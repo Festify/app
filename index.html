@@ -110,9 +110,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <span id="browser-sync-binding"></span>
     <script>
         window.cordova = {};
+        window.dev = true;
     </script>
     <!-- endbuild -->
 
+    <script>
+        console.debug = function () {
+            if (window.dev) {
+                console.log.apply(null, arguments);
+            }
+        }
+    </script>
     <app-shell></app-shell>
 </body>
 </html>
