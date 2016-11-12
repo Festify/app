@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 var gulp = require('gulp');
 var del = require('del');
 const PolymerProject = require('polymer-build').PolymerProject;
@@ -30,7 +31,7 @@ gulp.task('generate-icons', ['clean-icons'], function() {
                 return { width: width, rename: { suffix: '-' + width + 'x' + width }};
             })
         }))
-        .pipe(gulp.dest('images/manifest'));
+        .pipe(gulp.dest(path.join(distDir, 'images/manifest')));
 });
 
 gulp.task('clean-icons', function() {
