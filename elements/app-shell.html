@@ -23,117 +23,118 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="my-icons.html">
 
 <dom-module id="app-shell">
-  <template>
-    <style>
-      :host {
-        --app-primary-color: #951518;
-        --app-secondary-color: #1C1F24;
+    <template>
+        <style>
+            :host {
+                --app-primary-color: #951518;
+                --app-secondary-color: #1C1F24;
 
-        display: block;
-      }
+                display: block;
+            }
 
-      app-header {
-        color: #fff;
-        background-color: var(--app-primary-color);
-      }
-      app-header paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
+            app-header {
+                color: #fff;
+                background-color: var(--app-primary-color);
+            }
 
-      .drawer-list {
-        margin: 0 20px;
-      }
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
 
-      .drawer-list a {
-        display: block;
+            .drawer-list {
+                margin: 0 20px;
+            }
 
-        padding: 0 16px;
+            .drawer-list a {
+                display: block;
 
-        text-decoration: none;
+                padding: 0 16px;
 
-        color: var(--app-secondary-color);
+                text-decoration: none;
 
-        line-height: 40px;
-      }
+                color: var(--app-secondary-color);
 
-      .drawer-list a.iron-selected {
-        color: black;
+                line-height: 40px;
+            }
 
-        font-weight: bold;
-      }
-    </style>
+            .drawer-list a.iron-selected {
+                color: black;
 
-    <app-location route="{{route}}"></app-location>
-    <app-route
-        route="{{route}}"
-        pattern="/:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+                font-weight: bold;
+            }
+        </style>
 
-    <app-drawer-layout fullbleed>
-      <!-- Drawer content -->
-      <app-drawer>
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
-        </iron-selector>
-      </app-drawer>
+        <app-location route="{{route}}"></app-location>
+        <app-route
+            route="{{route}}"
+            pattern="/:page"
+            data="{{routeData}}"
+            tail="{{subroute}}"></app-route>
 
-      <!-- Main content -->
-      <app-header-layout has-scrolling-region>
+        <app-drawer-layout fullbleed>
+            <!-- Drawer content -->
+            <app-drawer>
+                <app-toolbar>Menu</app-toolbar>
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a name="view1" href="/view1">View One</a>
+                    <a name="view2" href="/view2">View Two</a>
+                    <a name="view3" href="/view3">View Three</a>
+                </iron-selector>
+            </app-drawer>
 
-        <app-header condenses reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
-          </app-toolbar>
-        </app-header>
+            <!-- Main content -->
+            <app-header-layout has-scrolling-region>
 
-        <iron-pages
-            selected="[[page]]"
-            attr-for-selected="name"
-            fallback-selection="view404"
-            role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
-        </iron-pages>
-      </app-header-layout>
-    </app-drawer-layout>
-  </template>
+                <app-header condenses reveals effects="waterfall">
+                    <app-toolbar>
+                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <div main-title>My App</div>
+                    </app-toolbar>
+                </app-header>
 
-  <script>
-    Polymer({
-      is: 'app-shell',
+                <iron-pages
+                    selected="[[page]]"
+                    attr-for-selected="name"
+                    fallback-selection="view404"
+                    role="main">
+                    <my-view1 name="view1"></my-view1>
+                    <my-view2 name="view2"></my-view2>
+                    <my-view3 name="view3"></my-view3>
+                    <my-view404 name="view404"></my-view404>
+                </iron-pages>
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
 
-      properties: {
-        page: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged'
-        }
-      },
+    <script>
+        Polymer({
+            is: 'app-shell',
 
-      observers: [
-        '_routePageChanged(routeData.page)'
-      ],
+            properties: {
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged'
+                }
+            },
 
-      _routePageChanged: function(page) {
-        this.page = page || 'view1';
-      },
+            observers: [
+                '_routePageChanged(routeData.page)'
+            ],
 
-      _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
-      },
+            _routePageChanged: function (page) {
+                this.page = page || 'view1';
+            },
 
-      _showPage404: function() {
-        this.page = 'view404';
-      }
-    });
-  </script>
+            _pageChanged: function (page) {
+                // Load page import on demand. Show 404 page if fails
+                var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this._showPage404, true);
+            },
+
+            _showPage404: function () {
+                this.page = 'view404';
+            }
+        });
+    </script>
 </dom-module>

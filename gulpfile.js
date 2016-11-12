@@ -13,7 +13,7 @@ const distDir = 'build';
 
 var watches = [];
 
-gulp.task('polymer', function() {
+gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
 
     return mergeStream(project.sources(), project.dependencies())
@@ -26,21 +26,21 @@ watches.push({
     tasks: 'polymer'
 });
 
-gulp.task('generate-icons', ['clean-icons'], function() {
+gulp.task('generate-icons', ['clean-icons'], function () {
     return gulp.src('images/icon.png')
         .pipe($.responsive({
             '*.png': [48, 72, 96, 144, 192, 512].map(function (width) {
-                return { width: width, rename: { suffix: '-' + width + 'x' + width }};
+                return {width: width, rename: {suffix: '-' + width + 'x' + width}};
             })
         }))
         .pipe(gulp.dest(path.join(distDir, 'images/manifest')));
 });
 
-gulp.task('clean-icons', function() {
+gulp.task('clean-icons', function () {
     return del(['images/manifest/*.png']);
 });
 
-gulp.task('serve', function() {
+gulp.task('serve', function () {
     browserSync.init({
         notify: false,
         open: false,
@@ -59,7 +59,7 @@ gulp.task('serve', function() {
         }
     });
 
-    watches.forEach(function(item) {
+    watches.forEach(function (item) {
         gulp.watch(item.src, item.tasks);
     });
 });
