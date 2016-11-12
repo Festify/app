@@ -1,0 +1,90 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link ref="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="app-icons-festify.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="view-home">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .wrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                min-height: 500px;
+                text-align: center;
+            }
+
+            iron-icon {
+                --iron-icon-height: 150px;
+                --iron-icon-width: 150px;
+            }
+
+            p {
+                padding: 0 25px;
+            }
+
+            paper-button {
+                display: block;
+                margin: 0 auto 20px auto;
+                max-width: 250px;
+            }
+
+            paper-button:last-child {
+                margin-bottom: 0;
+            }
+        </style>
+
+        <div class="wrapper">
+            <header>
+                <iron-icon icon="festify:logo"></iron-icon>
+            </header>
+
+            <p>
+                Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
+            </p>
+            <iron-pages selected="[[page]]"
+                        attr-for-selected="name"
+                        fallback-selection="host"
+                        role="main">
+                <div name="host" class="buttons-container">
+                    <paper-button raised on-tap="onTapPartyStart">Start a new Party</paper-button>
+                    <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
+                    <paper-button raised on-tap="onTapPeviousParties">Previews Parties</paper-button>
+                </div>
+            </iron-pages>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-home',
+
+            properties: {
+
+            },
+
+            ready: function () {
+            },
+
+            onTapPartyStart: function () {
+
+            },
+
+            onTapJoinParty: function () {
+
+            },
+
+            onTapPreviousParties: function () {
+
+            }
+        });
+    </script>
+</dom-module>

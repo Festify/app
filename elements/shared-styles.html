@@ -14,6 +14,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="shared-styles">
     <template>
         <style>
+            :host, * {
+                box-sizing: border-box;
+                color: white;
+            }
+
+            paper-button {
+                background: var(--app-primary-color);
+            }
+
             .card {
                 margin: 24px;
                 padding: 16px;
