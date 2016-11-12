@@ -29,7 +29,7 @@ gulp.task('polymer', function () {
 });
 watches.push({
     src: "elements/**/*",
-    tasks: 'polymer'
+    tasks: browserSync.reload
 });
 
 gulp.task('generate-icons', ['clean-icons'], function () {
