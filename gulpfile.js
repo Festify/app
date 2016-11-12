@@ -3,6 +3,7 @@
 const path = require('path');
 var gulp = require('gulp');
 var del = require('del');
+const runSequence = require('run-sequence');
 const PolymerProject = require('polymer-build').PolymerProject;
 const mergeStream = require('merge-stream');
 const browserSync = require('browser-sync').create();
@@ -12,6 +13,10 @@ var $ = require('gulp-load-plugins')();
 const distDir = 'build';
 
 var watches = [];
+
+gulp.task('clean', function() {
+    return del(distDir);
+});
 
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
@@ -36,10 +41,6 @@ gulp.task('generate-icons', ['clean-icons'], function () {
         .pipe(gulp.dest(path.join(distDir, 'images/manifest')));
 });
 
-gulp.task('clean-icons', function () {
-    return del(['images/manifest/*.png']);
-});
-
 gulp.task('serve', function () {
     browserSync.init({
         notify: false,
@@ -62,4 +63,12 @@ gulp.task('serve', function () {
     watches.forEach(function (item) {
         gulp.watch(item.src, item.tasks);
     });
+});
+
+gulp.task('build', function(cb) {
+    runSequence(
+        'clean',
+        ['polymer', 'generate-icons'],
+        cb
+    );
 });
