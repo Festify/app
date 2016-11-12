@@ -1,0 +1,54 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="view-join">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :root {
+                --paper-input-container-input: {
+                    font-size: 24px;
+                }
+
+                --paper-input-container-label: {
+                    font-size: 20px;
+                }
+            }
+
+            paper-input {
+                margin-bottom: 20px;
+            }
+        </style>
+
+        <paper-input label="Party ID"
+                     value="{{joinInput}}"
+                     type="tel"
+                     auto-validate="true"
+                     allowed-pattern="[0-9]+"
+                     required="true"
+                     invalid="{{inputInvalid}}">
+        </paper-input>
+        <paper-button raised disabled="[[inputInvalid]]" on-tap="onTapJoinParty">Join Party</paper-button>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-join',
+
+            properties: {
+                inputInvalid: {
+                    type: Boolean,
+                    value: true
+                },
+                joinInput: {
+                    type: String
+                }
+            },
+
+            onTapJoinParty: function () {
+
+            }
+        });
+    </script>
+</dom-module>

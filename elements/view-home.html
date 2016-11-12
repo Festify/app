@@ -1,9 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
 <link ref="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="app-icons-festify.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="view-join.html">
 
 <dom-module id="view-home">
     <template>
@@ -13,6 +16,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
+                padding: 0 10px;
             }
 
             .wrapper {
@@ -32,16 +36,25 @@
                 padding: 0 25px;
             }
 
+            iron-pages {
+                margin: 0 auto;
+                min-width: 250px;
+            }
+
             paper-button {
-                display: block;
-                margin: 0 auto 20px auto;
-                max-width: 250px;
+                margin-bottom: 20px;
             }
 
             paper-button:last-child {
                 margin-bottom: 0;
             }
         </style>
+
+        <app-route route="{{route}}"
+                   pattern="/:view"
+                   data="{{routeData}}"
+                   active="{{routeActive}}">
+        </app-route>
 
         <div class="wrapper">
             <header>
@@ -51,15 +64,16 @@
             <p>
                 Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
             </p>
-            <iron-pages selected="[[page]]"
-                        attr-for-selected="name"
+            <iron-pages selected="{{routeData.view}}"
+                        attr-for-selected="view"
                         fallback-selection="host"
                         role="main">
-                <div name="host" class="buttons-container">
+                <div view="host">
                     <paper-button raised on-tap="onTapPartyStart">Start a new Party</paper-button>
                     <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
-                    <paper-button raised on-tap="onTapPeviousParties">Previews Parties</paper-button>
+                    <paper-button raised on-tap="onTapPreviousParties">Previous Parties</paper-button>
                 </div>
+                <view-join view="join"></view-join>
             </iron-pages>
         </div>
     </template>
@@ -68,10 +82,26 @@
             is: 'view-home',
 
             properties: {
-
+                route: {
+                    type: Object,
+                    notify: true
+                },
+                routeActive: {
+                    type: Boolean
+                }
             },
 
-            ready: function () {
+            observers: [
+                '_routePageChanged(routeData.view, routeActive)'
+            ],
+
+            _routePageChanged: function (view, active) {
+                // Prevent browser users from seeing the host screen
+                if (!window.cordova) {
+                    this.set('route.path', '/join');
+                } else if (!view || !active) {
+                    this.set('routeData.view', 'host');
+                }
             },
 
             onTapPartyStart: function () {
@@ -79,7 +109,7 @@
             },
 
             onTapJoinParty: function () {
-
+                this.set('route.path', '/join');
             },
 
             onTapPreviousParties: function () {

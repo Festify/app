@@ -19,14 +19,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
         <style>
             :host {
-                --app-primary-color: #951518;
-                --app-secondary-color: #1C1F24;
-                background: var(--app-secondary-color);
+                --primary-color: #951518;
+                --primary-color-dark: #731417;
+                --secondary-color: #1c1f24;
+
+                --primary-text-color: white;
+                --secondary-text-color: #a9a9a9;
+
+                background: var(--secondary-color);
 
                 display: flex;
+                justify-content: center;
                 flex-direction: column;
 
-                height: 100vh;
+                min-height: 100vh;
             }
 
             iron-pages {
@@ -45,15 +51,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <app-location route="{{route}}"></app-location>
         <app-route route="{{route}}"
-                   pattern="/:page"
+                   pattern="/:view"
                    data="{{routeData}}"
                    tail="{{subroute}}"></app-route>
 
-        <iron-pages selected="[[page]]"
-                    attr-for-selected="name"
-                    fallback-selection="view404"
+        <iron-pages selected="{{routeData.view}}"
+                    attr-for-selected="view"
+                    fallback-selection="home"
                     role="main">
-            <view-home class="centered" name="home"></view-home>
+            <view-home class="centered" view="home" route="{{subroute}}"></view-home>
         </iron-pages>
     </template>
 
@@ -61,23 +67,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer({
             is: 'app-shell',
 
-            properties: {
-                page: {
-                    type: String,
-                    reflectToAttribute: true
-                }
-            },
+            properties: {},
 
             observers: [
-                '_routePageChanged(routeData.page)'
+                '_routePageChanged(routeData.view)'
             ],
 
             _routePageChanged: function (page) {
-                this.page = 'home';
-            },
-
-            _showPage404: function () {
-                this.page = 'view404';
+                if (!page || page == '') {
+                    this.set('route.path', '/home');
+                }
             }
         });
     </script>

@@ -19,8 +19,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 color: white;
             }
 
+            :root {
+                --paper-button-disabled: {
+                    background: var(--primary-color-dark);
+                }
+            }
+
             paper-button {
-                background: var(--app-primary-color);
+                background: var(--primary-color);
+                display: block;
+                margin: 0;
             }
 
             .card {
