@@ -1,0 +1,33 @@
+{
+  "name": "festify-v2-client-web",
+  "version": "1.0.0",
+  "description": "The Festify browser client that allows the guests to vote.",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.4.0",
+    "gulp-responsive": "^2.6.0",
+    "polymer-build": "^0.5.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Festify/v2-client-web.git"
+  },
+  "keywords": [
+    "Festify",
+    "Client"
+  ],
+  "author": "Festify Dev Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Festify/v2-client-web/issues"
+  },
+  "homepage": "https://github.com/Festify/v2-client-web#readme"
+}
