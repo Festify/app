@@ -11,6 +11,7 @@
     "gulp": "^3.9.1",
     "gulp-load-plugins": "^1.4.0",
     "gulp-responsive": "^2.6.0",
+    "merge-stream": "^1.0.0",
     "polymer-build": "^0.5.0"
   },
   "scripts": {

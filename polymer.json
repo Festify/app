@@ -1,18 +1,12 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/festify-client.html",
-  "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html",
-    "src/my-view404.html"
-  ],
-  "sourceGlobs": [
-   "src/**/*",
+  "shell": "elements/app-shell.html",
+  "sources": [
+   "elements/**/*",
    "images/**/*",
    "bower.json"
   ],
-  "includeDependencies": [
+  "extraDependencies": [
     "manifest.json",
     "bower_components/webcomponentsjs/webcomponents-lite.min.js"
   ]
