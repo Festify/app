@@ -11,6 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="app-icons.html">
 <link rel="import" href="view-home.html">
@@ -53,25 +55,61 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-route route="{{route}}"
                    pattern="/:view"
                    data="{{routeData}}"
-                   tail="{{subroute}}"></app-route>
+                   tail="{{subroute}}">
+        </app-route>
 
-        <iron-pages selected="{{routeData.view}}"
-                    attr-for-selected="view"
-                    fallback-selection="home"
-                    role="main">
-            <view-home class="centered" view="home" route="{{subroute}}"></view-home>
-        </iron-pages>
+        <firebase-app api-key="AIzaSyDl9A10FlNzy3smQQWp11RzYVPs2FgOzMg"
+                      auth-domain="festify-dev.firebaseapp.com"
+                      database-url="https://festify-dev.firebaseio.com">
+        </firebase-app>
+        <firebase-auth id="fbAuth" status-known="{{fbStatusKnown}}" signed-in="{{fbSignedIn}}"></firebase-auth>
+
+        <template is="dom-if" if="[[fbSignedIn]]">
+            <iron-pages selected="{{routeData.view}}"
+                        attr-for-selected="view"
+                        fallback-selection="home"
+                        role="main">
+                <view-home class="centered" view="home" route="{{subroute}}"></view-home>
+            </iron-pages>
+        </template>
+        <template is="dom-if" if="[[!fbSignedIn]]">
+            <p>Authing with Firebase</p>
+        </template>
     </template>
 
     <script>
         Polymer({
             is: 'app-shell',
 
-            properties: {},
+            properties: {
+                fbSignedIn: {
+                    type: Boolean
+                },
+                fbStatusKnown: {
+                    type: Boolean
+                }
+            },
 
             observers: [
-                '_routePageChanged(routeData.view)'
+                '_routePageChanged(routeData.view)',
+                '_loginStateChanged(fbStatusKnown, fbSignedIn)'
             ],
+
+            _loginStateChanged: function (statusKnown, signedIn) {
+                if (statusKnown) {
+                    if (!signedIn) {
+                        this.$.fbAuth.signInAnonymously()
+                            .then(function (user) {
+                                console.log("We're logged in", user.uid);
+                            })
+                            .catch(function (err) {
+                                console.error("Error while authing with Firebase", err);
+                            });
+                    } else {
+                        console.log("We're already logged in with", this.$.fbAuth.user.uid);
+                    }
+                }
+            },
 
             _routePageChanged: function (page) {
                 if (!page || page == '') {
