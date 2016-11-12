@@ -1,14 +1,14 @@
 'use strict';
 
 const path = require('path');
-var gulp = require('gulp');
-var del = require('del');
+const gulp = require('gulp');
+const del = require('del');
 const runSequence = require('run-sequence');
 const PolymerProject = require('polymer-build').PolymerProject;
 const mergeStream = require('merge-stream');
 const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
-var $ = require('gulp-load-plugins')();
+const $ = require('gulp-load-plugins')();
 
 const distDir = 'build';
 
