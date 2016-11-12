@@ -23,6 +23,7 @@ gulp.task('polymer', function () {
 
     return mergeStream(project.sources(), project.dependencies())
         .pipe(project.analyzer)
+        .pipe($.if('index.html', $.useref()))
         .pipe(project.bundler)
         .pipe(gulp.dest(distDir));
 });
