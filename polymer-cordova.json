@@ -1,0 +1,13 @@
+{
+    "entrypoint": "app.html",
+    "shell": "elements/app-shell.html",
+    "sources": [
+        "elements/**/*",
+        "images/**/*",
+        "bower.json"
+    ],
+    "extraDependencies": [
+        "manifest.json",
+        "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+    ]
+}
