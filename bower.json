@@ -16,9 +16,16 @@
     "polymerfire": "firebase/polymerfire#^0.10.2",
     "neon-animation": "PolymerElements/neon-animation#^1.2.4",
     "paper-button": "PolymerElements/paper-button#^1.0.14",
-    "paper-input": "PolymerElements/paper-input#^1.1.20"
+    "paper-input": "PolymerElements/paper-input#^1.1.20",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.4.3",
+    "lodash": "^4.16.6",
+    "iron-list": "PolymerElements/iron-list#^1.3.14",
+    "iron-icons": "PolymerElements/iron-icons#^1.1.3"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
+  },
+  "resolutions": {
+    "lodash": "^4.16.6"
   }
 }

@@ -3,10 +3,17 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../common/app-conditional-view.html">
+<link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../providers/provider-tracks.html">
+<link rel="import" href="../behavior-app-state.html">
+<link rel="import" href="view-track.html">
 
 <dom-module id="view-party">
     <template>
@@ -43,6 +50,11 @@
             }
         </style>
 
+        <provider-tracks tracks="{{tracks}}"
+                         search-query="[[searchQuery]]"
+                         state="[[state]]">
+        </provider-tracks>
+
         <app-conditional-view active="[[active]]">
             <app-drawer-layout fullbleed>
                 <!-- Drawer content -->
@@ -52,15 +64,19 @@
                     </iron-selector>
                 </app-drawer>
 
-                <!-- Main content -->
-                <app-header-layout has-scrolling-region>
-                    <app-header condenses reveals effects="waterfall">
-                        <app-toolbar>
-                            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                            <div main-title>My App</div>
-                        </app-toolbar>
-                    </app-header>
-                </app-header-layout>
+                <app-header fixed>
+                    <app-toolbar>
+                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <div main-title>[[state.party.name]]</div>
+                    </app-toolbar>
+                </app-header>
+
+                <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
+                <iron-list items="[[tracks]]">
+                    <template>
+                        <view-track track="[[item]]"></view-track>
+                    </template>
+                </iron-list>
             </app-drawer-layout>
         </app-conditional-view>
     </template>
@@ -68,9 +84,15 @@
         Polymer({
             is: 'view-party',
 
+            behaviors: [FestifyBehaviors.StateBehavior],
+
             properties: {
                 active: {
                     type: Boolean
+                },
+                route: {
+                    type: Object,
+                    notify: true
                 }
             },
 
