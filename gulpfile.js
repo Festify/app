@@ -32,7 +32,17 @@ watches.push({
     tasks: browserSync.reload
 });
 
-gulp.task('generate-icons', function () {
+gulp.task('generate-icons-ios', function() {
+    return gulp.src('images/icon-full.png')
+        .pipe($.responsive({
+            '*.png': [29, 40, 50, 57, 58, 60, 72, 76, 80, 100, 114, 120, 144, 152, 180].map(function (width) {
+                return {width: width, rename: {suffix: '-' + width}};
+            })
+        }))
+        .pipe(gulp.dest(path.join(distDir, 'images/manifest')));
+});
+
+gulp.task('generate-icons', ['generate-icons-ios'], function () {
     return gulp.src('images/icon.png')
         .pipe($.responsive({
             '*.png': [48, 72, 96, 144, 192, 512].map(function (width) {
