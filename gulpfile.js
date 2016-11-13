@@ -10,7 +10,7 @@ const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
 const $ = require('gulp-load-plugins')();
 
-const distDir = 'build';
+const distDir = 'www';
 
 var watches = [];
 
@@ -32,7 +32,7 @@ watches.push({
     tasks: browserSync.reload
 });
 
-gulp.task('generate-icons', ['clean-icons'], function () {
+gulp.task('generate-icons', function () {
     return gulp.src('images/icon.png')
         .pipe($.responsive({
             '*.png': [48, 72, 96, 144, 192, 512].map(function (width) {

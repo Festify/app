@@ -1,6 +1,9 @@
 bower_components/
-build/
 node_modules/
 /images/manifest/*.png
 .idea/
+
+# Cordova stuff
 plugins/
+platforms/
+www/
