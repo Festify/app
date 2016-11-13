@@ -16,7 +16,8 @@
     "polymerfire": "firebase/polymerfire#^0.10.2",
     "neon-animation": "PolymerElements/neon-animation#^1.2.4",
     "paper-button": "PolymerElements/paper-button#^1.0.14",
-    "paper-input": "PolymerElements/paper-input#^1.1.20"
+    "paper-input": "PolymerElements/paper-input#^1.1.20",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

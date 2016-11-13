@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
@@ -51,6 +52,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin: 0 auto;
                 max-width: 600px;
             }
+
+            paper-spinner-lite {
+                --paper-spinner-color: var(--primary-color);
+            }
         </style>
 
         <app-location route="{{route}}"></app-location>
@@ -82,7 +87,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!fbSignedIn]]">
-            <p>Authing with Firebase</p>
+            <paper-spinner active></paper-spinner>
         </template>
     </template>
 
@@ -117,6 +122,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 '_routePageChanged(routeData.view)',
                 '_loginStateChanged(fbStatusKnown, fbSignedIn)'
             ],
+
+            ready: function() {
+                if(window.cordova) {
+                    this.$$('app-location').forEach(function(loc) {
+                        loc.set("useHashAsPath", true);
+                    };
+                }
+            },
 
             // Property Observers
 
