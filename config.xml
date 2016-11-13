@@ -7,7 +7,7 @@
     <author email="mail@getfestify.de" href="https://festify.rocks">
         Festify
     </author>
-    <content src="index.html" />
+    <content src="app.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -19,35 +19,33 @@
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-        <!-- iOS 8.0+ -->
-        <!-- iPhone 6 Plus  -->
-        <icon src="www/images/manifest/icon-full-180.png" width="180" height="180" />
-        <!-- iOS 7.0+ -->
-        <!-- iPhone / iPod Touch  -->
-        <icon src="www/images/manifest/icon-full-60.png" width="60" height="60" />
-        <icon src="www/images/manifest/icon-full-120.png" width="120" height="120" />
-        <!-- iPad -->
-        <icon src="www/images/manifest/icon-full-76.png" width="76" height="76" />
-        <icon src="www/images/manifest/icon-full-152.png" width="152" height="152" />
-        <!-- iOS 6.1 -->
-        <!-- Spotlight Icon -->
-        <icon src="www/images/manifest/icon-full-40.png" width="40" height="40" />
-        <icon src="www/images/manifest/icon-full-80.png" width="80" height="80" />
-        <!-- iPhone / iPod Touch -->
-        <icon src="www/images/manifest/icon-full-57.png" width="57" height="57" />
-        <icon src="www/images/manifest/icon-full-114.png" width="114" height="114" />
-        <!-- iPad -->
-        <icon src="www/images/manifest/icon-full-72.png" width="72" height="72" />
-        <icon src="www/images/manifest/icon-full-144.png" width="144" height="144" />
-        <!-- iPhone Spotlight and Settings Icon -->
-        <icon src="www/images/manifest/icon-full-29.png" width="29" height="29" />
-        <icon src="www/images/manifest/icon-full-58.png" width="58" height="58" />
-        <!-- iPad Spotlight and Settings Icon -->
-        <icon src="www/images/manifest/icon-full-50.png" width="50" height="50" />
-        <icon src="www/images/manifest/icon-full-100.png" width="100" height="100" />
+        <icon height="180" src="www/images/manifest/icon-full-180.png" width="180" />
+        <icon height="60" src="www/images/manifest/icon-full-60.png" width="60" />
+        <icon height="120" src="www/images/manifest/icon-full-120.png" width="120" />
+        <icon height="76" src="www/images/manifest/icon-full-76.png" width="76" />
+        <icon height="152" src="www/images/manifest/icon-full-152.png" width="152" />
+        <icon height="40" src="www/images/manifest/icon-full-40.png" width="40" />
+        <icon height="80" src="www/images/manifest/icon-full-80.png" width="80" />
+        <icon height="57" src="www/images/manifest/icon-full-57.png" width="57" />
+        <icon height="114" src="www/images/manifest/icon-full-114.png" width="114" />
+        <icon height="72" src="www/images/manifest/icon-full-72.png" width="72" />
+        <icon height="144" src="www/images/manifest/icon-full-144.png" width="144" />
+        <icon height="29" src="www/images/manifest/icon-full-29.png" width="29" />
+        <icon height="58" src="www/images/manifest/icon-full-58.png" width="58" />
+        <icon height="50" src="www/images/manifest/icon-full-50.png" width="50" />
+        <icon height="100" src="www/images/manifest/icon-full-100.png" width="100" />
     </platform>
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="BackgroundColor" value="0xff1c1f24" />
+    <preference name="StatusBarOverlaysWebView" value="true" />
+    <preference name="StatusBarBackgroundColor" value="#1c1f24" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="HideKeyboardFormAccessoryBar" value="true" />
+    <preference name="Orientation" value="portrait" />
+    <splash src="www/images/Default@2x~universal~anyany.png" />
     <plugin name="de.fhg.fokus.famium.presentation" spec="https://github.com/fraunhoferfokus/cordova-plugin-presentation.git" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
     <engine name="ios" spec="~4.3.0" />
     <engine name="android" spec="~6.0.0" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.0" />
 </widget>
