@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="app-conditional-view.html">
 <link rel="import" href="app-icons-festify.html">
 <link rel="import" href="shared-styles.html">
@@ -50,6 +51,14 @@
             paper-button:last-child {
                 margin-bottom: 0;
             }
+
+            paper-icon-button {
+                position: absolute;
+                top: 20px;
+                left: 15px;
+                width: 50px;
+                height: 50px;
+            }
         </style>
 
         <app-conditional-view active="[[active]]">
@@ -59,6 +68,12 @@
             </app-route>
 
             <div class="wrapper">
+
+                <!-- Navigation for Cordova Builds -->
+                <template is="dom-if" if="[[_showBackButton(routeData.view)]]">
+                    <paper-icon-button icon="arrow-back" on-tap="_tapJoinBack"></paper-icon-button>
+                </template>
+
                 <header>
                     <iron-icon icon="festify:logo"></iron-icon>
                 </header>
@@ -112,6 +127,10 @@
 
             },
 
+            _tapJoinBack: function() {
+                this.set('route.path', '/host');
+            },
+
             _activeChanged: function (value) {
                 if (value && this.route.path.length < 1) {
                     this._routePageChanged('');
@@ -125,6 +144,10 @@
                 } else if (!view || view.length < 1) {
                     this.set('route.path', '/host');
                 }
+            },
+
+            _showBackButton: function(view) {
+                return window.cordova && view == 'join';
             }
         });
     </script>
