@@ -1,0 +1,29 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="app-conditional-view">
+    <template>
+        <template is="dom-if" if="[[active]]">
+            <content active="[[active]]"></content>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            is: 'app-conditional-view',
+
+            properties: {
+                active: {
+                    type: Boolean,
+                    value: false,
+                    observer: 'd'
+                },
+                view: {
+                    type: String
+                }
+            },
+            d: function (val) {
+
+                console.log('Were ' + (val ? '' : 'not ') + 'visible', this.view);
+            }
+        });
+    </script>
+</dom-module>

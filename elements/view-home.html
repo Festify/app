@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="app-conditional-view.html">
 <link rel="import" href="app-icons-festify.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="view-join.html">
@@ -50,62 +51,56 @@
             }
         </style>
 
-        <app-route route="{{route}}"
-                   pattern="/:view"
-                   data="{{routeData}}"
-                   active="{{routeActive}}">
-        </app-route>
+        <app-conditional-view active="[[active]]">
+            <app-route route="{{route}}"
+                       pattern="/:view"
+                       data="{{routeData}}">
+            </app-route>
 
-        <div class="wrapper">
-            <header>
-                <iron-icon icon="festify:logo"></iron-icon>
-            </header>
+            <div class="wrapper">
+                <header>
+                    <iron-icon icon="festify:logo"></iron-icon>
+                </header>
 
-            <p>
-                Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
-            </p>
-            <iron-pages selected="{{routeData.view}}"
-                        attr-for-selected="view"
-                        fallback-selection="host"
-                        role="main">
-                <div view="host">
-                    <paper-button raised on-tap="onTapPartyStart">Start a new Party</paper-button>
-                    <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
-                    <paper-button raised on-tap="onTapPreviousParties">Previous Parties</paper-button>
-                </div>
-                <view-join view="join"></view-join>
-            </iron-pages>
-        </div>
+                <p>
+                    Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
+                </p>
+                <iron-pages selected="{{routeData.view}}"
+                            attr-for-selected="view"
+                            attribute-selected="active"
+                            role="main">
+                    <div view="host">
+                        <paper-button raised on-tap="onTapCreateParty">Create a new Party</paper-button>
+                        <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
+                        <paper-button raised on-tap="onTapPreviousParties">Previous Parties</paper-button>
+                    </div>
+                    <view-join view="join"></view-join>
+                </iron-pages>
+            </div>
+        </app-conditional-view>
     </template>
     <script>
         Polymer({
             is: 'view-home',
 
             properties: {
+                active: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_activeChanged'
+                },
                 route: {
                     type: Object,
                     notify: true
-                },
-                routeActive: {
-                    type: Boolean
                 }
             },
 
             observers: [
-                '_routePageChanged(routeData.view, routeActive)'
+                '_routePageChanged(routeData.view)'
             ],
 
-            _routePageChanged: function (view, active) {
-                // Prevent browser users from seeing the host screen
-                if (!window.cordova) {
-                    this.set('route.path', '/join');
-                } else if (!view || !active) {
-                    this.set('routeData.view', 'host');
-                }
-            },
-
-            onTapPartyStart: function () {
-
+            onTapCreateParty: function () {
+                this.fire('host-createNewParty');
             },
 
             onTapJoinParty: function () {
@@ -114,6 +109,21 @@
 
             onTapPreviousParties: function () {
 
+            },
+
+            _activeChanged: function (value) {
+                if (value && this.route.path.length < 1) {
+                    this._routePageChanged('');
+                }
+            },
+
+            _routePageChanged: function (view) {
+                // Prevent browser users from seeing the host screen
+                if (!window.cordova) {
+                    this.set('route.path', '/join');
+                } else if (!view || view.length < 1) {
+                    this.set('route.path', '/host');
+                }
             }
         });
     </script>

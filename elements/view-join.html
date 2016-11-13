@@ -47,7 +47,9 @@
             },
 
             onTapJoinParty: function () {
-
+                if (!this.inputInvalid) {
+                    this.fire('join-openParty', { shortId: this.joinInput });
+                }
             }
         });
     </script>
