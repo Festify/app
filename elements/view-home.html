@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="app-conditional-view.html">
 <link rel="import" href="app-icons-festify.html">
 <link rel="import" href="shared-styles.html">
@@ -40,6 +41,7 @@
             iron-pages {
                 margin: 0 auto;
                 min-width: 250px;
+                height: 180px;
             }
 
             paper-button {
@@ -48,6 +50,14 @@
 
             paper-button:last-child {
                 margin-bottom: 0;
+            }
+
+            paper-icon-button {
+                position: absolute;
+                top: 20px;
+                left: 15px;
+                width: 50px;
+                height: 50px;
             }
         </style>
 
@@ -58,6 +68,12 @@
             </app-route>
 
             <div class="wrapper">
+
+                <!-- Navigation for Cordova Builds -->
+                <template is="dom-if" if="[[_showBackButton(routeData.view)]]">
+                    <paper-icon-button icon="arrow-back" on-tap="_tapJoinBack"></paper-icon-button>
+                </template>
+
                 <header>
                     <iron-icon icon="festify:logo"></iron-icon>
                 </header>
@@ -70,9 +86,9 @@
                             attribute-selected="active"
                             role="main">
                     <div view="host">
-                        <paper-button raised on-tap="onTapCreateParty">Create a new Party</paper-button>
-                        <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
-                        <paper-button raised on-tap="onTapPreviousParties">Previous Parties</paper-button>
+                        <paper-button raised on-tap="_tapCreateParty">Create a new Party</paper-button>
+                        <paper-button raised on-tap="_tapJoinParty">Join a Party</paper-button>
+                        <paper-button raised on-tap="_tapPreviousParties">Previous Parties</paper-button>
                     </div>
                     <view-join view="join"></view-join>
                 </iron-pages>
@@ -99,16 +115,20 @@
                 '_routePageChanged(routeData.view)'
             ],
 
-            onTapCreateParty: function () {
+            _tapCreateParty: function () {
                 this.fire('host-createNewParty');
             },
 
-            onTapJoinParty: function () {
+            _tapJoinParty: function () {
                 this.set('route.path', '/join');
             },
 
-            onTapPreviousParties: function () {
+            _tapPreviousParties: function () {
 
+            },
+
+            _tapJoinBack: function() {
+                this.set('route.path', '/host');
             },
 
             _activeChanged: function (value) {
@@ -124,6 +144,10 @@
                 } else if (!view || view.length < 1) {
                     this.set('route.path', '/host');
                 }
+            },
+
+            _showBackButton: function(view) {
+                return window.cordova && view == 'join';
             }
         });
     </script>

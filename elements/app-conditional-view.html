@@ -13,16 +13,11 @@
             properties: {
                 active: {
                     type: Boolean,
-                    value: false,
-                    observer: 'd'
+                    value: false
                 },
                 view: {
                     type: String
                 }
-            },
-            d: function (val) {
-
-                console.log('Were ' + (val ? '' : 'not ') + 'visible', this.view);
             }
         });
     </script>
