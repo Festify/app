@@ -25,7 +25,7 @@ gulp.task('clean', function() {
 function polymerBuilding(project) {
     return mergeStream(project.sources(), project.dependencies())
         .pipe(project.analyzer)
-        .pipe($.if('index.html', $.useref()))
+        .pipe($.if(['index.html', 'app.html'], $.useref()))
         .pipe(project.bundler);
 }
 
