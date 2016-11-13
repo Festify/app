@@ -21,7 +21,6 @@
                 margin-bottom: 20px;
             }
         </style>
-
         <paper-input label="Party ID"
                      value="{{joinInput}}"
                      type="tel"
@@ -30,7 +29,7 @@
                      required="true"
                      invalid="{{inputInvalid}}">
         </paper-input>
-        <paper-button raised disabled="[[inputInvalid]]" on-tap="onTapJoinParty">Join Party</paper-button>
+        <paper-button raised disabled="[[inputInvalid]]" on-tap="_tapJoinParty">Join Party</paper-button>
     </template>
     <script>
         Polymer({
@@ -46,7 +45,7 @@
                 }
             },
 
-            onTapJoinParty: function () {
+            _tapJoinParty: function () {
                 if (!this.inputInvalid) {
                     this.fire('join-openParty', { shortId: this.joinInput });
                 }
