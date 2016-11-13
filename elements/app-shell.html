@@ -121,7 +121,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // Property Observers
 
             _currentPartyIdChanged: function (ev) {
-                console.log(ev.detail.value);
                 this.set('route.path', '/party/' + ev.detail.value);
             },
 
