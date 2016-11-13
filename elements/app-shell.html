@@ -15,7 +15,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="app-icons.html">
+<link rel="import" href="provider-party.html">
 <link rel="import" href="view-home.html">
+<link rel="import" href="view-party.html">
 
 <dom-module id="app-shell">
     <template>
@@ -62,14 +64,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       auth-domain="festify-dev.firebaseapp.com"
                       database-url="https://festify-dev.firebaseio.com">
         </firebase-app>
-        <firebase-auth id="fbAuth" status-known="{{fbStatusKnown}}" signed-in="{{fbSignedIn}}"></firebase-auth>
+        <firebase-auth id="fbAuth"
+                       status-known="{{fbStatusKnown}}"
+                       signed-in="{{fbSignedIn}}"
+                       user="{{state.authedUser}}">
+        </firebase-auth>
+
+        <provider-party id="partyProvider" state="[[state]]" on-fb-id-changed="_currentPartyIdChanged"></provider-party>
 
         <template is="dom-if" if="[[fbSignedIn]]">
-            <iron-pages selected="{{routeData.view}}"
+            <iron-pages selected="[[currentView]]"
                         attr-for-selected="view"
-                        fallback-selection="home"
+                        selected-attribute="active"
                         role="main">
                 <view-home class="centered" view="home" route="{{subroute}}"></view-home>
+                <view-party class="centered" view="party" route="{{subroute}}"></view-party>
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!fbSignedIn]]">
@@ -82,18 +91,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             is: 'app-shell',
 
             properties: {
+                currentView: {
+                    type: String
+                },
                 fbSignedIn: {
                     type: Boolean
                 },
                 fbStatusKnown: {
                     type: Boolean
+                },
+                state: {
+                    type: Object,
+                    value: function () {
+                        return {};
+                    }
                 }
+            },
+
+            listeners: {
+                'host-createNewParty': '_createNewParty',
+                'join-openParty': '_openParty'
             },
 
             observers: [
                 '_routePageChanged(routeData.view)',
                 '_loginStateChanged(fbStatusKnown, fbSignedIn)'
             ],
+
+            // Property Observers
+
+            _currentPartyIdChanged: function (ev) {
+                console.log(ev.detail.value);
+                this.set('route.path', '/party/' + ev.detail.value);
+            },
 
             _loginStateChanged: function (statusKnown, signedIn) {
                 if (statusKnown) {
@@ -112,9 +142,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
 
             _routePageChanged: function (page) {
-                if (!page || page == '') {
+                if (page && page.length > 0) {
+                    this.set('currentView', page);
+                } else {
                     this.set('route.path', '/home');
+                    this.set('currentView', 'home');
                 }
+            },
+
+            // Actions
+
+            _openParty: function (ev) {
+                this.$.partyProvider.set('shortId', ev.detail.shortId);
+            },
+
+            _createNewParty: function () {
+                this.$.partyProvider.createNewParty();
             }
         });
     </script>

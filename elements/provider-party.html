@@ -1,0 +1,94 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/firebase.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="behavior-app-state.html">
+
+<dom-module id="provider-party">
+    <template>
+        <firebase-document id="partyDocument" data="{{data}}" path="[[_getPath(fbId)]]"></firebase-document>
+    </template>
+    <script>
+        var partiesKey = '/parties';
+        Polymer({
+            is: 'provider-party',
+
+            behaviors: [FestifyBehaviors.StateBehavior],
+
+            properties: {
+                data: {
+                    type: Object,
+                    notify: true
+                },
+                fbId: {
+                    type: String,
+                    notify: true
+                },
+                shortId: {
+                    type: String,
+                    observer: '_shortIdChanged'
+                }
+            },
+
+            createNewParty: function () {
+                var now = (new Date()).getTime();
+                var short_id = Math.floor(Math.random() * 1000000) + '';
+                this.set('data', {
+                    country: 'DE',
+                    created_at: now,
+                    created_by: this.state.authedUser.uid,
+                    name: "Today's Party",
+                    short_id: short_id,
+                    playing: false,
+                    last_position: 0,
+                    last_change: now
+                });
+                return this.$.partyDocument.save(partiesKey)
+                    .then(function () {
+                        var ref = this.$.partyDocument.ref;
+                        this.set('fbId', ref.key);
+                    }.bind(this));
+            },
+
+            _getPath: function (id) {
+                return (typeof id == 'string' && id.length > 0) ?
+                    partiesKey + '/' + id :
+                    '';
+            },
+
+            _shortIdChanged: function (value) {
+                if (typeof value != 'string' || value.length < 1) {
+                    return;
+                }
+
+                var value = value;
+                this.set('shortId', '');
+                firebase.database()
+                    .ref(partiesKey)
+                    .orderByChild('short_id')
+                    .equalTo(value)
+                    .once('value')
+                    .then(function (snapshot) {
+                        if (snapshot.numChildren() < 1) {
+                            return;
+                        }
+
+                        // Please improve me
+                        var latestCreated = 0;
+                        var data = null;
+                        var fbId = null;
+                        snapshot.forEach(function (snapshot) {
+                            var value = snapshot.val();
+                            if (value.created_at > latestCreated) {
+                                latestCreated = value.created_at;
+                                data = value;
+                                fbId = snapshot.key;
+                            }
+                        }.bind(this));
+
+                        this.set('data', data);
+                        this.set('fbId', fbId);
+                    }.bind(this));
+            }
+        });
+    </script>
+</dom-module>
