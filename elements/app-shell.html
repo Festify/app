@@ -54,6 +54,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             paper-spinner-lite {
+                display: flex;
+                justify-self: center;
                 --paper-spinner-color: var(--primary-color);
             }
         </style>
@@ -127,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if(window.cordova) {
                     this.$$('app-location').forEach(function(loc) {
                         loc.set("useHashAsPath", true);
-                    };
+                    });
                 }
             },
 
