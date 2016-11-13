@@ -92,7 +92,7 @@ gulp.task('serve', function () {
 });
 
 
-gulp.task("package-cordova", function (callback) {
+gulp.task("package-cordova", ['polymer-cordova', 'generate-icons'], function (callback) {
     cordova.build({
         "platforms": ["ios"],
         "options": {
@@ -112,7 +112,7 @@ gulp.task('build', function(cb) {
 gulp.task('build-cordova', function(cb) {
     runSequence(
         'clean',
-        ['polymer-cordova', 'generate-icons', 'package-cordova'],
+        'package-cordova',
         cb
     );
 });
