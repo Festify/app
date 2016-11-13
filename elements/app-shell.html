@@ -15,10 +15,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="app-icons.html">
-<link rel="import" href="provider-party.html">
-<link rel="import" href="view-home.html">
-<link rel="import" href="view-party.html">
+<link rel="import" href="common/app-icons.html">
+<link rel="import" href="providers/provider-party.html">
+<link rel="import" href="views/view-home.html">
+<link rel="import" href="views/view-party.html">
 
 <dom-module id="app-shell">
     <template>
@@ -77,7 +77,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                        user="{{state.authedUser}}">
         </firebase-auth>
 
-        <provider-party id="partyProvider" state="[[state]]" on-fb-id-changed="_currentPartyIdChanged"></provider-party>
+        <app-route route="{{route}}"
+                   pattern="/party/:partyId"
+                   data="{{partyRouteData}}"
+                   active="{{partyViewActive}}">
+        </app-route>
+        <provider-party id="partyProvider"
+                        data="{{state.party}}"
+                        fb-id="{{state.partyId}}"
+                        state="[[state]]"
+                        on-fb-id-changed="_currentPartyIdChanged">
+        </provider-party>
 
         <template is="dom-if" if="[[fbSignedIn]]">
             <iron-pages selected="[[currentView]]"
@@ -85,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         selected-attribute="active"
                         role="main">
                 <view-home class="centered" view="home" route="{{subroute}}"></view-home>
-                <view-party class="centered" view="party" route="{{subroute}}"></view-party>
+                <view-party class="centered" view="party" state="[[state]]" route="{{subroute}}"></view-party>
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!fbSignedIn]]">
@@ -107,6 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 fbStatusKnown: {
                     type: Boolean
                 },
+                partyRouteData: {
+                    type: Object
+                },
                 state: {
                     type: Object,
                     value: function () {
@@ -121,6 +134,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
 
             observers: [
+                '_partyRouteIdChanged(partyRouteData.partyId)',
                 '_routePageChanged(routeData.view)',
                 '_loginStateChanged(fbStatusKnown, fbSignedIn)'
             ],
@@ -136,7 +150,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // Property Observers
 
             _currentPartyIdChanged: function (ev) {
-                console.log(ev.detail.value);
                 this.set('route.path', '/party/' + ev.detail.value);
             },
 
@@ -153,6 +166,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     } else {
                         console.debug("We're already logged in with", this.$.fbAuth.user.uid);
                     }
+                }
+            },
+
+            _partyRouteIdChanged: function (partyId) {
+                if (partyId && partyId.length > 0) {
+                    this.set('state.partyId', partyId);
                 }
             },
 

@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="size-aware-image">
+    <template>
+        <img src="[[_selected]]">
+    </template>
+    <script>
+        Polymer({
+            is: 'size-aware-image',
+
+            properties: {
+                _selected: {
+                    type: String
+                },
+                sizes: {
+                    type: Array,
+                    observer: '_sizesChanged'
+                }
+            },
+
+            _sizesChanged: function (newImages) {
+
+            }
+        });
+    </script>
+</dom-module>

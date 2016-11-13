@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../utils/lodash.html">
+
+<dom-module id="provider-spotify">
+    <template>
+        <iron-ajax id="trackSearchAjax"
+                   url="https://api.spotify.com/v1/search"
+                   handle-as="json">
+        </iron-ajax>
+    </template>
+    <script>
+        Polymer({
+            is: 'provider-spotify',
+
+            properties: {
+                market: {
+                    type: String,
+                    value: 'DE'
+                }
+            },
+
+            search: function (query) {
+                var xhr = this.$.trackSearchAjax;
+                xhr.set('params', {
+                    market: this.market,
+                    q: query + '*',
+                    type: 'track'
+                });
+                return xhr.generateRequest()
+                    .completes
+                    .then(function (xhr) {
+                        return Promise.resolve(xhr.response.tracks.items.map(function (track) {
+                            return {
+                                artists: track.artists.map(function (artist) {
+                                    return artist.name;
+                                }),
+                                name: track.name,
+                                reference: {
+                                    id: track.id,
+                                    provider: 'spotify'
+                                }
+                            }
+                        }));
+                    })
+                    .catch(function (err) {
+                        console.error("Spotify search error:", err);
+                    });
+            }
+        });
+    </script>
+</dom-module>

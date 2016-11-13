@@ -1,0 +1,68 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../behavior-app-state.html">
+<link rel="import" href="provider-spotify.html">
+
+<dom-module id="provider-tracks">
+    <template>
+        <firebase-query path="[[_getFirebaseTracksPath(state.partyId)]]"
+                        data="{{_queueTracks}}"
+                        order-by-child="order"
+                        limit-to-last="[[limit]]">
+        </firebase-query>
+        <provider-spotify id="spotifyProvider" market="[[state.party.country]]"></provider-spotify>
+    </template>
+    <script>
+        Polymer({
+            is: 'provider-tracks',
+
+            behaviors: [FestifyBehaviors.StateBehavior],
+
+            properties: {
+                _queueTracks: {
+                    type: Object
+                },
+                limit: {
+                    type: Number,
+                    value: 50
+                },
+                searchQuery: {
+                    type: String,
+                    observer: '_searchQueryChanged'
+                },
+                tracks: {
+                    type: Array,
+                    notify: true
+                }
+            },
+
+            ready: function () {
+                this._searchQueryChanged = _.debounce(function (query) {
+                    if (query && query.length > 0) {
+                        this.$.spotifyProvider.search(query)
+                            .then(function (results) {
+                                this.set('tracks', results.map(function (track) {
+                                    track.votes = Math.floor(Math.random() * 100);
+                                    return track;
+                                }));
+                            }.bind(this));
+                    }
+                }.bind(this), 200);
+            },
+
+            _getFirebaseTracksPath: function (partyId) {
+                return partyId && partyId.length > 0 ?
+                    '/tracks/' + partyId :
+                    '';
+            },
+
+            _searchQueryChanged: function () {
+                /*
+                 * Implemented in ready callback because of binding to this
+                 * not properly working with debounced functions
+                 */
+            }
+        });
+    </script>
+</dom-module>

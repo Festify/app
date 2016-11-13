@@ -1,0 +1,102 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../common/shared-styles.html">
+
+<dom-module id="view-track">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                height: 60px;
+                padding: 5px;
+
+                box-sizing: content-box;
+            }
+
+            img {
+                margin: 5px 15px 5px 5px;
+                height: 50px;
+            }
+
+            .metadata-wrapper {
+                overflow: hidden;
+            }
+
+            h2 {
+                margin: 0;
+                font-weight: 400;
+                font-size: 18px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            aside {
+                margin: 2px 0;
+                font-weight: 300;
+                font-size: 16px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .icon-wrapper {
+                margin-left: auto;
+                flex-basis: 50px;
+            }
+
+            paper-icon-button {
+                margin-left: 5px;
+                height: 50px;
+                width: 50px;
+            }
+        </style>
+
+        <img src="http://lorempixel.com/64/64">
+        <div class="metadata-wrapper">
+            <h2>[[track.name]]</h2>
+            <aside>
+                <template is="dom-if" if="[[track.artists]]">
+                    <a>[[_joinArtistNames(track.artists)]]</a>
+                    <span>·</span>
+                </template>
+                [[track.votes]] Votes
+            </aside>
+        </div>
+
+        <div class="icon-wrapper">
+            <paper-icon-button icon="[[_getIcon(track)]]"></paper-icon-button>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-track',
+
+            properties: {
+                track: {
+                    type: Object
+                }
+            },
+
+            _getIcon: function (track) {
+                return track.playing ?
+                    'av:play-arrow' :
+                        track.voted_by_me ?
+                            'favorite' :
+                            'favorite-border';
+            },
+
+            _joinArtistNames: function (artists) {
+                var first = artists.pop();
+                return first + (artists.length > 0 ?
+                                    " feat. " + artists.join(', ') :
+                                    '');
+            }
+        });
+    </script>
+</dom-module>
