@@ -71,9 +71,9 @@
                             attribute-selected="active"
                             role="main">
                     <div view="host">
-                        <paper-button raised on-tap="onTapCreateParty">Create a new Party</paper-button>
-                        <paper-button raised on-tap="onTapJoinParty">Join a Party</paper-button>
-                        <paper-button raised on-tap="onTapPreviousParties">Previous Parties</paper-button>
+                        <paper-button raised on-tap="_tapCreateParty">Create a new Party</paper-button>
+                        <paper-button raised on-tap="_tapJoinParty">Join a Party</paper-button>
+                        <paper-button raised on-tap="_tapPreviousParties">Previous Parties</paper-button>
                     </div>
                     <view-join view="join"></view-join>
                 </iron-pages>
@@ -100,15 +100,15 @@
                 '_routePageChanged(routeData.view)'
             ],
 
-            onTapCreateParty: function () {
+            _tapCreateParty: function () {
                 this.fire('host-createNewParty');
             },
 
-            onTapJoinParty: function () {
+            _tapJoinParty: function () {
                 this.set('route.path', '/join');
             },
 
-            onTapPreviousParties: function () {
+            _tapPreviousParties: function () {
 
             },
 
