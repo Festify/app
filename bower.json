@@ -1,5 +1,5 @@
 {
-  "name": "festify-v2-client-web",
+  "name": "festify-v2-app",
   "private": true,
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#^0.10.0",
