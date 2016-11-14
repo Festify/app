@@ -1,10 +1,7 @@
 {
-  "name": "festify-v2-client-web",
+  "name": "festify-v2-app",
   "version": "1.0.0",
-  "description": "The Festify browser client that allows the guests to vote.",
-  "directories": {
-    "test": "test"
-  },
+  "description": "The Festify app that allows hosting parties and voting for tracks.",
   "dependencies": {},
   "devDependencies": {
     "browser-sync": "^2.17.5",
@@ -22,12 +19,9 @@
     "polymer-lint": "^0.8.3",
     "run-sequence": "^1.2.2"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Festify/v2-client-web.git"
+    "url": "git+https://github.com/Festify/app.git"
   },
   "keywords": [
     "Festify",
@@ -36,7 +30,7 @@
   "author": "Festify Dev Team",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Festify/v2-client-web/issues"
+    "url": "https://github.com/Festify/app/issues"
   },
-  "homepage": "https://github.com/Festify/v2-client-web#readme"
+  "homepage": "https://github.com/Festify/app#readme"
 }
