@@ -60,7 +60,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
         </style>
 
-        <app-location route="{{route}}"></app-location>
+        <template is="dom-if" if="[[!_cordova]]">
+            <app-location route="{{route}}"></app-location>
+        </template>
         <app-route route="{{route}}"
                    pattern="/:view"
                    data="{{routeData}}"
@@ -125,6 +127,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     value: function () {
                         return {};
                     }
+                },
+                _cordova: {
+                    type: Boolean,
+                    value: function() {return !!window.cordova},
+                    readonly: true
                 }
             },
 
@@ -141,9 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             ready: function() {
                 if(window.cordova) {
-                    this.$$('app-location').forEach(function(loc) {
-                        loc.set("useHashAsPath", true);
-                    });
+                    this.set("route", {path: "/home/host", prefix: "", __queryParams: {}});
                 }
             },
 
