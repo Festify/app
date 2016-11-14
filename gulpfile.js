@@ -7,7 +7,6 @@ const runSequence = require('run-sequence');
 const PolymerProject = require('polymer-build').PolymerProject;
 const mergeStream = require('merge-stream');
 const browserSync = require('browser-sync').create();
-const crisper = require('gulp-crisper');
 const template = require('gulp-template');
 const historyApiFallback = require('connect-history-api-fallback');
 const $ = require('gulp-load-plugins')();
@@ -38,7 +37,7 @@ gulp.task('polymer', function () {
 gulp.task('polymer-cordova', function() {
     const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
     return polymerBuilding(projectCordova)
-        .pipe($.if('elements/app-shell.html', crisper()))
+        .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(appDir))
 });
 
