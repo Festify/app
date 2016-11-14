@@ -98,9 +98,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         selected-attribute="active"
                         role="main">
                 <!-- No subroute for host / join as they do top level routing -->
-                <view-host view="host" class="centered" route="{{route}}"></view-host>
+                <view-host view="host" class="centered" route="{{route}}" state="[[state]]"></view-host>
                 <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
-                <view-party view="party" class="centered" state="[[state]]" route="{{subroute}}"></view-party>
+                <view-party view="party" class="centered" route="{{subroute}}" state="[[state]]"></view-party>
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!fbSignedIn]]">
