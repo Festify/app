@@ -139,7 +139,7 @@
 
             _routePageChanged: function (view) {
                 // Prevent browser users from seeing the host screen
-                if (!window.cordova) {
+                if (!window.isHost) {
                     this.set('route.path', '/join');
                 } else if (!view || view.length < 1) {
                     this.set('route.path', '/host');
@@ -147,7 +147,7 @@
             },
 
             _showBackButton: function(view) {
-                return window.cordova && view == 'join';
+                return window.isHost && view == 'join';
             }
         });
     </script>

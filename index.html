@@ -106,10 +106,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 </head>
 <body>
+    <script>
+        window.isHost = !!window.cordova;
+    </script>
+
     <!-- build:remove -->
     <span id="browser-sync-binding"></span>
     <script>
-        window.cordova = {};
+        window.isHost = true;
         window.dev = true;
     </script>
     <!-- endbuild -->
