@@ -60,7 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
         </style>
 
-        <template is="dom-if" if="[[!_cordova]]">
+        <template is="dom-if" if="[[!state.cordova]]">
             <app-location route="{{route}}"></app-location>
         </template>
         <app-route route="{{route}}"
@@ -127,11 +127,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     value: function () {
                         return {};
                     }
-                },
-                _cordova: {
-                    type: Boolean,
-                    value: function() {return !!window.cordova},
-                    readonly: true
                 }
             },
 
@@ -147,8 +142,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             ],
 
             ready: function() {
-                if(window.cordova) {
-                    this.set("route", {path: "/home/host", prefix: "", __queryParams: {}});
+                this.set('state.cordova', window.cordova);
+                this.set('state.isHost', window.isHost);
+                if (window.cordova) {
+                    this.set("route", { path: "/host", prefix: "", __queryParams: {} });
                 }
             },
 
