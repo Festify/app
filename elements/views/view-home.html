@@ -13,14 +13,11 @@
         <style include="shared-styles"></style>
         <style>
             :host {
-                padding: 0 10px;
-            }
-
-            .wrapper {
                 display: flex;
                 flex-direction: column;
                 justify-content: space-around;
                 min-height: 500px;
+                padding: 0 10px;
                 text-align: center;
             }
 
@@ -33,21 +30,21 @@
                 padding: 0 25px;
             }
 
-            content {
+            .wrapper {
                 margin: 0 auto;
                 min-width: 250px;
                 height: 180px;
             }
         </style>
 
-        <div class="wrapper">
-            <header>
-                <iron-icon icon="festify:logo"></iron-icon>
-            </header>
+        <header>
+            <iron-icon icon="festify:logo"></iron-icon>
+        </header>
 
-            <p>
-                Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
-            </p>
+        <p>
+            Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
+        </p>
+        <div class="wrapper">
             <content></content>
         </div>
     </template>
