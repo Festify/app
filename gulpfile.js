@@ -21,7 +21,7 @@ gulp.task('clean', function() {
     return del([distDir, appDir]);
 });
 
-function polymerBuilding(project) {
+function buildPolymer(project) {
     return mergeStream(project.sources(), project.dependencies())
         .pipe(project.analyzer)
         .pipe($.if(['index.html', 'app.html'], $.useref()))
@@ -30,13 +30,13 @@ function polymerBuilding(project) {
 
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
-    return polymerBuilding(project)
+    return buildPolymer(project)
         .pipe(gulp.dest(distDir));
 });
 
 gulp.task('polymer-cordova', function() {
     const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
-    return polymerBuilding(projectCordova)
+    return buildPolymer(projectCordova)
         .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(appDir))
 });
