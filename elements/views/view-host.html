@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="view-home.html">
+
+<dom-module id="view-host">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            paper-button {
+                margin-bottom: 20px;
+            }
+
+            paper-button:last-child {
+                margin-bottom: 0;
+            }
+        </style>
+
+        <view-home>
+            <paper-button raised on-tap="_tapCreateParty">Create a new Party</paper-button>
+            <paper-button raised on-tap="_tapJoinParty">Join a Party</paper-button>
+            <paper-button raised on-tap="_tapPreviousParties">Previous Parties</paper-button>
+        </view-home>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-host',
+
+            properties: {
+                route: {
+                    type: Object,
+                    notify: true
+                }
+            },
+
+            _tapCreateParty: function () {
+                this.fire('host-createNewParty');
+            },
+
+            _tapJoinParty: function () {
+                this.set('route.path', '/join');
+            },
+
+            _tapPreviousParties: function () {
+                this.set('route.path', '/previous');
+            }
+        });
+    </script>
+</dom-module>

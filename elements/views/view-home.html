@@ -5,19 +5,14 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../common/app-conditional-view.html">
 <link rel="import" href="../common/app-icons-festify.html">
 <link rel="import" href="../common/shared-styles.html">
-<link rel="import" href="view-join.html">
 
 <dom-module id="view-home">
     <template>
         <style include="shared-styles"></style>
         <style>
             :host {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
                 padding: 0 10px;
             }
 
@@ -38,117 +33,29 @@
                 padding: 0 25px;
             }
 
-            iron-pages {
+            content {
                 margin: 0 auto;
                 min-width: 250px;
                 height: 180px;
             }
-
-            paper-button {
-                margin-bottom: 20px;
-            }
-
-            paper-button:last-child {
-                margin-bottom: 0;
-            }
-
-            paper-icon-button {
-                position: absolute;
-                top: 20px;
-                left: 15px;
-                width: 50px;
-                height: 50px;
-            }
         </style>
 
-        <app-conditional-view active="[[active]]">
-            <app-route route="{{route}}"
-                       pattern="/:view"
-                       data="{{routeData}}">
-            </app-route>
+        <div class="wrapper">
+            <header>
+                <iron-icon icon="festify:logo"></iron-icon>
+            </header>
 
-            <div class="wrapper">
-
-                <!-- Navigation for Cordova Builds -->
-                <template is="dom-if" if="[[_showBackButton(routeData.view)]]">
-                    <paper-icon-button icon="arrow-back" on-tap="_tapJoinBack"></paper-icon-button>
-                </template>
-
-                <header>
-                    <iron-icon icon="festify:logo"></iron-icon>
-                </header>
-
-                <p>
-                    Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
-                </p>
-                <iron-pages selected="{{routeData.view}}"
-                            attr-for-selected="view"
-                            attribute-selected="active"
-                            role="main">
-                    <div view="host">
-                        <paper-button raised on-tap="_tapCreateParty">Create a new Party</paper-button>
-                        <paper-button raised on-tap="_tapJoinParty">Join a Party</paper-button>
-                        <paper-button raised on-tap="_tapPreviousParties">Previous Parties</paper-button>
-                    </div>
-                    <view-join view="join"></view-join>
-                </iron-pages>
-            </div>
-        </app-conditional-view>
+            <p>
+                Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
+            </p>
+            <content></content>
+        </div>
     </template>
     <script>
         Polymer({
             is: 'view-home',
 
-            properties: {
-                active: {
-                    type: Boolean,
-                    value: false,
-                    observer: '_activeChanged'
-                },
-                route: {
-                    type: Object,
-                    notify: true
-                }
-            },
-
-            observers: [
-                '_routePageChanged(routeData.view)'
-            ],
-
-            _tapCreateParty: function () {
-                this.fire('host-createNewParty');
-            },
-
-            _tapJoinParty: function () {
-                this.set('route.path', '/join');
-            },
-
-            _tapPreviousParties: function () {
-
-            },
-
-            _tapJoinBack: function() {
-                this.set('route.path', '/host');
-            },
-
-            _activeChanged: function (value) {
-                if (value && this.route.path.length < 1) {
-                    this._routePageChanged('');
-                }
-            },
-
-            _routePageChanged: function (view) {
-                // Prevent browser users from seeing the host screen
-                if (!window.isHost) {
-                    this.set('route.path', '/join');
-                } else if (!view || view.length < 1) {
-                    this.set('route.path', '/host');
-                }
-            },
-
-            _showBackButton: function(view) {
-                return window.isHost && view == 'join';
-            }
+            properties: {}
         });
     </script>
 </dom-module>

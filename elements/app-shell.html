@@ -17,7 +17,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="common/app-icons.html">
 <link rel="import" href="providers/provider-party.html">
-<link rel="import" href="views/view-home.html">
+<link rel="import" href="views/view-host.html">
+<link rel="import" href="views/view-join.html">
 <link rel="import" href="views/view-party.html">
 
 <dom-module id="app-shell">
@@ -96,8 +97,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         attr-for-selected="view"
                         selected-attribute="active"
                         role="main">
-                <view-home class="centered" view="home" route="{{subroute}}"></view-home>
-                <view-party class="centered" view="party" state="[[state]]" route="{{subroute}}"></view-party>
+                <!-- No subroute for host / join as they do top level routing -->
+                <view-host view="host" class="centered" route="{{route}}"></view-host>
+                <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
+                <view-party view="party" class="centered" state="[[state]]" route="{{subroute}}"></view-party>
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!fbSignedIn]]">
@@ -181,8 +184,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (page && page.length > 0) {
                     this.set('currentView', page);
                 } else {
-                    this.set('route.path', '/home');
-                    this.set('currentView', 'home');
+                    var view = window.isHost ? 'host' : 'join';
+                    this.set('route.path', '/' + view);
+                    this.set('currentView', view);
                 }
             },
 
