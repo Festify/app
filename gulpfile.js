@@ -7,7 +7,6 @@ const runSequence = require('run-sequence');
 const PolymerProject = require('polymer-build').PolymerProject;
 const mergeStream = require('merge-stream');
 const browserSync = require('browser-sync').create();
-const template = require('gulp-template');
 const historyApiFallback = require('connect-history-api-fallback');
 const $ = require('gulp-load-plugins')();
 const cordova = require("cordova-lib").cordova;
