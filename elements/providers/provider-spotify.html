@@ -17,18 +17,27 @@
                 market: {
                     type: String,
                     value: 'DE'
+                },
+                _request: {
+                    type: Object
                 }
             },
 
             search: function (query) {
+                if(this._request) {
+                    this._request.abort();
+                }
+
                 var xhr = this.$.trackSearchAjax;
                 xhr.set('params', {
                     market: this.market,
                     q: query + '*',
                     type: 'track'
                 });
-                return xhr.generateRequest()
-                    .completes
+
+                this._request = xhr.generateRequest();
+
+                this._request._promise = this._request.completes
                     .then(function (xhr) {
                         return Promise.resolve(xhr.response.tracks.items.map(function (track) {
                             return {
@@ -42,10 +51,9 @@
                                 }
                             }
                         }));
-                    })
-                    .catch(function (err) {
-                        console.error("Spotify search error:", err);
                     });
+
+                return this._request;
             }
         });
     </script>
