@@ -63,14 +63,16 @@
             <aside>
                 <template is="dom-if" if="[[track.artists]]">
                     <a>[[_joinArtistNames(track.artists)]]</a>
-                    <span>·</span>
                 </template>
-                [[track.votes]] Votes
+                <template is="dom-if" if="[[isInQueue]]">
+                    <span>·</span>
+                    <span>[[track.voteCount]] Votes</span>
+                </template>
             </aside>
         </div>
 
         <div class="icon-wrapper">
-            <paper-icon-button icon="[[_getIcon(track)]]"></paper-icon-button>
+            <paper-icon-button icon="[[_getIcon(track)]]" on-tap="_tapLikeIcon"></paper-icon-button>
         </div>
     </template>
     <script>
@@ -78,17 +80,23 @@
             is: 'view-track',
 
             properties: {
+                isInQueue: {
+                    type: Boolean
+                },
                 track: {
-                    type: Object
+                    type: Object,
+                    observer: '_trackChanged'
                 }
             },
 
             _getIcon: function (track) {
                 return track.playing ?
-                    'av:play-arrow' :
-                        track.voted_by_me ?
+                        'av:play-arrow' :
+                        track.votedByMe ?
                             'favorite' :
-                            'favorite-border';
+                            this.isInQueue ?
+                                'favorite-border' :
+                                'add';
             },
 
             _joinArtistNames: function (artists) {
@@ -96,6 +104,14 @@
                 return first + (artists.length > 0 ?
                                     " feat. " + artists.join(', ') :
                                     '');
+            },
+
+            _tapLikeIcon: function () {
+                this.fire('track-voteFor', { track: this.track });
+            },
+
+            _trackChanged: function (track) {
+                this.set('isInQueue', track.votes.length > 0 || track.is_fallback);
             }
         });
     </script>
