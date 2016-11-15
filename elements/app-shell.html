@@ -144,7 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             ready: function() {
                 this.set('state.cordova', window.cordova);
                 this.set('state.isHost', window.isHost);
-                if (window.cordova) {
+                if (window.cordova) { // Cordova doesn't like app-location
                     this.set("route", { path: "/host", prefix: "", __queryParams: {} });
                 }
             },
