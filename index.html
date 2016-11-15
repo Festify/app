@@ -108,6 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body>
     <script>
         window.isHost = !!window.cordova;
+        console.debug = function () { };
     </script>
 
     <!-- build:remove -->
@@ -115,16 +116,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script>
         window.isHost = true;
         window.dev = true;
+        console.debug = console.log;
     </script>
     <!-- endbuild -->
 
-    <script>
-        console.debug = function () {
-            if (window.dev) {
-                console.log.apply(null, arguments);
-            }
-        };
-    </script>
     <app-shell></app-shell>
 </body>
 </html>
