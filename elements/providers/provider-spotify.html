@@ -30,10 +30,12 @@
 
                 var xhr = this.$.trackSearchAjax;
                 xhr.set('params', {
-                    market: this.market,
                     q: query + '*',
                     type: 'track'
                 });
+                if (this.market) {
+                    this.set('params.market', this.market);
+                }
 
                 this.set('_request', xhr.generateRequest());
                 return this._request.completes
