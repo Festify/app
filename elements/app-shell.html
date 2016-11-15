@@ -76,9 +76,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       database-url="https://festify-dev.firebaseio.com">
         </firebase-app>
         <firebase-auth id="fbAuth"
-                       status-known="{{fbStatusKnown}}"
-                       signed-in="{{fbSignedIn}}"
-                       user="{{state.authedUser}}">
+                       status-known="{{state.auth.statusKnown}}"
+                       signed-in="{{state.auth.signedIn}}"
+                       user="{{state.auth.authedUser}}">
         </firebase-auth>
 
         <app-route route="{{route}}"
@@ -93,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         on-fb-id-changed="_currentPartyIdChanged">
         </provider-party>
 
-        <template is="dom-if" if="[[fbSignedIn]]">
+        <template is="dom-if" if="[[state.auth.signedIn]]">
             <iron-pages selected="[[currentView]]"
                         attr-for-selected="view"
                         selected-attribute="active"
@@ -104,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <view-party view="party" class="centered" route="{{subroute}}" state="[[state]]"></view-party>
             </iron-pages>
         </template>
-        <template is="dom-if" if="[[!fbSignedIn]]">
+        <template is="dom-if" if="[[!state.auth.signedIn]]">
             <paper-spinner active></paper-spinner>
         </template>
     </template>
@@ -117,19 +117,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 currentView: {
                     type: String
                 },
-                fbSignedIn: {
-                    type: Boolean
-                },
-                fbStatusKnown: {
-                    type: Boolean
-                },
                 partyRouteData: {
                     type: Object
                 },
                 state: {
                     type: Object,
                     value: function () {
-                        return {};
+                        return {
+                            auth: {}
+                        };
                     }
                 }
             },
@@ -142,7 +138,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observers: [
                 '_partyRouteIdChanged(partyRouteData.partyId)',
                 '_routePageChanged(routeData.view)',
-                '_loginStateChanged(fbStatusKnown, fbSignedIn)'
+                '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)'
             ],
 
             ready: function() {
