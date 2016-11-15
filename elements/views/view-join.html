@@ -35,7 +35,7 @@
         <view-home>
             <!-- Navigation for Cordova Builds -->
             <template is="dom-if" if="[[state.isHost]]">
-                <paper-icon-button icon="arrow-back" on-tap="_tapJoinBack"></paper-icon-button>
+                <paper-icon-button icon="arrow-back" on-tap="_tapBack"></paper-icon-button>
             </template>
 
             <paper-input label="Party ID"
@@ -91,14 +91,14 @@
                 }
             },
 
+            _tapBack: function() {
+                this.set('route.path', '/host');
+            },
+
             _tapJoinParty: function () {
                 if (!this.inputInvalid) {
                     this.fire('join-openParty', { shortId: this.joinInput });
                 }
-            },
-
-            _tapJoinBack: function() {
-                this.set('route.path', '/host');
             }
         });
     </script>
