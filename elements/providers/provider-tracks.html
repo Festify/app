@@ -41,27 +41,22 @@
             },
 
             ready: function () {
-                this._searchReq = null;
                 this._searchQueryChanged = _.debounce(function (query) {
                     if (query && query.length > 0) {
-                        this._searchReq = this.$.spotifyProvider.search(query);
-                        this._searchReq._promise
+                        this.$.spotifyProvider.search(query)
                             .then(function (results) {
                                 this.set('tracks', results.map(function (track) {
                                     track.votes = Math.floor(Math.random() * 100);
                                     return track;
                                 }));
                             }.bind(this))
-                            .catch(function(err) {
-                                if(err.message == "Request aborted.") {
+                            .catch(function (err) {
+                                if (err.message == "Request aborted.") {
                                     return Promise.resolve();
                                 }
                                 console.error("Provider error:", err);
                             }.bind(this));
                     } else {
-                        if(this._searchReq) {
-                            this._searchReq.abort();
-                        }
                         this.splice('tracks', 0, this.tracks.length);
                     }
                 }.bind(this), 200);

@@ -24,7 +24,7 @@
             },
 
             search: function (query) {
-                if(this._request) {
+                if (this._request) {
                     this._request.abort();
                 }
 
@@ -35,10 +35,10 @@
                     type: 'track'
                 });
 
-                this._request = xhr.generateRequest();
-
-                this._request._promise = this._request.completes
+                this.set('_request', xhr.generateRequest());
+                return this._request.completes
                     .then(function (xhr) {
+                        this.set('_request', null);
                         return Promise.resolve(xhr.response.tracks.items.map(function (track) {
                             return {
                                 artists: track.artists.map(function (artist) {
@@ -51,9 +51,7 @@
                                 }
                             }
                         }));
-                    });
-
-                return this._request;
+                    }.bind(this));
             }
         });
     </script>
