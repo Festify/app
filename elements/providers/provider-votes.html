@@ -40,11 +40,10 @@
             toggleVote: function (track) {
                 var fbId = track.$key;
                 if (!fbId) {
-                    var now = Date.now();
                     fbId = firebase.database()
                         .ref(this._getFirebaseTracksPath(this.state.partyId))
                         .push({
-                            added_at: now,
+                            added_at: Date.now(),
                             is_fallback: false,
                             name: track.name,
                             reference: track.reference
