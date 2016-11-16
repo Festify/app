@@ -12,6 +12,7 @@
 <link rel="import" href="../common/app-conditional-view.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-tracks.html">
+<link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="../behavior-app-state.html">
 <link rel="import" href="view-track.html">
 
@@ -42,6 +43,7 @@
                          search-query="[[searchQuery]]"
                          state="[[state]]">
         </provider-tracks>
+        <provider-votes id="voteProvider" state="[[state]]"></provider-votes>
 
         <app-conditional-view active="[[active]]">
             <app-drawer-layout fullbleed>
@@ -61,7 +63,7 @@
                 <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
                 <iron-list items="[[tracks]]">
                     <template>
-                        <view-track track="[[item]]"></view-track>
+                        <view-track state="[[state]]" track="[[item]]"></view-track>
                     </template>
                 </iron-list>
             </app-drawer-layout>
@@ -84,11 +86,11 @@
             },
 
             listeners: {
-                'track-voteFor': '_voteForTrack'
+                'track-toggleVote': '_voteForTrack'
             },
 
             _voteForTrack: function (ev) {
-                this.$.trackProvider.processVote(ev.detail.track);
+                this.$.voteProvider.toggleVote(ev.detail.track);
             }
         });
     </script>

@@ -1,0 +1,20 @@
+<script>
+    window.FestifyBehaviors = window.FestifyBehaviors || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FestifyBehaviors.FirebasePathsBehavior = {
+        _getFirebaseTracksPath: function (partyId) {
+            return partyId && partyId.length > 0 ?
+                '/tracks/' + partyId :
+                '';
+        },
+
+        _getFirebaseVotesPath: function (partyId) {
+            return partyId && partyId.length > 0 ?
+                '/votes/' + partyId :
+                '';
+        }
+    }
+</script>

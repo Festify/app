@@ -1,0 +1,90 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../behavior-app-state.html">
+<link rel="import" href="../behavior-firebase-paths.html">
+
+<dom-module id="provider-votes">
+    <template>
+        <firebase-document path="[[_getFirebaseVotesPath(state.partyId)]]"
+                           data="{{_fbVotes}}"
+                           disabled="[[!_fetchFbVotes]]">
+        </firebase-document>
+    </template>
+    <script>
+        var voteFactor = 1000000000000;
+        Polymer({
+            is: 'provider-votes',
+
+            behaviors: [FestifyBehaviors.FirebasePathsBehavior],
+
+            properties: {
+                _fbVotes: {
+                    type: Object
+                },
+                _fetchFbVotes: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+
+            observers: [
+                '_fbVotesChanged(_fbVotes, state)',
+                '_stateChanged(state)'
+            ],
+
+            toggleVote: function (track) {
+                var fbId = track.$key;
+                if (!fbId) {
+                    var now = Date.now();
+                    fbId = firebase.database()
+                        .ref(this._getFirebaseTracksPath(this.state.partyId))
+                        .push({
+                            added_at: now,
+                            is_fallback: false,
+                            name: track.name,
+                            order: -(now - this.state.party.created_at),
+                            reference: track.reference
+                        })
+                        .key;
+                }
+                return firebase.database()
+                    .ref(this._getFirebaseVotesPath(this.state.partyId))
+                    .child(fbId)
+                    .child(this.state.auth.authedUser.uid)
+                    .transaction(function (currentVote) {
+                        // Don't invert but replace with null to remove the value
+                        return currentVote ? null : true;
+                    });
+            },
+
+            _fbVotesChanged: function (votes, state) {
+                if (!votes || (!state.partyId || state.partyId.length < 1) || !state.party) {
+                    return;
+                }
+
+                var ref = firebase.database().ref(this._getFirebaseTracksPath(state.partyId));
+                _.forOwn(votes, function (votesHash, trackId) {
+                    ref.child(trackId).transaction(function (track) {
+                        var votes = Object.keys(votesHash);
+                        var order = votes.length * voteFactor - (track.added_at - state.party.created_at);
+
+                        if (track.order != order) {
+                            track.order = order;
+                            track.vote_count = votes.length;
+                            return track;
+                        }
+
+                        // Explicitly omit return to tell Firebase SDK that
+                        // we have nothing to change.
+                    });
+                });
+            },
+
+            _stateChanged: function (state) {
+                this.set('_fetchFbVotes', state.party && state.party.created_by == state.auth.authedUser.uid);
+            }
+        });
+    </script>
+</dom-module>

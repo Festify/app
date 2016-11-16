@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../behavior-app-state.html">
 
 <dom-module id="view-track">
     <template>
@@ -57,44 +59,57 @@
             }
         </style>
 
-        <img src="http://lorempixel.com/64/64">
+        <firebase-document path="[[_getFirebaseVotesPath(state, track)]]" data="{{_hasVoted}}"></firebase-document>
+
+        <img src="[[_getCoverImage(track)]]">
         <div class="metadata-wrapper">
             <h2>[[track.name]]</h2>
             <aside>
                 <template is="dom-if" if="[[track.artists]]">
                     <a>[[_joinArtistNames(track.artists)]]</a>
                 </template>
-                <template is="dom-if" if="[[isInQueue]]">
+                <template is="dom-if" if="[[track.vote_count]]">
                     <span>·</span>
-                    <span>[[track.voteCount]] Votes</span>
+                    <span>[[track.vote_count]] Votes</span>
                 </template>
             </aside>
         </div>
-
         <div class="icon-wrapper">
-            <paper-icon-button icon="[[_getIcon(track)]]" on-tap="_tapLikeIcon"></paper-icon-button>
+            <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]" on-tap="_tapLikeIcon"></paper-icon-button>
         </div>
     </template>
     <script>
         Polymer({
             is: 'view-track',
 
+            behaviors: [FestifyBehaviors.StateBehavior],
+
             properties: {
-                isInQueue: {
-                    type: Boolean
+                _hasVoted: {
+                    type: Object
                 },
                 track: {
-                    type: Object,
-                    observer: '_trackChanged'
+                    type: Object
                 }
             },
 
-            _getIcon: function (track) {
-                return track.playing ?
+            _getCoverImage: function (track) {
+                return "http://lorempixel.com/64/64";
+            },
+
+            _getFirebaseVotesPath: function (state, track) {
+                var partyId = state.partyId;
+                return partyId && partyId.length > 0 && track ?
+                    '/votes/' + partyId + '/' + track.$key + '/' + state.auth.authedUser.uid :
+                    '';
+            },
+
+            _getLikeButtonIcon: function (track, hasVoted) {
+                return track.played_at ?
                         'av:play-arrow' :
-                        track.votedByMe ?
+                        hasVoted ?
                             'favorite' :
-                            this.isInQueue ?
+                            true || track.is_fallback ?
                                 'favorite-border' :
                                 'add';
             },
@@ -107,11 +122,9 @@
             },
 
             _tapLikeIcon: function () {
-                this.fire('track-voteFor', { track: this.track });
-            },
-
-            _trackChanged: function (track) {
-                this.set('isInQueue', track.votes.length > 0 || track.is_fallback);
+                this.debounce('tapLikeIcon', function () {
+                    this.fire('track-toggleVote', { track: this.track });
+                }, 50);
             }
         });
     </script>

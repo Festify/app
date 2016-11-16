@@ -2,26 +2,31 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../utils/lodash.html">
 <link rel="import" href="../behavior-app-state.html">
+<link rel="import" href="../behavior-firebase-paths.html">
 <link rel="import" href="provider-spotify.html">
 
 <dom-module id="provider-tracks">
     <template>
         <firebase-query path="[[_getFirebaseTracksPath(state.partyId)]]"
-                        data="{{_queueTracks}}"
+                        data="{{_fbTracks}}"
                         order-by-child="order"
                         limit-to-last="[[limit]]">
         </firebase-query>
+
         <provider-spotify id="spotifyProvider" market="[[state.party.country]]"></provider-spotify>
     </template>
     <script>
         Polymer({
             is: 'provider-tracks',
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+            behaviors: [
+                FestifyBehaviors.FirebasePathsBehavior,
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
-                _queueTracks: {
-                    type: Object
+                _fbTracks: {
+                    type: Array
                 },
                 limit: {
                     type: Number,
@@ -41,42 +46,39 @@
             },
 
             ready: function () {
-                this._searchQueryChanged = _.debounce(function (query) {
-                    if (query && query.length > 0) {
-                        this.$.spotifyProvider.search(query)
+                this.set('tracks', this._fbTracks);
+                this.linkPaths('tracks', '_fbTracks');
+            },
+
+            _searchQueryChanged: function (query) {
+                this.debounce('searchQueryChanged', function () {
+                    if (!query || query.length < 1) {
+                        this.set('tracks', this._fbTracks);
+                        this.linkPaths('tracks', '_fbTracks');
+                        return;
+                    }
+
+                    this.unlinkPaths('tracks');
+                    this.splice('tracks', 0, this.tracks.length);
+
+                    [ // Enter the other providers here
+                        this.$.spotifyProvider
+                    ].map(function (provider) {
+                        provider.search(query)
                             .then(function (results) {
-                                this.set('tracks', results.map(function (track) {
-                                    track.votes = Math.floor(Math.random() * 100);
-                                    return track;
-                                }));
+                                // Special trick to reduce the amount of pushes to a notifying property.
+                                // Once our build toolchain supports ES6, this can be replaced by using
+                                // the ...spread operator.
+                                results.unshift('tracks');
+                                this.push.apply(this, results);
                             }.bind(this))
                             .catch(function (err) {
                                 if (err.message == "Request aborted.") {
                                     return Promise.resolve();
                                 }
-                                console.error("Provider error:", err);
-                            }.bind(this));
-                    } else {
-                        this.splice('tracks', 0, this.tracks.length);
-                    }
-                }.bind(this), 200);
-            },
-
-            processVote: function (track) {
-
-            },
-
-            _getFirebaseTracksPath: function (partyId) {
-                return partyId && partyId.length > 0 ?
-                    '/tracks/' + partyId :
-                    '';
-            },
-
-            _searchQueryChanged: function () {
-                /*
-                 * Implemented in ready callback because of binding to this
-                 * not properly working with debounced functions
-                 */
+                            });
+                    }.bind(this));
+                }, 200);
             }
         });
     </script>
