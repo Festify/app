@@ -30,14 +30,13 @@
             },
 
             createNewParty: function () {
-                var now = (new Date()).getTime();
-                var short_id = Math.floor(Math.random() * 1000000) + '';
+                var now = Date.now();
                 this.set('data', {
                     country: 'DE',
                     created_at: now,
                     created_by: this.state.auth.authedUser.uid,
                     name: "Today's Party",
-                    short_id: short_id,
+                    short_id: Math.floor(Math.random() * 1000000) + '',
                     playing: false,
                     last_position: 0,
                     last_change: now
