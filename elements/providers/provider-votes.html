@@ -44,8 +44,9 @@
                             added_at: now,
                             is_fallback: false,
                             name: track.name,
-                            order: -(now - this.state.party.created_at),
-                            reference: track.reference
+                            order: voteFactor - (now - this.state.party.created_at),
+                            reference: track.reference,
+                            vote_count: 1
                         })
                         .key;
                 }
