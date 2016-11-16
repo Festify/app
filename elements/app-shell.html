@@ -172,9 +172,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
 
             _partyRouteIdChanged: function (partyId) {
-                if (partyId && partyId.length > 0) {
-                    this.set('state.partyId', partyId);
-                }
+                this.set('state.partyId', partyId);
             },
 
             _routePageChanged: function (page) {
