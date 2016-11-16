@@ -2,17 +2,21 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../behavior-app-state.html">
+<link rel="import" href="../behavior-firebase-paths.html">
 
 <dom-module id="provider-party">
     <template>
-        <firebase-document id="partyDocument" data="{{data}}" path="[[_getPath(fbId)]]"></firebase-document>
+        <firebase-document id="partyDocument" data="{{data}}" path="[[_getFirebasePartiesPath(fbId)]]"></firebase-document>
     </template>
     <script>
         var partiesKey = '/parties';
         Polymer({
             is: 'provider-party',
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+            behaviors: [
+                FestifyBehaviors.FirebasePathsBehavior,
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
                 data: {
@@ -48,18 +52,11 @@
                     }.bind(this));
             },
 
-            _getPath: function (id) {
-                return (typeof id == 'string' && id.length > 0) ?
-                    partiesKey + '/' + id :
-                    '';
-            },
-
             _shortIdChanged: function (value) {
                 if (typeof value != 'string' || value.length < 1) {
                     return;
                 }
 
-                var value = value;
                 this.set('shortId', '');
                 firebase.database()
                     .ref(partiesKey)

@@ -5,14 +5,20 @@
      * @polymerBehavior
      */
     FestifyBehaviors.FirebasePathsBehavior = {
+        _getFirebasePartiesPath: function (partyId) {
+            return typeof partyId == 'string' && partyId.length > 0 ?
+                '/parties/' + partyId :
+                '';
+        },
+
         _getFirebaseTracksPath: function (partyId) {
-            return partyId && partyId.length > 0 ?
+            return typeof partyId == 'string' && partyId.length > 0 ?
                 '/tracks/' + partyId :
                 '';
         },
 
         _getFirebaseVotesPath: function (partyId) {
-            return partyId && partyId.length > 0 ?
+            return typeof partyId == 'string' && partyId.length > 0 ?
                 '/votes/' + partyId :
                 '';
         }
