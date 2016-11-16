@@ -14,6 +14,10 @@
             is: 'provider-spotify',
 
             properties: {
+                limit: {
+                    type: Number,
+                    value: 20
+                },
                 market: {
                     type: String,
                     value: 'DE'
@@ -30,6 +34,7 @@
 
                 var xhr = this.$.trackSearchAjax;
                 xhr.set('params', {
+                    limit: this.limit,
                     q: query + '*',
                     type: 'track'
                 });
