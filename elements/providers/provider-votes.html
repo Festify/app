@@ -34,7 +34,7 @@
 
             observers: [
                 '_fbVotesChanged(_fbVotes, state)',
-                '_stateChanged(state)'
+                '_stateDataChanged(state.party, state.auth.authedUser)'
             ],
 
             toggleVote: function (track) {
@@ -86,8 +86,8 @@
                 });
             },
 
-            _stateChanged: function (state) {
-                this.set('_fetchFbVotes', state.party && state.party.created_by == state.auth.authedUser.uid);
+            _stateDataChanged: function (party, user) {
+                this.set('_fetchFbVotes', party && party.created_by == user.uid);
             }
         });
     </script>
