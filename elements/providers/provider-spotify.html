@@ -46,18 +46,21 @@
                 return this._request.completes
                     .then(function (xhr) {
                         this.set('_request', null);
-                        return Promise.resolve(xhr.response.tracks.items.map(function (track) {
-                            return {
-                                artists: track.artists.map(function (artist) {
-                                    return artist.name;
-                                }),
-                                name: track.name,
-                                reference: {
-                                    id: track.id,
-                                    provider: 'spotify'
+                        var tracks = _.get(xhr, 'response.tracks.items');
+
+                        if (tracks) {
+                            return tracks.map(function (track) {
+                                return {
+                                    name: track.name,
+                                    reference: {
+                                        id: track.id,
+                                        provider: 'spotify'
+                                    }
                                 }
-                            }
-                        }));
+                            });
+                        } else {
+                            return [];
+                        }
                     }.bind(this));
             }
         });
