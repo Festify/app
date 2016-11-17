@@ -69,7 +69,7 @@
                 _.forOwn(votes, function (votesHash, trackId) {
                     ref.child(trackId).transaction(function (track) {
                         var votes = Object.keys(votesHash);
-                        var order = votes.length * voteFactor - (track.added_at - state.party.created_at);
+                        var order = (track.added_at - state.party.created_at) - (votes.length * voteFactor);
 
                         if (track.order != order) {
                             track.order = order;
