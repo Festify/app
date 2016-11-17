@@ -86,7 +86,7 @@
 
             properties: {
                 _hasVoted: {
-                    type: Object
+                    type: Boolean
                 },
                 track: {
                     type: Object
@@ -107,9 +107,9 @@
             _getLikeButtonIcon: function (track, hasVoted) {
                 return track.played_at ?
                         'av:play-arrow' :
-                        hasVoted ?
+                        hasVoted === true ? // We get an empty object from firebase once the vote is deleted
                             'favorite' :
-                            true || track.is_fallback ?
+                            track.vote_count > 0 || track.is_fallback ?
                                 'favorite-border' :
                                 'add';
             },
