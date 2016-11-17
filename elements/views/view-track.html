@@ -122,9 +122,7 @@
             },
 
             _tapLikeIcon: function () {
-                this.debounce('tapLikeIcon', function () {
-                    this.fire('track-toggleVote', { track: this.track });
-                }, 50);
+                this.fire('track-toggleVote', { track: this.track });
             }
         });
     </script>
