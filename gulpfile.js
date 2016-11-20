@@ -14,14 +14,14 @@ const cordova = require("cordova-lib").cordova;
 const distDir = 'build';
 const appDir = 'www';
 
-var watches = [];
+let watches = [];
 
 gulp.task('clean', function() {
     return del([distDir, appDir]);
 });
 
 function buildPolymer(project) {
-    var sources = project.sources()
+    const sources = project.sources()
         .pipe($.if(['index.html', 'app.html'], $.useref()))
         .pipe(project.splitHtml())
         .pipe($.if(/elements[\\\/].+\.js/, $.babel()))

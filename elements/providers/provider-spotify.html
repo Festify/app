@@ -35,7 +35,7 @@
                     this._request.abort();
                 }
 
-                var xhr = this.$.trackSearchAjax;
+                const xhr = this.$.trackSearchAjax;
                 xhr.set('params', {
                     limit: this.limit,
                     q: query + '*',
@@ -47,20 +47,18 @@
 
                 this.set('_request', xhr.generateRequest());
                 return this._request.completes
-                    .then(function (xhr) {
+                    .then(xhr => {
                         this.set('_request', null);
 
                         return _.get(xhr, 'response.tracks.items', [])
-                                .map(function (track) {
-                                    return {
-                                        name: track.name,
-                                        reference: {
-                                            id: track.id,
-                                            provider: 'spotify'
-                                        }
-                                    }
-                                });
-                    }.bind(this));
+                            .map(track => ({
+                                name: track.name,
+                                reference: {
+                                    id: track.id,
+                                    provider: 'spotify'
+                                }
+                            }));
+                    });
             }
         });
     </script>

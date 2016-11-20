@@ -159,12 +159,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (statusKnown) {
                     if (!signedIn) {
                         this.$.fbAuth.signInAnonymously()
-                            .then(function (user) {
-                                console.debug("We're logged in", user.uid);
-                            })
-                            .catch(function (err) {
-                                console.error("Error while authing with Firebase", err);
-                            });
+                            .then(user => console.debug("We're logged in", user.uid))
+                            .catch(err => console.error("Error while authing with Firebase", err));
                     } else {
                         console.debug("We're already logged in with", this.$.fbAuth.user.uid);
                     }
@@ -179,7 +175,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (page && page.length > 0) {
                     this.set('currentView', page);
                 } else {
-                    var view = window.isHost ? 'host' : 'join';
+                    const view = window.isHost ? 'host' : 'join';
                     this.set('route.path', '/' + view);
                     this.set('currentView', view);
                 }

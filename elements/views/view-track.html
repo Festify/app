@@ -100,7 +100,7 @@
             },
 
             _getFirebaseVotesPath: function (state, track) {
-                var partyId = state.partyId;
+                const partyId = state.partyId;
                 return partyId && partyId.length > 0 && track ?
                     '/votes/' + partyId + '/' + track.$key + '/' + state.auth.authedUser.uid :
                     '';
@@ -117,7 +117,7 @@
             },
 
             _joinArtistNames: function (artists) {
-                var first = artists.pop();
+                const first = artists.pop();
                 return first + (artists.length > 0 ?
                                     " feat. " + artists.join(', ') :
                                     '');

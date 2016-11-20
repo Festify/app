@@ -64,21 +64,15 @@
 
                     [ // Enter the other providers here
                         this.$.spotifyProvider
-                    ].map(function (provider) {
+                    ].map(provider => {
                         provider.search(query)
-                            .then(function (results) {
-                                // Special trick to reduce the amount of pushes to a notifying property.
-                                // Once our build toolchain supports ES6, this can be replaced by using
-                                // the ...spread operator.
-                                results.unshift('tracks');
-                                this.push.apply(this, results);
-                            }.bind(this))
+                            .then(results => this.push('tracks', ...results))
                             .catch(function (err) {
                                 if (err.message == "Request aborted.") {
                                     return Promise.resolve();
                                 }
                             });
-                    }.bind(this));
+                    });
                 }, 200);
             }
         });

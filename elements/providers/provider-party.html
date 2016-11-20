@@ -34,7 +34,7 @@
             },
 
             createNewParty: function () {
-                var now = Date.now();
+                const now = Date.now();
                 this.set('data', {
                     country: 'DE',
                     created_at: now,
@@ -46,10 +46,10 @@
                     last_change: now
                 });
                 return this.$.partyDocument.save(partiesKey)
-                    .then(function () {
-                        var ref = this.$.partyDocument.ref;
+                    .then(() => {
+                        const ref = this.$.partyDocument.ref;
                         this.set('fbId', ref.key);
-                    }.bind(this));
+                    });
             },
 
             _shortIdChanged: function (value) {
@@ -63,7 +63,7 @@
                     .orderByChild('short_id')
                     .equalTo(value)
                     .once('value')
-                    .then(function (snapshot) {
+                    .then(snapshot => {
                         if (snapshot.numChildren() < 1) {
                             return;
                         }
@@ -72,18 +72,18 @@
                         var latestCreated = 0;
                         var data = null;
                         var fbId = null;
-                        snapshot.forEach(function (snapshot) {
+                        snapshot.forEach(snapshot => {
                             var value = snapshot.val();
                             if (value.created_at > latestCreated) {
                                 latestCreated = value.created_at;
                                 data = value;
                                 fbId = snapshot.key;
                             }
-                        }.bind(this));
+                        });
 
                         this.set('data', data);
                         this.set('fbId', fbId);
-                    }.bind(this));
+                    });
             }
         });
     </script>
