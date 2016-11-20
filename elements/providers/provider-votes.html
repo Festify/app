@@ -55,8 +55,7 @@
                     .child(fbId)
                     .child(this.state.auth.authedUser.uid)
                     .transaction(function (currentVote) {
-                        // Don't invert but replace with null to remove the value
-                        return currentVote ? null : true;
+                        return !currentVote;
                     });
             },
 
@@ -68,13 +67,23 @@
                 var ref = firebase.database().ref(this._getFirebaseTracksPath(state.partyId));
                 _.forOwn(votes, function (votesHash, trackId) {
                     ref.child(trackId).transaction(function (track) {
-                        var votes = Object.keys(votesHash);
-                        var order = (track.added_at - state.party.created_at) - (votes.length * voteFactor);
+                        if (!track) {
+                            return;
+                        }
 
-                        if (track.order != order) {
-                            track.order = order;
-                            track.vote_count = votes.length;
-                            return track;
+                        var voteCount = _.reduce(votesHash, function (sum, hasVoted) {
+                            return hasVoted ? sum + 1 : sum;
+                        }, 0);
+                        if (voteCount > 0 || track.is_fallback) {
+                            var order = (track.added_at - state.party.created_at) - (voteCount * voteFactor);
+
+                            if (track.order != order) {
+                                track.order = order;
+                                track.vote_count = voteCount;
+                                return track;
+                            }
+                        } else {
+                            return null;
                         }
 
                         // Explicitly omit return to tell Firebase SDK that
