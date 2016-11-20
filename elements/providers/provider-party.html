@@ -46,10 +46,7 @@
                     last_change: now
                 });
                 return this.$.partyDocument.save(partiesKey)
-                    .then(() => {
-                        const ref = this.$.partyDocument.ref;
-                        this.set('fbId', ref.key);
-                    });
+                    .then(() => this.set('fbId', this.$.partyDocument.ref.key));
             },
 
             _shortIdChanged: function (value) {
