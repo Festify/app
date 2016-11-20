@@ -39,28 +39,24 @@
                     type: 'track'
                 });
                 if (this.market) {
-                    this.set('params.market', this.market);
+                    xhr.set('params.market', this.market);
                 }
 
                 this.set('_request', xhr.generateRequest());
                 return this._request.completes
                     .then(function (xhr) {
                         this.set('_request', null);
-                        var tracks = _.get(xhr, 'response.tracks.items');
 
-                        if (tracks) {
-                            return tracks.map(function (track) {
-                                return {
-                                    name: track.name,
-                                    reference: {
-                                        id: track.id,
-                                        provider: 'spotify'
+                        return _.get(xhr, 'response.tracks.items', [])
+                                .map(function (track) {
+                                    return {
+                                        name: track.name,
+                                        reference: {
+                                            id: track.id,
+                                            provider: 'spotify'
+                                        }
                                     }
-                                }
-                            });
-                        } else {
-                            return [];
-                        }
+                                });
                     }.bind(this));
             }
         });
