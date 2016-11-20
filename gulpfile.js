@@ -21,9 +21,14 @@ gulp.task('clean', function() {
 });
 
 function buildPolymer(project) {
-    return mergeStream(project.sources(), project.dependencies())
-        .pipe(project.analyzer)
+    var sources = project.sources()
         .pipe($.if(['index.html', 'app.html'], $.useref()))
+        .pipe(project.splitHtml())
+        .pipe($.if(/elements[\\\/].+\.js/, $.babel()))
+        .pipe(project.rejoinHtml());
+
+    return mergeStream(sources, project.dependencies())
+        .pipe(project.analyzer)
         .pipe(project.bundler);
 }
 
