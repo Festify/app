@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../common/size-aware-image.html">
+<link rel="import" href="../utils/lodash.html">
 <link rel="import" href="../behavior-app-state.html">
 
 <dom-module id="view-track">
@@ -18,13 +20,13 @@
                 padding: 5px;
 
                 box-sizing: content-box;
-            }
 
-            img {
-                background: rgba(0, 0, 0, 0.2);
-                height: 50px;
-                margin: 5px 15px 5px 5px;
-                width: 50px;
+                --size-aware-image: {
+                    background: rgba(0, 0, 0, 0.2);
+                    height: 50px;
+                    margin: 5px 15px 5px 5px;
+                    width: 50px;
+                }
             }
 
             .metadata-wrapper {
@@ -63,13 +65,11 @@
 
         <firebase-document path="[[_getFirebaseVotesPath(state, track)]]" data="{{_hasVoted}}"></firebase-document>
 
-        <img src="[[_getCoverImage(track)]]">
+        <size-aware-image sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
             <h2>[[track.name]]</h2>
             <aside>
-                <template is="dom-if" if="[[track.artists]]">
-                    <a>[[_joinArtistNames(track.artists)]]</a>
-                </template>
+                <a>[[_joinArtistNames(metadata.*, track)]]</a>
                 <template is="dom-if" if="[[track.vote_count]]">
                     <span>·</span>
                     <span>[[track.vote_count]] Votes</span>
@@ -90,13 +90,16 @@
                 _hasVoted: {
                     type: Boolean
                 },
+                metadata: {
+                    type: Object
+                },
                 track: {
                     type: Object
                 }
             },
 
-            _getCoverImage: function (track) {
-                return "http://lorempixel.com/64/64";
+            _getCoverImage: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
             },
 
             _getFirebaseVotesPath: function (state, track) {
@@ -116,7 +119,12 @@
                             'add';
             },
 
-            _joinArtistNames: function (artists) {
+            _joinArtistNames: function (metaChange, track) {
+                const artists = _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artists']);
+                if (!artists || artists.length < 1) {
+                    return;
+                }
+
                 const first = artists.pop();
                 return first + (artists.length > 0 ?
                                     " feat. " + artists.join(', ') :

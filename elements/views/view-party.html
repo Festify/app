@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../common/app-conditional-view.html">
 <link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="../behavior-app-state.html">
@@ -38,6 +39,7 @@
             }
         </style>
 
+        <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
         <provider-tracks id="trackProvider"
                          tracks="{{tracks}}"
                          search-query="[[searchQuery]]"
@@ -63,7 +65,7 @@
                 <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
                 <iron-list items="[[tracks]]">
                     <template>
-                        <view-track state="[[state]]" track="[[item]]"></view-track>
+                        <view-track metadata="[[meta]]" state="[[state]]" track="[[item]]"></view-track>
                     </template>
                 </iron-list>
             </app-drawer-layout>

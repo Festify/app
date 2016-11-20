@@ -2,24 +2,38 @@
 
 <dom-module id="size-aware-image">
     <template>
-        <img src="[[_selected]]">
+        <style>
+            img {
+                @apply(--size-aware-image);
+            }
+        </style>
+        <img src="[[_getImage(sizes)]]">
     </template>
     <script>
         Polymer({
             is: 'size-aware-image',
 
             properties: {
-                _selected: {
-                    type: String
-                },
                 sizes: {
-                    type: Array,
-                    observer: '_sizesChanged'
+                    type: Array
                 }
             },
 
-            _sizesChanged: function (newImages) {
+            _getImage: function (sizes) {
+                if (!sizes) {
+                    return;
+                }
 
+                const requiredHeight = this.getBoundingClientRect().height * window.devicePixelRatio;
+                let currentImage;
+                for (let i = sizes.length - 1; i >= 0; i--) {
+                    if (sizes[i].height >= requiredHeight) {
+                        currentImage = sizes[i];
+                    } else {
+                        break;
+                    }
+                }
+                return currentImage.url;
             }
         });
     </script>

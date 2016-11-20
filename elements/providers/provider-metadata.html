@@ -1,0 +1,79 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../utils/lodash.html">
+
+<dom-module id="provider-metadata">
+    <template>
+        <iron-ajax id="spotifyAjax"
+                   url="https://api.spotify.com/v1/tracks"
+                   handle-as="json">
+        </iron-ajax>
+    </template>
+    <script>
+        Polymer({
+            is: 'provider-metadata',
+
+            properties: {
+                _providers: {
+                    type: Object
+                },
+                data: {
+                    type: Object,
+                    notify: true,
+                    value: () => ({ spotify: {} })
+                },
+                tracks: {
+                    type: Array
+                }
+            },
+
+            ready: function () {
+                this.set('_providers', { spotify: chunk => this._processSpotifyChunk(this.$.spotifyAjax, chunk) });
+            },
+
+            observers: [
+                '_spliceTracks(tracks.splices, data, _providers)'
+            ],
+
+            _spliceTracks: function (changeRecord, cache, providers) {
+                if (!changeRecord) {
+                    return;
+                }
+
+                changeRecord.indexSplices.forEach(splice => {
+                    const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
+                        .filter(t => !_.get(cache, [t.reference.provider, t.reference.id]));
+                    _.forOwn(_.groupBy(newTracks, t => t.reference.provider), (tracks, provider) => {
+                        const processor = _.get(providers, provider);
+                        if (processor) {
+                            _.chunk(tracks, 50)
+                                .filter(chunk => chunk.length > 0)
+                                .forEach(chunk => processor(chunk));
+                        } else {
+                            console.error("Could not find metadata chunk processor for provider", provider);
+                        }
+                    });
+                });
+            },
+
+            _processSpotifyChunk: function (ironAjax, chunk) {
+                ironAjax.set('params', { ids: chunk.map(t => t.reference.id).join(',') });
+                ironAjax.generateRequest().completes
+                    .then(xhr => {
+                        const tracks = xhr.response.tracks;
+                        if (!tracks || tracks.length < 1) {
+                            return;
+                        }
+
+                        tracks.forEach(t => {
+                            this.set(['data.spotify', t.id], {
+                                artists: t.artists.map(a => a.name),
+                                cover: _.sortBy(t.album.images, img => img.height)
+                            });
+                        });
+                    })
+                    .catch(err => console.error("Failed to fetch metadata for track chunk", chunk, "An error", err, "was thrown."));
+            }
+        });
+    </script>
+</dom-module>
