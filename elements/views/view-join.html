@@ -60,10 +60,6 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
-                _displayBackButton: {
-                    type: Boolean,
-                    computed: '_getDisplayBackButton()'
-                },
                 inputInvalid: {
                     type: Boolean,
                     value: true
@@ -79,10 +75,6 @@
 
             listeners: {
                 'keypress': '_keypress'
-            },
-
-            _getDisplayBackButton: function () {
-                return window.isHost;
             },
 
             _keypress: function (ev) {
