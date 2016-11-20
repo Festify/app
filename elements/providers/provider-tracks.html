@@ -13,7 +13,10 @@
                         limit-to-last="[[limit]]">
         </firebase-query>
 
-        <provider-spotify id="spotifyProvider" market="[[state.party.country]]"></provider-spotify>
+        <provider-spotify id="spotifyProvider"
+                          limit="[[limit]]"
+                          market="[[state.party.country]]">
+        </provider-spotify>
     </template>
     <script>
         Polymer({
