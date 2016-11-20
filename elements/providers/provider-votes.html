@@ -38,6 +38,12 @@
             ],
 
             toggleVote: function (track) {
+                var uid = this.get('state.auth.authedUser.uid');
+                if (!uid) {
+                    console.error("Tried to toggle a vote, but no user was logged in.");
+                    return;
+                }
+
                 var fbId = track.$key;
                 if (!fbId) {
                     fbId = firebase.database()
@@ -53,7 +59,7 @@
                 return firebase.database()
                     .ref(this._getFirebaseVotesPath(this.state.partyId))
                     .child(fbId)
-                    .child(this.state.auth.authedUser.uid)
+                    .child(uid)
                     .transaction(function (currentVote) {
                         return !currentVote;
                     });
