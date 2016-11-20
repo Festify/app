@@ -28,6 +28,9 @@
             },
 
             search: function (query) {
+                if (query.length < 2) {
+                    return;
+                }
                 if (this._request) {
                     this._request.abort();
                 }
