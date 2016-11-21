@@ -20,17 +20,22 @@
                 padding: 5px;
 
                 box-sizing: content-box;
-
-                --size-aware-image: {
-                    background: rgba(0, 0, 0, 0.2);
-                    height: 50px;
-                    margin: 5px 15px 5px 5px;
-                    width: 50px;
-                }
             }
 
             .metadata-wrapper {
                 overflow: hidden;
+            }
+
+            size-aware-image {
+                background: rgba(0, 0, 0, 0.2);
+                flex-shrink: 0;
+                height: 50px;
+                margin: 5px 15px 5px 5px;
+                width: 50px;
+
+                --size-aware-image-container: {
+                    border-radius: 5px;
+                }
             }
 
             h2 {

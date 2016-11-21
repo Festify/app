@@ -3,11 +3,16 @@
 <dom-module id="size-aware-image">
     <template>
         <style>
-            img {
-                @apply(--size-aware-image);
+            div {
+                background-size: cover;
+                background-position: center;
+                height: 100%;
+                width: 100%;
+
+                @apply(--size-aware-image-container);
             }
         </style>
-        <img src="[[_getImage(sizes)]]">
+        <div id="container"></div>
     </template>
     <script>
         Polymer({
@@ -15,11 +20,12 @@
 
             properties: {
                 sizes: {
-                    type: Array
+                    type: Array,
+                    observer: '_sizesChanged'
                 }
             },
 
-            _getImage: function (sizes) {
+            _sizesChanged: function (sizes) {
                 if (!sizes) {
                     return;
                 }
@@ -33,7 +39,7 @@
                         break;
                     }
                 }
-                return currentImage.url;
+                this.$.container.style.backgroundImage = 'url("' + currentImage.url + '")';
             }
         });
     </script>
