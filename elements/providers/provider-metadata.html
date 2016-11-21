@@ -35,6 +35,14 @@
                 '_spliceTracks(tracks.splices, data, _providers)'
             ],
 
+            _formatArtistName: function (artists) {
+                if (artists.length > 0) {
+                    return artists[0] + (artists.length > 1 ?
+                        " feat. " + artists.slice(1).join(', ') :
+                            '');
+                }
+            },
+
             _spliceTracks: function (changeRecord, cache, providers) {
                 if (!changeRecord) {
                     return;
@@ -66,8 +74,10 @@
                         }
 
                         tracks.forEach(t => {
+                            const artists = t.artists.map(a => a.name);
                             this.set(['data.spotify', t.id], {
-                                artists: t.artists.map(a => a.name),
+                                artists: artists,
+                                artistName: this._formatArtistName(artists),
                                 cover: _.sortBy(t.album.images, img => img.height)
                             });
                         });

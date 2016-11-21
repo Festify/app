@@ -69,7 +69,7 @@
         <div class="metadata-wrapper">
             <h2>[[track.name]]</h2>
             <aside>
-                <a>[[_joinArtistNames(metadata.*, track)]]</a>
+                <a>[[_getArtistName(metadata.*, track)]]</a>
                 <template is="dom-if" if="[[track.vote_count]]">
                     <span>·</span>
                     <span>[[track.vote_count]] Votes</span>
@@ -119,16 +119,8 @@
                             'add';
             },
 
-            _joinArtistNames: function (metaChange, track) {
-                const artists = _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artists']);
-                if (!artists || artists.length < 1) {
-                    return;
-                }
-
-                const first = artists.pop();
-                return first + (artists.length > 0 ?
-                                    " feat. " + artists.join(', ') :
-                                    '');
+            _getArtistName: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
             },
 
             _tapLikeIcon: function () {
