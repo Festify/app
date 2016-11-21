@@ -27,9 +27,19 @@ function buildPolymer(project) {
         .pipe($.if(/elements[\\\/].+\.js/, $.babel()))
         .pipe(project.rejoinHtml());
 
+    /*
+     * Inline CSS minifications don't work at the moment because polymer-build
+     * doesn't split out CSS at the moment. This is a bug however, and will be
+     * fixed in one of the next versions.
+     */
+
     return mergeStream(sources, project.dependencies())
         .pipe(project.analyzer)
-        .pipe(project.bundler);
+        .pipe(project.bundler)
+        .pipe(project.splitHtml())
+        .pipe($.if(/\.css$/, $.cleanCss({ keepSpecialComments: 0 })))
+        .pipe($.if(/\.js$/, $.uglify({ comments: false })))
+        .pipe(project.rejoinHtml());
 }
 
 gulp.task('polymer', function () {
