@@ -75,10 +75,8 @@
             <h2>[[track.name]]</h2>
             <aside>
                 <a>[[_getArtistName(metadata.*, track)]]</a>
-                <template is="dom-if" if="[[track.vote_count]]">
-                    <span>·</span>
-                    <span>[[track.vote_count]] Votes</span>
-                </template>
+                <span>&middot;</span>
+                <span>[[_getVoteString(track.vote_count)]]</span>
             </aside>
         </div>
         <div class="icon-wrapper">
@@ -103,6 +101,10 @@
                 }
             },
 
+            _getArtistName: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
+            },
+
             _getCoverImage: function (metaChange, track) {
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
             },
@@ -125,8 +127,12 @@
                             'add';
             },
 
-            _getArtistName: function (metaChange, track) {
-                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
+            _getVoteString: function (count) {
+                return (count > 1) ?
+                    count + ' Votes' :
+                    (count == 1) ?
+                        'One Vote' :
+                        'Fallback Track';
             },
 
             _tapLikeIcon: function () {
