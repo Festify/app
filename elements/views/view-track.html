@@ -68,7 +68,7 @@
             }
         </style>
 
-        <firebase-document path="[[_getFirebaseVotesPath(state, track)]]" data="{{_hasVoted}}"></firebase-document>
+        <firebase-document path="[[_getFirebaseVotesPath(state, track.*)]]" data="{{_hasVoted}}"></firebase-document>
 
         <size-aware-image sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
@@ -107,8 +107,9 @@
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
             },
 
-            _getFirebaseVotesPath: function (state, track) {
+            _getFirebaseVotesPath: function (state, trackChange) {
                 const partyId = state.partyId;
+                const track = trackChange.base;
                 return partyId && partyId.length > 0 && track ?
                     '/votes/' + partyId + '/' + track.$key + '/' + state.auth.authedUser.uid :
                     '';
@@ -130,6 +131,7 @@
 
             _tapLikeIcon: function () {
                 this.fire('track-toggleVote', { track: this.track });
+                setTimeout(() => this.notifyPath('track.$key'), 30);
             }
         });
     </script>

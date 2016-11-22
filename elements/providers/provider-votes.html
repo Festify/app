@@ -44,15 +44,19 @@
                     return;
                 }
 
-                const fbId = track.$key || firebase.database()
-                    .ref(this._getFirebaseTracksPath(this.state.partyId))
-                    .push({
-                        added_at: Date.now(),
-                        is_fallback: false,
-                        name: track.name,
-                        reference: track.reference
-                    })
-                    .key;
+                let fbId = track.$key;
+                if (!fbId) {
+                    fbId = firebase.database()
+                        .ref(this._getFirebaseTracksPath(this.state.partyId))
+                        .push({
+                            added_at: Date.now(),
+                            is_fallback: false,
+                            name: track.name,
+                            reference: track.reference
+                        })
+                        .key;
+                    track.$key = fbId;
+                }
                 return firebase.database()
                     .ref(this._getFirebaseVotesPath(this.state.partyId))
                     .child(fbId)
