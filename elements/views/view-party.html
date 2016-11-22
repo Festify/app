@@ -62,12 +62,14 @@
                     </app-toolbar>
                 </app-header>
 
-                <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
-                <iron-list items="[[tracks]]">
-                    <template>
-                        <view-track metadata="[[meta]]" state="[[state]]" track="[[item]]"></view-track>
-                    </template>
-                </iron-list>
+                <div>
+                    <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
+                    <iron-list items="[[tracks]]">
+                        <template>
+                            <view-track metadata="[[meta]]" state="[[state]]" track="[[item]]"></view-track>
+                        </template>
+                    </iron-list>
+                </div>
             </app-drawer-layout>
         </app-conditional-view>
     </template>
