@@ -29,7 +29,7 @@
 
             search: function (query) {
                 if (query.length < 2) {
-                    return;
+                    return Promise.resolve([]);
                 }
                 if (this._request) {
                     this._request.abort();
