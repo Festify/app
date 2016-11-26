@@ -8,7 +8,6 @@
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../common/app-conditional-view.html">
 <link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
@@ -46,7 +45,7 @@
         </provider-tracks>
         <provider-votes id="voteProvider" state="[[state]]"></provider-votes>
 
-        <app-conditional-view active="[[active]]">
+        <template is="dom-if" if="[[active]]">
             <app-drawer-layout fullbleed>
                 <app-drawer>
                     <app-toolbar>Menu</app-toolbar>
@@ -70,7 +69,7 @@
                     </iron-list>
                 </div>
             </app-drawer-layout>
-        </app-conditional-view>
+        </template>
     </template>
     <script>
         Polymer({
