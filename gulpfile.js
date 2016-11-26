@@ -14,7 +14,10 @@ const cordova = require("cordova-lib").cordova;
 const distDir = 'build';
 const appDir = 'www';
 
-let watches = [];
+let watches = [{
+    src: "elements/**/*",
+    tasks: browserSync.reload
+}];
 
 gulp.task('clean', function() {
     return del([distDir, appDir]);
@@ -53,11 +56,6 @@ gulp.task('polymer-cordova', function() {
     return buildPolymer(projectCordova)
         .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(appDir))
-});
-
-watches.push({
-    src: "elements/**/*",
-    tasks: browserSync.reload
 });
 
 gulp.task('generate-icons-ios', function() {
