@@ -14,7 +14,10 @@ const cordova = require("cordova-lib").cordova;
 const distDir = 'build';
 const appDir = 'www';
 
-let watches = [];
+let watches = [{
+    src: "elements/**/*",
+    tasks: browserSync.reload
+}];
 
 gulp.task('clean', function() {
     return del([distDir, appDir]);
@@ -26,7 +29,6 @@ function buildPolymer(project) {
         .pipe(project.splitHtml())
         .pipe($.if(/elements[\\\/].+\.js/, $.babel()))
         .pipe(project.rejoinHtml());
-
     return mergeStream(sources, project.dependencies())
         .pipe(project.analyzer)
         .pipe(project.bundler);
@@ -34,7 +36,17 @@ function buildPolymer(project) {
 
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
+
+    /*
+     * Inline CSS minifications don't work at the moment because polymer-build
+     * doesn't split out CSS at the moment. This is a bug, however, and will be
+     * fixed in one of the next versions.
+     */
     return buildPolymer(project)
+        .pipe(project.splitHtml())
+        .pipe($.if(/\.css$/, $.cleanCss({ keepSpecialComments: 0 })))
+        .pipe($.if(/\.js$/, $.uglify({ comments: false })))
+        .pipe(project.rejoinHtml())
         .pipe(gulp.dest(distDir));
 });
 
@@ -43,11 +55,6 @@ gulp.task('polymer-cordova', function() {
     return buildPolymer(projectCordova)
         .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(appDir))
-});
-
-watches.push({
-    src: "elements/**/*",
-    tasks: browserSync.reload
 });
 
 gulp.task('generate-icons-ios', function() {
