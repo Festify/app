@@ -12,7 +12,7 @@
                 @apply(--size-aware-image-container);
             }
         </style>
-        <div id="container"></div>
+        <div id="container" style$="background-image: url([[_getImage(sizes)]])"></div>
     </template>
     <script>
         Polymer({
@@ -20,17 +20,16 @@
 
             properties: {
                 sizes: {
-                    type: Array,
-                    observer: '_sizesChanged'
+                    type: Array
                 }
             },
 
-            _sizesChanged: function (sizes) {
-                if (!sizes) {
+            _getImage: function (sizes) {
+                if (!sizes || sizes.length < 1) {
                     return;
                 }
 
-                const requiredHeight = this.getBoundingClientRect().height * window.devicePixelRatio;
+                const requiredHeight = this.getBoundingClientRect().height * (window.devicePixelRatio || 1);
                 let currentImage;
                 for (let i = sizes.length - 1; i >= 0; i--) {
                     if (sizes[i].height >= requiredHeight) {
@@ -39,7 +38,7 @@
                         break;
                     }
                 }
-                this.$.container.style.backgroundImage = 'url("' + currentImage.url + '")';
+                return currentImage.url;
             }
         });
     </script>
