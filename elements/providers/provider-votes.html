@@ -49,7 +49,7 @@
                     fbId = firebase.database()
                         .ref(this._getFirebaseTracksPath(this.state.partyId))
                         .push({
-                            added_at: Date.now(),
+                            added_at: firebase.database.ServerValue.TIMESTAMP,
                             is_fallback: false,
                             name: track.name,
                             reference: track.reference

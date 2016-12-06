@@ -34,7 +34,7 @@
             },
 
             createNewParty: function () {
-                const now = Date.now();
+                const now = firebase.database.ServerValue.TIMESTAMP;
                 this.set('data', {
                     country: 'DE',
                     created_at: now,
