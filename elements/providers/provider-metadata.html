@@ -28,7 +28,9 @@
             },
 
             ready: function () {
-                this.set('_providers', { spotify: chunk => this._processSpotifyChunk(this.$.spotifyAjax, chunk) });
+                this.set('_providers', {
+                    spotify: chunk => this._processSpotifyChunk(this.$.spotifyAjax, chunk)
+                });
             },
 
             observers: [
