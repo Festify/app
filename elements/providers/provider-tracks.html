@@ -10,7 +10,7 @@
         <firebase-query path="[[_getFirebaseTracksPath(state.partyId)]]"
                         data="{{_fbTracks}}"
                         order-by-child="order"
-                        limit-to-last="[[limit]]">
+                        limit-to-first="[[limit]]">
         </firebase-query>
 
         <provider-spotify id="spotifyProvider"
