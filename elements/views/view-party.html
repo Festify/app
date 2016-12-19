@@ -87,10 +87,10 @@
             },
 
             listeners: {
-                'track-toggleVote': '_voteForTrack'
+                'track-toggleVote': '_toggleVote'
             },
 
-            _voteForTrack: function (ev) {
+            _toggleVote: function (ev) {
                 this.$.voteProvider.toggleVote(ev.detail.track);
             }
         });
