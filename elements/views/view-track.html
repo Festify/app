@@ -70,7 +70,7 @@
 
         <firebase-document path="[[_getFirebaseVotesPath(state, track.*)]]" data="{{_hasVoted}}"></firebase-document>
 
-        <size-aware-image sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
+        <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
             <h2>[[track.name]]</h2>
             <aside>
