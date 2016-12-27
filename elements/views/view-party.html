@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
@@ -13,26 +14,65 @@
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
-<link rel="import" href="view-track.html">
+<link rel="import" href="./components/component-search-bar.html">
+<link rel="import" href="./components/component-track.html">
 
 <dom-module id="view-party">
     <template>
         <style include="shared-styles"></style>
         <style>
-            app-header {
-                color: white;
-                background-color: var(--app-primary-color);
+            app-header-layout {
+                overflow-y: scroll;
             }
 
-            app-header paper-icon-button {
+            app-header {
+                background-color: #212121;
+                color: white;
+                height: auto;
+                padding: 0 8px;
+            }
+
+            app-header > div {
+                height: 80px;
+                padding-top: 16px;
+            }
+
+            app-toolbar {
+                height: 48px;
+                padding: 8px 0 0 0;
+            }
+
+            app-toolbar paper-icon-button {
+                margin: 12px;
+                padding: 0;
+
+                width: 24px;
+                height: 24px;
+
                 --paper-icon-button-ink-color: white;
             }
 
-            paper-input {
-                padding: 0 10px;
+            app-toolbar div[main-title] {
+                margin-right: 64px;
+                text-align: center;
+                flex-grow: 1;
             }
 
-            view-track[hidden] {
+            iron-list {
+                background-color: #303030;
+            }
+
+            iron-list component-track[playing] {
+                background-color: #282828;
+                padding: 13px 16px;
+                margin: 16px;
+            }
+
+            iron-list component-track[playing] + component-track {
+                padding-top: 13px;
+            }
+
+            component-track[hidden] {
                 display: none;
             }
         </style>
@@ -52,21 +92,29 @@
                     </iron-selector>
                 </app-drawer>
 
-                <app-header fixed>
-                    <app-toolbar>
-                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                        <div main-title>[[state.party.name]]</div>
-                    </app-toolbar>
-                </app-header>
+                <app-header-layout>
+                    <app-header condenses fixed reveals effects="waterfall">
+                        <app-toolbar>
+                            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                            <div main-title>[[state.party.name]]</div>
+                        </app-toolbar>
+                        <div sticky>
+                            <component-search-bar value="{{searchQuery}}"
+                                                  placeholder="Add Tracks">
+                            </component-search-bar>
+                        </div>
+                    </app-header>
 
-                <div>
-                    <paper-input value="{{searchQuery}}" label="Add Tracks"></paper-input>
                     <iron-list items="[[tracks]]">
                         <template>
-                            <view-track metadata="[[meta]]" state="[[state]]" track="[[item]]"></view-track>
+                            <component-track index="[[index]]"
+                                             metadata="[[meta]]"
+                                             state="[[state]]"
+                                             track="[[item]]">
+                            </component-track>
                         </template>
                     </iron-list>
-                </div>
+                </app-header-layout>
             </app-drawer-layout>
         </template>
     </template>

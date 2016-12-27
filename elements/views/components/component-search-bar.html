@@ -1,0 +1,74 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../common/shared-styles.html">
+
+<dom-module id="component-search-bar">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                align-items: center;
+                background-color: #fafafa;
+                border-radius: 2px;
+                box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.24);
+                display: flex;
+                height: 48px;
+                position: relative;
+            }
+
+            iron-icon {
+                color: black;
+                flex-shrink: 0;
+                margin: 12px;
+
+                --iron-icon-height: 24px;
+                --iron-icon-width: 24px;
+            }
+
+            input {
+                background: transparent;
+                border: 0;
+                color: black;
+                font-size: 16px;
+                height: 100%;
+                line-height: 24px;
+                margin: 0 16px 0 0;
+                width: 100%;
+            }
+
+            input:focus {
+                outline: none;
+            }
+
+            input::-webkit-input-placeholder {
+                color: rgba(0, 0, 0, 54);
+            }
+        </style>
+
+        <iron-icon icon="[[_getIcon(value)]]"></iron-icon>
+        <input is="iron-input" bind-value="{{value}}" placeholder="[[placeholder]]">
+    </template>
+    <script>
+        Polymer({
+            is: 'component-search-bar',
+
+            properties: {
+                placeholder: {
+                    type: String
+                },
+                value: {
+                    type: String,
+                    notify: true
+                }
+            },
+
+            _getIcon: function (input) {
+                return (typeof input == 'string' && input.length > 0) ?
+                    'arrow-back' :
+                    'festify:logo';
+            }
+        });
+    </script>
+</dom-module>

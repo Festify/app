@@ -1,14 +1,14 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../common/behavior-app-state.html">
-<link rel="import" href="../common/behavior-firebase-paths.html">
-<link rel="import" href="../common/shared-styles.html">
-<link rel="import" href="../common/size-aware-image.html">
-<link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../common/behavior-app-state.html">
+<link rel="import" href="../../common/behavior-firebase-paths.html">
+<link rel="import" href="../../common/shared-styles.html">
+<link rel="import" href="../../common/size-aware-image.html">
+<link rel="import" href="../../utils/lodash.html">
 
-<dom-module id="view-track">
+<dom-module id="component-track">
     <template>
         <style include="shared-styles"></style>
         <style>
@@ -17,32 +17,29 @@
                 flex-direction: row;
                 align-items: center;
 
-                height: 60px;
-                padding: 5px;
+                padding: 5px 16px;
 
                 box-sizing: content-box;
             }
 
             .metadata-wrapper {
+                margin-top: 2px;
                 overflow: hidden;
             }
 
             size-aware-image {
                 background: rgba(0, 0, 0, 0.2);
                 flex-shrink: 0;
-                height: 50px;
-                margin: 5px 15px 5px 5px;
-                width: 50px;
-
-                --size-aware-image-container: {
-                    border-radius: 5px;
-                }
+                height: 54px;
+                margin-right: 15px;
+                width: 54px;
             }
 
             h2 {
                 margin: 0;
-                font-weight: 400;
-                font-size: 18px;
+                font-weight: lighter;
+                font-size: 15px;
+                line-height: 20px;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -51,7 +48,8 @@
             aside {
                 margin: 2px 0;
                 font-weight: 300;
-                font-size: 16px;
+                font-size: 13px;
+                line-height: 20px;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -59,13 +57,12 @@
 
             .icon-wrapper {
                 margin-left: auto;
-                flex-basis: 50px;
+                flex-basis: 40px;
             }
 
             paper-icon-button {
                 margin-left: 5px;
-                height: 50px;
-                width: 50px;
+                padding: 6px;
             }
         </style>
 
@@ -86,7 +83,7 @@
     </template>
     <script>
         Polymer({
-            is: 'view-track',
+            is: 'component-track',
 
             behaviors: [
                 FestifyBehaviors.FirebasePathsBehavior,
@@ -97,8 +94,17 @@
                 _hasVoted: {
                     type: Boolean
                 },
+                index: {
+                    type: Number
+                },
                 metadata: {
                     type: Object
+                },
+                playing: {
+                    type: Boolean,
+                    reflectToAttribute: true,
+                    value: false,
+                    computed: '_getIsPlaying(index)'
                 },
                 track: {
                     type: Object
@@ -119,6 +125,10 @@
                 return partyId && partyId.length > 0 && track ?
                     '/votes/' + partyId + '/' + this._generateFbId(track) + '/' + state.auth.authedUser.uid :
                     '';
+            },
+
+            _getIsPlaying: function (index) {
+                return index == 0;
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {

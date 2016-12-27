@@ -21,7 +21,8 @@
     "iron-ajax": "PolymerElements/iron-ajax#^1.4.3",
     "lodash": "^4.16.6",
     "iron-list": "PolymerElements/iron-list#^1.3.14",
-    "iron-icons": "PolymerElements/iron-icons#^1.1.3"
+    "iron-icons": "PolymerElements/iron-icons#^1.1.3",
+    "iron-input": "PolymerElements/iron-input#^1.0.10"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
