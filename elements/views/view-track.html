@@ -76,7 +76,7 @@
             <aside>
                 <a>[[_getArtistName(metadata.*, track)]]</a>
                 <span>&middot;</span>
-                <span>[[_getVoteString(track.vote_count)]]</span>
+                <span>[[_getVoteString(track)]]</span>
             </aside>
         </div>
         <div class="icon-wrapper">
@@ -118,7 +118,7 @@
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {
-                return track.played_at ?
+                return track.played_at && !track.isFromSearch ?
                     'av:play-arrow' :
                     hasVoted === true ? // We get an empty object from firebase once the vote is deleted
                         'favorite' :
@@ -127,12 +127,14 @@
                             'add';
             },
 
-            _getVoteString: function (count) {
-                return (count > 1) ?
-                    count + ' Votes' :
-                    (count == 1) ?
+            _getVoteString: function (track) {
+                return (track.vote_count > 1) ?
+                    track.vote_count + ' Votes' :
+                    (track.vote_count == 1) ?
                         'One Vote' :
-                        'Fallback Track';
+                        track.isFromSearch ?
+                            'Not in queue' :
+                            'Fallback Track';
             },
 
             _tapLikeIcon: function () {

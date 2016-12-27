@@ -67,6 +67,10 @@
                         this.$.spotifyProvider
                     ].map(provider => {
                         provider.search(query)
+                            .then(results => results.map(track => {
+                                track.isFromSearch = true;
+                                return track;
+                            }))
                             .then(results => this.push('tracks', ...results))
                             .catch(function (err) {
                                 if (err.message == "Request aborted.") {
