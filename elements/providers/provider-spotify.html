@@ -1,11 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../utils/promise.html">
 
 <dom-module id="provider-spotify">
     <template>
-        <iron-ajax id="trackSearchAjax"
+        <iron-ajax id="searchXhr"
                    url="https://api.spotify.com/v1/search"
+                   handle-as="json">
+        </iron-ajax>
+        <iron-ajax id="trackXhr"
+                   url="https://api.spotify.com/v1/tracks"
                    handle-as="json">
         </iron-ajax>
     </template>
@@ -14,45 +19,52 @@
             is: 'provider-spotify',
 
             properties: {
-                limit: {
-                    type: Number,
-                    value: 20
-                },
-                market: {
-                    type: String,
-                    value: 'DE'
-                },
-                _request: {
+                _searchRequest: {
                     type: Object
                 }
             },
 
-            search: function (query) {
+            getTrackInfo: function (id, market) {
+                return this.getTracksInfo([id], market)
+                    .then(tracks => (tracks.length > 0) ? tracks[0] : null);
+            },
+
+            getTracksInfo: function (ids, market) {
+                const xhr = this.$.trackXhr;
+                xhr.set('params', { ids: ids.join(',') });
+                if (market) {
+                    xhr.set('params.market', { market: market });
+                }
+
+                return xhr.generateRequest().completes
+                    .then(xhr => xhr.response.tracks);
+            },
+
+            search: function (query, market, limit) {
                 if (query.length < 2) {
                     return Promise.resolve([]);
                 }
-                if (this._request) {
-                    this._request.abort();
+                if (this._searchRequest) {
+                    this._searchRequest.abort();
                 }
 
-                const xhr = this.$.trackSearchAjax;
+                const xhr = this.$.searchXhr;
                 xhr.set('params', {
-                    limit: this.limit,
-                    q: query + '*',
+                    limit: limit || 20,
+                    q: query.replace('-', ' ') + '*',
                     type: 'track'
                 });
-                if (this.market) {
-                    xhr.set('params.market', this.market);
+                if (market) {
+                    xhr.set('params.market', market);
                 }
 
-                this.set('_request', xhr.generateRequest());
-                return this._request.completes
+                this.set('_searchRequest', xhr.generateRequest());
+                return this._searchRequest.completes
                     .then(xhr => {
-                        this.set('_request', null);
+                        this.set('_searchRequest', null);
 
                         return _.get(xhr, 'response.tracks.items', [])
                             .map(track => ({
-                                name: track.name,
                                 reference: {
                                     id: track.id,
                                     provider: 'spotify'

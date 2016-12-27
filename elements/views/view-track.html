@@ -72,11 +72,11 @@
 
         <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
-            <h2>[[track.name]]</h2>
+            <h2>[[_getTrackName(metadata.*, track)]]</h2>
             <aside>
                 <a>[[_getArtistName(metadata.*, track)]]</a>
                 <span>&middot;</span>
-                <span>[[_getVoteString(track)]]</span>
+                <span>[[_getVoteString(track.*)]]</span>
             </aside>
         </div>
         <div class="icon-wrapper">
@@ -87,7 +87,10 @@
         Polymer({
             is: 'view-track',
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+            behaviors: [
+                FestifyBehaviors.FirebasePathsBehavior,
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
                 _hasVoted: {
@@ -113,7 +116,7 @@
                 const partyId = state.partyId;
                 const track = trackChange.base;
                 return partyId && partyId.length > 0 && track ?
-                    '/votes/' + partyId + '/' + track.$key + '/' + state.auth.authedUser.uid :
+                    '/votes/' + partyId + '/' + this._generateFbId(track) + '/' + state.auth.authedUser.uid :
                     '';
             },
 
@@ -127,7 +130,12 @@
                             'add';
             },
 
-            _getVoteString: function (track) {
+            _getTrackName: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'name']);
+            },
+
+            _getVoteString: function (trackChange) {
+                const track = trackChange.base;
                 return (track.vote_count > 1) ?
                     track.vote_count + ' Votes' :
                     (track.vote_count == 1) ?
@@ -139,7 +147,6 @@
 
             _tapLikeIcon: function () {
                 this.fire('track-toggleVote', { track: this.track });
-                setTimeout(() => this.notifyPath('track.$key'), 30);
             }
         });
     </script>

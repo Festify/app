@@ -1,13 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../utils/lodash.html">
+<link rel="import" href="./provider-spotify.html">
 
 <dom-module id="provider-metadata">
     <template>
-        <iron-ajax id="spotifyAjax"
-                   url="https://api.spotify.com/v1/tracks"
-                   handle-as="json">
-        </iron-ajax>
+        <provider-spotify id="spotifyProvider"></provider-spotify>
     </template>
     <script>
         Polymer({
@@ -29,7 +27,7 @@
 
             ready: function () {
                 this.set('_providers', {
-                    spotify: chunk => this._processSpotifyChunk(this.$.spotifyAjax, chunk)
+                    spotify: chunk => this._processSpotifyChunk(this.$.spotifyProvider, chunk)
                 });
             },
 
@@ -64,11 +62,9 @@
                 });
             },
 
-            _processSpotifyChunk: function (ironAjax, chunk) {
-                ironAjax.set('params', { ids: chunk.map(t => t.reference.id).join(',') });
-                ironAjax.generateRequest().completes
-                    .then(xhr => {
-                        const tracks = xhr.response.tracks;
+            _processSpotifyChunk: function (provider, chunk) {
+                provider.getTracksInfo(chunk.map(t => t.reference.id))
+                    .then(tracks => {
                         if (!tracks || tracks.length < 1) {
                             return;
                         }
@@ -78,7 +74,8 @@
                             this.set(['data.spotify', t.id], {
                                 artists: artists,
                                 artistName: this._formatArtistName(artists),
-                                cover: _.sortBy(t.album.images, img => img.height)
+                                cover: _.sortBy(t.album.images, img => img.height),
+                                name: t.name
                             });
                         });
                     })

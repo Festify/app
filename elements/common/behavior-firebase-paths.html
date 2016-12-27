@@ -5,6 +5,10 @@
      * @polymerBehavior
      */
     FestifyBehaviors.FirebasePathsBehavior = {
+        _generateFbId: function (track) {
+            return track.reference.provider + '-' + track.reference.id;
+        },
+
         _getFirebasePartiesPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/parties/' + partyId :
@@ -21,6 +25,11 @@
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/votes/' + partyId :
                 '';
+        },
+
+        _getProviderAndId: function (trackId) {
+            const separatorIndex = trackId.indexOf('-');
+            return [trackId.substring(0, separatorIndex), trackId.substring(separatorIndex + 1)];
         }
     }
 </script>

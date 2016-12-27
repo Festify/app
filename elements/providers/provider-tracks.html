@@ -13,10 +13,7 @@
                         limit-to-first="[[limit]]">
         </firebase-query>
 
-        <provider-spotify id="spotifyProvider"
-                          limit="[[limit]]"
-                          market="[[state.party.country]]">
-        </provider-spotify>
+        <provider-spotify id="spotifyProvider"></provider-spotify>
     </template>
     <script>
         Polymer({
@@ -36,8 +33,7 @@
                     value: 50
                 },
                 searchQuery: {
-                    type: String,
-                    observer: '_searchQueryChanged'
+                    type: String
                 },
                 tracks: {
                     type: Array,
@@ -46,12 +42,16 @@
                 }
             },
 
+            observers: [
+                '_searchQueryChanged(searchQuery, limit, state.party.country)'
+            ],
+
             ready: function () {
                 this.set('tracks', this._fbTracks);
                 this.linkPaths('tracks', '_fbTracks');
             },
 
-            _searchQueryChanged: function (query) {
+            _searchQueryChanged: function (query, limit, market) {
                 this.debounce('searchQueryChanged', function () {
                     if (!query || query.length < 1) {
                         this.set('tracks', this._fbTracks);
@@ -66,7 +66,7 @@
                     [ // Enter the other providers here
                         this.$.spotifyProvider
                     ].map(provider => {
-                        provider.search(query)
+                        provider.search(query, market, limit)
                             .then(results => results.map(track => {
                                 track.isFromSearch = true;
                                 return track;
