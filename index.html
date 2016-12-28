@@ -111,7 +111,8 @@
         }
 
         body[polyready] #loading-spinner {
-            display: none;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         #loading-spinner > svg {
@@ -123,7 +124,7 @@
         }
 
         #loading-spinner #foreground {
-            animation: spin .8s infinite linear;
+            animation: spin .6s infinite linear;
         }
 
         @keyframes spin {
