@@ -67,8 +67,6 @@
 
                 const tracksRef = firebase.database().ref(this._getFirebaseTracksPath(state.partyId));
                 _.forOwn(votes, (votesHash, trackId) => {
-                    const [provider, id] = this._getProviderAndId(trackId);
-
                     tracksRef.child(trackId).transaction(track => {
                         const voteCount = _.reduce(votesHash, (sum, hasVoted) => hasVoted ? sum + 1 : sum, 0);
 
@@ -76,6 +74,7 @@
                             // Track does not exist, has just been voted for in via Add Tracks menu.
                             // Add it to the queue.
 
+                            const [provider, id] = this._getProviderAndId(trackId);
                             return {
                                 added_at: firebase.database.ServerValue.TIMESTAMP,
                                 is_fallback: false,
