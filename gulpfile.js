@@ -10,6 +10,7 @@ const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
 const $ = require('gulp-load-plugins')();
 const cordova = require("cordova-lib").cordova;
+const autoprefixer = require('autoprefixer');
 
 const distDir = 'build';
 const appDir = 'www';
@@ -23,19 +24,19 @@ gulp.task('clean', function() {
     return del([distDir, appDir]);
 });
 
+const cssProcessors = [
+    autoprefixer({browsers: ['last 2 versions']})
+];
+
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
 
-    /*
-     * Inline CSS minifications don't work at the moment because polymer-build
-     * doesn't split out CSS at the moment. This is a bug, however, and will be
-     * fixed in one of the next versions.
-     */
     const sources = project.sources()
         .pipe($.if(['index.html', 'app.html'], $.useref()));
 
     return mergeStream(sources, project.dependencies())
         .pipe(project.splitHtml())
+        .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
         .pipe($.if(['elements/**/*.js'], $.babel()))
         .pipe($.if(function(file) {
             return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
