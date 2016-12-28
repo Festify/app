@@ -15,6 +15,7 @@
     "gulp-clean-css": "^2.0.13",
     "gulp-crisper": "^1.1.0",
     "gulp-html-postcss": "^6.0.1",
+    "gulp-htmlmin": "^3.0.0",
     "gulp-if": "^2.0.2",
     "gulp-load-plugins": "^1.4.0",
     "gulp-responsive": "^2.6.0",

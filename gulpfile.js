@@ -42,6 +42,7 @@ gulp.task('polymer', function () {
             return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
         }, $.uglify({ preserveComments: 'license' })))
         .pipe(project.rejoinHtml())
+        .pipe($.if(/\.html$/, $.htmlmin({ collapseWhitespace: true })))
         .pipe(project.analyzer)
         .pipe(project.bundler)
         .pipe(gulp.dest(distDir));
