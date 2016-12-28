@@ -16,7 +16,7 @@ const distDir = 'build';
 const appDir = 'www';
 
 let watches = [{
-    src: "elements/**/*",
+    src: ["elements/**/*", "index.html"],
     tasks: browserSync.reload
 }];
 
