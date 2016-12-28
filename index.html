@@ -38,6 +38,13 @@
     <meta name="msapplication-tap-highlight" content="no">
 
     <script>
+        // Loader
+        window.addEventListener('WebComponentsReady', function(e) {
+            setTimeout(function() {
+                document.body.setAttribute('polyready', "");
+            }, 2000);
+        });
+
         // Setup Polymer options
         window.Polymer = {
             dom: 'shadow',
@@ -93,9 +100,39 @@
             min-height: 100vh;
             background-color: #1c1f24;
         }
+
+        #loading-spinner {
+            width: 128px;
+            height: 128px;
+            margin: -64px;
+            top: 50%;
+            left: 50%;
+            position: fixed;
+        }
+
+        body[polyready] #loading-spinner {
+            display: none;
+        }
+
+        #loading-spinner > svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        #loading-spinner #foreground {
+            animation: spin .8s infinite linear;
+        }
+
+        @keyframes spin {
+            from {transform:rotate(0deg);}
+            to {transform:rotate(360deg);}
+        }
     </style>
 </head>
-<body>
+<body unresolved>
     <script>
         window.isHost = !!window.cordova;
         console.debug = function () { };
@@ -109,6 +146,38 @@
         console.debug = console.log;
     </script>
     <!-- endbuild -->
+
+    <div id="loading-spinner">
+        <svg version="1.1" id="background" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+            <g id="festify-logo" transform="translate(16.000000, 40.000000)">
+                <g id="Layer_2">
+                    <circle id="Oval" fill="#282B30" cx="16" cy="-8" r="32"/>
+                    <circle id="Oval_1_" fill="#951518" cx="15.7" cy="-7.8" r="11.4"/>
+                    <path id="Shape_4_" fill="#FEFEFE" d="M12.2-2.2l1.8-10c0-0.1,0-0.1,0-0.3c0-0.4-0.2-0.5-0.7-0.5c-0.1,0-0.3,0-0.5,0
+                        c-0.2,0-0.4,0-0.5,0c-0.6,0-0.9-0.3-0.9-0.9c0-1.7,0.5-2.5,1.6-2.5c0.2,0,0.3,0,0.4,0c0.4,0,0.6,0.1,0.6,0.1
+                        c0.3,0,0.6-0.1,0.8-0.5c0.2-0.3,0.4-1,0.6-2c0.8-3.1,2.8-4.6,6.1-4.6c1.5,0,2.8,0.4,3.8,1.1c1,0.8,1.5,1.7,1.5,2.9
+                        c0,0.7-0.2,1.3-0.7,1.8s-1,0.6-1.8,0.6c-1.4,0-2-0.5-2-1.6c0-0.2,0-0.4,0.1-0.6c0-0.1,0-0.2,0-0.4c0-0.4-0.3-0.6-0.8-0.6
+                        c-0.9,0-1.5,0.6-1.6,1.7l-0.3,1.6c0,0,0,0.1,0,0.2c0,0.3,0.2,0.5,0.5,0.5c0,0,0.1,0,0.2,0h0.2c0.6-0.1,1.2-0.2,1.6-0.2
+                        c0.7,0,1,0.3,1,0.9c0,1.6-0.5,2.4-1.4,2.4c-0.3,0-0.6,0-0.8,0c-0.2,0-0.5,0-0.9,0c-0.7,0-1.1,0.3-1.2,0.8l-1.9,11
+                        c-0.5,2.7-1.1,4.7-2,6c-1.4,2-3.2,3-5.5,3C8.2,7.8,7,7.3,6,6.5C5,5.6,4.5,4.5,4.5,3.3c0-0.8,0.2-1.5,0.8-2
+                        c0.5-0.6,1.1-0.8,1.8-0.8c0.6,0,1.1,0.2,1.5,0.6C9,1.4,9.2,1.9,9.2,2.4c0,0.2,0,0.4-0.2,0.7L8.7,3.8c0,0.4,0.3,0.6,0.8,0.6
+                        c0.6,0,1.1-0.4,1.4-1.1C11.3,2.6,11.7,0.7,12.2-2.2L12.2-2.2z"/>
+                </g>
+            </g>
+        </svg>
+        <svg version="1.1" id="foreground" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+            <path id="Shape" fill="#FEFEFE" d="M16.2,30.5c0,0,0.3-7.5,7.4-11.9l0.1-0.1c0,0,0.1,0,0.1-0.2l-1.2-2l0,0c0,0-0.1-0.2-0.4,0
+                c-0.3,0.2-7.9,4.4-8.7,14.1c0,0,0,0.2,0.2,0.3c0.2,0,2.3,0.2,2.3,0.2S16.2,30.8,16.2,30.5L16.2,30.5z"/>
+            <path id="Shape_1_" fill="#FEFEFE" d="M7.9,29.8c0,0,0.5-11.7,11.5-18.5c0,0,0.3-0.1,0.1-0.4c-0.2-0.3-1.1-2-1.1-2s-0.1-0.3-0.4-0.1
+                C17.6,9.1,6.1,15.6,5.1,29.6c0,0-0.1,0.3,0.3,0.4c0.4,0,2,0.1,2,0.1h0.4C7.8,30.1,7.9,30.2,7.9,29.8L7.9,29.8z"/>
+            <path id="Shape_2_" fill="#FEFEFE" d="M47.7,33.8c0,0-0.3,7.5-7.4,11.9l-0.1,0.1c0,0-0.1,0-0.1,0.2l1.2,2l0,0c0,0,0.1,0.2,0.4,0
+                c0.3-0.2,7.9-4.4,8.7-14.1c0,0,0-0.2-0.2-0.3c-0.2,0-2.3-0.2-2.3-0.2S47.8,33.5,47.7,33.8L47.7,33.8z"/>
+            <path id="Shape_3_" fill="#FEFEFE" d="M56,34.4c0,0-0.5,11.7-11.5,18.5c0,0-0.3,0.1-0.1,0.4c0.2,0.3,1.2,2,1.2,2s0.1,0.3,0.4,0.1
+                c0.3-0.2,11.8-6.7,12.9-20.7c0,0,0.1-0.3-0.3-0.4c-0.4,0-2-0.1-2-0.1h-0.4C56.2,34.2,56,34,56,34.4L56,34.4z"/>
+        </svg>
+    </div>
 
     <app-shell></app-shell>
 </body>
