@@ -3,7 +3,7 @@
   "short_name": "Festify Guests",
   "start_url": "/?homescreen=1",
   "display": "standalone",
-  "theme_color": "#951518",
+  "theme_color": "#212121",
   "background_color": "#1C1F24",
   "icons": [
     {
