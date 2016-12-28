@@ -13,7 +13,6 @@
                            data="{{_fbVotes}}"
                            disabled="[[!_fetchFbVotes]]">
         </firebase-document>
-
     </template>
     <script>
         const voteFactor = 1000000000000;
@@ -76,6 +75,7 @@
                         if (!track && voteCount > 0) {
                             // Track does not exist, has just been voted for in via Add Tracks menu.
                             // Add it to the queue.
+
                             return {
                                 added_at: firebase.database.ServerValue.TIMESTAMP,
                                 is_fallback: false,
