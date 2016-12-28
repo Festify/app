@@ -15,6 +15,10 @@
                 _providers: {
                     type: Object
                 },
+                _waitingTracks: {
+                    type: Array,
+                    value: () => ([])
+                },
                 data: {
                     type: Object,
                     notify: true,
@@ -49,7 +53,13 @@
                 changeRecord.indexSplices.forEach(splice => {
                     const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
                         .filter(t => !_.get(cache, [t.reference.provider, t.reference.id]));
-                    _.forOwn(_.groupBy(newTracks, t => t.reference.provider), (tracks, provider) => {
+                    this._waitingTracks.push(...newTracks);
+                });
+
+                this.debounce('processTracks', () => {
+                    const tracks = this._waitingTracks;
+                    this._waitingTracks = [];
+                    _.forOwn(_.groupBy(tracks, t => t.reference.provider), (tracks, provider) => {
                         const processor = _.get(providers, provider);
                         if (processor) {
                             _.chunk(tracks, 50)
@@ -59,7 +69,7 @@
                             console.error("Could not find metadata chunk processor for provider", provider);
                         }
                     });
-                });
+                }, 50);
             },
 
             _processSpotifyChunk: function (provider, chunk) {
