@@ -22,7 +22,8 @@
     "lodash": "^4.16.6",
     "iron-list": "PolymerElements/iron-list#^1.3.14",
     "iron-icons": "PolymerElements/iron-icons#^1.1.3",
-    "iron-input": "PolymerElements/iron-input#^1.0.10"
+    "iron-input": "PolymerElements/iron-input#^1.0.10",
+    "paper-fab": "PolymerElements/paper-fab#^1.2.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

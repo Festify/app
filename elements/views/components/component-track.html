@@ -1,7 +1,9 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../common/behavior-app-state.html">
 <link rel="import" href="../../common/behavior-firebase-paths.html">
 <link rel="import" href="../../common/shared-styles.html">
@@ -60,13 +62,20 @@
                 flex-basis: 40px;
             }
 
+            paper-fab {
+                color: white;
+                background-color: var(--primary-color);
+            }
+
             paper-icon-button {
                 margin-left: 5px;
                 padding: 6px;
             }
         </style>
 
-        <firebase-document path="[[_getFirebaseVotesPath(state, track.*)]]" data="{{_hasVoted}}"></firebase-document>
+        <firebase-document path="[[_getFirebaseVotesPath(state, track.*)]]"
+                           data="{{_hasVoted}}">
+        </firebase-document>
 
         <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
@@ -77,8 +86,19 @@
                 <span>[[_getVoteString(track.*)]]</span>
             </aside>
         </div>
+
         <div class="icon-wrapper">
-            <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]" on-tap="_tapLikeIcon"></paper-icon-button>
+            <template is="dom-if" if="[[index]]">
+                <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]"
+                                   on-tap="_tapLikeIcon">
+                </paper-icon-button>
+            </template>
+            <template is="dom-if" if="[[!index]]">
+                <paper-fab mini
+                           icon="[[_getPlayPauseButtonIcon(state.party.playing)]]"
+                           on-tap="_tapPlayPauseBtn">
+                </paper-fab>
+            </template>
         </div>
     </template>
     <script>
@@ -117,6 +137,10 @@
 
             _getCoverImage: function (metaChange, track) {
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
+            },
+
+            _getPlayPauseButtonIcon: function (isPlaying) {
+                return isPlaying ? 'av:pause' : 'av:play-arrow';
             },
 
             _getFirebaseVotesPath: function (state, trackChange) {
@@ -158,6 +182,13 @@
 
             _tapLikeIcon: function () {
                 this.fire('track-toggleVote', { track: this.track });
+            },
+
+            _tapPlayPauseBtn: function () {
+                const state = this.state;
+                if (state && state.isHost) {
+                    this.fire('track-togglePlayPause', { track: this.track });
+                }
             }
         });
     </script>
