@@ -1,7 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../common/shared-styles.html">
 
 <dom-module id="component-search-bar">
@@ -18,10 +18,11 @@
                 position: relative;
             }
 
-            iron-icon {
+            paper-icon-button {
                 color: black;
                 flex-shrink: 0;
-                margin: 12px;
+                margin: 0 4px;
+                padding: 8px;
 
                 --iron-icon-height: 24px;
                 --iron-icon-width: 24px;
@@ -47,7 +48,7 @@
             }
         </style>
 
-        <iron-icon icon="[[_getIcon(value)]]"></iron-icon>
+        <paper-icon-button icon="[[_getIcon(value)]]" on-tap="_tapIconButton"></paper-icon-button>
         <input is="iron-input" bind-value="{{value}}" placeholder="[[placeholder]]">
     </template>
     <script>
@@ -68,6 +69,13 @@
                 return (typeof input == 'string' && input.length > 0) ?
                     'arrow-back' :
                     'festify:logo';
+            },
+
+            _tapIconButton: function () {
+                const input = this.value;
+                if (input && input.length > 0) {
+                    this.set('value', null);
+                }
             }
         });
     </script>
