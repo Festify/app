@@ -23,17 +23,6 @@ gulp.task('clean', function() {
     return del([distDir, appDir]);
 });
 
-function buildPolymer(project) {
-    const sources = project.sources()
-        .pipe($.if(['index.html', 'app.html'], $.useref()))
-        .pipe(project.splitHtml())
-        .pipe($.if(/elements[\\\/].+\.js/, $.babel()))
-        .pipe(project.rejoinHtml());
-    return mergeStream(sources, project.dependencies())
-        .pipe(project.analyzer)
-        .pipe(project.bundler);
-}
-
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
 
@@ -42,11 +31,18 @@ gulp.task('polymer', function () {
      * doesn't split out CSS at the moment. This is a bug, however, and will be
      * fixed in one of the next versions.
      */
-    return buildPolymer(project)
+    const sources = project.sources()
+        .pipe($.if(['index.html', 'app.html'], $.useref()));
+
+    return mergeStream(sources, project.dependencies())
         .pipe(project.splitHtml())
-        .pipe($.if(/\.css$/, $.cleanCss({ keepSpecialComments: 0 })))
-        .pipe($.if(/\.js$/, $.uglify({ comments: false })))
+        .pipe($.if(['elements/**/*.js'], $.babel()))
+        .pipe($.if(function(file) {
+            return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
+        }, $.uglify({ preserveComments: 'license' })))
         .pipe(project.rejoinHtml())
+        .pipe(project.analyzer)
+        .pipe(project.bundler)
         .pipe(gulp.dest(distDir));
 });
 
