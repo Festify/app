@@ -15,7 +15,7 @@
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="components/component-search-bar.html">
-<link rel="import" href="components/component-track.html">
+<link rel="import" href="components/festify-track.html">
 
 <dom-module id="view-party">
     <template>
@@ -62,17 +62,17 @@
                 background-color: #303030;
             }
 
-            iron-list component-track[playing] {
+            iron-list festify-track[playing] {
                 background-color: #282828;
                 padding: 13px 16px;
                 margin: 16px;
             }
 
-            iron-list component-track[playing] + component-track {
+            iron-list festify-track[playing] + festify-track {
                 padding-top: 13px;
             }
 
-            component-track[hidden] {
+            festify-track[hidden] {
                 display: none;
             }
         </style>
@@ -107,11 +107,11 @@
 
                     <iron-list items="[[tracks]]">
                         <template>
-                            <component-track index="[[index]]"
+                            <festify-track index="[[index]]"
                                              metadata="[[meta]]"
                                              state="[[state]]"
                                              track="[[item]]">
-                            </component-track>
+                            </festify-track>
                         </template>
                     </iron-list>
                 </app-header-layout>
