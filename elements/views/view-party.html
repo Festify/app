@@ -14,8 +14,8 @@
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
-<link rel="import" href="components/component-search-bar.html">
 <link rel="import" href="components/festify-track.html">
+<link rel="import" href="components/search-bar.html">
 
 <dom-module id="view-party">
     <template>
@@ -99,9 +99,9 @@
                             <div main-title>[[state.party.name]]</div>
                         </app-toolbar>
                         <div sticky>
-                            <component-search-bar value="{{searchQuery}}"
+                            <search-bar value="{{searchQuery}}"
                                                   placeholder="Add Tracks">
-                            </component-search-bar>
+                            </search-bar>
                         </div>
                     </app-header>
 
