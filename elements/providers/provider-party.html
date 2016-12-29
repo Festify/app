@@ -60,17 +60,17 @@
                     .orderByChild('short_id')
                     .equalTo(value)
                     .once('value')
-                    .then(snapshot => {
-                        if (snapshot.numChildren() < 1) {
+                    .then(results => {
+                        if (results.numChildren() < 1) {
                             return;
                         }
 
                         // Please improve me
-                        var latestCreated = 0;
-                        var data = null;
-                        var fbId = null;
-                        snapshot.forEach(snapshot => {
-                            var value = snapshot.val();
+                        let latestCreated = 0;
+                        let data = null;
+                        let fbId = null;
+                        results.forEach(snapshot => {
+                            const value = snapshot.val();
                             if (value.created_at > latestCreated) {
                                 latestCreated = value.created_at;
                                 data = value;
