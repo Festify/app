@@ -84,39 +84,35 @@
         </provider-tracks>
         <provider-votes id="voteProvider" state="[[state]]"></provider-votes>
 
-        <template is="dom-if" if="[[active]]">
-            <app-drawer-layout fullbleed>
-                <app-drawer>
-                    <app-toolbar>Menu</app-toolbar>
-                    <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                    </iron-selector>
-                </app-drawer>
+        <app-drawer-layout fullbleed>
+            <app-drawer>
+                <app-toolbar>Menu</app-toolbar>
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                </iron-selector>
+            </app-drawer>
 
-                <app-header-layout>
-                    <app-header condenses fixed reveals effects="waterfall">
-                        <app-toolbar>
-                            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                            <div main-title>[[state.party.name]]</div>
-                        </app-toolbar>
-                        <div sticky>
-                            <search-bar value="{{searchQuery}}"
-                                                  placeholder="Add Tracks">
-                            </search-bar>
-                        </div>
-                    </app-header>
+            <app-header-layout>
+                <app-header condenses fixed reveals effects="waterfall">
+                    <app-toolbar>
+                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <div main-title>[[state.party.name]]</div>
+                    </app-toolbar>
+                    <div sticky>
+                        <search-bar value="{{searchQuery}}" placeholder="Add Tracks"></search-bar>
+                    </div>
+                </app-header>
 
-                    <iron-list items="[[tracks]]">
-                        <template>
-                            <festify-track index="[[index]]"
-                                             metadata="[[meta]]"
-                                             state="[[state]]"
-                                             track="[[item]]">
-                            </festify-track>
-                        </template>
-                    </iron-list>
-                </app-header-layout>
-            </app-drawer-layout>
-        </template>
+                <iron-list items="[[tracks]]">
+                    <template>
+                        <festify-track index="[[index]]"
+                                       metadata="[[meta]]"
+                                       state="[[state]]"
+                                       track="[[item]]">
+                        </festify-track>
+                    </template>
+                </iron-list>
+            </app-header-layout>
+        </app-drawer-layout>
     </template>
     <script>
         Polymer({
@@ -125,9 +121,6 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
-                active: {
-                    type: Boolean
-                },
                 route: {
                     type: Object,
                     notify: true
