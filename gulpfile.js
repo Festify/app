@@ -91,6 +91,10 @@ gulp.task('configure', function() {
         }))
         .pipe(gulp.dest('.tmp'));
 });
+watches.push({
+    src: ["elements/app-shell.html"],
+    tasks: ['configure', browserSync.reload]
+});
 
 gulp.task('serve', ['configure'], function () {
     browserSync.init({
