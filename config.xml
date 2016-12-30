@@ -8,7 +8,6 @@
         Festify
     </author>
     <content src="app.html" />
-    <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -35,25 +34,23 @@
         <icon height="50" src="www/images/manifest/icon-full-50.png" width="50" />
         <icon height="100" src="www/images/manifest/icon-full-100.png" width="100" />
     </platform>
-
-    <splash platform="ios" src="res/screens/ios/screen-iphone-portrait.png" width="320" height="480" />
-    <splash platform="ios" src="res/screens/ios/screen-iphone-portrait-2x.png" width="640" height="960" />
-    <splash platform="ios" src="res/screens/ios/screen-iphone-portrait-568h-2x.png" width="640" height="1136" />
-    <splash platform="ios" src="res/screens/ios/screen-iphone-portrait-667h.png" width="750" height="1334" />
-    <splash platform="ios" src="res/screens/ios/screen-iphone-portrait-736h.png" width="1242" height="2208" />
-    <splash platform="ios" src="res/screens/ios/screen-ipad-portrait.png" width="768" height="1024" />
-    <splash platform="ios" src="res/screens/ios/screen-ipad-portrait-2x.png" width="1536" height="2048" />
-    <splash platform="android" qualifier="ldpi" src="res/screens/android/screen-ldpi-portrait.png" width="200" height="320" />
-    <splash platform="android" qualifier="mdpi" src="res/screens/android/screen-mdpi-portrait.png" width="320" height="480" />
-    <splash platform="android" qualifier="hdpi" src="res/screens/android/screen-hdpi-portrait.png" width="480" height="800" />
-    <splash platform="android" qualifier="xhdpi" src="res/screens/android/screen-xhdpi-portrait.png" width="720" height="1280" />
-    <icon platform="android" qualifier="ldpi" src="res/icons/android/icon-36-ldpi.png" width="36"/>
-    <icon platform="android" qualifier="mdpi" src="res/icons/android/icon-48-mdpi.png" width="48"/>
-    <icon platform="android" qualifier="hdpi" src="res/icons/android/icon-72-hdpi.png" width="72"/>
-    <icon platform="android" qualifier="xhdpi" src="res/icons/android/icon-96-xhdpi.png" width="96"/>
-    <icon platform="android" qualifier="xxhdpi" src="res/icons/android/icon-144-xxhdpi.png" width="144"/>
-    <icon platform="android" qualifier="xxxhdpi" src="res/icons/android/icon-192-xxxhdpi.png" width="192"/>
-
+    <splash height="480" platform="ios" src="res/screens/ios/screen-iphone-portrait.png" width="320" />
+    <splash height="960" platform="ios" src="res/screens/ios/screen-iphone-portrait-2x.png" width="640" />
+    <splash height="1136" platform="ios" src="res/screens/ios/screen-iphone-portrait-568h-2x.png" width="640" />
+    <splash height="1334" platform="ios" src="res/screens/ios/screen-iphone-portrait-667h.png" width="750" />
+    <splash height="2208" platform="ios" src="res/screens/ios/screen-iphone-portrait-736h.png" width="1242" />
+    <splash height="1024" platform="ios" src="res/screens/ios/screen-ipad-portrait.png" width="768" />
+    <splash height="2048" platform="ios" src="res/screens/ios/screen-ipad-portrait-2x.png" width="1536" />
+    <splash height="320" platform="android" qualifier="ldpi" src="res/screens/android/screen-ldpi-portrait.png" width="200" />
+    <splash height="480" platform="android" qualifier="mdpi" src="res/screens/android/screen-mdpi-portrait.png" width="320" />
+    <splash height="800" platform="android" qualifier="hdpi" src="res/screens/android/screen-hdpi-portrait.png" width="480" />
+    <splash height="1280" platform="android" qualifier="xhdpi" src="res/screens/android/screen-xhdpi-portrait.png" width="720" />
+    <icon platform="android" qualifier="ldpi" src="res/icons/android/icon-36-ldpi.png" width="36" />
+    <icon platform="android" qualifier="mdpi" src="res/icons/android/icon-48-mdpi.png" width="48" />
+    <icon platform="android" qualifier="hdpi" src="res/icons/android/icon-72-hdpi.png" width="72" />
+    <icon platform="android" qualifier="xhdpi" src="res/icons/android/icon-96-xhdpi.png" width="96" />
+    <icon platform="android" qualifier="xxhdpi" src="res/icons/android/icon-144-xxhdpi.png" width="144" />
+    <icon platform="android" qualifier="xxxhdpi" src="res/icons/android/icon-192-xxxhdpi.png" width="192" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="false" />
     <preference name="BackgroundColor" value="0xff1c1f24" />
@@ -62,17 +59,17 @@
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <preference name="Orientation" value="portrait" />
-    <preference name="FadeSplashScreenDuration" value="500"/>
-    <preference name="SplashScreenDelay" value="2000"/>
-    <preference name="ShowSplashScreenSpinner" value="true"/>
+    <preference name="FadeSplashScreenDuration" value="500" />
+    <preference name="SplashScreenDelay" value="2000" />
+    <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="SplashScreen" value="images/icon.png" />
     <preference name="SplashScreenBackgroundColor" value="#1c1f24" />
-    <plugin name="de.fhg.fokus.famium.presentation" spec="https://github.com/fraunhoferfokus/cordova-plugin-presentation.git" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="~2.2.0" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
     <engine name="ios" spec="~4.3.0" />
     <engine name="android" spec="~6.0.0" />
-    <feature name="Presentation">
-    </feature>
+    <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify" />
+    <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper" />
 </widget>

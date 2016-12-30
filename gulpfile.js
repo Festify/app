@@ -117,11 +117,14 @@ gulp.task('serve', ['configure'], function () {
 
 gulp.task("package-cordova", function (callback) {
     cordova.build({
-        "platforms": ["ios"],
         "options": {
             argv: []
         }
     }, callback);
+});
+
+gulp.task("serve:cordova", ['build-cordova'], function(cb) {
+    cordova.run({}, cb);
 });
 
 gulp.task('build', function(cb) {
