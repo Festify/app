@@ -30,7 +30,7 @@
                 }
 
                 const requiredHeight = this.getBoundingClientRect().height * (window.devicePixelRatio || 1);
-                let currentImage;
+                let currentImage = sizes[sizes.length - 1];
                 for (let i = sizes.length - 1; i >= 0; i--) {
                     if (sizes[i].height >= requiredHeight) {
                         currentImage = sizes[i];
