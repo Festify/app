@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/behavior-firebase-paths.html">
 
 <dom-module id="provider-party">
@@ -13,12 +12,12 @@
         Polymer({
             is: 'provider-party',
 
-            behaviors: [
-                FestifyBehaviors.FirebasePathsBehavior,
-                FestifyBehaviors.StateBehavior
-            ],
+            behaviors: [FestifyBehaviors.FirebasePathsBehavior],
 
             properties: {
+                auth: {
+                    type: Object
+                },
                 data: {
                     type: Object,
                     notify: true
@@ -34,11 +33,16 @@
             },
 
             createNewParty: function () {
+                const uid = this.get('auth.authedUser.uid');
+                if (!uid || uid.length < 1) {
+                    throw new Error("Tried to create a party but user ID was null or empty!");
+                }
+
                 const now = firebase.database.ServerValue.TIMESTAMP;
                 this.set('data', {
                     country: 'DE',
                     created_at: now,
-                    created_by: this.state.auth.authedUser.uid,
+                    created_by: uid,
                     name: "Today's Party",
                     short_id: Math.floor(Math.random() * 1000000) + '',
                     playing: false,

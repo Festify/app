@@ -76,9 +76,9 @@
                    active="{{partyViewActive}}">
         </app-route>
         <provider-party id="partyProvider"
+                        auth="[[state.auth]]"
                         data="{{state.party}}"
                         fb-id="{{state.partyId}}"
-                        state="[[state]]"
                         on-fb-id-changed="_currentPartyIdChanged">
         </provider-party>
 
