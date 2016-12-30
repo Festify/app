@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/behavior-firebase-paths.html">
+<link rel="import" href="../utils/lodash.html">
 
 <dom-module id="provider-party">
     <template>
@@ -24,6 +25,10 @@
                     observer: '_shortIdChanged'
                 }
             },
+
+            observers: [
+                '_onParty(state.party.*)'
+            ],
 
             createNewParty: function () {
                 const uid = this.get('state.auth.authedUser.uid');
@@ -78,6 +83,13 @@
                         this.set('state.party', data);
                         this.set('state.partyId', fbId);
                     });
+            },
+
+            _onParty: function(change) {
+                this.set(
+                    'state.isOwner',
+                    _.get(change, 'base.created_by', 'unequal') == this.get('state.auth.authedUser.uid')
+                );
             }
         });
     </script>
