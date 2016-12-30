@@ -36,15 +36,15 @@
             },
 
             deinit: function() {
-                return this._withSession(s => s.logout(), Promise.resolve());
+                return this._withSession(s => s.logout(), () => Promise.resolve());
             },
 
             play: function(ref) {
-                return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), Promise.reject());
+                return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), () => Promise.reject());
             },
 
             pause: function() {
-                return this._withSession(s => s.pause(), Promise.reject());
+                return this._withSession(s => s.pause(), () => Promise.reject());
             },
 
             getUsername: function() {
@@ -64,7 +64,8 @@
             },
 
             _withSession: function(body, defaultValue) {
-                return this._session ? body(this._session) : defaultValue;
+                defaultValue = _.isFunction(defaultValue) ? defaultValue : (() => defaultValue);
+                return this._session ? body(this._session) : defaultValue();
             }
         });
     </script>
