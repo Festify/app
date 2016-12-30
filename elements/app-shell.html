@@ -125,7 +125,7 @@
             ],
 
             ready: function() {
-                this.set('state.cordova', window.cordova);
+                this.set('state.cordova', !!window.cordova);
                 this.set('state.isHost', window.isHost);
                 if (window.cordova) { // Cordova doesn't like app-location
                     this.set("route", { path: "/host", prefix: "", __queryParams: {} });
