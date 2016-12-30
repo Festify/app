@@ -28,9 +28,7 @@ const cssProcessors = [
     autoprefixer({browsers: ['last 2 versions']})
 ];
 
-gulp.task('polymer', function () {
-    const project = new PolymerProject(require('./polymer.json'));
-
+function buildPolymer(project) {
     const sources = project.sources()
         .pipe($.if(['index.html', 'app.html'], $.useref()));
 
@@ -45,6 +43,12 @@ gulp.task('polymer', function () {
         .pipe($.if(/\.html$/, $.htmlmin({ collapseWhitespace: true })))
         .pipe(project.analyzer)
         .pipe(project.bundler)
+}
+
+gulp.task('polymer', function () {
+    const project = new PolymerProject(require('./polymer.json'));
+
+    return buildPolymer(project)
         .pipe(gulp.dest(distDir));
 });
 
@@ -100,7 +104,7 @@ gulp.task('serve', function () {
 });
 
 
-gulp.task("package-cordova", [''], function (callback) {
+gulp.task("package-cordova", function (callback) {
     cordova.build({
         "platforms": ["ios"],
         "options": {
