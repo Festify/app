@@ -25,14 +25,14 @@
 
             ready: function () {
                 Polymer.dom(this.root).children.forEach(element => {
-                    if(typeof element.getProviders !== 'function' ||
+                    if (typeof element.getProviders !== 'function' ||
                         typeof element.isAvailable !== 'function' ||
                         !element.isAvailable()) {
                         return;
                     }
                     element.getProviders().forEach(provider => {
                         const path = ['_providers', provider];
-                        if(!Array.isArray(this.get(path))) {
+                        if (!Array.isArray(this.get(path))) {
                             this.set(path, [])
                         }
                         this.push(path, element);
@@ -49,9 +49,9 @@
             },
 
             play: function(ref) {
-                if(!!ref) {
+                if (!!ref) {
                     const providerList = _.get(this._providers, ref.provider);
-                    if(!providerList || providerList.length < 1) {
+                    if (!providerList || providerList.length < 1) {
                         return Promise.reject("Tried to play a track with provider " + ref.provider + ", but not available.");
                     }
 
@@ -66,14 +66,14 @@
             },
 
             stop: function() {
-                if(this._activeProvider) {
+                if (this._activeProvider) {
                     this._activeProvider.pause();
                     this._activeProvider = null;
                 }
             },
 
             _forAllProviders: function(body, sequential) {
-                if(sequential) {
+                if (sequential) {
                     return _.reduce(
                         Polymer.dom(this.root).children,
                         (p, prov) => p.then(() => body(prov)),

@@ -23,7 +23,7 @@
 
             init: function() {
                 const spotify = this._getPluginUnsafe();
-                if(!spotify) {
+                if (!spotify) {
                     throw new Error("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
                 }
 

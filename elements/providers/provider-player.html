@@ -37,21 +37,21 @@
                 '_onTracks(tracks.splices)'
             ],
 
-            _onPlayerState: function(playerState, oldPlayerState) {
+            _onPlayerState: function (playerState, oldPlayerState) {
                 playerState = playerState || {};
                 oldPlayerState = oldPlayerState || {};
 
-                if(!playerState.currentTrack) {
+                if (!playerState.currentTrack) {
                     this.$.playback.stop();
-                } else if(playerState.currentTrack != oldPlayerState.currentTrack) {
+                } else if (playerState.currentTrack != oldPlayerState.currentTrack) {
                     this.$.playback.play(playerState.currentTrack.reference);
-                } else if(playerState.playing != oldPlayerState.playing) {
+                } else if (playerState.playing != oldPlayerState.playing) {
                     playerState.playing ? this.$.playback.play() : this.$.playback.pause();
                 }
             },
 
             _onTracks: function() {
-                if(this.tracks.length == 0) {
+                if (this.tracks.length == 0) {
                     this._setPlayerState(false, null)
                 } else {
                     this._setPlayerState(true, this.tracks[0]);
@@ -63,7 +63,7 @@
             },
 
             _onPartyExistence: function(val) {
-                if(val) {
+                if (val) {
                     this.$.playback.init()
                         .then(() => this._hasInitialized = true)
                         .then(() => this._onTracks())
@@ -74,7 +74,7 @@
             },
 
             _setPlayerState: function(playing, currentTrack) {
-                if(!this._hasInitialized) {
+                if (!this._hasInitialized) {
                     return;
                 }
 
