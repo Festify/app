@@ -76,10 +76,7 @@
                    active="{{partyViewActive}}">
         </app-route>
         <provider-party id="partyProvider"
-                        auth="[[state.auth]]"
-                        data="{{state.party}}"
-                        fb-id="{{state.partyId}}"
-                        on-fb-id-changed="_currentPartyIdChanged">
+                        state="{{state}}">
         </provider-party>
 
         <template is="dom-if" if="[[state.auth.signedIn]]">
@@ -123,7 +120,8 @@
             observers: [
                 '_partyRouteIdChanged(partyRouteData.partyId)',
                 '_routePageChanged(routeData.view)',
-                '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)'
+                '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)',
+                '_currentPartyIdChanged(state.partyId)'
             ],
 
             ready: function() {
@@ -136,8 +134,8 @@
 
             // Property Observers
 
-            _currentPartyIdChanged: function (ev) {
-                this.set('route.path', '/party/' + ev.detail.value);
+            _currentPartyIdChanged: function (val) {
+                this.set('route.path', '/party/' + val);
             },
 
             _loginStateChanged: function (statusKnown, signedIn) {

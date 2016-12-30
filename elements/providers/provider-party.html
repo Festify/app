@@ -1,31 +1,24 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/behavior-firebase-paths.html">
 
 <dom-module id="provider-party">
     <template>
-        <firebase-document id="partyDocument" data="{{data}}" path="[[_getFirebasePartiesPath(fbId)]]"></firebase-document>
+        <firebase-document id="partyDocument" data="{{state.party}}" path="[[_getFirebasePartiesPath(state.partyId)]]"></firebase-document>
     </template>
     <script>
         const partiesKey = '/parties';
         Polymer({
             is: 'provider-party',
 
-            behaviors: [FestifyBehaviors.FirebasePathsBehavior],
+            behaviors: [
+                FestifyBehaviors.FirebasePathsBehavior,
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
-                auth: {
-                    type: Object
-                },
-                data: {
-                    type: Object,
-                    notify: true
-                },
-                fbId: {
-                    type: String,
-                    notify: true
-                },
                 shortId: {
                     type: String,
                     observer: '_shortIdChanged'
@@ -33,13 +26,13 @@
             },
 
             createNewParty: function () {
-                const uid = this.get('auth.authedUser.uid');
+                const uid = this.get('state.auth.authedUser.uid');
                 if (!uid || uid.length < 1) {
                     throw new Error("Tried to create a party but user ID was null or empty!");
                 }
 
                 const now = firebase.database.ServerValue.TIMESTAMP;
-                this.set('data', {
+                this.set('state.party', {
                     country: 'DE',
                     created_at: now,
                     created_by: uid,
@@ -50,7 +43,7 @@
                     last_change: now
                 });
                 return this.$.partyDocument.save(partiesKey)
-                    .then(() => this.set('fbId', this.$.partyDocument.ref.key));
+                    .then(() => this.set('state.partyId', this.$.partyDocument.ref.key));
             },
 
             _shortIdChanged: function (value) {
@@ -82,8 +75,8 @@
                             }
                         });
 
-                        this.set('data', data);
-                        this.set('fbId', fbId);
+                        this.set('state.party', data);
+                        this.set('state.partyId', fbId);
                     });
             }
         });
