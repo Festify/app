@@ -1,0 +1,185 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../common/app-icons-festify.html">
+
+<dom-module id="queue-drawer">
+    <template>
+        <style>
+            :host {
+                display: block;
+                max-height: 100vh;
+                overflow-y: scroll;
+            }
+
+            a, a:visited, .dropdown-content {
+                color: rgba(0, 0, 0, .8);
+                text-decoration: none;
+                font-weight: bolder;
+            }
+
+            iron-icon {
+                color: rgba(0, 0, 0, .54);
+
+                --iron-icon-height: 24px;
+                --iron-icon-width: 24px;
+            }
+
+            /*
+             * Header
+             */
+
+            header {
+                background-image: url("/images/bg-top.jpg");
+                background-position: center;
+                background-size: cover;
+
+                color: white;
+
+                height: 176px;
+                position: relative;
+            }
+
+            header .darken {
+                background-color: rgba(0, 0, 0, 0.5);
+                width: 100%;
+                height: 100%;
+            }
+
+            header iron-icon[icon="festify:logo"] {
+                margin: 16px 0 0 16px;
+
+                --iron-icon-height: 64px;
+                --iron-icon-width: 64px;
+            }
+
+            header aside {
+                position: absolute;
+                bottom: 16px;
+                left: 16px;
+            }
+
+            header paper-menu-button {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+            }
+
+            /*
+             * Menu
+             */
+
+            .menu iron-selector {
+                display: block;
+                margin-top: 24px;
+                width: 100%;
+            }
+
+            .menu a {
+                display: block;
+                font-size: 16px;
+                line-height: 24px;
+                margin: 0 0 24px 24px;
+            }
+
+            .menu a.iron-selected, .menu a.iron-selected iron-icon {
+                color: var(--primary-color);
+            }
+
+            .menu iron-icon {
+                margin: 0 16px 2px 0;
+            }
+        </style>
+
+        <header>
+            <div class="darken">
+                <iron-icon icon="festify:logo" aria-hidden></iron-icon>
+
+                <aside>
+                    <span>[[userName]]</span>
+                    <span>[[_getIsAdmin(isAdmin)]]</span>
+                </aside>
+
+                <paper-menu-button>
+                    <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
+                    <paper-menu class="dropdown-content">
+                        <paper-icon-item>
+                            <iron-icon icon="exit-to-app" item-icon></iron-icon>
+                            Sign out
+                        </paper-icon-item>
+                    </paper-menu>
+                </paper-menu-button>
+            </div>
+        </header>
+        <div class="menu" role="menu">
+            <iron-selector selected="{{page}}" attr-for-selected="name" role="navigation">
+                <a name="queue">
+                    <iron-icon icon="menu"></iron-icon>
+                    Queue
+                </a>
+                <a name="history">
+                    <iron-icon icon="history"></iron-icon>
+                    Track History
+                </a>
+                <a name="share">
+                    <iron-icon icon="social:share"></iron-icon>
+                    Share Party
+                </a>
+                <a name="settings">
+                    <iron-icon icon="settings"></iron-icon>
+                    Party Settings
+                </a>
+                <a name="cast">
+                    <iron-icon icon="hardware:cast"></iron-icon>
+                    Cast to Screen
+                </a>
+                <a name="tvmode">
+                    <iron-icon icon="hardware:tv"></iron-icon>
+                    TV Mode
+                </a>
+            </iron-selector>
+            <a href="https://festify.rocks/" target="_blank">
+                <iron-icon icon="home"></iron-icon>
+                Festify Homepage
+            </a>
+            <a role="button" on-tap="_tapExit">
+                <iron-icon icon="cancel"></iron-icon>
+                Exit Party
+            </a>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'queue-drawer',
+
+            properties: {
+                isAdmin: {
+                    type: Boolean
+                },
+                page: {
+                    type: String,
+                    notify: true,
+                    value: () => 'queue'
+                },
+                userName: {
+                    type: String
+                }
+            },
+
+            _getIsAdmin: function (isAdmin) {
+                return isAdmin ? "· Admin" : '';
+            },
+
+            _tapExit: function (event) {
+                this.fire('exitParty', event.detail);
+            }
+        });
+    </script>
+</dom-module>

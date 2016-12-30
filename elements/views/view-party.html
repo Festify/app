@@ -15,6 +15,7 @@
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="components/festify-track.html">
+<link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/search-bar.html">
 
 <dom-module id="view-party">
@@ -86,13 +87,12 @@
 
         <app-drawer-layout fullbleed>
             <app-drawer>
-                <app-toolbar>Menu</app-toolbar>
-                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                </iron-selector>
+                <queue-drawer page="{{page}}"></queue-drawer>
             </app-drawer>
 
             <app-header-layout>
                 <app-header condenses fixed reveals effects="waterfall">
+                    <!-- TODO: Move this into a separate component -->
                     <app-toolbar>
                         <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                         <div main-title>[[state.party.name]]</div>
