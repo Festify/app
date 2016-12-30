@@ -60,9 +60,9 @@
                    tail="{{subroute}}">
         </app-route>
 
-        <firebase-app api-key="AIzaSyDl9A10FlNzy3smQQWp11RzYVPs2FgOzMg"
-                      auth-domain="festify-dev.firebaseapp.com"
-                      database-url="https://festify-dev.firebaseio.com">
+        <firebase-app api-key="<%= ENV.FIREBASE_API_KEY %>"
+                      auth-domain="<%= ENV.FIREBASE_AUTH_DOMAIN %>"
+                      database-url="<%= ENV.FIREBASE_DB_URL %>">
         </firebase-app>
         <firebase-auth id="fbAuth"
                        status-known="{{state.auth.statusKnown}}"

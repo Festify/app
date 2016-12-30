@@ -8,3 +8,6 @@ build/
 plugins/
 platforms/
 www/
+
+.env
+.tmp/

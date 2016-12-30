@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const path = require('path');
 const gulp = require('gulp');
 const del = require('del');
@@ -34,6 +36,9 @@ function buildPolymer(project) {
 
     return mergeStream(sources, project.dependencies())
         .pipe(project.splitHtml())
+        .pipe($.if('elements/app-shell.html', $.template({
+            ENV: process.env
+        })))
         .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
         .pipe($.if(['elements/**/*.js'], $.babel()))
         .pipe($.if(function(file) {
@@ -79,7 +84,15 @@ gulp.task('generate-icons', ['generate-icons-ios'], function () {
         .pipe(gulp.dest(path.join(distDir, 'images/manifest')));
 });
 
-gulp.task('serve', function () {
+gulp.task('configure', function() {
+    return gulp.src("elements/app-shell.html", { base: '.' })
+        .pipe($.template({
+            ENV: process.env
+        }))
+        .pipe(gulp.dest('.tmp'));
+});
+
+gulp.task('serve', ['configure'], function () {
     browserSync.init({
         notify: false,
         open: false,
@@ -93,9 +106,7 @@ gulp.task('serve', function () {
         ui: false,
         injectChanges: false,
         ghostMode: false,
-        server: {
-            baseDir: ['.']
-        }
+        server: ['.tmp', '.']
     });
 
     watches.forEach(function (item) {
