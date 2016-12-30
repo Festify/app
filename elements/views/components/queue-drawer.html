@@ -53,7 +53,7 @@
                 height: 100%;
             }
 
-            header iron-icon[icon="festify:logo"] {
+            .festify-icon {
                 margin: 16px 0 0 16px;
 
                 --iron-icon-height: 64px;
@@ -117,7 +117,7 @@
 
         <header>
             <div class="darken">
-                <iron-icon icon="festify:logo" aria-hidden></iron-icon>
+                <iron-icon icon="festify:logo" class="festify-icon" aria-hidden></iron-icon>
 
                 <template is="dom-if" if="[[isAdmin]]">
                     <div class="meta">
