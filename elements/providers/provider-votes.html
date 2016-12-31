@@ -78,10 +78,12 @@
                             return {
                                 added_at: firebase.database.ServerValue.TIMESTAMP,
                                 is_fallback: false,
+                                order: (Date.now() - state.party.created_at) - (voteCount * voteFactor),
                                 reference: {
                                     id: id,
                                     provider: provider
-                                }
+                                },
+                                vote_count: voteCount
                             };
                         } else if (voteCount > 0 || track.is_fallback) {
                             // Track exists and has votes or is a fallback track. Leave it in
