@@ -75,9 +75,7 @@
                    data="{{partyRouteData}}"
                    active="{{partyViewActive}}">
         </app-route>
-        <provider-party id="partyProvider"
-                        state="{{state}}">
-        </provider-party>
+        <provider-party id="partyProvider" state="{{state}}"></provider-party>
 
         <template is="dom-if" if="[[state.auth.signedIn]]">
             <iron-pages selected="[[currentView]]"
