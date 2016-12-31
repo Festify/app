@@ -6,7 +6,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
-<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../common/behavior-app-state.html">
@@ -106,8 +106,10 @@
                     </div>
                 </app-header>
 
-                <template is="dom-if" if="[[!searchQuery]]">
-                    <iron-list items="[[tracks]]" hidden="[[!searchQuery]]">
+                <iron-pages selected="[[currentView]]"
+                            attr-for-selected="view"
+                            role="main">
+                    <iron-list items="[[tracks]]" view="queue">
                         <template>
                             <festify-track is-in-queue
                                            index="[[index]]"
@@ -117,9 +119,7 @@
                             </festify-track>
                         </template>
                     </iron-list>
-                </template>
-                <template is="dom-if" if="[[searchQuery]]">
-                    <iron-list items="[[searchResults]]">
+                    <iron-list items="[[searchResults]]" view="search">
                         <template>
                             <festify-track index="[[index]]"
                                            metadata="[[meta]]"
@@ -128,7 +128,7 @@
                             </festify-track>
                         </template>
                     </iron-list>
-                </template>
+                </iron-pages>
             </app-header-layout>
         </app-drawer-layout>
     </template>
@@ -139,15 +139,27 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
+                currentView: {
+                    type: String,
+                    computed: '_getCurrentView(searchQuery)',
+                    value: () => 'queue'
+                },
                 route: {
                     type: Object,
                     notify: true
+                },
+                searchQuery: {
+                    type: String
                 }
             },
 
             listeners: {
                 'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
+            },
+
+            _getCurrentView: function (q) {
+                return q ? 'search' : 'queue';
             },
 
             _togglePlay: function(ev) {
