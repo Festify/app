@@ -30,8 +30,8 @@
                 return spotify.authenticate(this.config)
                     .then(session => this.set('_session', session))
                     .then(() => {
-                        this._session.addListener('playbackevent', console.log);
-                        this._session.addListener('playbackerror', console.error);
+                        this._session.addListener('playbackevent', this._onPlaybackEvent);
+                        this._session.addListener('playbackerror', this._onPlaybackError);
                     });
             },
 
@@ -61,6 +61,14 @@
 
             _getPluginUnsafe: function () {
                 return _.get(window, 'cordova.plugins.spotify', null);
+            },
+
+            _onPlaybackEvent: function (event) {
+                console.log(event);
+            },
+
+            _onPlaybackError: function (err) {
+                console.error(err);
             },
 
             _withSession: function(body, defaultValue) {

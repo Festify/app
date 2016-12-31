@@ -15,6 +15,12 @@
                 '';
         },
 
+        _getFirebaseHistoryPath: function (partyId) {
+            return typeof partyId == 'string' && partyId.length > 0 ?
+                '/tracks_played/' + partyId :
+                '';
+        },
+
         _getFirebaseTracksPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/tracks/' + partyId :

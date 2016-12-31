@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../common/behavior-app-state.html">
+<link rel="import" href="../common/behavior-firebase-paths.html">
+<link rel="import" href="../utils/lodash.html">
 <link rel="import" href="playback/playback-controller.html">
 
 <dom-module id="provider-player">
@@ -11,7 +13,10 @@
         Polymer({
             is: 'provider-player',
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+            behaviors: [
+                FestifyBehaviors.FirebasePathsBehavior,
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
                 tracks: {
@@ -37,6 +42,27 @@
                 '_onTracks(tracks.splices)'
             ],
 
+            skip: function () {
+                if (!this.tracks || this.tracks.length < 1 || !this.state) {
+                    return;
+                }
+
+                const track = _.assign({}, this.tracks[0]);
+                const r = firebase.database()
+                    .ref(this._getFirebaseTracksPath(this.state.partyId))
+                    .child(track.$key)
+                    .remove();
+                delete track.$key;
+                const w = firebase.database()
+                    .ref(this._getFirebaseHistoryPath(this.state.partyId))
+                    .push(track);
+                return Promise.all([r, w]);
+            },
+
+            togglePlay: function() {
+                this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+            },
+
             _onPlayerState: function (playerState, oldPlayerState) {
                 playerState = playerState || {};
                 oldPlayerState = oldPlayerState || {};
@@ -44,7 +70,13 @@
                 if (!playerState.currentTrack) {
                     this.$.playback.stop();
                 } else if (playerState.currentTrack != oldPlayerState.currentTrack) {
-                    this.$.playback.play(playerState.currentTrack.reference);
+                    this.$.playback.play(playerState.currentTrack.reference)
+                        .catch(err => {
+                            console.error("Could not play track, the following error occured: ", err)
+                            this.fire('player-playbackFailed', err);
+
+                            return this.skip();
+                        });
                 } else if (playerState.playing != oldPlayerState.playing) {
                     playerState.playing ? this.$.playback.play() : this.$.playback.pause();
                 }
@@ -84,10 +116,6 @@
                     currentTrack: currentTrack,
                     playing: playing
                 });
-            },
-
-            togglePlay: function() {
-                this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
             }
         });
     </script>
