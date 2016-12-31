@@ -87,12 +87,12 @@
         </div>
 
         <div class="icon-wrapper">
-            <template is="dom-if" if="[[index]]">
+            <template is="dom-if" if="[[!playing]]">
                 <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]"
                                    on-tap="_tapLikeIcon">
                 </paper-icon-button>
             </template>
-            <template is="dom-if" if="[[!index]]">
+            <template is="dom-if" if="[[playing]]">
                 <paper-fab mini
                            icon="[[_getPlayPauseButtonIcon(state.party.playing)]]"
                            on-tap="_tapPlayPauseBtn">
@@ -116,6 +116,10 @@
                 index: {
                     type: Number
                 },
+                isInQueue: {
+                    type: Boolean,
+                    value: false
+                },
                 metadata: {
                     type: Object
                 },
@@ -123,7 +127,7 @@
                     type: Boolean,
                     reflectToAttribute: true,
                     value: false,
-                    computed: '_getIsPlaying(index)'
+                    computed: '_getIsPlaying(isInQueue, index)'
                 },
                 track: {
                     type: Object
@@ -150,8 +154,8 @@
                     '';
             },
 
-            _getIsPlaying: function (index) {
-                return index == 0;
+            _getIsPlaying: function (isInQueue, index) {
+                return isInQueue && index == 0;
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {

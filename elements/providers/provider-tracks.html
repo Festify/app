@@ -8,7 +8,7 @@
 <dom-module id="provider-tracks">
     <template>
         <firebase-query path="[[_getFirebaseTracksPath(state.partyId)]]"
-                        data="{{_fbTracks}}"
+                        data="{{tracks}}"
                         order-by-child="order"
                         limit-to-first="[[limit]]">
         </firebase-query>
@@ -25,15 +25,17 @@
             ],
 
             properties: {
-                _fbTracks: {
-                    type: Array
-                },
                 limit: {
                     type: Number,
                     value: 50
                 },
                 searchQuery: {
                     type: String
+                },
+                searchResults: {
+                    type: Array,
+                    notify: true,
+                    value: () => []
                 },
                 tracks: {
                     type: Array,
@@ -43,25 +45,16 @@
             },
 
             observers: [
-                '_searchQueryChanged(searchQuery, limit, state.party.country)'
+                '_searchQueryChanged(searchQuery, state.party.country, limit)'
             ],
 
-            ready: function () {
-                this.set('tracks', this._fbTracks);
-                this.linkPaths('tracks', '_fbTracks');
-            },
+            _searchQueryChanged: function (query, market, limit) {
+                this.debounce('queryChanged', function () {
+                    this.set('searchResults', []);
 
-            _searchQueryChanged: function (query, limit, market) {
-                this.debounce('searchQueryChanged', function () {
                     if (!query || query.length < 1) {
-                        this.set('tracks', this._fbTracks);
-                        this.linkPaths('tracks', '_fbTracks');
                         return;
                     }
-
-                    this.unlinkPaths('tracks');
-                    this.set('tracks', []);
-                    this.splice('tracks', 0, this.tracks.length);
 
                     [ // Enter the other providers here
                         this.$.spotifyProvider
@@ -71,7 +64,7 @@
                                 track.isFromSearch = true;
                                 return track;
                             }))
-                            .then(results => this.push('tracks', ...results))
+                            .then(results => this.push('searchResults', ...results))
                             .catch(function (err) {
                                 if (err.message == "Request aborted.") {
                                     return Promise.resolve();

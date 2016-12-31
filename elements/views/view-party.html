@@ -79,7 +79,9 @@
         </style>
 
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
+        <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
         <provider-tracks search-query="[[searchQuery]]"
+                         search-results="{{searchResults}}"
                          state="[[state]]"
                          tracks="{{tracks}}">
         </provider-tracks>
@@ -102,15 +104,29 @@
                     </div>
                 </app-header>
 
-                <iron-list items="[[tracks]]">
-                    <template>
-                        <festify-track index="[[index]]"
-                                       metadata="[[meta]]"
-                                       state="[[state]]"
-                                       track="[[item]]">
-                        </festify-track>
-                    </template>
-                </iron-list>
+                <template is="dom-if" if="[[!searchQuery]]">
+                    <iron-list items="[[tracks]]" hidden="[[!searchQuery]]">
+                        <template>
+                            <festify-track is-in-queue
+                                           index="[[index]]"
+                                           metadata="[[meta]]"
+                                           state="[[state]]"
+                                           track="[[item]]">
+                            </festify-track>
+                        </template>
+                    </iron-list>
+                </template>
+                <template is="dom-if" if="[[searchQuery]]">
+                    <iron-list items="[[searchResults]]">
+                        <template>
+                            <festify-track index="[[index]]"
+                                           metadata="[[meta]]"
+                                           state="[[state]]"
+                                           track="[[item]]">
+                            </festify-track>
+                        </template>
+                    </iron-list>
+                </template>
             </app-header-layout>
         </app-drawer-layout>
     </template>
