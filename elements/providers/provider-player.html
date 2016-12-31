@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../utils/lodash.html">
+<link rel="import" href="../common/behavior-app-state.html">
+<link rel="import" href="playback/playback-controller.html">
+
+<dom-module id="provider-player">
+    <template>
+        <playback-controller id="playback" config="[[state.config]]"></playback-controller>
+    </template>
+    <script>
+        Polymer({
+            is: 'provider-player',
+
+            behaviors: [FestifyBehaviors.StateBehavior],
+
+            properties: {
+                tracks: {
+                    type: Array,
+                    notify: true
+                },
+                _hasInitialized: {
+                    type: Boolean,
+                    value: false
+                },
+                _hasParty: {
+                    type: Boolean,
+                    computed: '_computePartyExistence(state.*)',
+                    observer: '_onPartyExistence'
+                },
+                _playerState: {
+                    type: Object,
+                    observer: '_onPlayerState'
+                }
+            },
+
+            observers: [
+                '_onTracks(tracks.splices)'
+            ],
+
+            _onPlayerState: function(playerState, oldPlayerState) {
+                playerState = playerState || {};
+                oldPlayerState = oldPlayerState || {};
+
+                if(!playerState.currentTrack) {
+                    this.$.playback.stop();
+                } else if(playerState.currentTrack != oldPlayerState.currentTrack) {
+                    this.$.playback.play(playerState.currentTrack.reference);
+                } else if(playerState.playing != oldPlayerState.playing) {
+                    playerState.playing ? this.$.playback.play() : this.$.playback.pause();
+                }
+            },
+
+            _onTracks: function() {
+                if(this.tracks.length == 0) {
+                    this._setPlayerState(false, null)
+                } else {
+                    this._setPlayerState(true, this.tracks[0]);
+                }
+            },
+
+            _computePartyExistence: function(change) {
+                return !!_.get(change, 'base.party');
+            },
+
+            _onPartyExistence: function(val) {
+                if(val) {
+                    this.$.playback.init()
+                        .then(() => this._hasInitialized = true)
+                        .then(() => this._onTracks())
+                        .catch(console.error);
+                } else {
+                    this.$.playback.deinit();
+                }
+            },
+
+            _setPlayerState: function(playing, currentTrack) {
+                if(!this._hasInitialized) {
+                    return;
+                }
+
+                this.set('state.party.playing', playing);
+                this.set('state.currentTrack', currentTrack);
+                this.set('_playerState', {
+                    currentTrack: currentTrack,
+                    playing: playing
+                });
+            },
+
+            togglePlay: function() {
+                this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+            }
+        });
+    </script>
+</dom-module>

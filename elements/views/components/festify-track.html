@@ -190,7 +190,7 @@
             _tapPlayPauseBtn: function () {
                 const state = this.state;
                 if (state && state.isHost) {
-                    this.fire('track-togglePlayPause', { track: this.track });
+                    this.fire('track-togglePlayPause');
                 }
             }
         });

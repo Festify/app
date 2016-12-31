@@ -87,7 +87,7 @@
                 <!-- No subroute for host / join as they do top level routing -->
                 <view-host view="host" class="centered" route="{{route}}" state="[[state]]"></view-host>
                 <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
-                <view-party view="party" class="centered" route="{{subroute}}" state="[[state]]"></view-party>
+                <view-party view="party" class="centered" route="{{subroute}}" state="{{state}}"></view-party>
             </iron-pages>
         </template>
         <template is="dom-if" if="[[!state.auth.signedIn]]">
@@ -108,7 +108,18 @@
                 },
                 state: {
                     type: Object,
-                    value: () => ({ auth: {} })
+                    value: () => ({
+                        auth: {},
+                        config: {
+                            spotify: {
+                                urlScheme: "festify-spotify",
+                                clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
+                                scopes: ['streaming'],
+                                tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
+                                tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
+                            }
+                        }
+                    })
                 }
             },
 

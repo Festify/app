@@ -1,0 +1,90 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../utils/lodash.html">
+<link rel="import" href="playback-spotify.html">
+
+<dom-module id="playback-controller">
+    <template>
+        <playback-spotify config="[[config.spotify]]"></playback-spotify>
+    </template>
+    <script>
+        Polymer({
+            is: 'playback-controller',
+
+            properties: {
+                config: {
+                    type: Object
+                },
+                _providers: {
+                    type: Object,
+                    value: () => ({})
+                },
+                _activeProvider: {
+                    type: FestifyBehaviors.PlaybackProviderBehavior
+                }
+            },
+
+            ready: function () {
+                Polymer.dom(this.root).children.forEach(element => {
+                    if(typeof element.getProviders !== 'function' ||
+                        typeof element.isAvailable !== 'function' ||
+                        !element.isAvailable()) {
+                        return;
+                    }
+                    element.getProviders().forEach(provider => {
+                        const path = ['_providers', provider];
+                        if(!Array.isArray(this.get(path))) {
+                            this.set(path, [])
+                        }
+                        this.push(path, element);
+                    });
+                });
+            },
+
+            init: function() {
+                return this._forAllProviders(element => element.init(), true);
+            },
+
+            deinit: function() {
+                return this._forAllProviders(element => element.deinit());
+            },
+
+            play: function(ref) {
+                if(!!ref) {
+                    const providerList = _.get(this._providers, ref.provider);
+                    if(!providerList || providerList.length < 1) {
+                        return Promise.reject("Tried to play a track with provider " + ref.provider + ", but not available.");
+                    }
+
+                    this._activeProvider = providerList[0];
+                }
+
+                return this._activeProvider.play(ref);
+            },
+
+            pause: function() {
+                return this._activeProvider ? this._activeProvider.pause() : Promise.resolve();
+            },
+
+            stop: function() {
+                if(this._activeProvider) {
+                    this._activeProvider.pause();
+                    this._activeProvider = null;
+                }
+            },
+
+            _forAllProviders: function(body, sequential) {
+                if(sequential) {
+                    return _.reduce(
+                        Polymer.dom(this.root).children,
+                        (p, prov) => p.then(() => body(prov)),
+                        Promise.resolve()
+                    );
+                } else {
+                    return Promise.all(
+                        Polymer.dom(this.root).children.map(body)
+                    );
+                }
+            }
+        });
+    </script>
+</dom-module>

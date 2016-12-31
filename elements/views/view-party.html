@@ -12,6 +12,7 @@
 <link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
+<link rel="import" href="../providers/provider-player.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="components/festify-track.html">
@@ -85,6 +86,7 @@
                          state="[[state]]"
                          tracks="{{tracks}}">
         </provider-tracks>
+        <provider-player id="playerProvider" state="{{state}}" tracks="{{tracks}}"></provider-player>
         <provider-votes id="voteProvider" state="[[state]]"></provider-votes>
 
         <app-drawer-layout fullbleed>
@@ -144,7 +146,12 @@
             },
 
             listeners: {
+                'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
+            },
+
+            _togglePlay: function(ev) {
+                this.$.playerProvider.togglePlay();
             },
 
             _toggleVote: function (ev) {
