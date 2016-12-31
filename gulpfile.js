@@ -30,24 +30,34 @@ const cssProcessors = [
     autoprefixer({browsers: ['last 2 versions']})
 ];
 
-function buildPolymer(project) {
+function buildPolymer(project, develop) {
     const sources = project.sources()
         .pipe($.if(['index.html', 'app.html'], $.useref()));
 
-    return mergeStream(sources, project.dependencies())
+    let stream = mergeStream(sources, project.dependencies())
         .pipe(project.splitHtml())
-        .pipe($.if('elements/app-shell.html', $.template({
+        .pipe($.if('elements/app-shell.*', $.template({
             ENV: process.env
-        })))
-        .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
-        .pipe($.if(['elements/**/*.js'], $.babel()))
-        .pipe($.if(function(file) {
-            return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
-        }, $.uglify({ preserveComments: 'license' })))
-        .pipe(project.rejoinHtml())
-        .pipe($.if(/\.html$/, $.htmlmin({ collapseWhitespace: true })))
-        .pipe(project.analyzer)
-        .pipe(project.bundler)
+        })));
+
+    if(!develop) {
+        stream = stream.pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
+            .pipe($.if(['elements/**/*.js'], $.babel()))
+            .pipe($.if(function(file) {
+                return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
+            }, $.uglify({ preserveComments: 'license' })));
+    }
+
+    stream = stream.pipe(project.rejoinHtml());
+
+    if(!develop) {
+        stream = stream.pipe($.if(/\.html$/, $.htmlmin({ collapseWhitespace: true })));
+    }
+
+    stream = stream.pipe(project.analyzer)
+                .pipe(project.bundler);
+
+    return stream;
 }
 
 gulp.task('polymer', function () {
@@ -62,6 +72,14 @@ gulp.task('polymer-cordova', function() {
     return buildPolymer(projectCordova)
         .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(appDir))
+});
+
+gulp.task('build-cordova:develop', ['generate-icons-ios'], function() {
+    const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
+
+    return buildPolymer(projectCordova, true)
+        .pipe($.if('elements/app-shell.html', $.crisper()))
+        .pipe(gulp.dest(appDir));
 });
 
 gulp.task('generate-icons-ios', function() {
@@ -127,7 +145,7 @@ gulp.task("package-cordova", function (callback) {
     }, callback);
 });
 
-gulp.task("serve:cordova", ['build-cordova'], function(cb) {
+gulp.task("serve:cordova", ['build-cordova:develop'], function(cb) {
     cordova.run({}, cb);
 });
 
