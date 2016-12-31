@@ -50,10 +50,10 @@
             },
 
             play: function(ref) {
-                if (!!ref) {
+                if (ref) {
                     const providerList = _.get(this._providers, ref.provider);
                     if (!providerList || providerList.length < 1) {
-                        return Promise.reject("Tried to play a track with provider " + ref.provider + ", but not available.");
+                        return Promise.reject("Tried to play a track from " + ref.provider + ", but no provider available.");
                     }
 
                     this._activeProvider = providerList[0];
@@ -74,16 +74,15 @@
             },
 
             _forAllProviders: function(body, sequential) {
+                const providers = _.uniq(_.flatten(_.values(this._providers)));
                 if (sequential) {
                     return _.reduce(
-                        Polymer.dom(this.root).children,
+                        providers,
                         (p, prov) => p.then(() => body(prov)),
                         Promise.resolve()
                     );
                 } else {
-                    return Promise.all(
-                        Polymer.dom(this.root).children.map(body)
-                    );
+                    return Promise.all(providers.map(body));
                 }
             }
         });
