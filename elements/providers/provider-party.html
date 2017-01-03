@@ -42,10 +42,12 @@
                     created_at: now,
                     created_by: uid,
                     name: "Today's Party",
-                    short_id: Math.floor(Math.random() * 1000000) + '',
-                    playing: false,
-                    last_position: 0,
-                    last_change: now
+                    playback: {
+                        last_change: now,
+                        last_position_ms: 0,
+                        playing: false
+                    },
+                    short_id: Math.floor(Math.random() * 1000000) + ''
                 });
                 return this.$.partyDocument.save(partiesKey)
                     .then(() => this.set('state.partyId', this.$.partyDocument.ref.key));
