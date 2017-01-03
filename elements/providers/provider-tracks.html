@@ -48,7 +48,8 @@
             },
 
             observers: [
-                '_searchQueryChanged(searchQuery, state.party.country, limit)'
+                '_searchQueryChanged(searchQuery, state.party.country, limit)',
+                '_tracksChanged(tracks.*)'
             ],
 
             ready: function () {
@@ -81,6 +82,11 @@
                             });
                     });
                 }, 200);
+            },
+
+            _tracksChanged: function (change) {
+                const tracks = change.base;
+                this.set('state.currentTrack', (tracks.length > 0) ? tracks[0] : null);
             }
         });
     </script>
