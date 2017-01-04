@@ -76,7 +76,7 @@
 
             _tracksChanged: function (change) {
                 const tracks = change.base;
-                this.set('state.currentTrack', (tracks.length > 0) ? tracks[0] : null);
+                this.set('state.currentTrack', (tracks && tracks.length > 0) ? tracks[0] : null);
             }
         });
     </script>
