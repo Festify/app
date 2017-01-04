@@ -85,6 +85,7 @@
                                 artists: artists,
                                 artistName: this._formatArtistName(artists),
                                 cover: _.sortBy(t.album.images, img => img.height),
+                                durationMs: t.duration_ms,
                                 name: t.name
                             });
                             this.notifyPath(['data.spotify', t.id]);
