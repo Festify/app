@@ -37,8 +37,6 @@
             ],
 
             _transitionTo: function (percentage, durationMs, isPlaying) {
-                console.log("Progress bar moves to", percentage, "% over", durationMs / 1000, "s.");
-
                 const value = 'opacity 0.25s ease, width ' + durationMs + 'ms linear';
                 /** @type CSSStyleDeclaration */
                 const style = this.$.indicator.style;
