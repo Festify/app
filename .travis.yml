@@ -1,6 +1,7 @@
 language: node_js
 sudo: required
 dist: trusty
+
 addons:
   firefox: '46.0'
   apt:
@@ -8,12 +9,19 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+
 node_js:
   - '6'
   - '5'
   - '4'
+
 before_script:
   - npm install -g bower polymer-cli
   - bower install
+
 script:
   - xvfb-run polymer test
+
+notifications:
+  slack:
+    secure: s7rKDjPltFzSCYurWiKPKgW6D2GkSfg0EGPbSreurj4hnuipxeak9Ph0NOCaGT4zg8tFfDnwF+Mb3PGSd1/2zro8ga0u/f1ac4FCOs1m8ruWLScYb4Yz+O6GnHpRsMfRFCv2NtjvMEwUDzT8d8G72M3F9Hd5TKPCYVEC6xhHTAgewv8QFbkifwj0sAtP3Ti4+MPM2LGOUagpSLAssmyN9yqx8MnUtR6sZaGxCwAHYm3mKwooIEmy1BEDpzPVk9IjerFGxG6BksbqxUKtH+Z5lZdg6Pf9AAGMQfylqZniQMjTEWcuo6hsUJfkwebn0cEU/ee3giF9qIHBuoXNQlGOjm1CVIwk/C/DB4kHODuCDcRNNA7ahDbyCYtN03zmCA0ljwityDf04wXJNNiGW9/Qgg996ZAsFCYCNJBoEINiZ69JA3dyWFFnT4bwvPtw2FIBfS8CCNmqvg9uxhRbOnbj7EMnRBfx+Qq1uSEfTmX9rDThQoqO+db4oj9oX3JoX3IySxRVnTg0630RRaic9SoSo3egqAaGWKmuojfPQvkf8X87HU9CtMI7/flKlN3IMa5eHrzW+xPvavqetSgUlf6tqRfuh9VjjBHDBpz/+RRXFGLNqSmjEcVPvIJPkL8zUpNLjW5pK6EnyFIAbgKbMgJMGiOMxgVL2Y7L8zRXLa1eGrg=
