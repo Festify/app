@@ -51,7 +51,10 @@ function buildPolymer(project, develop) {
     stream = stream.pipe(project.rejoinHtml());
 
     if(!develop) {
-        stream = stream.pipe($.if(/\.html$/, $.htmlmin({ collapseWhitespace: true })));
+        stream = stream.pipe($.if(/\.html$/, $.htmlmin({
+            collapseWhitespace: true,
+            removeComments: true
+        })));
     }
 
     stream = stream.pipe(project.analyzer)

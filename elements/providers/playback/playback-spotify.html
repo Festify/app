@@ -21,7 +21,7 @@
             init: function() {
                 const spotify = this._getPluginUnsafe();
                 if (!spotify) {
-                    throw new Error("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
+                    return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
                 }
 
                 return spotify.authenticate(this.config)
@@ -45,7 +45,11 @@
             },
 
             getUsername: function() {
-                return _.get(this, '_session.canonicalUsername', false);
+                return this.get('_session.canonicalUsername');
+            },
+
+            getPosition: function () {
+                return this._withSession(s => s.getPosition(), () => Promise.reject());
             },
 
             getProviders: function () {
@@ -57,7 +61,7 @@
             },
 
             _getPluginUnsafe: function () {
-                return _.get(window, 'cordova.plugins.spotify', null);
+                return this.get('cordova.plugins.spotify', window);
             },
 
             _onPlaybackEvent: function (event) {

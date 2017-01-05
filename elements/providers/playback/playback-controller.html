@@ -63,14 +63,19 @@
             },
 
             pause: function() {
-                return this._activeProvider ? this._activeProvider.pause() : Promise.resolve();
+                return this._activeProvider ?
+                    this._activeProvider.pause() :
+                    Promise.resolve();
             },
 
             stop: function() {
-                if (this._activeProvider) {
-                    this._activeProvider.pause();
-                    this._activeProvider = null;
-                }
+                return this.pause().then(() => this._activeProvider = null);
+            },
+
+            getPosition: function() {
+                return this._activeProvider ?
+                    this._activeProvider.getPosition() :
+                    Promise.reject("Not currently playing.");
             },
 
             _forAllProviders: function(body, sequential) {

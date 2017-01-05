@@ -22,7 +22,7 @@
                 data: {
                     type: Object,
                     notify: true,
-                    value: () => ({ spotify: {} })
+                    value: () => ({})
                 },
                 tracks: {
                     type: Array
@@ -81,12 +81,14 @@
 
                         tracks.forEach(t => {
                             const artists = t.artists.map(a => a.name);
-                            this.set(['data.spotify', t.id], {
+                            _.set(this.data, ['spotify', t.id], {
                                 artists: artists,
                                 artistName: this._formatArtistName(artists),
                                 cover: _.sortBy(t.album.images, img => img.height),
+                                durationMs: t.duration_ms,
                                 name: t.name
                             });
+                            this.notifyPath(['data.spotify', t.id]);
                         });
                     })
                     .catch(err => console.error("Failed to fetch metadata for track chunk", chunk, "An error", err, "was thrown."));

@@ -16,6 +16,7 @@
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="components/festify-track.html">
+<link rel="import" href="components/playback-progress-bar.html">
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/search-bar.html">
 
@@ -31,20 +32,14 @@
                 background-color: #212121;
                 color: white;
                 height: auto;
-                padding: 0 8px;
             }
 
-            app-header div[sticky] {
-                height: 80px;
-                padding-top: 16px;
-            }
-
-            app-toolbar {
+            app-header app-toolbar {
                 height: 48px;
-                padding: 8px 0 0 0;
+                padding: 8px 8px 0 8px;
             }
 
-            app-toolbar paper-icon-button {
+            app-header app-toolbar paper-icon-button {
                 margin: 12px;
                 padding: 0;
 
@@ -54,10 +49,26 @@
                 --paper-icon-button-ink-color: white;
             }
 
-            app-toolbar div[main-title] {
+            app-header app-toolbar div[main-title] {
                 margin-right: 64px;
                 text-align: center;
                 flex-grow: 1;
+            }
+
+            app-header div[sticky] {
+                height: 80px;
+                padding-top: 16px;
+            }
+
+            app-header div[sticky] search-bar {
+                margin: 0 8px;
+            }
+
+            app-header div[sticky] playback-progress-bar {
+                bottom: 0;
+                position: absolute;
+
+                width: 100%;
             }
 
             iron-list {
@@ -106,6 +117,9 @@
                     </app-toolbar>
                     <div sticky>
                         <search-bar value="{{searchQuery}}" placeholder="Add Tracks"></search-bar>
+                        <playback-progress-bar duration="[[_getTrackDuration(state.*, meta.*)]]"
+                                               playback="[[state.party.playback]]">
+                        </playback-progress-bar>
                     </div>
                 </app-header>
 
@@ -147,6 +161,10 @@
                     computed: '_getCurrentView(searchQuery)',
                     value: () => 'queue'
                 },
+                meta: {
+                    type: Object,
+                    value: () => ({})
+                },
                 route: {
                     type: Object,
                     notify: true
@@ -164,6 +182,14 @@
 
             _getCurrentView: function (q) {
                 return q ? 'search' : 'queue';
+            },
+
+            _getTrackDuration: function (tChange, metaChange) {
+                const provId = this.get('currentTrack.reference.provider', tChange.base);
+                const trackId = this.get('currentTrack.reference.id', tChange.base);
+                return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
+                    this.get([provId, trackId, 'durationMs'], metaChange.base) :
+                    0;
             },
 
             _playbackFailed: function (ev) {

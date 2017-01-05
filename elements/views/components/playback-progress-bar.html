@@ -1,0 +1,82 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="playback-progress-bar">
+    <template>
+        <style>
+            :host {
+                display: block;
+                height: 1px;
+                position: relative;
+                width: 100%;
+            }
+
+            div {
+                background: white;
+                height: 100%;
+                width: 0;
+            }
+        </style>
+
+        <div id="indicator"></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'playback-progress-bar',
+
+            properties: {
+                duration: {
+                    type: Number
+                },
+                playback: {
+                    type: Object
+                }
+            },
+
+            observers: [
+                '_updateIndicator(playback.*, duration)'
+            ],
+
+            _transitionTo: function (percentage, durationMs, isPlaying) {
+                const value = 'opacity 0.25s ease, width ' + durationMs + 'ms linear';
+                /** @type CSSStyleDeclaration */
+                const style = this.$.indicator.style;
+
+                style.oTransition = value;
+                style.mozTransition = value;
+                style.webkitTransition = value;
+                style.transition = value;
+
+                style.opacity = isPlaying ? 1 : 0.5;
+                style.width = percentage + '%';
+            },
+
+            _updateIndicator: function (ch, durationMs) {
+                const playbackData = ch.base;
+
+                let currentPercentage;
+                if (durationMs > 0) {
+                    currentPercentage = playbackData.last_position_ms / durationMs;
+                    if (playbackData.playing) {
+                        const timeDiff = Date.now() - playbackData.last_change;
+                        currentPercentage += (timeDiff / durationMs);
+                    }
+                } else {
+                    currentPercentage = 0;
+                }
+
+                window.requestAnimationFrame(() => {
+                    this._transitionTo(currentPercentage * 100, 0, playbackData.playing);
+
+                    if (playbackData.playing) {
+                        // Give the compositor a chance to reset the transitions
+                        // before we start the actual animation.
+                        window.requestAnimationFrame(() => {
+                            const remainingDurationMs = durationMs * (1 - currentPercentage);
+                            this._transitionTo(100, remainingDurationMs, playbackData.playing);
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</dom-module>

@@ -72,15 +72,39 @@
                 oldPlayerState = oldPlayerState || {};
 
                 if (!playerState.currentTrack) {
-                    this.$.playback.stop();
+                    return this.$.playback.stop()
+                        .then(() => {
+                            this.set('state.party.playback', {
+                                last_change: Date.now(),
+                                last_position_ms: 0,
+                                playing: false
+                            });
+                        });
                 } else if (playerState.currentTrack != oldPlayerState.currentTrack) {
-                    this.$.playback.play(playerState.currentTrack.reference)
+                    return this.$.playback.play(playerState.currentTrack.reference)
+                        .then(() => this.$.playback.getPosition())
+                        .then(posMs => {
+                            this.set('state.party.playback', {
+                                last_change: Date.now(),
+                                last_position_ms: posMs,
+                                playing: true
+                            });
+                        })
                         .catch(err => {
                             this._setPlayerState(false, playerState.currentTrack);
+                            console.error("Could not play track, the following error occured: ", err);
                             this.fire('player-playbackFailed', err);
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
-                    playerState.playing ? this.$.playback.play() : this.$.playback.pause();
+                    return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
+                        .then(() => this.$.playback.getPosition())
+                        .then(posMs => this.set('state.party.playback', {
+                            last_change: Date.now(),
+                            last_position_ms: posMs,
+                            playing: playerState.playing
+                        }));
+                } else {
+                    throw new Error("Unhandled player state!");
                 }
             },
 
@@ -111,8 +135,6 @@
                     return;
                 }
 
-                this.set('state.party.playing', playing);
-                this.set('state.currentTrack', currentTrack);
                 this.set('_playerState', {
                     currentTrack: currentTrack,
                     playing: playing

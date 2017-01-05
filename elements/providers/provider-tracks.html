@@ -25,10 +25,6 @@
             ],
 
             properties: {
-                _fbTracks: {
-                    type: Array,
-                    value: () => []
-                },
                 limit: {
                     type: Number,
                     value: 50
@@ -48,14 +44,9 @@
             },
 
             observers: [
-                '_searchQueryChanged(searchQuery, state.party.country, limit)'
+                '_searchQueryChanged(searchQuery, state.party.country, limit)',
+                '_tracksChanged(tracks.*)'
             ],
-
-            ready: function () {
-                // iron-list only displays the items properly if we use a linked path
-                this.set('tracks', this._fbTracks);
-                this.linkPaths('tracks', '_fbTracks');
-            },
 
             _searchQueryChanged: function (query, market, limit) {
                 this.debounce('queryChanged', function () {
@@ -81,6 +72,11 @@
                             });
                     });
                 }, 200);
+            },
+
+            _tracksChanged: function (change) {
+                const tracks = change.base;
+                this.set('state.currentTrack', (tracks && tracks.length > 0) ? tracks[0] : null);
             }
         });
     </script>
