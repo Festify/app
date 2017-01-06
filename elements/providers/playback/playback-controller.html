@@ -15,12 +15,16 @@
                 config: {
                     type: Object
                 },
+                _activeProvider: {
+                    type: FestifyBehaviors.PlaybackProviderBehavior
+                },
+                _hasAvailableProviders: {
+                    type: Boolean,
+                    value: false
+                },
                 _providers: {
                     type: Object,
                     value: () => ({})
-                },
-                _activeProvider: {
-                    type: FestifyBehaviors.PlaybackProviderBehavior
                 }
             },
 
@@ -31,6 +35,8 @@
                         !element.isAvailable()) {
                         return;
                     }
+
+                    this._hasAvailableProviders = true;
                     element.getProviders().forEach(provider => {
                         const path = ['_providers', provider];
                         if (!Array.isArray(this.get(path))) {
@@ -42,7 +48,9 @@
             },
 
             init: function() {
-                return this._forAllProviders(element => element.init(), true);
+                return this._hasAvailableProviders ?
+                    this._forAllProviders(element => element.init(), true) :
+                    Promise.reject("Got no playback providers to initialize.");
             },
 
             deinit: function() {

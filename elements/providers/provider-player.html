@@ -120,7 +120,7 @@
                         this.$.playback.init()
                             .then(() => this._hasInitialized = true)
                             .then(() => this._onTracks())
-                            .catch(console.error);
+                            .catch(err => console.error("Could not initialize playback:", err));
                     } else {
                         this.$.playback.deinit()
                             .then(() => this._hasInitialized = false);
