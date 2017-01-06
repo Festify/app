@@ -1,6 +1,7 @@
 language: node_js
 sudo: required
 dist: trusty
+
 addons:
   firefox: '46.0'
   apt:
@@ -8,12 +9,18 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
+
 node_js:
   - '6'
   - '5'
   - '4'
+
 before_script:
   - npm install -g bower polymer-cli
   - bower install
+
 script:
   - xvfb-run polymer test
+
+notifications:
+  slack: festify-dev:dcsxykwtWTFF3kvIRWM52uLE

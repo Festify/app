@@ -110,16 +110,6 @@
             ],
 
             properties: {
-                _hasVoted: {
-                    type: Boolean
-                },
-                index: {
-                    type: Number
-                },
-                isInQueue: {
-                    type: Boolean,
-                    value: false
-                },
                 metadata: {
                     type: Object
                 },
@@ -127,10 +117,13 @@
                     type: Boolean,
                     reflectToAttribute: true,
                     value: false,
-                    computed: '_getIsPlaying(isInQueue, index)'
+                    computed: '_getIsPlaying(state.*, track)'
                 },
                 track: {
                     type: Object
+                },
+                _hasVoted: {
+                    type: Boolean
                 }
             },
 
@@ -154,8 +147,8 @@
                     '';
             },
 
-            _getIsPlaying: function (isInQueue, index) {
-                return isInQueue && index == 0;
+            _getIsPlaying: function (stateChange, t) {
+                return this.get('base.currentTrack', stateChange) == t;
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {

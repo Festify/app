@@ -110,7 +110,6 @@
 
             <app-header-layout>
                 <app-header condenses fixed reveals effects="waterfall">
-                    <!-- TODO: Move this into a separate component -->
                     <app-toolbar>
                         <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                         <div main-title>[[state.party.name]]</div>
@@ -123,14 +122,12 @@
                     </div>
                 </app-header>
 
-                <iron-pages selected="[[currentView]]"
+                <iron-pages selected="[[_getCurrentView(searchQuery)]]"
                             attr-for-selected="view"
                             role="main">
                     <iron-list items="[[tracks]]" view="queue">
                         <template>
-                            <festify-track is-in-queue
-                                           index="[[index]]"
-                                           metadata="[[meta]]"
+                            <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]">
                             </festify-track>
@@ -138,8 +135,7 @@
                     </iron-list>
                     <iron-list items="[[searchResults]]" view="search">
                         <template>
-                            <festify-track index="[[index]]"
-                                           metadata="[[meta]]"
+                            <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]">
                             </festify-track>
@@ -156,11 +152,6 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
-                currentView: {
-                    type: String,
-                    computed: '_getCurrentView(searchQuery)',
-                    value: () => 'queue'
-                },
                 meta: {
                     type: Object,
                     value: () => ({})
