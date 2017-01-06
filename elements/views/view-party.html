@@ -119,7 +119,7 @@
                     </div>
                 </app-header>
 
-                <iron-pages selected="[[currentView]]"
+                <iron-pages selected="[[_getCurrentView(searchQuery)]]"
                             attr-for-selected="view"
                             role="main">
                     <iron-list items="[[tracks]]" view="queue">
@@ -149,11 +149,6 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
-                currentView: {
-                    type: String,
-                    computed: '_getCurrentView(searchQuery)',
-                    value: () => 'queue'
-                },
                 meta: {
                     type: Object,
                     value: () => ({})
