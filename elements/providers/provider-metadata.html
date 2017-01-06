@@ -12,13 +12,6 @@
             is: 'provider-metadata',
 
             properties: {
-                _providers: {
-                    type: Object
-                },
-                _waitingTracks: {
-                    type: Array,
-                    value: () => ([])
-                },
                 data: {
                     type: Object,
                     notify: true,
@@ -26,6 +19,13 @@
                 },
                 tracks: {
                     type: Array
+                },
+                _providers: {
+                    type: Object
+                },
+                _waitingTracks: {
+                    type: Array,
+                    value: () => ([])
                 }
             },
 
