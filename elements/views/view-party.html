@@ -124,9 +124,7 @@
                             role="main">
                     <iron-list items="[[tracks]]" view="queue">
                         <template>
-                            <festify-track is-in-queue
-                                           index="[[index]]"
-                                           metadata="[[meta]]"
+                            <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]">
                             </festify-track>
@@ -134,8 +132,7 @@
                     </iron-list>
                     <iron-list items="[[searchResults]]" view="search">
                         <template>
-                            <festify-track index="[[index]]"
-                                           metadata="[[meta]]"
+                            <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]">
                             </festify-track>
