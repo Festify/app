@@ -32,13 +32,13 @@ const cssProcessors = [
 
 function buildPolymer(project, develop) {
     const sources = project.sources()
-        .pipe($.if(['index.html', 'app.html'], $.useref()));
-
-    let stream = mergeStream(sources, project.dependencies())
-        .pipe(project.splitHtml())
-        .pipe($.if('elements/app-shell.*', $.template({
+        .pipe($.if(['index.html', 'app.html'], $.useref()))
+        .pipe($.if('elements/app-shell.html', $.template({
             ENV: process.env
         })));
+
+    let stream = mergeStream(sources, project.dependencies())
+        .pipe(project.splitHtml());
 
     if(!develop) {
         stream = stream.pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
