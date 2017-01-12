@@ -86,10 +86,31 @@
                                 vote_count: voteCount
                             };
                         } else if (voteCount > 0 || track.is_fallback) {
-                            // Track exists and has votes or is a fallback track. Leave it in
-                            // and update the ranking. This is the most probable case.
+                            // Track exists and has votes or is a fallback track.
+                            // Leave it in and update the ranking. This is the most probable case.
 
-                            const order = (track.added_at - state.party.created_at) - (voteCount * voteFactor);
+                            /**
+                             * Order calculation is based on a formula, so we don't have to keep an
+                             * index for ordering tracks.
+                             *
+                             * Because a Firebase Query is always sorted in ascending order,
+                             * the first track should have the lowest value. The value of the
+                             * other tracks should therefore ascend after that, sorted by vote count,
+                             * then by the time of insertion.
+                             *
+                             * DISCLAIMER: The following is not mathematically proven, but we think
+                             * it should work.
+                             *
+                             * The currently playing track should always be the first track in the list,
+                             * which is why we assign the lowest safe integer value possible.
+                             * The first part of the formula ensures sorting by time of insertion,
+                             * and because we want the vote count to always outweigh the time delta,
+                             * we multiply it by a very large factor (10^12 in this case) and subtract it.
+                             */
+                            const order = state.currentTrack == track ?
+                                Number.MIN_SAFE_INTEGER :
+                                (track.added_at - state.party.created_at) - (voteCount * voteFactor);
+
                             if (track.order != order) {
                                 track.order = order;
                                 track.vote_count = voteCount;
