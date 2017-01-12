@@ -57,10 +57,7 @@ function buildPolymer(project, develop) {
         })));
     }
 
-    stream = stream.pipe(project.analyzer)
-                .pipe(project.bundler);
-
-    return stream;
+    return stream.pipe(project.bundler);
 }
 
 gulp.task('polymer', function () {
