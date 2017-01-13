@@ -128,6 +128,7 @@
                 this.debounce('enabledChanged', () => {
                     if (isEnabled) {
                         this.$.playback.init()
+                            .then(() => window.fixStatusBar())
                             .then(() => this._hasInitialized = true)
                             .then(() => this._onTracks({ base: this.tracks }))
                             .catch(err => console.error("Could not initialize playback:", err));

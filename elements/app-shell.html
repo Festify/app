@@ -94,6 +94,15 @@
     </template>
 
     <script>
+        // Fix statusbar fuckups on iOS
+        window.fixStatusBar = () => {};
+        if(window.cordova && cordova.platformId == 'ios') {
+            window.fixStatusBar = function() {
+                StatusBar.hide();
+                StatusBar.show();
+            };
+        }
+
         Polymer({
             is: 'app-shell',
 
@@ -164,6 +173,8 @@
             },
 
             _routePageChanged: function (page) {
+                window.fixStatusBar();
+
                 if (page && page.length > 0) {
                     this.set('currentView', page);
                 } else {

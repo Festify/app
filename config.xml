@@ -66,7 +66,7 @@
     <preference name="SplashScreenBackgroundColor" value="#1c1f24" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
-    <plugin name="cordova-plugin-statusbar" spec="~2.2.0" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
     <engine name="ios" spec="~4.3.0" />
     <engine name="android" spec="~6.0.0" />
