@@ -97,7 +97,7 @@
                         // Track does not exist, has just been voted for in via Add Tracks menu.
                         // Add it to the queue.
 
-                        const [provider, id] = this._getProviderAndId(trackId);
+                        const [provider, id] = this._unsafeGetProviderAndId(trackId);
                         return {
                             added_at: firebase.database.ServerValue.TIMESTAMP,
                             is_fallback: false,
