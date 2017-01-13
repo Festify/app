@@ -35,7 +35,7 @@
 
             observers: [
                 '_enabledChanged(state.isOwner)',
-                '_onTracks(tracks.splices)'
+                '_onTracks(tracks.*)'
             ],
 
             skip: function () {
@@ -106,11 +106,18 @@
                 }
             },
 
-            _onTracks: function() {
-                if (this.tracks.length == 0) {
+            _onTracks: function(change) {
+                if(!change || !change.base) {
+                    return;
+                }
+
+                if (change.base.length == 0) {
                     this._setPlayerState(false, null)
                 } else {
-                    this._setPlayerState(true, this.tracks[0]);
+                    this._setPlayerState(
+                        this._playerState ? this._playerState.playing : true,
+                        change.base[0]
+                    );
                 }
             },
 
@@ -119,7 +126,7 @@
                     if (isEnabled) {
                         this.$.playback.init()
                             .then(() => this._hasInitialized = true)
-                            .then(() => this._onTracks())
+                            .then(() => this._onTracks({ base: this.tracks }))
                             .catch(err => console.error("Could not initialize playback:", err));
                     } else {
                         this.$.playback.deinit()
