@@ -15,12 +15,16 @@
                 config: {
                     type: Object
                 },
+                _activeProvider: {
+                    type: FestifyBehaviors.PlaybackProviderBehavior
+                },
+                _hasAvailableProviders: {
+                    type: Boolean,
+                    value: false
+                },
                 _providers: {
                     type: Object,
                     value: () => ({})
-                },
-                _activeProvider: {
-                    type: FestifyBehaviors.PlaybackProviderBehavior
                 }
             },
 
@@ -31,6 +35,8 @@
                         !element.isAvailable()) {
                         return;
                     }
+
+                    this._hasAvailableProviders = true;
                     element.getProviders().forEach(provider => {
                         const path = ['_providers', provider];
                         if (!Array.isArray(this.get(path))) {
@@ -42,7 +48,9 @@
             },
 
             init: function() {
-                return this._forAllProviders(element => element.init(), true);
+                return this._hasAvailableProviders ?
+                    this._forAllProviders(element => element.init(), true) :
+                    Promise.reject("Got no playback providers to initialize.");
             },
 
             deinit: function() {
@@ -50,10 +58,10 @@
             },
 
             play: function(ref) {
-                if (!!ref) {
+                if (ref) {
                     const providerList = _.get(this._providers, ref.provider);
                     if (!providerList || providerList.length < 1) {
-                        return Promise.reject("Tried to play a track with provider " + ref.provider + ", but not available.");
+                        return Promise.reject("Tried to play a track from " + ref.provider + ", but no provider available.");
                     }
 
                     this._activeProvider = providerList[0];
@@ -79,16 +87,15 @@
             },
 
             _forAllProviders: function(body, sequential) {
+                const providers = _.uniq(_.flatten(_.values(this._providers)));
                 if (sequential) {
                     return _.reduce(
-                        Polymer.dom(this.root).children,
+                        providers,
                         (p, prov) => p.then(() => body(prov)),
                         Promise.resolve()
                     );
                 } else {
-                    return Promise.all(
-                        Polymer.dom(this.root).children.map(body)
-                    );
+                    return Promise.all(providers.map(body));
                 }
             }
         });

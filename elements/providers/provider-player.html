@@ -27,11 +27,6 @@
                     type: Boolean,
                     value: false
                 },
-                _hasParty: {
-                    type: Boolean,
-                    computed: '_computePartyExistence(state.*)',
-                    observer: '_onPartyExistence'
-                },
                 _playerState: {
                     type: Object,
                     observer: '_onPlayerState'
@@ -39,7 +34,8 @@
             },
 
             observers: [
-                '_onTracks(tracks.splices)'
+                '_enabledChanged(state.isOwner)',
+                '_onTracks(tracks.*)'
             ],
 
             skip: function () {
@@ -66,7 +62,9 @@
             },
 
             togglePlay: function() {
-                this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+                if (this._playerState) {
+                    this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+                }
             },
 
             _onPlayerState: function (playerState, oldPlayerState) {
@@ -82,7 +80,10 @@
                                 playing: false
                             });
                         });
-                } else if (playerState.currentTrack != oldPlayerState.currentTrack) {
+                } else if (!_.isEqual(
+                    this.get('currentTrack.reference', playerState),
+                    this.get('currentTrack.reference', oldPlayerState)
+                )) {
                     return this.$.playback.play(playerState.currentTrack.reference)
                         .then(() => this.$.playback.getPosition())
                         .then(posMs => {
@@ -94,9 +95,8 @@
                         })
                         .catch(err => {
                             console.error("Could not play track, the following error occured: ", err);
+                            this._setPlayerState(false, playerState.currentTrack);
                             this.fire('player-playbackFailed', err);
-
-                            return this.skip();
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
                     return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
@@ -106,32 +106,36 @@
                             last_position_ms: posMs,
                             playing: playerState.playing
                         }));
-                } else {
-                    throw new Error("Unhandled player state!");
                 }
             },
 
-            _onTracks: function() {
-                if (this.tracks.length == 0) {
+            _onTracks: function(change) {
+                if(!change || !change.base) {
+                    return;
+                }
+
+                if (change.base.length == 0) {
                     this._setPlayerState(false, null)
                 } else {
-                    this._setPlayerState(true, this.tracks[0]);
+                    this._setPlayerState(
+                        this._playerState ? this._playerState.playing : true,
+                        change.base[0]
+                    );
                 }
             },
 
-            _computePartyExistence: function(change) {
-                return !!_.get(change, 'base.party');
-            },
-
-            _onPartyExistence: function(val) {
-                if (val) {
-                    this.$.playback.init()
-                        .then(() => this._hasInitialized = true)
-                        .then(() => this._onTracks())
-                        .catch(console.error);
-                } else {
-                    this.$.playback.deinit();
-                }
+            _enabledChanged: function(isEnabled) {
+                this.debounce('enabledChanged', () => {
+                    if (isEnabled) {
+                        this.$.playback.init()
+                            .then(() => this._hasInitialized = true)
+                            .then(() => this._onTracks({ base: this.tracks }))
+                            .catch(err => console.error("Could not initialize playback:", err));
+                    } else {
+                        this.$.playback.deinit()
+                            .then(() => this._hasInitialized = false);
+                    }
+                }, 100);
             },
 
             _setPlayerState: function(playing, currentTrack) {

@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/behavior-firebase-paths.html">
 <link rel="import" href="../utils/lodash.html">
@@ -7,12 +7,6 @@
 
 <dom-module id="provider-tracks">
     <template>
-        <firebase-query path="[[_getFirebaseTracksPath(state.partyId)]]"
-                        data="{{tracks}}"
-                        order-by-child="order"
-                        limit-to-first="[[limit]]">
-        </firebase-query>
-
         <provider-spotify id="spotifyProvider"></provider-spotify>
     </template>
     <script>
@@ -39,7 +33,13 @@
                 },
                 tracks: {
                     type: Array,
-                    notify: true
+                    notify: true,
+                    value: () => []
+                },
+                _fbQuery: {
+                    type: firebase.database.Query,
+                    computed: '_computeQuery(state.partyId, limit)',
+                    observer: '_queryChanged'
                 }
             },
 
@@ -47,6 +47,43 @@
                 '_searchQueryChanged(searchQuery, state.party.country, limit)',
                 '_tracksChanged(tracks.*)'
             ],
+
+            _computeQuery: function(partyId, limit) {
+                if(!partyId) {
+                    return null;
+                }
+
+                let query = firebase.database().ref(this._getFirebaseTracksPath(partyId));
+                if(limit > 0) {
+                    query = query.limitToFirst(limit);
+                }
+                return query.orderByChild('order');
+            },
+
+            _queryChanged: function(query, oldQuery) {
+                if(oldQuery) {
+                    oldQuery.off('value');
+                }
+                if(this.tracks) {
+                    this.splice('tracks', 0, this.tracks.length);
+                }
+                if(query) {
+                    query.on('value', this._fbValue.bind(this));
+                }
+            },
+
+            _fbValue: function(snap) {
+                const data = _.values(snap.val());
+
+                if(data.length > 0) {
+                    data.sort((a, b) => a.order - b.order);
+                }
+
+                if(!this.tracks) {
+                    this.set('tracks', []);
+                }
+                this.splice('tracks', 0, this.tracks.length, ...data);
+            },
 
             _searchQueryChanged: function (query, market, limit) {
                 this.debounce('queryChanged', function () {
