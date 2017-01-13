@@ -80,7 +80,10 @@
                                 playing: false
                             });
                         });
-                } else if (playerState.currentTrack != oldPlayerState.currentTrack) {
+                } else if (!_.isEqual(
+                    this.get('currentTrack.reference', playerState),
+                    this.get('currentTrack.reference', oldPlayerState)
+                )) {
                     return this.$.playback.play(playerState.currentTrack.reference)
                         .then(() => this.$.playback.getPosition())
                         .then(posMs => {
