@@ -7,7 +7,11 @@
 
 <dom-module id="provider-player">
     <template>
-        <playback-controller id="playback" config="[[state.config]]"></playback-controller>
+        <playback-controller id="playback"
+                             config="[[state.config]]"
+                             on-player="_playerEvent"
+                             on-error="_playerError">
+        </playback-controller>
     </template>
     <script>
         Polymer({
@@ -48,13 +52,13 @@
 
                 const tracksPath = this._getFbTracksPath(this.state.partyId);
                 const votesPath = this._getFbVotesPath(this.state.partyId);
-                updateObject[tracksPath + '/' + track.$key] = null;
-                updateObject[votesPath + '/' + track.$key] = null;
+                const trackId = this._generateFbId(track);
+                updateObject[tracksPath + '/' + trackId] = null;
+                updateObject[votesPath + '/' + trackId] = null;
 
                 const u = firebase.database()
                     .ref('/')
                     .update(updateObject);
-                delete track.$key;
                 const w = firebase.database()
                     .ref(this._getFbHistoryPath(this.state.partyId))
                     .push(track);
@@ -85,27 +89,13 @@
                     this.get('currentTrack.reference', oldPlayerState)
                 )) {
                     return this.$.playback.play(playerState.currentTrack.reference)
-                        .then(() => this.$.playback.getPosition())
-                        .then(posMs => {
-                            this.set('state.party.playback', {
-                                last_change: Date.now(),
-                                last_position_ms: posMs,
-                                playing: true
-                            });
-                        })
                         .catch(err => {
                             console.error("Could not play track, the following error occured: ", err);
                             this._setPlayerState(false, playerState.currentTrack);
                             this.fire('player-playbackFailed', err);
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
-                    return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
-                        .then(() => this.$.playback.getPosition())
-                        .then(posMs => this.set('state.party.playback', {
-                            last_change: Date.now(),
-                            last_position_ms: posMs,
-                            playing: playerState.playing
-                        }));
+                    return (playerState.playing ? this.$.playback.play() : this.$.playback.pause());
                 }
             },
 
@@ -148,6 +138,26 @@
                     currentTrack: currentTrack,
                     playing: playing
                 });
+            },
+
+            _playerEvent: function(e) {
+                const type = e.detail.type;
+                if(type == 'play' || type == 'pause') {
+                    this.$.playback.getPosition()
+                        .then(posMs => {
+                            this.set('state.party.playback', {
+                                last_change: Date.now(),
+                                last_position_ms: posMs,
+                                playing: (type == 'play')
+                            });
+                        });
+                } else if(type == 'finished') {
+                    this.skip();
+                }
+            },
+
+            _playerError: function(e) {
+                console.error(e.details);
             }
         });
     </script>
