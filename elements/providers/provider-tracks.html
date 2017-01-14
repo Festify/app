@@ -53,7 +53,7 @@
                     return null;
                 }
 
-                let query = firebase.database().ref(this._getFirebaseTracksPath(partyId));
+                let query = firebase.database().ref(this._getFbTracksPath(partyId));
                 if (limit > 0) {
                     query = query.limitToFirst(limit);
                 }

@@ -9,25 +9,25 @@
             return track.reference.provider + '-' + track.reference.id;
         },
 
-        _getFirebasePartiesPath: function (partyId) {
+        _getFbPartiesPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/parties/' + partyId :
                 '';
         },
 
-        _getFirebaseHistoryPath: function (partyId) {
+        _getFbHistoryPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/tracks_played/' + partyId :
                 '';
         },
 
-        _getFirebaseTracksPath: function (partyId) {
+        _getFbTracksPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/tracks/' + partyId :
                 '';
         },
 
-        _getFirebaseVotesPath: function (partyId) {
+        _getFbVotesPath: function (partyId) {
             return typeof partyId == 'string' && partyId.length > 0 ?
                 '/votes/' + partyId :
                 '';

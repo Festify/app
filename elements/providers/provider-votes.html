@@ -9,7 +9,7 @@
 
 <dom-module id="provider-votes">
     <template>
-        <firebase-document path="[[_getFirebaseVotesPath(state.partyId)]]"
+        <firebase-document path="[[_getFbVotesPath(state.partyId)]]"
                            data="{{_fbVotes}}"
                            disabled="[[!state.isOwner]]">
         </firebase-document>
@@ -27,7 +27,7 @@
             properties: {
                 _fbTracksPath: {
                     type: String,
-                    computed: '_getFirebaseTracksPath(state.partyId)'
+                    computed: '_getFbTracksPath(state.partyId)'
                 },
                 _fbVotes: {
                     type: Object
@@ -52,7 +52,7 @@
                 }
 
                 return firebase.database()
-                    .ref(this._getFirebaseVotesPath(partyId))
+                    .ref(this._getFbVotesPath(partyId))
                     .child(this._generateFbId(track))
                     .child(userId)
                     .transaction(currentVote => !currentVote);

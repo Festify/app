@@ -72,7 +72,7 @@
             }
         </style>
 
-        <firebase-document path="[[_getFirebaseVotesPath(state, track.*)]]"
+        <firebase-document path="[[_getFbVotesPath(state, track.*)]]"
                            data="{{_hasVoted}}">
         </firebase-document>
 
@@ -139,7 +139,7 @@
                 return isPlaying ? 'av:pause' : 'av:play-arrow';
             },
 
-            _getFirebaseVotesPath: function (state, trackChange) {
+            _getFbVotesPath: function (state, trackChange) {
                 const partyId = state.partyId;
                 const track = trackChange.base;
                 return partyId && partyId.length > 0 && track ?

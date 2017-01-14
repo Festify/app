@@ -7,7 +7,7 @@
 
 <dom-module id="provider-party">
     <template>
-        <firebase-document id="partyDocument" data="{{state.party}}" path="[[_getFirebasePartiesPath(state.partyId)]]"></firebase-document>
+        <firebase-document id="partyDocument" data="{{state.party}}" path="[[_getFbPartiesPath(state.partyId)]]"></firebase-document>
     </template>
     <script>
         const partiesKey = '/parties';

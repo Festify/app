@@ -46,8 +46,8 @@
                 const track = _.assign({}, this.tracks[0]);
                 const updateObject = {};
 
-                const tracksPath = this._getFirebaseTracksPath(this.state.partyId);
-                const votesPath = this._getFirebaseVotesPath(this.state.partyId);
+                const tracksPath = this._getFbTracksPath(this.state.partyId);
+                const votesPath = this._getFbVotesPath(this.state.partyId);
                 updateObject[tracksPath + '/' + track.$key] = null;
                 updateObject[votesPath + '/' + track.$key] = null;
 
@@ -56,7 +56,7 @@
                     .update(updateObject);
                 delete track.$key;
                 const w = firebase.database()
-                    .ref(this._getFirebaseHistoryPath(this.state.partyId))
+                    .ref(this._getFbHistoryPath(this.state.partyId))
                     .push(track);
                 return Promise.all([u, w]);
             },
