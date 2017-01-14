@@ -78,7 +78,7 @@
 
             _playingTrackChanged: function(stateChange) {
                 const track = this.get('base.currentTrack', stateChange);
-                if(!track) {
+                if (!track) {
                     return;
                 }
 
@@ -141,7 +141,7 @@
                         }
 
                         track.order = order;
-                        if(!currentlyPlaying) {
+                        if (!currentlyPlaying) {
                             track.vote_count = voteCount;
                         }
                         return track;

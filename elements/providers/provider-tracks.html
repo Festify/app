@@ -49,25 +49,25 @@
             ],
 
             _computeQuery: function(partyId, limit) {
-                if(!partyId) {
+                if (!partyId) {
                     return null;
                 }
 
                 let query = firebase.database().ref(this._getFirebaseTracksPath(partyId));
-                if(limit > 0) {
+                if (limit > 0) {
                     query = query.limitToFirst(limit);
                 }
                 return query.orderByChild('order');
             },
 
             _queryChanged: function(query, oldQuery) {
-                if(oldQuery) {
+                if (oldQuery) {
                     oldQuery.off('value');
                 }
-                if(this.tracks) {
+                if (this.tracks) {
                     this.splice('tracks', 0, this.tracks.length);
                 }
-                if(query) {
+                if (query) {
                     query.on('value', this._fbValue.bind(this));
                 }
             },
@@ -75,11 +75,11 @@
             _fbValue: function(snap) {
                 const data = _.values(snap.val());
 
-                if(data.length > 0) {
+                if (data.length > 0) {
                     data.sort((a, b) => a.order - b.order);
                 }
 
-                if(!this.tracks) {
+                if (!this.tracks) {
                     this.set('tracks', []);
                 }
                 this.splice('tracks', 0, this.tracks.length, ...data);
