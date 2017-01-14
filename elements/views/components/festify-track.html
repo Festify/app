@@ -152,13 +152,11 @@
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {
-                return track.played_at && !track.isFromSearch ?
-                    'av:play-arrow' :
-                    hasVoted === true ? // We get an empty object from firebase once the vote is deleted
-                        'favorite' :
-                        track.vote_count > 0 || track.is_fallback ?
-                            'favorite-border' :
-                            'add';
+                return hasVoted === true ? // We get an empty object from firebase once the vote is deleted
+                    'favorite' :
+                    track.vote_count > 0 || track.is_fallback ?
+                        'favorite-border' :
+                        'add';
             },
 
             _getTrackName: function (metaChange, track) {
