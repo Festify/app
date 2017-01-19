@@ -93,6 +93,17 @@
                             console.error("Could not play track, the following error occured: ", err);
                             this._setPlayerState(false, playerState.currentTrack);
                             this.fire('player-playbackFailed', err);
+
+                            return Promise.reject();
+                        })
+                        .then(() => {
+                            if (!this.state || !this.state.partyId) {
+                                return;
+                            }
+                            return firebase.database()
+                                .ref(this._getFbTracksPath(this.state.partyId))
+                                .child(this._generateFbId(playerState.currentTrack))
+                                .update({ played_at: firebase.database.ServerValue.TIMESTAMP });
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
                     return (playerState.playing ? this.$.playback.play() : this.$.playback.pause());
