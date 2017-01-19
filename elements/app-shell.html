@@ -141,7 +141,8 @@
             listeners: {
                 'host-createNewParty': '_createNewParty',
                 'join-openParty': '_openParty',
-                'toast': '_showToast'
+                'toast': '_showToast',
+                'party-notfound': '_partyNotFound'
             },
 
             observers: [
@@ -202,6 +203,13 @@
 
             _createNewParty: function () {
                 this.$.partyProvider.createNewParty();
+            },
+
+            _partyNotFound: function() {
+                if(this.currentView == 'party') {
+                    this.fire('toast', { text: "Party not found!" });
+                    this.set('route.path', '/');
+                }
             },
 
             _showToast: function(ev) {

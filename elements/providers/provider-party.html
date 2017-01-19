@@ -29,6 +29,10 @@
                 '_onParty(state.party.*)'
             ],
 
+            attached: function() {
+                this.hasAttached = true;
+            },
+
             createNewParty: function () {
                 const uid = this.get('state.auth.authedUser.uid');
                 if (!uid || uid.length < 1) {
@@ -88,6 +92,15 @@
             },
 
             _onParty: function(change) {
+                if(!change || !change.base || !this.hasAttached) {
+                    return;
+                }
+
+                if(_.isEmpty(change.base)) {
+                    this.fire('party-notfound');
+                    return;
+                }
+
                 const creatorId = _.get(change, 'base.created_by');
                 const currentUserId = this.get('state.auth.authedUser.uid');
                 if (creatorId && currentUserId) {
