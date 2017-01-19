@@ -48,7 +48,7 @@
                     const xhr = this.$.searchXhr;
                     xhr.set('params', {
                         limit: limit || 20,
-                        q: encodeURIComponent(query.replace('-', ' ')) + '*',
+                        q: query.replace('-', ' ') + '*',
                         type: 'track'
                     });
                     if (market) {
