@@ -23,7 +23,10 @@ let watches = [{
 }];
 
 gulp.task('clean', function() {
-    return del([distDir, appDir]);
+    return del([
+        distDir,
+        path.join(appDir, '**/*')
+    ]);
 });
 
 const cssProcessors = [
