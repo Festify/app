@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
@@ -49,6 +50,11 @@
                 justify-self: center;
                 --paper-spinner-color: var(--primary-color);
             }
+
+            #toast {
+                --paper-toast-background-color: var(--primary-color);
+                box-shadow: 0px 1px 10px 0px rgba(0,0,0,1);
+            }
         </style>
 
         <template is="dom-if" if="[[!state.cordova]]">
@@ -91,6 +97,8 @@
         <template is="dom-if" if="[[!state.auth.signedIn]]">
             <paper-spinner active></paper-spinner>
         </template>
+
+        <paper-toast id="toast"></paper-toast>
     </template>
 
     <script>
@@ -132,7 +140,8 @@
 
             listeners: {
                 'host-createNewParty': '_createNewParty',
-                'join-openParty': '_openParty'
+                'join-openParty': '_openParty',
+                'toast': '_showToast'
             },
 
             observers: [
@@ -187,11 +196,16 @@
             // Actions
 
             _openParty: function (ev) {
-                this.$.partyProvider.set('shortId', ev.detail.shortId);
+                this.$.partyProvider.openParty(ev.detail.shortId)
+                    .then(result => result || this.fire('toast', { text: "Party not found!" }));
             },
 
             _createNewParty: function () {
                 this.$.partyProvider.createNewParty();
+            },
+
+            _showToast: function(ev) {
+                this.$.toast.show(ev.detail);
             }
         });
     </script>

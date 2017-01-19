@@ -7,7 +7,10 @@
 
 <dom-module id="provider-party">
     <template>
-        <firebase-document id="partyDocument" data="{{state.party}}" path="[[_getFbPartiesPath(state.partyId)]]"></firebase-document>
+        <firebase-document id="partyDocument"
+                           data="{{state.party}}"
+                           path="[[_getFbPartiesPath(state.partyId)]]">
+        </firebase-document>
     </template>
     <script>
         const partiesKey = '/parties';
@@ -20,10 +23,6 @@
             ],
 
             properties: {
-                shortId: {
-                    type: String,
-                    observer: '_shortIdChanged'
-                }
             },
 
             observers: [
@@ -53,20 +52,19 @@
                     .then(() => this.set('state.partyId', this.$.partyDocument.ref.key));
             },
 
-            _shortIdChanged: function (value) {
-                if (typeof value != 'string' || value.length < 1) {
-                    return;
+            openParty: function (shortId) {
+                if (typeof shortId != 'string' || shortId.length < 1) {
+                    throw new Error("ShortId not string or empty");
                 }
 
-                this.set('shortId', '');
-                firebase.database()
+                return firebase.database()
                     .ref(partiesKey)
                     .orderByChild('short_id')
-                    .equalTo(value)
+                    .equalTo(shortId)
                     .once('value')
                     .then(results => {
                         if (results.numChildren() < 1) {
-                            return;
+                            return false;
                         }
 
                         // Please improve me
@@ -84,6 +82,8 @@
 
                         this.set('state.party', data);
                         this.set('state.partyId', fbId);
+
+                        return true;
                     });
             },
 
