@@ -1,9 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
@@ -24,22 +21,25 @@
     <template>
         <style include="shared-styles"></style>
         <style>
-            app-header-layout {
-                overflow-y: scroll;
+            app-drawer {
+                z-index: 2;
             }
 
-            app-header {
+            header {
                 background-color: #212121;
-                color: white;
-                height: auto;
+                overflow: hidden;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 1;
             }
 
-            app-header app-toolbar {
+            header app-toolbar {
                 height: 48px;
-                padding: 8px 8px 0 8px;
+                padding: 8px;
             }
 
-            app-header app-toolbar paper-icon-button {
+            header app-toolbar paper-icon-button {
                 margin: 12px;
                 padding: 0;
 
@@ -49,30 +49,25 @@
                 --paper-icon-button-ink-color: white;
             }
 
-            app-header app-toolbar div[main-title] {
+            header app-toolbar div[main-title] {
                 margin-right: 64px;
                 text-align: center;
                 flex-grow: 1;
             }
 
-            app-header div[sticky] {
-                height: 80px;
-                padding-top: 16px;
+            header search-bar {
+                margin: 8px 8px 16px;
             }
 
-            app-header div[sticky] search-bar {
-                margin: 0 8px;
-            }
-
-            app-header div[sticky] playback-progress-bar {
+            header playback-progress-bar {
                 bottom: 0;
                 position: absolute;
-
                 width: 100%;
             }
 
             iron-list {
                 background-color: #303030;
+                margin-top: 120px;
             }
 
             iron-list festify-track[playing] {
@@ -108,19 +103,17 @@
                 <queue-drawer page="{{page}}"></queue-drawer>
             </app-drawer>
 
-            <app-header-layout>
-                <app-header condenses fixed reveals effects="waterfall">
+            <div>
+                <header>
                     <app-toolbar>
                         <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                         <div main-title>[[state.party.name]]</div>
                     </app-toolbar>
-                    <div sticky>
-                        <search-bar value="{{searchQuery}}" placeholder="Add Tracks"></search-bar>
-                        <playback-progress-bar duration="[[_getTrackDuration(state.*, meta.*)]]"
-                                               playback="[[state.party.playback]]">
-                        </playback-progress-bar>
-                    </div>
-                </app-header>
+                    <search-bar value="{{searchQuery}}" placeholder="Add Tracks"></search-bar>
+                    <playback-progress-bar duration="[[_getTrackDuration(state.*, meta.*)]]"
+                                           playback="[[state.party.playback]]">
+                    </playback-progress-bar>
+                </header>
 
                 <iron-pages selected="[[_getCurrentView(searchQuery)]]"
                             attr-for-selected="view"
@@ -142,7 +135,7 @@
                         </template>
                     </iron-list>
                 </iron-pages>
-            </app-header-layout>
+            </div>
         </app-drawer-layout>
     </template>
     <script>
