@@ -71,20 +71,13 @@
                             return false;
                         }
 
-                        // Please improve me
-                        let latestCreated = 0;
-                        let data = null;
-                        let fbId = null;
-                        results.forEach(snapshot => {
-                            const value = snapshot.val();
-                            if (value.created_at > latestCreated) {
-                                latestCreated = value.created_at;
-                                data = value;
-                                fbId = snapshot.key;
-                            }
-                        });
+                        const [party, fbId] = _.reduce(results.val(), (result, value, key) => {
+                            return !result[0].created_at || value.created_at > result[0].created_at ?
+                                [value, key] :
+                                result;
+                        }, [{}, '']);
 
-                        this.set('state.party', data);
+                        this.set('state.party', party);
                         this.set('state.partyId', fbId);
 
                         return true;
