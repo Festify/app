@@ -35,7 +35,7 @@
             },
 
             observers: [
-                '_fbVotesChanged(_fbVotes.*)',
+                '_votesChanged(_fbVotes.*)',
                 '_playingTrackChanged(state.*)'
             ],
 
@@ -58,7 +58,17 @@
                     .transaction(currentVote => !currentVote);
             },
 
-            _fbVotesChanged: function (voteChange) {
+            _playingTrackChanged: function(stateChange) {
+                const track = this.get('base.currentTrack', stateChange);
+                if (!track) {
+                    return;
+                }
+
+                const id = this._generateFbId(track);
+                this._updateOrder(this._fbVotes[id], id, track);
+            },
+
+            _votesChanged: function (voteChange) {
                 // TODO: Move this to worker process somewhere in the ☁
 
                 if (!voteChange || !voteChange.base) {
@@ -67,26 +77,18 @@
 
                 const changeParts = voteChange.path.split('/');
                 if (changeParts.length == 1) {
-                    _.forOwn(voteChange.base,
-                        (votes, trackId) => this._processVotes(votes, trackId, this.state.currentTrack)
-                    );
+                    _.forOwn(voteChange.base, (trackVotes, trackId) => this._updateOrder(
+                        trackVotes,
+                        trackId,
+                        this.state.currentTrack
+                    ));
                 } else {
                     const trackId = changeParts[1];
-                    this._processVotes(voteChange.base[trackId], trackId, this.state.currentTrack);
+                    this._updateOrder(voteChange.base[trackId], trackId, this.state.currentTrack);
                 }
             },
 
-            _playingTrackChanged: function(stateChange) {
-                const track = this.get('base.currentTrack', stateChange);
-                if (!track) {
-                    return;
-                }
-
-                const id = this._generateFbId(track);
-                this._processVotes(this._fbVotes[id], id, track);
-            },
-
-            _processVotes: function(votesHash, trackId, currentTrack) {
+            _updateOrder: function (votesHash, trackId, currentTrack) {
                 const voteCount = _.reduce(votesHash, (sum, hasVoted) => hasVoted ? sum + 1 : sum, 0);
 
                 firebase.database().ref(this._fbTracksPath).child(trackId).transaction(track => {
