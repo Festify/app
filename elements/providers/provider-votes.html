@@ -11,6 +11,9 @@
                            data="{{_fbVotes}}"
                            disabled="[[!state.isOwner]]">
         </firebase-document>
+        <firebase-document path="[[_getFbUserVotesPath(state.partyId, state.auth.authedUser.uid)]]"
+                           data="{{userVotes}}">
+        </firebase-document>
     </template>
     <script>
         const voteFactor = 1000000000000;
@@ -23,6 +26,10 @@
             ],
 
             properties: {
+                userVotes: {
+                    type: Object,
+                    notify: true
+                },
                 _fbTracksPath: {
                     type: String,
                     computed: '_getFbTracksPath(state.partyId)'
@@ -58,6 +65,10 @@
                     .child(this._generateFbId(track))
                     .child(userId)
                     .transaction(currentVote => !currentVote);
+            },
+
+            _getFbUserVotesPath: function (partyId, userId) {
+                return this._getFbVotesByUserPath(partyId) + '/' + userId;
             },
 
             _playingTrackChanged: function(stateChange) {

@@ -99,7 +99,10 @@
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-player>
-        <provider-votes id="voteProvider" state="[[state]]"></provider-votes>
+        <provider-votes id="voteProvider"
+                        state="[[state]]"
+                        user-votes="{{userVotes}}">
+        </provider-votes>
 
         <app-drawer-layout fullbleed>
             <app-drawer>
@@ -125,7 +128,8 @@
                         <template>
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
-                                           track="[[item]]">
+                                           track="[[item]]"
+                                           user-votes="[[userVotes]]">
                             </festify-track>
                         </template>
                     </iron-list>
@@ -133,7 +137,8 @@
                         <template>
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
-                                           track="[[item]]">
+                                           track="[[item]]"
+                                           user-votes="[[userVotes]]">
                             </festify-track>
                         </template>
                     </iron-list>

@@ -3,7 +3,6 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../common/behavior-app-state.html">
 <link rel="import" href="../../common/behavior-firebase-paths.html">
 <link rel="import" href="../../common/shared-styles.html">
@@ -76,10 +75,6 @@
             }
         </style>
 
-        <firebase-document path="[[_getFbVotesPath(state, track.*)]]"
-                           data="{{_hasVoted}}">
-        </firebase-document>
-
         <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
         <div class="metadata-wrapper">
             <h2>[[_getTrackName(metadata.*, track)]]</h2>
@@ -126,8 +121,12 @@
                 track: {
                     type: Object
                 },
+                userVotes: {
+                    type: Object
+                },
                 _hasVoted: {
-                    type: Boolean
+                    type: Boolean,
+                    computed: '_getHasVoted(userVotes.*, track.*)'
                 }
             },
 
@@ -139,16 +138,11 @@
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
             },
 
-            _getPlayPauseButtonIcon: function (isPlaying) {
-                return isPlaying ? 'av:pause' : 'av:play-arrow';
-            },
-
-            _getFbVotesPath: function (state, trackChange) {
-                const partyId = state.partyId;
-                const track = trackChange.base;
-                return partyId && partyId.length > 0 && track ?
-                    '/votes/' + partyId + '/' + this._generateFbId(track) + '/' + state.auth.authedUser.uid :
-                    '';
+            _getHasVoted: function (votesChange, trackChange) {
+                if (!votesChange.base || !trackChange.base) {
+                    return;
+                }
+                return votesChange.base[this._generateFbId(trackChange.base)] === true;
             },
 
             _getIsPlaying: function (stateChange, t) {
@@ -161,6 +155,10 @@
                     track.vote_count > 0 || track.is_fallback ?
                         'favorite-border' :
                         'add';
+            },
+
+            _getPlayPauseButtonIcon: function (isPlaying) {
+                return isPlaying ? 'av:pause' : 'av:play-arrow';
             },
 
             _getTrackName: function (metaChange, track) {
