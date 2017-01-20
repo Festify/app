@@ -27,6 +27,10 @@
                     type: String,
                     computed: '_getFbTracksPath(state.partyId)'
                 },
+                _fbUserVotesPath: {
+                    type: String,
+                    computed: '_getFbVotesByUserPath(state.partyId)'
+                },
                 _fbVotes: {
                     type: Object
                 }
@@ -75,21 +79,41 @@
 
                 const changeParts = voteChange.path.split('/');
                 if (changeParts.length == 1) {
-                    _.forOwn(voteChange.base, (trackVotes, trackId) => this._updateOrder(
-                        trackVotes,
-                        trackId,
-                        this.state.currentTrack
-                    ));
+                    _.forOwn(voteChange.base, (trackVotes, trackId) => {
+                        this._updateOrder(
+                            trackVotes,
+                            trackId,
+                            this.state.currentTrack
+                        );
+                        _.forOwn(
+                            trackVotes,
+                            (hasVoted, userId) => this._updateByUserVotes(trackId, userId, hasVoted)
+                        );
+                    });
                 } else {
                     const trackId = changeParts[1];
-                    this._updateOrder(voteChange.base[trackId], trackId, this.state.currentTrack);
+                    const votesHash = voteChange.base[trackId];
+                    this._updateOrder(votesHash, trackId, this.state.currentTrack);
+
+                    if (changeParts.length > 2) {
+                        const userId = changeParts[2];
+                        this._updateByUserVotes(trackId, userId, votesHash[userId]);
+                    }
                 }
+            },
+
+            _updateByUserVotes: function (trackId, userId, hasVoted) {
+                return firebase.database()
+                    .ref(this._fbUserVotesPath)
+                    .child(userId)
+                    .child(trackId)
+                    .set(hasVoted);
             },
 
             _updateOrder: function (votesHash, trackId, currentTrack) {
                 const voteCount = _.reduce(votesHash, (sum, hasVoted) => hasVoted ? sum + 1 : sum, 0);
 
-                firebase.database().ref(this._fbTracksPath).child(trackId).transaction(track => {
+                return firebase.database().ref(this._fbTracksPath).child(trackId).transaction(track => {
                     const currentlyPlaying = !!currentTrack && !!track &&
                         _.isEqual(currentTrack.reference, track.reference);
 
