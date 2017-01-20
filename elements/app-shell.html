@@ -170,7 +170,10 @@
                 if (statusKnown) {
                     if (!signedIn) {
                         this.$.fbAuth.signInAnonymously()
-                            .catch(err => console.error("Error while authing with Firebase", err));
+                            .catch(err => this.fire('toast', {
+                                text: "Could not authenticate with the Server.",
+                                details: err
+                            }));
                     } else {
                         console.debug("We're already logged in with", this.$.fbAuth.user.uid);
                     }
