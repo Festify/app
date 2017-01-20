@@ -47,22 +47,33 @@
                     return;
                 }
 
-                const track = _.assign({}, this.tracks[0]);
+                const track = this.tracks[0];
+                const partyId = this.state.partyId;
                 const updateObject = {};
 
-                const tracksPath = this._getFbTracksPath(this.state.partyId);
-                const votesPath = this._getFbVotesPath(this.state.partyId);
+                const tracksPath = this._getFbTracksPath(partyId);
+                const votesPath = this._getFbVotesPath(partyId);
                 const trackId = this._generateFbId(track);
                 updateObject[tracksPath + '/' + trackId] = null;
                 updateObject[votesPath + '/' + trackId] = null;
 
-                const u = firebase.database()
+                const updateVotes = firebase.database()
                     .ref('/')
                     .update(updateObject);
-                const w = firebase.database()
-                    .ref(this._getFbHistoryPath(this.state.partyId))
+                const updateUserVotes = firebase.database()
+                    .ref(this._getFbVotesByUserPath(partyId))
+                    .transaction(votes => {
+                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
+                    });
+                const pushToHistory = firebase.database()
+                    .ref(this._getFbHistoryPath(partyId))
                     .push(track);
-                return Promise.all([u, w]);
+
+                return Promise.all([
+                    updateUserVotes,
+                    updateVotes,
+                    pushToHistory
+                ]);
             },
 
             togglePlay: function() {
