@@ -81,6 +81,7 @@
 
                         tracks.forEach(t => {
                             const artists = t.artists.map(a => a.name);
+                            // Using this.set does not pass the dirty checking for some reason
                             _.set(this.data, ['spotify', t.id], {
                                 artists: artists,
                                 artistName: this._formatArtistName(artists),
