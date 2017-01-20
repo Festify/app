@@ -51,17 +51,16 @@
             },
 
             _updateIndicator: function (ch, durationMs) {
+                if (durationMs <= 0) {
+                    return;
+                }
+
                 const playbackData = ch.base;
 
-                let currentPercentage;
-                if (durationMs > 0) {
-                    currentPercentage = playbackData.last_position_ms / durationMs;
-                    if (playbackData.playing) {
-                        const timeDiff = Date.now() - playbackData.last_change;
-                        currentPercentage += (timeDiff / durationMs);
-                    }
-                } else {
-                    currentPercentage = 0;
+                let currentPercentage = playbackData.last_position_ms / durationMs;
+                if (playbackData.playing) {
+                    const timeDiff = Date.now() - playbackData.last_change;
+                    currentPercentage += (timeDiff / durationMs);
                 }
 
                 window.requestAnimationFrame(() => {
