@@ -13,7 +13,7 @@
             }
         </style>
 
-        <div id="container" style$="background-image: url([[_getImage(sortedSizes)]])"></div>
+        <div id="container"></div>
     </template>
     <script>
         Polymer({
@@ -21,11 +21,12 @@
 
             properties: {
                 sortedSizes: {
-                    type: Array
+                    type: Array,
+                    observer: '_sortedSizesChanged'
                 }
             },
 
-            _getImage: function (sizes) {
+            _sortedSizesChanged: function (sizes) {
                 if (!sizes || sizes.length < 1) {
                     return;
                 }
@@ -39,7 +40,8 @@
                         break;
                     }
                 }
-                return currentImage.url;
+
+                this.$.container.style.backgroundImage = 'url(' + currentImage.url + ')';
             }
         });
     </script>
