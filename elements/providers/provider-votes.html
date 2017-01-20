@@ -60,11 +60,18 @@
                     return;
                 }
 
-                return firebase.database()
+                const trackId = this._generateFbId(track);
+                const a = firebase.database()
                     .ref(this._getFbVotesPath(partyId))
-                    .child(this._generateFbId(track))
+                    .child(trackId)
                     .child(userId)
                     .transaction(currentVote => !currentVote);
+                const b = firebase.database()
+                    .ref(this._getFbVotesByUserPath(partyId))
+                    .child(userId)
+                    .child(trackId)
+                    .transaction(currentVote => !currentVote);
+                return Promise.all([a, b]);
             },
 
             _getFbUserVotesPath: function (partyId, userId) {
@@ -96,29 +103,12 @@
                             trackId,
                             this.state.currentTrack
                         );
-                        _.forOwn(
-                            trackVotes,
-                            (hasVoted, userId) => this._updateByUserVotes(trackId, userId, hasVoted)
-                        );
                     });
                 } else {
                     const trackId = changeParts[1];
                     const votesHash = voteChange.base[trackId];
                     this._updateOrder(votesHash, trackId, this.state.currentTrack);
-
-                    if (changeParts.length > 2) {
-                        const userId = changeParts[2];
-                        this._updateByUserVotes(trackId, userId, votesHash[userId]);
-                    }
                 }
-            },
-
-            _updateByUserVotes: function (trackId, userId, hasVoted) {
-                return firebase.database()
-                    .ref(this._fbUserVotesPath)
-                    .child(userId)
-                    .child(trackId)
-                    .set(hasVoted);
             },
 
             _updateOrder: function (votesHash, trackId, currentTrack) {
