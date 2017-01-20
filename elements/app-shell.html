@@ -170,7 +170,6 @@
                 if (statusKnown) {
                     if (!signedIn) {
                         this.$.fbAuth.signInAnonymously()
-                            .then(user => console.debug("We're logged in", user.uid))
                             .catch(err => console.error("Error while authing with Firebase", err));
                     } else {
                         console.debug("We're already logged in with", this.$.fbAuth.user.uid);
