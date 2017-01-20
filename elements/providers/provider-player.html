@@ -79,7 +79,7 @@
                     return this.$.playback.stop()
                         .then(() => {
                             this.set('state.party.playback', {
-                                last_change: firebase.database.ServerValue.TIMESTAMP,
+                                last_change: Date.now(),
                                 last_position_ms: 0,
                                 playing: false
                             });
@@ -96,6 +96,14 @@
 
                             return Promise.reject();
                         })
+                        .then(() => this.$.playback.getPosition())
+                        .then(posMs => {
+                            this.set('state.party.playback', {
+                                last_change: Date.now(),
+                                last_position_ms: posMs,
+                                playing: true
+                            });
+                        })
                         .then(() => {
                             if (!this.state || !this.state.partyId) {
                                 return;
@@ -106,7 +114,15 @@
                                 .update({ played_at: firebase.database.ServerValue.TIMESTAMP });
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
-                    return (playerState.playing ? this.$.playback.play() : this.$.playback.pause());
+                    return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
+                        .then(() => this.$.playback.getPosition())
+                        .then(posMs => {
+                            this.set('state.party.playback', {
+                                last_change: Date.now(),
+                                last_position_ms: posMs,
+                                playing: playerState.playing
+                            });
+                        });
                 }
             },
 
