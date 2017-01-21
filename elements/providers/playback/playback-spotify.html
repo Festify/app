@@ -25,10 +25,11 @@
                 }
 
                 return spotify.authenticate(this.config)
-                    .then(session => this.set('_session', session))
-                    .then(() => {
-                        this._session.addListener('playbackevent', this._onPlaybackEvent, this);
-                        this._session.addListener('playbackerror', this._onPlaybackError, this);
+                    .then(session => {
+                        session.addListener('playbackevent', this._onPlaybackEvent, this);
+                        session.addListener('playbackerror', this._onPlaybackError, this);
+
+                        this.set('_session', session);
                     });
             },
 
