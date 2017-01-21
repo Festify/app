@@ -1,0 +1,51 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="provider-casting">
+    <script>
+        Polymer({
+            is: 'provider-casting',
+
+            properties: {
+                _screenListener: {
+                    type: Object
+                }
+            },
+
+            isAvailable: function() {
+                return !!this._getPluginUnsafe();
+            },
+
+            ready: function() {
+                if(!this.isAvailable()) {
+                    return;
+                }
+
+                const plugin = this._getPluginUnsafe();
+                plugin.createScreenListener().then(l => {
+                    l.addListener("connect", this._connect, this);
+                    l.addListener("disconnect", this._disconnect, this);
+
+                    this.set("_screenListener", l);
+                });
+            },
+
+            _connect: function() {
+                // TODO: Add real url for party view
+                this._screenListener.loadUrl(window.location.href);
+            },
+
+            _disconnect: function() {
+                this.fire("toast", {
+                    text: "Lost screen connection."
+                });
+            },
+
+            _getPluginUnsafe: function(){
+                return this.get('cordova.plugins.externalScreen', window);
+            },
+
+        });
+    </script>
+</dom-module>
+
+<!-- Couch -->

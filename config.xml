@@ -72,4 +72,5 @@
     <engine name="android" spec="~6.0.0" />
     <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify" />
     <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper" />
+    <plugin name="rocks.festify.cordova-external-screen" spec="https://github.com/Festify/cordova-external-screen" />
 </widget>
