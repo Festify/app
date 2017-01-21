@@ -8,6 +8,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../common/behavior-app-state.html">
 <link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../providers/provider-casting.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-player.html">
 <link rel="import" href="../providers/provider-tracks.html">
@@ -88,6 +89,7 @@
             }
         </style>
 
+        <provider-casting></provider-casting>
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
         <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
         <provider-tracks search-query="[[searchQuery]]"
