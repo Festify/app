@@ -180,7 +180,7 @@
 
             _playerEvent: function(e) {
                 const type = e.detail.type;
-                if(type == 'play' || type == 'pause') {
+                if (type == 'play' || type == 'pause') {
                     this.$.playback.getPosition()
                         .then(posMs => {
                             this.set('state.party.playback', {
@@ -189,7 +189,7 @@
                                 playing: (type == 'play')
                             });
                         });
-                } else if(type == 'finished') {
+                } else if (type == 'finished') {
                     this.skip();
                 }
             },

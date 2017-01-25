@@ -85,11 +85,11 @@
             },
 
             _onParty: function(change) {
-                if(!change || !change.base || !this.hasAttached) {
+                if (!change || !change.base || !this.hasAttached) {
                     return;
                 }
 
-                if(_.isEmpty(change.base)) {
+                if (_.isEmpty(change.base)) {
                     this.fire('party-notfound');
                     return;
                 }
