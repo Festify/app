@@ -11,6 +11,7 @@
 <link rel="import" href="../providers/provider-casting.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-player.html">
+<link rel="import" href="../providers/provider-search.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
 <link rel="import" href="components/festify-track.html">
@@ -92,11 +93,11 @@
         <provider-casting></provider-casting>
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
         <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
-        <provider-tracks search-query="[[searchQuery]]"
-                         search-results="{{searchResults}}"
-                         state="{{state}}"
-                         tracks="{{tracks}}">
-        </provider-tracks>
+        <provider-search search-query="[[searchQuery]]"
+                         state="[[state]]"
+                         tracks="{{searchResults}}">
+        </provider-search>
+        <provider-tracks state="{{state}}" tracks="{{tracks}}"></provider-tracks>
         <provider-player id="playerProvider"
                          state="{{state}}"
                          tracks="{{tracks}}">

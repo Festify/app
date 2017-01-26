@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../common/behavior-app-state.html">
+<link rel="import" href="../common/behavior-tracks.html">
+<link rel="import" href="provider-spotify.html">
+
+<dom-module id="provider-search">
+    <template>
+        <provider-spotify id="spotifyProvider"></provider-spotify>
+    </template>
+    <script>
+        Polymer({
+            is: 'provider-search',
+
+            behaviors: [
+                FestifyBehaviors.StateBehavior,
+                FestifyBehaviors.TracksBehavior
+            ],
+
+            properties: {
+                searchQuery: {
+                    type: String
+                }
+            },
+
+            observers: [
+                '_searchQueryChanged(searchQuery, state.party.country, limit)',
+            ],
+
+            _searchQueryChanged: function (query, market, limit) {
+                this.debounce('queryChanged', function () {
+                    this.set('searchResults', []);
+
+                    if (!query || query.length < 1) {
+                        return;
+                    }
+
+                    [ // Enter the other providers here
+                        this.$.spotifyProvider
+                    ].map(provider => {
+                        provider.search(query, market, limit)
+                            .then(results => results.map(track => {
+                                track.isFromSearch = true;
+                                return track;
+                            }))
+                            .then(results => this.push('tracks', ...results))
+                            .catch(function (err) {
+                                if (err.message == "Request aborted.") {
+                                    return Promise.resolve();
+                                }
+                            });
+                    });
+                }, 200);
+            }
+        });
+    </script>
+</dom-module>
