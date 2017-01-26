@@ -79,6 +79,11 @@
             togglePlay: function() {
                 if (this._playerState) {
                     this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+                } else {
+                    this.fire(
+                        'player-playPauseFailed',
+                        "Could not toggle play/pause: Missing player state. Did the playback initialize properly?"
+                    );
                 }
             },
 
@@ -101,11 +106,10 @@
                 )) {
                     return this.$.playback.play(playerState.currentTrack.reference)
                         .catch(err => {
-                            console.error("Could not play track, the following error occured: ", err);
                             this._setPlayerState(false, playerState.currentTrack);
-                            this.fire('player-playbackFailed', err);
+                            this.fire('player-playbackFailed', "Failed to play track: " + err);
 
-                            return Promise.reject();
+                            return Promise.reject(err);
                         })
                         .then(() => this.$.playback.getPosition())
                         .then(posMs => {
@@ -133,6 +137,10 @@
                                 last_position_ms: posMs,
                                 playing: playerState.playing
                             });
+                        })
+                        .catch(err => {
+                            this.fire('player-playPauseFailed', "Could not toggle play/pause: " + err);
+                            return Promise.reject(err);
                         });
                 }
             },
@@ -159,7 +167,7 @@
                             .then(() => window.fixStatusBar())
                             .then(() => this._hasInitialized = true)
                             .then(() => this._onTracks({ base: this.tracks }))
-                            .catch(err => console.error("Could not initialize playback:", err));
+                            .catch(err => this.fire('player-initFailed', "Could not initialize playback: " + err));
                     } else {
                         this.$.playback.deinit()
                             .then(() => this._hasInitialized = false);
@@ -195,7 +203,11 @@
             },
 
             _playerError: function(e) {
-                console.error(e.details);
+                if (e.detail.type == 'permissionlost') {
+                    this.fire('player-playbackInterrupted', "Playback was paused: " + e.detail.msg);
+                } else {
+                    console.error(e.detail);
+                }
             }
         });
     </script>

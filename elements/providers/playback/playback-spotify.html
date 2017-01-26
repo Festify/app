@@ -73,7 +73,11 @@
                     case 'TrackDelivered':
                         this.fire('player', { type: 'finished' }); break;
                     case 'LostPermission':
-                        this.fire('error', { type: 'permissionlost' }); break;
+                        this.fire('error', {
+                            type: 'permissionlost',
+                            msg: "Somebody else started using your Spotify account."
+                        });
+                        break;
                     default:
                         console.log(event);
                 }

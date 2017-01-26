@@ -50,7 +50,7 @@
             init: function() {
                 return this._hasAvailableProviders ?
                     this._forAllProviders(element => element.init(), true) :
-                    Promise.reject("Got no playback providers to initialize.");
+                    Promise.reject("Got no playback providers to initialize. Are you hosting a party from a browser?");
             },
 
             deinit: function() {

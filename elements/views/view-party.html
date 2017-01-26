@@ -170,7 +170,10 @@
             },
 
             listeners: {
-                'player-playbackFailed': '_playbackFailed',
+                'player-initFailed': '_playerEvent',
+                'player-playbackFailed': '_playerEvent',
+                'player-playbackInterrupted': '_playerEvent',
+                'player-playPauseFailed': '_playerEvent',
                 'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
             },
@@ -187,8 +190,8 @@
                     0;
             },
 
-            _playbackFailed: function (ev) {
-                console.error(ev.detail);
+            _playerEvent: function (ev) {
+                this.fire('toast', { text: ev.detail, duration: 5000 });
             },
 
             _togglePlay: function(ev) {
