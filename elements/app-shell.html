@@ -196,13 +196,13 @@
 
             // Actions
 
+            _createNewParty: function () {
+                this.$.partyProvider.createNewParty();
+            },
+
             _openParty: function (ev) {
                 this.$.partyProvider.openParty(ev.detail.shortId)
                     .then(result => result || this.fire('toast', { text: "Party not found!" }));
-            },
-
-            _createNewParty: function () {
-                this.$.partyProvider.createNewParty();
             },
 
             _partyNotFound: function() {
