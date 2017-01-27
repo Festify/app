@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
@@ -71,20 +70,20 @@
                 padding-top: 120px;
             }
 
-            iron-list {
+            .track-list {
                 background-color: #303030;
             }
 
-            iron-list[view=search] festify-track:first-of-type {
+            .track-list[view=search] festify-track:first-of-type {
                 padding-top: 16px;
             }
 
-            iron-list festify-track[playing] {
+            .track-list festify-track[playing] {
                 background-color: #282828;
                 padding: 13px 16px;
             }
 
-            iron-list festify-track[playing] + festify-track {
+            .track-list festify-track[playing] + festify-track {
                 padding-top: 13px;
             }
 
@@ -130,24 +129,24 @@
                 <iron-pages selected="[[_getCurrentView(searchQuery)]]"
                             attr-for-selected="view"
                             role="main">
-                    <iron-list items="[[tracks]]" view="queue">
-                        <template>
+                    <div class="track-list" view="queue">
+                        <template is="dom-repeat" items="[[tracks]]">
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
                                            user-votes="[[userVotes]]">
                             </festify-track>
                         </template>
-                    </iron-list>
-                    <iron-list items="[[searchResults]]" view="search">
-                        <template>
+                    </div>
+                    <div class="track-list" view="search">
+                        <template is="dom-repeat" items="[[searchResults]]">
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
                                            user-votes="[[userVotes]]">
                             </festify-track>
                         </template>
-                    </iron-list>
+                    </div>
                 </iron-pages>
             </div>
         </app-drawer-layout>

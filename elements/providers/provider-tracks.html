@@ -59,10 +59,8 @@
                     data.sort((a, b) => a.order - b.order);
                 }
 
-                if (!this.tracks) {
-                    this.set('tracks', []);
-                }
-                this.splice('tracks', 0, this.tracks.length, ...data);
+                this.set('tracks', []);
+                this.push('tracks', ...data);
             },
 
             _tracksChanged: function (change) {
