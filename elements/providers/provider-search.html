@@ -28,7 +28,7 @@
 
             _searchQueryChanged: function (query, market, limit) {
                 this.debounce('queryChanged', function () {
-                    this.set('searchResults', []);
+                    this.set('tracks', []);
 
                     if (!query || query.length < 1) {
                         return;
