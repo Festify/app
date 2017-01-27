@@ -26,7 +26,7 @@
             },
 
             observers: [
-                '_onParty(state.party.*)'
+                '_partyChanged(state.party.*)'
             ],
 
             attached: function() {
@@ -84,7 +84,7 @@
                     });
             },
 
-            _onParty: function(change) {
+            _partyChanged: function(change) {
                 if (!change || !change.base || !this.hasAttached) {
                     return;
                 }
@@ -94,11 +94,9 @@
                     return;
                 }
 
-                const creatorId = _.get(change, 'base.created_by');
+                const creatorId = this.get('base.created_by', change);
                 const currentUserId = this.get('state.auth.authedUser.uid');
-                if (creatorId && currentUserId) {
-                    this.set('state.isOwner', creatorId == currentUserId);
-                }
+                this.set('state.isOwner', creatorId == currentUserId);
             }
         });
     </script>
