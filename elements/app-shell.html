@@ -167,17 +167,15 @@
             },
 
             _loginStateChanged: function (statusKnown, signedIn) {
-                if (statusKnown) {
-                    if (!signedIn) {
-                        this.$.fbAuth.signInAnonymously()
-                            .catch(err => this.fire('toast', {
-                                text: "Could not authenticate with the Server.",
-                                details: err
-                            }));
-                    } else {
-                        console.debug("We're already logged in with", this.$.fbAuth.user.uid);
-                    }
+                if (!statusKnown || signedIn) {
+                    return;
                 }
+
+                return this.$.fbAuth.signInAnonymously()
+                    .catch(err => this.fire('toast', {
+                        text: "Could not authenticate with the Server.",
+                        details: err
+                    }));
             },
 
             _partyRouteIdChanged: function (partyId) {
