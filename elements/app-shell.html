@@ -1,7 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
@@ -93,9 +92,6 @@
                 <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
                 <view-party view="party" class="centered" route="{{subroute}}" state="{{state}}"></view-party>
             </iron-pages>
-        </template>
-        <template is="dom-if" if="[[!state.auth.signedIn]]">
-            <paper-spinner active></paper-spinner>
         </template>
 
         <paper-toast id="toast"></paper-toast>
