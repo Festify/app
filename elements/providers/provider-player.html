@@ -43,7 +43,9 @@
             ],
 
             skip: function () {
-                if (!this.tracks || this.tracks.length < 1 || !this.state) {
+                if (!this.tracks || this.tracks.length < 1 ||
+                    !this.state ||
+                    !this.state.isHost) {
                     return;
                 }
 
