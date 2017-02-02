@@ -278,6 +278,8 @@
             },
 
             _tracksChanged: function () {
+                // Polymer bindings are synchronous. If we want to get the DOM results
+                // of a change in the track list, we have to do the query in the next tick.
                 setTimeout(() => {
                     const el = this.$$('festify-track[playing]');
                     this._translateXTo(el, 0, 0);
