@@ -91,7 +91,7 @@
                 padding-top: 13px;
             }
 
-            #skipIndicator {
+            #skipBackground {
                 position: absolute;
                 right: 0;
                 width: 100%;
@@ -107,11 +107,11 @@
                 z-index: 0;
             }
 
-            #skipIndicator.active {
+            #skipBackground.active {
                 background-color: var(--primary-color);
             }
 
-            #skipIndicator p {
+            #skipBackground p {
                 line-height: 16px;
                 margin: 0 32px 0 0;
                 text-align: right;
@@ -160,8 +160,8 @@
                             attr-for-selected="view"
                             role="main">
                     <div class="track-list" view="queue">
-                        <div id="skipIndicator" style$="display: [[_getDisplaySkipIndicator(tracks.length)]]">
-                            <p>Skip</p>
+                        <div id="skipBackground" style$="display: [[_getDisplaySkipIndicator(tracks.length)]]">
+                            <p id="skipIndicator">Skip</p>
                         </div>
                         <template is="dom-repeat" items="[[tracks]]">
                             <festify-track metadata="[[meta]]"
@@ -185,6 +185,8 @@
         </app-drawer-layout>
     </template>
     <script>
+        const SKIP_TRACK_THRESHOLD = -94.5;
+
         Polymer({
             is: 'view-party',
 
@@ -209,6 +211,14 @@
                 },
                 userVotes: {
                     type: Object
+                },
+                _currentTrack: {
+                    type: HTMLElement,
+                    observer: '_currentTrackChanged'
+                },
+                _skipOffset: {
+                    type: Number,
+                    value: 0
                 }
             },
 
@@ -217,9 +227,6 @@
                 'player-playbackFailed': '_playerEvent',
                 'player-playbackInterrupted': '_playerEvent',
                 'player-playPauseFailed': '_playerEvent',
-                'track-skip': '_skipTrack',
-                'track-skipThresholdLeft': '_skipThresholdLeft',
-                'track-skipThresholdPassed': '_skipThresholdPassed',
                 'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
             },
@@ -228,12 +235,38 @@
                 '_tracksChanged(tracks.*)'
             ],
 
+            _translateXTo: function (element, offsetX, durationMs) {
+                if (!element || !element.style) {
+                    return;
+                }
+
+                element.style.transition = 'transform ' + durationMs + 'ms';
+                element.style.transform = 'translateX(' + offsetX + 'px)';
+            },
+
+            /*
+             * Observers and UI getters
+             */
+
+            _currentTrackChanged: function (newTrack, oldTrack) {
+                if (!this.state.isOwner) {
+                    return;
+                }
+
+                if (oldTrack) {
+                    this.unlisten(oldTrack, 'track', '_track');
+                }
+                if (newTrack) {
+                    this.listen(newTrack, 'track', '_track');
+                }
+            },
+
             _getCurrentView: function (q) {
                 return q ? 'search' : 'queue';
             },
 
             _getDisplaySkipIndicator: function (tracksLength) {
-                return tracksLength > 0 ? 'flex' : 'none';
+                return this.state.isOwner && tracksLength > 0 ? 'flex' : 'none';
             },
 
             _getTrackDuration: function (tChange, metaChange) {
@@ -244,24 +277,20 @@
                     0;
             },
 
+            _tracksChanged: function () {
+                setTimeout(() => {
+                    const el = this.$$('festify-track[playing]');
+                    this._translateXTo(el, 0, 0);
+                    this.set('_currentTrack', el);
+                });
+            },
+
             /*
              * Event Handlers
              */
 
             _playerEvent: function (ev) {
                 this.fire('toast', { text: ev.detail, duration: 5000 });
-            },
-
-            _skipThresholdLeft: function () {
-                this.$.skipIndicator.classList.remove('active');
-            },
-
-            _skipThresholdPassed: function () {
-                this.$.skipIndicator.classList.add('active');
-            },
-
-            _skipTrack: function (ev) {
-                this.$.playerProvider.skip();
             },
 
             _togglePlay: function() {
@@ -272,8 +301,43 @@
                 this.$.voteProvider.toggleVote(ev.detail.track);
             },
 
-            _tracksChanged: function (trackChange) {
+            _track: function (ev) {
+                const { ddx, state } = ev.detail;
+                const indicator = this.$.skipIndicator;
+                const t = this._currentTrack;
 
+                switch (state) {
+                    case 'track':
+                        if (isNaN(ddx)) {
+                            return;
+                        }
+
+                        this._skipOffset = Math.min(this._skipOffset + ddx, 0);
+
+                        const background = this.$.skipBackground;
+                        if (this._skipOffset <= SKIP_TRACK_THRESHOLD) {
+                            background.classList.add('active');
+                        } else {
+                            background.classList.remove('active');
+                        }
+
+                        this._translateXTo(t, this._skipOffset, 0);
+                        this._translateXTo(indicator, Math.min(this._skipOffset - SKIP_TRACK_THRESHOLD, 0), 0);
+                        break;
+                    case 'end':
+                        if (this._skipOffset <= SKIP_TRACK_THRESHOLD) {
+                            const offset = -t.getBoundingClientRect().width;
+                            this._translateXTo(t, offset, 300);
+                            this._translateXTo(indicator, offset - SKIP_TRACK_THRESHOLD, 300);
+
+                            setTimeout(() => this.$.playerProvider.skip(), 300);
+                        } else {
+                            this._translateXTo(t, 0, 500);
+                        }
+
+                        this._skipOffset = 0;
+                        break;
+                }
             }
         });
     </script>
