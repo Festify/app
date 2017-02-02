@@ -120,10 +120,12 @@
                     type: Boolean,
                     reflectToAttribute: true,
                     value: false,
-                    computed: '_getIsPlaying(state.*, track)'
+                    computed: '_getIsPlaying(state.*, track)',
+                    observer: '_isPlayingChanged'
                 },
                 track: {
-                    type: Object
+                    type: Object,
+                    observer: '_trackChanged'
                 },
                 userVotes: {
                     type: Object
@@ -131,8 +133,26 @@
                 _hasVoted: {
                     type: Boolean,
                     computed: '_getHasVoted(userVotes.*, track.*)'
+                },
+                _translationOffset: {
+                    type: Number,
+                    value: 0
                 }
             },
+
+            /*
+             * Methods
+             */
+
+            _translateTo: function (offsetX, durationMs) {
+                const s = this.style;
+                s.transition = 'transform ' + durationMs + 'ms';
+                s.transform = 'translateX(' + offsetX + 'px)';
+            },
+
+            /*
+             * UI Getters
+             */
 
             _getArtistName: function (metaChange, track) {
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
@@ -180,6 +200,18 @@
                             'Fallback Track';
             },
 
+            /*
+             * Event handlers
+             */
+
+            _isPlayingChanged: function (isPlaying) {
+                if (isPlaying) {
+                    this.listen(this, 'track', '_track');
+                } else {
+                    this.unlisten(this, 'track', '_track');
+                }
+            },
+
             _tapLikeIcon: function () {
                 this.fire('track-toggleVote', { track: this.track });
             },
@@ -189,6 +221,42 @@
                 if (state && state.isHost) {
                     this.fire('track-togglePlayPause');
                 }
+            },
+
+            _track: function (ev) {
+                if (!this.playing) {
+                    return;
+                }
+
+                const threshold = -100;
+                const { ddx, state } = ev.detail;
+                if (!isNaN(ddx)) {
+                    this._translationOffset += ddx;
+                }
+                if (this._translationOffset > 0) {
+                    this._translationOffset = 0;
+                }
+                this._translateTo(this._translationOffset, 0);
+
+                const event = this._translationOffset <= threshold ?
+                    'track-skipThresholdPassed' :
+                    'track-skipThresholdLeft';
+                this.fire(event);
+
+                if (state == 'end') {
+                    if (this._translationOffset <= threshold) {
+                        const rect = this.getBoundingClientRect();
+                        this._translateTo(-(rect.width), 500);
+                        setTimeout(() => this.fire('track-skip'), 300);
+                    } else {
+                        this._translateTo(0, 500);
+                    }
+                    this._translationOffset = 0;
+                }
+            },
+
+            _trackChanged: function () {
+                this._translateTo(0, 0);
             }
         });
     </script>

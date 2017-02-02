@@ -72,19 +72,49 @@
 
             .track-list {
                 background-color: #303030;
+                position: relative;
             }
 
             .track-list[view=search] festify-track:first-of-type {
                 padding-top: 16px;
+                z-index: 1;
             }
 
             .track-list festify-track[playing] {
                 background-color: #282828;
                 padding: 13px 16px;
+
+                transform: translateX(0px); /* Dirty hack */
             }
 
             .track-list festify-track[playing] + festify-track {
                 padding-top: 13px;
+            }
+
+            #skipIndicator {
+                position: absolute;
+                right: 0;
+                width: 100%;
+
+                display: flex;
+                align-items: flex-end;
+                flex-direction: column;
+                justify-content: center;
+
+                height: 80px;
+                pointer-events: none;
+                transition: background-color 0.25s;
+                z-index: 0;
+            }
+
+            #skipIndicator.active {
+                background-color: var(--primary-color);
+            }
+
+            #skipIndicator p {
+                line-height: 16px;
+                margin: 0 32px 0 0;
+                text-align: right;
             }
 
             festify-track[hidden] {
@@ -130,6 +160,9 @@
                             attr-for-selected="view"
                             role="main">
                     <div class="track-list" view="queue">
+                        <div id="skipIndicator" style$="display: [[_getDisplaySkipIndicator(tracks.length)]]">
+                            <p>Skip</p>
+                        </div>
                         <template is="dom-repeat" items="[[tracks]]">
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
@@ -162,8 +195,20 @@
                     type: Object,
                     value: () => ({})
                 },
+                page: {
+                    type: String
+                },
                 searchQuery: {
                     type: String
+                },
+                searchResults: {
+                    type: Array
+                },
+                tracks: {
+                    type: Array
+                },
+                userVotes: {
+                    type: Object
                 }
             },
 
@@ -172,12 +217,23 @@
                 'player-playbackFailed': '_playerEvent',
                 'player-playbackInterrupted': '_playerEvent',
                 'player-playPauseFailed': '_playerEvent',
+                'track-skip': '_skipTrack',
+                'track-skipThresholdLeft': '_skipThresholdLeft',
+                'track-skipThresholdPassed': '_skipThresholdPassed',
                 'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
             },
 
+            observers: [
+                '_tracksChanged(tracks.*)'
+            ],
+
             _getCurrentView: function (q) {
                 return q ? 'search' : 'queue';
+            },
+
+            _getDisplaySkipIndicator: function (tracksLength) {
+                return tracksLength > 0 ? 'flex' : 'none';
             },
 
             _getTrackDuration: function (tChange, metaChange) {
@@ -188,16 +244,36 @@
                     0;
             },
 
+            /*
+             * Event Handlers
+             */
+
             _playerEvent: function (ev) {
                 this.fire('toast', { text: ev.detail, duration: 5000 });
             },
 
-            _togglePlay: function(ev) {
+            _skipThresholdLeft: function () {
+                this.$.skipIndicator.classList.remove('active');
+            },
+
+            _skipThresholdPassed: function () {
+                this.$.skipIndicator.classList.add('active');
+            },
+
+            _skipTrack: function (ev) {
+                this.$.playerProvider.skip();
+            },
+
+            _togglePlay: function() {
                 this.$.playerProvider.togglePlay();
             },
 
             _toggleVote: function (ev) {
                 this.$.voteProvider.toggleVote(ev.detail.track);
+            },
+
+            _tracksChanged: function (trackChange) {
+
             }
         });
     </script>
