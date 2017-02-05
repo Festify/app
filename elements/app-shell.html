@@ -169,7 +169,7 @@
 
                 return this.$.fbAuth.signInAnonymously()
                     .catch(err => this.fire('toast', {
-                        text: "Could not authenticate with the Server.",
+                        text: "Could not authenticate with the Server. Please reload the site to try again.",
                         details: err
                     }));
             },
