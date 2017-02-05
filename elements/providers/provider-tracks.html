@@ -40,6 +40,17 @@
                 return query.orderByChild('order');
             },
 
+            _fbValue: function(snap) {
+                const data = _.values(snap.val());
+
+                if (data.length > 0) {
+                    data.sort((a, b) => a.order - b.order);
+                }
+
+                this.set('tracks', []);
+                this.push('tracks', ...data);
+            },
+
             _queryChanged: function(query, oldQuery) {
                 if (oldQuery) {
                     oldQuery.off('value');
@@ -50,17 +61,6 @@
                 if (query) {
                     query.on('value', this._fbValue.bind(this));
                 }
-            },
-
-            _fbValue: function(snap) {
-                const data = _.values(snap.val());
-
-                if (data.length > 0) {
-                    data.sort((a, b) => a.order - b.order);
-                }
-
-                this.set('tracks', []);
-                this.push('tracks', ...data);
             },
 
             _tracksChanged: function (change) {
