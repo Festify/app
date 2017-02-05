@@ -107,12 +107,6 @@
                     this.get('currentTrack.reference', oldPlayerState)
                 )) {
                     return this.$.playback.play(playerState.currentTrack.reference)
-                        .catch(err => {
-                            this._setPlayerState(false, playerState.currentTrack);
-                            this.fire('player-playbackFailed', "Failed to play track: " + err);
-
-                            return Promise.reject(err);
-                        })
                         .then(() => this.$.playback.getPosition())
                         .then(posMs => {
                             this.set('state.party.playback', {
@@ -129,6 +123,10 @@
                                 .ref(this._getFbTracksPath(this.state.partyId))
                                 .child(this._generateFbId(playerState.currentTrack))
                                 .update({ played_at: firebase.database.ServerValue.TIMESTAMP });
+                        })
+                        .catch(err => {
+                            this._setPlayerState(false, playerState.currentTrack);
+                            this.fire('player-playbackFailed', "Failed to play track: " + err);
                         });
                 } else if (playerState.playing != oldPlayerState.playing) {
                     return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
