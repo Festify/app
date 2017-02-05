@@ -142,10 +142,10 @@
             },
 
             observers: [
-                '_partyRouteIdChanged(partyRouteData.partyId)',
-                '_routePageChanged(routeData.view)',
+                '_currentPartyIdChanged(state.partyId)',
                 '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)',
-                '_currentPartyIdChanged(state.partyId)'
+                '_partyRouteIdChanged(partyRouteData.partyId)',
+                '_routePageChanged(routeData.view)'
             ],
 
             ready: function() {
