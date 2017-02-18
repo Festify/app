@@ -35,15 +35,12 @@
             },
 
             _disconnect: function() {
-                this.fire("toast", {
-                    text: "Lost screen connection."
-                });
+                this.fire("toast", { text: "Lost screen connection." });
             },
 
             _getPluginUnsafe: function(){
                 return this.get('cordova.plugins.externalScreen', window);
-            },
-
+            }
         });
     </script>
 </dom-module>
