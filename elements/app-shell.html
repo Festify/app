@@ -152,8 +152,8 @@
                 this.set('state.isHost', window.isHost);
                 if (window.cordova) { // Cordova doesn't like app-location
                     this.set("route", { path: "/host", prefix: "", __queryParams: {} });
-                    document.addEventListener("pause", this._appWillSuspend, false);
-                    document.addEventListener("resume", this._appWillResume, false);
+                    document.addEventListener("pause", this._appWillSuspend.bind(this));
+                    document.addEventListener("resume", this._appWillResume.bind(this));
                 }
             },
 
@@ -213,7 +213,6 @@
                 this.$.toast.show(ev.detail);
                 console.log("Toast:", ev.detail.text);
             },
-
 
             // Event Handlers
 
