@@ -80,7 +80,7 @@
 
             togglePlay: function() {
                 if (this._playerState) {
-                    this._setPlayerState(!this._playerState.playing, this._playerState.currentTrack);
+                    this._setPlayerState(!this._playerState.playing, this.tracks[0] || null);
                 } else {
                     this.fire(
                         'player-playPauseFailed',
@@ -154,7 +154,7 @@
 
                 if (change.base.length == 0) {
                     this._setPlayerState(false, null);
-                } else {
+                } else if (this._playerState.playing) {
                     this._setPlayerState(
                         this._playerState ? this._playerState.playing : true,
                         change.base[0]

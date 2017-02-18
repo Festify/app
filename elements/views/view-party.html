@@ -162,7 +162,7 @@
                         <div id="skipBackground" style$="display: [[_getDisplaySkipIndicator(tracks.length)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
-                        <template is="dom-repeat" items="[[tracks]]" on-dom-change="_trackListChange">
+                        <template is="dom-repeat" id="trackList" items="[[tracks]]" on-dom-change="_trackListChange">
                             <festify-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
@@ -230,6 +230,10 @@
                 'track-toggleVote': '_toggleVote'
             },
 
+            observers: [
+                '_tracksChanged(tracks.*)'
+            ],
+
             _translateXTo: function (element, offsetX, durationMs) {
                 if (!element || !element.style) {
                     return;
@@ -270,6 +274,10 @@
                 return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
                     this.get([provId, trackId, 'durationMs'], metaChange.base) :
                     0;
+            },
+
+            _tracksChanged: function () {
+                this.$.trackList.render();
             },
 
             /*

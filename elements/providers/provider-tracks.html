@@ -47,8 +47,7 @@
                     data.sort((a, b) => a.order - b.order);
                 }
 
-                this.set('tracks', []);
-                this.push('tracks', ...data);
+                this.splice('tracks', 0, this.tracks.length, ...data);
             },
 
             _queryChanged: function(query, oldQuery) {
