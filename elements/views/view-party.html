@@ -273,6 +273,7 @@
             },
 
             _tracksChanged: function () {
+                // dom-repeat doesn't like splicing with objects
                 this.$.trackList.render();
             },
 
