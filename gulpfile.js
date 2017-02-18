@@ -61,6 +61,28 @@ function buildPolymer(project, develop) {
         .pipe(project.bundler);
 }
 
+function serve(directories) {
+    browserSync.init({
+        notify: false,
+        open: false,
+        reloadOnRestart: true,
+        snippetOptions: {
+            rule: {
+                match: '<span id="browser-sync-binding"></span>'
+            }
+        },
+        middleware: [historyApiFallback()],
+        ui: false,
+        injectChanges: false,
+        ghostMode: false,
+        server: directories
+    });
+
+    watches.forEach(function (item) {
+        gulp.watch(item.src, item.tasks);
+    });
+}
+
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
 
@@ -116,27 +138,12 @@ watches.push({
 });
 
 gulp.task('serve', ['configure'], function () {
-    browserSync.init({
-        notify: false,
-        open: false,
-        reloadOnRestart: true,
-        snippetOptions: {
-            rule: {
-                match: '<span id="browser-sync-binding"></span>'
-            }
-        },
-        middleware: [historyApiFallback()],
-        ui: false,
-        injectChanges: false,
-        ghostMode: false,
-        server: ['.tmp', '.']
-    });
-
-    watches.forEach(function (item) {
-        gulp.watch(item.src, item.tasks);
-    });
+    return serve(['.tmp', '.']);
 });
 
+gulp.task('serve-output', ['configure'], function () {
+    return serve(['.tmp', 'build']);
+});
 
 gulp.task("package-cordova", function (callback) {
     cordova.build({
