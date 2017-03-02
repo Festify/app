@@ -7,6 +7,7 @@ const gulp = require('gulp');
 const del = require('del');
 const runSequence = require('run-sequence');
 const PolymerProject = require('polymer-build').PolymerProject;
+const htmlSplitter = new (require('polymer-build').HtmlSplitter)();
 const mergeStream = require('merge-stream');
 const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
@@ -41,7 +42,7 @@ function buildPolymer(project, develop) {
         })));
 
     let stream = mergeStream(sources, project.dependencies())
-        .pipe(project.splitHtml());
+        .pipe(htmlSplitter.split());
 
     if(!develop) {
         stream = stream.pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
@@ -51,7 +52,7 @@ function buildPolymer(project, develop) {
             }, $.uglify({ preserveComments: 'license' })));
     }
 
-    stream = stream.pipe(project.rejoinHtml());
+    stream = stream.pipe(htmlSplitter.rejoin());
 
     if(!develop) {
         stream = stream.pipe($.if(/\.html$/, $.htmlmin({
