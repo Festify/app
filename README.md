@@ -6,7 +6,7 @@ Festify is a free Spotify-powered app that lets your guests choose which music s
 
 ### Project status
 
-*The state of the project is considered **alpha** right now. Please refer to the [roadmap](#roadmap) for details.*
+*The state of the project is considered* **alpha** *right now. Please refer to the [roadmap](#roadmap) for details.*
 
 ## Getting started
 
