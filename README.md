@@ -1,3 +1,5 @@
+![Festify logo](/.github/logo.png)
+
 # Festify mobile web app
 
 Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
