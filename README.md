@@ -111,4 +111,5 @@ This project is licensed under the LGPLv3 - see the [LICENSE file](https://githu
 These people helped us bring Festify to life. Thank you!
 
 [![Duplexmedia](/.github/sponsors/duplexmedia.png)](https://duplexmedia.com/)
+
 [![BrowserStack](/.github/sponsors/browserstack.png)](https://www.browserstack.com)
