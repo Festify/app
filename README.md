@@ -54,7 +54,6 @@ Install the following tools to build and run the project:
 ### Build
 
 #### Dependency injection
->>>>>>> develop
 
 ```bash
 npm install
