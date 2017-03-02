@@ -2,6 +2,8 @@
 
 Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Festify/app.svg)](https://greenkeeper.io/)
+
 ### Project status
 
 *The state of the project is considered **alpha** right now. Please refer to the [roadmap](#roadmap) for details.*
