@@ -42,8 +42,8 @@ function buildPolymer(project, develop) {
         })));
     const stream = mergeStream(sources, project.dependencies());
 
-    if(develop) {
-      return stream.pipe(project.bundler);
+    if (develop) {
+        return stream.pipe(project.bundler);
     }
 
     return stream
@@ -51,12 +51,13 @@ function buildPolymer(project, develop) {
         .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
         .pipe($.if(['elements/**/*.js'], $.babel()))
         .pipe($.if(function(file) {
-            return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
-          }, $.uglify({ preserveComments: 'license' })))
+            return path.extname(file.path) === '.js' &&
+                file.contents.toString().indexOf('@polymerBehavior') === -1;
+        }, $.uglify({ preserveComments: 'license' })))
         .pipe(htmlSplitter.rejoin())
         .pipe($.if(/\.html$/, $.htmlmin({
-          collapseWhitespace: true,
-          removeComments: true
+            collapseWhitespace: true,
+            removeComments: true
         })))
         .pipe(project.bundler);
 }
