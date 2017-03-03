@@ -1,4 +1,4 @@
-![Festify logo](/.github/logo.png)
+<img title="Festify Logo" height="150" src="https://festify.rocks/img/festify-logo.svg">
 
 # Festify mobile web app
 
@@ -110,6 +110,7 @@ This project is licensed under the LGPLv3 - see the [LICENSE file](https://githu
 
 These people helped us bring Festify to life. Thank you!
 
-[![Duplexmedia](/.github/sponsors/duplexmedia.png)](https://duplexmedia.com/)
+<a href="https://duplexmedia.com/"><img title="Duplexmedia" src="https://www.duplexmedia.com/uploads/images/logo.svg" width="400"></a>
 
-[![BrowserStack](/.github/sponsors/browserstack.png)](https://www.browserstack.com)
+<a href="https://browserstack.com/"><img title="BrowserStack" src="https://festify.rocks/img/sponsors/browserstack.svg" width="400"></a>
+
