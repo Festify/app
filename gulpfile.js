@@ -40,28 +40,25 @@ function buildPolymer(project, develop) {
         .pipe($.if('elements/app-shell.html', $.template({
             ENV: process.env
         })));
+    const stream = mergeStream(sources, project.dependencies());
 
-    let stream = mergeStream(sources, project.dependencies())
-        .pipe(htmlSplitter.split());
-
-    if(!develop) {
-        stream = stream.pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
-            .pipe($.if(['elements/**/*.js'], $.babel()))
-            .pipe($.if(function(file) {
-                return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
-            }, $.uglify({ preserveComments: 'license' })));
+    if(develop) {
+      return stream.pipe(project.bundler);
     }
 
-    stream = stream.pipe(htmlSplitter.rejoin());
-
-    if(!develop) {
-        stream = stream.pipe($.if(/\.html$/, $.htmlmin({
-            collapseWhitespace: true,
-            removeComments: true
-        })));
-    }
-
-    return stream.pipe(project.bundler);
+    return stream
+        .pipe(htmlSplitter.split())
+        .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
+        .pipe($.if(['elements/**/*.js'], $.babel()))
+        .pipe($.if(function(file) {
+            return path.extname(file.path) === '.js' && file.contents.toString().indexOf('@polymerBehavior') === -1;
+          }, $.uglify({ preserveComments: 'license' })))
+        .pipe(htmlSplitter.rejoin())
+        .pipe($.if(/\.html$/, $.htmlmin({
+          collapseWhitespace: true,
+          removeComments: true
+        })))
+        .pipe(project.bundler);
 }
 
 gulp.task('polymer', function () {
