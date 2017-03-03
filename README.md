@@ -1,4 +1,4 @@
-<img title="Festify Logo" height="150" src="https://festify.rocks/img/festify-logo.svg">
+<a href="https://festify.rocks/"><img title="Festify Logo" height="150" src="https://festify.rocks/img/festify-logo.svg"></a>
 
 # Festify mobile web app
 
