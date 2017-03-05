@@ -18,7 +18,7 @@ In order to get the app running on your machine/device please follow these steps
 
 The app relies on the following external services. You need to obtain API credentials for these for the app to function at all.
 
-- [Firebase](https://firebase.google.com/) (for state synchronization / database)
+- [Firebase](https://firebase.google.com/) (for state synchronization / database) - allow anonymous access
 - [Spotify API](https://developer.spotify.com/my-applications/)
 
 #### Spotify OAuth Code Grant Flow
