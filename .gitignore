@@ -1,8 +1,7 @@
 bower_components/
 node_modules/
-build/
-/images/manifest/*.png
 .idea/
+npm-debug.log
 
 # Cordova stuff
 plugins/
@@ -10,5 +9,7 @@ platforms/
 www/*
 !www/.gitkeep
 
-.env
 .tmp/
+build/
+.env
+/images/manifest/*.png
