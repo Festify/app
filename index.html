@@ -135,16 +135,13 @@
 </head>
 <body unresolved>
     <script>
-        window.isHost = !!window.cordova;
-        console.debug = function () { };
+        window.isHost = false;
     </script>
 
     <!-- build:remove -->
     <span id="browser-sync-binding"></span>
     <script>
         window.isHost = true;
-        window.dev = true;
-        console.debug = console.log;
     </script>
     <!-- endbuild -->
 

@@ -103,25 +103,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 </head>
 <body>
+    <script>
+        window.isHost = true;
+    </script>
+
     <!-- build:remove -->
     <span id="browser-sync-binding"></span>
-    <script>
-        window.cordova = {};
-        window.dev = true;
-    </script>
     <!-- endbuild -->
 
     <link rel="import" href="elements/app-shell.html">
 
-    <script>
-        console.debug = function () {
-            if (window.dev) {
-                console.log.apply(null, arguments);
-            }
-        };
-
-        window.isHost = true;
-    </script>
     <app-shell></app-shell>
 </body>
 </html>

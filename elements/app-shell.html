@@ -185,7 +185,7 @@
                 if (page && page.length > 0) {
                     this.set('currentView', page);
                 } else {
-                    const view = window.isHost ? 'host' : 'join';
+                    const view = this.state.isHost ? 'host' : 'join';
                     this.set('route.path', '/' + view);
                     this.set('currentView', view);
                 }
