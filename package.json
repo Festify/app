@@ -24,7 +24,7 @@
     "gulp-uglify": "^2.0.0",
     "gulp-useref": "^3.1.2",
     "merge-stream": "^1.0.0",
-    "polymer-build": "^0.8.2",
+    "polymer-build": "^0.8.4",
     "polymer-lint": "^0.8.3",
     "run-sequence": "^1.2.2"
   },
