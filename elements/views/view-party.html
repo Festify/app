@@ -125,7 +125,10 @@
                          state="[[state]]"
                          tracks="{{searchResults}}">
         </provider-search>
-        <provider-tracks state="{{state}}" tracks="{{tracks}}"></provider-tracks>
+        <provider-tracks id="tracksProvider"
+                         state="{{state}}"
+                         tracks="{{tracks}}">
+        </provider-tracks>
         <provider-player id="playerProvider"
                          state="{{state}}"
                          tracks="[[tracks]]">
@@ -222,6 +225,7 @@
                 'player-playbackFailed': '_playerEvent',
                 'player-playbackInterrupted': '_playerEvent',
                 'player-playPauseFailed': '_playerEvent',
+                'player-skip': '_skipTrack',
                 'track-togglePlayPause': '_togglePlay',
                 'track-toggleVote': '_toggleVote'
             },
@@ -285,6 +289,14 @@
                 this.fire('toast', { text: ev.detail, duration: 5000 });
             },
 
+            _skipTrack: function () {
+                if (!this.tracks || this.tracks.length < 1) {
+                    return;
+                }
+
+                this.$.tracksProvider.removeTrack(this.tracks[0], true);
+            },
+
             _togglePlay: function() {
                 this.$.playerProvider.togglePlay();
             },
@@ -322,7 +334,7 @@
                             this._translateXTo(t, offset, 300);
                             this._translateXTo(indicator, offset - SKIP_TRACK_THRESHOLD, 300);
 
-                            setTimeout(() => this.$.playerProvider.skip(), 300);
+                            setTimeout(() => this._skipTrack(), 300);
                         } else {
                             this._translateXTo(t, 0, 500);
                         }

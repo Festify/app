@@ -41,42 +41,6 @@
                 '_onTracks(tracks.*)'
             ],
 
-            skip: function () {
-                if (!this.tracks || this.tracks.length < 1 ||
-                    !this.state ||
-                    !this.state.isHost) {
-                    return;
-                }
-
-                const track = this.tracks[0];
-                const partyId = this.state.partyId;
-                const updateObject = {};
-
-                const tracksPath = this._getFbTracksPath(partyId);
-                const votesPath = this._getFbVotesPath(partyId);
-                const trackId = this._generateFbId(track);
-                updateObject[tracksPath + '/' + trackId] = null;
-                updateObject[votesPath + '/' + trackId] = null;
-
-                const updateVotes = firebase.database()
-                    .ref('/')
-                    .update(updateObject);
-                const updateUserVotes = firebase.database()
-                    .ref(this._getFbVotesByUserPath(partyId))
-                    .transaction(votes => {
-                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
-                    });
-                const pushToHistory = firebase.database()
-                    .ref(this._getFbHistoryPath(partyId))
-                    .push(track);
-
-                return Promise.all([
-                    updateUserVotes,
-                    updateVotes,
-                    pushToHistory
-                ]);
-            },
-
             togglePlay: function() {
                 if (this._playerState) {
                     this._setPlayerState(!this._playerState.playing, this.tracks[0] || null);
@@ -197,7 +161,7 @@
                             });
                         });
                 } else if (type == 'finished') {
-                    this.skip();
+                    this.fire('player-skip');
                 }
             },
 
