@@ -7,16 +7,11 @@
 
 <dom-module id="provider-votes">
     <template>
-        <firebase-document path="[[_getFbVotesPath(state.partyId)]]"
-                           data="{{_fbVotes}}"
-                           disabled="[[!state.isOwner]]">
-        </firebase-document>
         <firebase-document path="[[_getFbUserVotesPath(state.partyId, state.auth.authedUser.uid)]]"
                            data="{{userVotes}}">
         </firebase-document>
     </template>
     <script>
-        const voteFactor = 1000000000000;
         Polymer({
             is: 'provider-votes',
 
@@ -29,34 +24,22 @@
                 userVotes: {
                     type: Object,
                     notify: true
-                },
-                _fbTracksPath: {
-                    type: String,
-                    computed: '_getFbTracksPath(state.partyId)'
-                },
-                _fbUserVotesPath: {
-                    type: String,
-                    computed: '_getFbVotesByUserPath(state.partyId)'
-                },
-                _fbVotes: {
-                    type: Object
                 }
             },
 
             observers: [
-                '_votesChanged(_fbVotes.*)',
                 '_playingTrackChanged(state.*)'
             ],
 
             toggleVote: function (track) {
                 const userId = this.get('state.auth.authedUser.uid');
                 if (!userId) {
-                    console.error("Tried to toggle a vote, but no user was logged in.");
+                    this.fire('toast', { text: "Tried to toggle a vote, but no user was logged in." });
                     return;
                 }
                 const partyId = this.get('state.partyId');
                 if (!partyId) {
-                    console.error("Tried to toggle a vote, but party ID wasn't set.");
+                    this.fire('toast', { text: "Tried to toggle a vote, but party ID wasn't set." });
                     return;
                 }
 
@@ -83,100 +66,16 @@
                 if (!track) {
                     return;
                 }
-
-                const id = this._generateFbId(track);
-                this._updateOrder(this._fbVotes[id], id, track);
-            },
-
-            _votesChanged: function (voteChange) {
-                // TODO: Move this to worker process somewhere in the ☁
-
-                if (!voteChange || !voteChange.base) {
+                const partyId = this.get('base.partyId', stateChange);
+                if (!partyId) {
+                    console.error("Tried to update votes from topmost track, but party ID was null.");
                     return;
                 }
 
-                const changeParts = voteChange.path.split('/');
-                if (changeParts.length == 1) {
-                    _.forOwn(voteChange.base, (trackVotes, trackId) => {
-                        this._updateOrder(
-                            trackVotes,
-                            trackId,
-                            this.state.currentTrack
-                        );
-                    });
-                } else {
-                    const trackId = changeParts[1];
-                    const votesHash = voteChange.base[trackId];
-                    this._updateOrder(votesHash, trackId, this.state.currentTrack);
-                }
-            },
-
-            _updateOrder: function (votesHash, trackId, currentTrack) {
-                const voteCount = _.reduce(votesHash, (sum, hasVoted) => hasVoted ? sum + 1 : sum, 0);
-
-                return firebase.database().ref(this._fbTracksPath).child(trackId).transaction(track => {
-                    const currentlyPlaying = !!currentTrack && !!track &&
-                        _.isEqual(currentTrack.reference, track.reference);
-
-                    if (!track && voteCount > 0) {
-                        // Track does not exist, has just been voted for in via Add Tracks menu.
-                        // Add it to the queue.
-
-                        const [provider, id] = this._unsafeGetProviderAndId(trackId);
-                        return {
-                            added_at: firebase.database.ServerValue.TIMESTAMP,
-                            is_fallback: false,
-                            order: (Date.now() - this.state.party.created_at) - (voteCount * voteFactor),
-                            reference: {
-                                id: id,
-                                provider: provider
-                            },
-                            vote_count: voteCount
-                        };
-                    } else if (voteCount > 0 || currentlyPlaying || (!!track && track.is_fallback)) {
-                        // Track exists and has votes, is playing or is a fallback track.
-                        // Leave it in and update the ranking. This is the most probable case.
-
-                        /**
-                         * Order calculation is based on a formula, so we don't have to keep an
-                         * index for ordering tracks.
-                         *
-                         * Because a Firebase Query is always sorted in ascending order,
-                         * the first track should have the lowest value. The value of the
-                         * other tracks should therefore ascend after that, sorted by vote count,
-                         * then by the time of insertion.
-                         *
-                         * DISCLAIMER: The following is not mathematically proven, but we think
-                         * it should work.
-                         *
-                         * The currently playing track should always be the first track in the list,
-                         * which is why we assign the lowest safe integer value possible.
-                         * The first part of the formula ensures sorting by time of insertion,
-                         * and because we want the vote count to always outweigh the time delta,
-                         * we multiply it by a very large factor (10^12 in this case) and subtract it.
-                         */
-                        const order = currentlyPlaying ?
-                            Number.MIN_SAFE_INTEGER + 1 :
-                            (track.added_at - this.state.party.created_at) - (voteCount * voteFactor);
-
-                        // Order hasn't changed. Undefined tells Firebase SDK that
-                        // we have nothing to change.
-                        if (track.order == order) {
-                            return undefined;
-                        }
-
-                        track.order = order;
-                        if (!currentlyPlaying) {
-                            track.vote_count = voteCount;
-                        }
-                        return track;
-                    } else {
-                        // Track does not have votes and is not a fallback track, so remove it
-                        // by returning null.
-
-                        return null;
-                    }
-                });
+                firebase.database()
+                    .ref(this._getFbTracksPath(partyId))
+                    .child(this._generateFbId(track))
+                    .set({ order: Number.MIN_SAFE_INTEGER + 1 });
             }
         });
     </script>
