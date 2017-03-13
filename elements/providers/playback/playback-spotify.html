@@ -89,7 +89,6 @@
             },
 
             _withSession: function(body, defaultValue) {
-                defaultValue = _.isFunction(defaultValue) ? defaultValue : (() => defaultValue);
                 return this._session ? body(this._session) : defaultValue();
             }
         });
