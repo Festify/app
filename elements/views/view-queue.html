@@ -7,15 +7,20 @@
 
 <dom-module id="view-queue">
     <template>
+        <app-route route="{{route}}"
+                   pattern="/:partyId"
+                   data="{{_partyRouteData}}"
+                   tail="{{subroute}}">
+        </app-route>
+        <app-route route="{{subroute}}"
+                   pattern="/:mode"
+                   data="{{_modeRouteData}}">
+        </app-route>
+
         <iron-pages selected="[[_currentView]]" attr-for-selected="view">
             <view-party view="party" state="{{state}}"></view-party>
             <view-tv view="tv" state="{{state}}"></view-tv>
         </iron-pages>
-
-        <app-route route="{{route}}"
-                   pattern="/:partyId/:mode"
-                   data="{{routeData}}">
-        </app-route>
     </template>
     <script>
         Polymer({
@@ -30,7 +35,10 @@
                     type: Object,
                     notify: true
                 },
-                routeData: {
+                _modeRouteData: {
+                    type: Object
+                },
+                _partyRouteData: {
                     type: Object
                 },
                 _currentView: {
@@ -39,15 +47,15 @@
             },
 
             observers: [
-                '_modeChanged(routeData.mode)',
-                '_partyRouteIdChanged(routeData.partyId)'
+                '_modeChanged(_modeRouteData.mode)',
+                '_partyIdChanged(_partyRouteData.partyId)'
             ],
 
             _modeChanged: function(mode) {
-                this.set("_currentView", mode || "party");
+                this.set('_currentView', mode || 'party');
             },
 
-            _partyRouteIdChanged: function (partyId) {
+            _partyIdChanged: function (partyId) {
                 this.set('state.partyId', partyId);
             },
         });
