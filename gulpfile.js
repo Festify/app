@@ -43,7 +43,7 @@ function buildPolymer(project, develop) {
     const stream = mergeStream(sources, project.dependencies());
 
     if (develop) {
-        return stream.pipe(project.bundler);
+        return stream.pipe(project.bundler());
     }
 
     return stream
@@ -59,7 +59,7 @@ function buildPolymer(project, develop) {
             collapseWhitespace: true,
             removeComments: true
         })))
-        .pipe(project.bundler);
+        .pipe(project.bundler());
 }
 
 function serve(directories) {
@@ -143,7 +143,7 @@ gulp.task('serve', ['configure'], function () {
 });
 
 gulp.task('serve-output', ['configure'], function () {
-    return serve(['.tmp', 'build']);
+    return serve(['build']);
 });
 
 gulp.task("package-cordova", function (callback) {
