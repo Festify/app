@@ -6,6 +6,14 @@ node_js:
 cache:
   yarn: true
 
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5.1
+    - g++-5.1
+
 before_script:
   - bower install
 
