@@ -6,6 +6,8 @@ node_js:
 
 cache:
   yarn: true
+  directories:
+    - $HOME/.cache/bower
 
 after_install:
   - bower install
