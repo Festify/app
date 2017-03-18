@@ -75,7 +75,7 @@
                 firebase.database()
                     .ref(this._getFbTracksPath(partyId))
                     .child(this._generateFbId(track))
-                    .set({ order: Number.MIN_SAFE_INTEGER + 1 });
+                    .update({ order: Number.MIN_SAFE_INTEGER + 1 });
             }
         });
     </script>
