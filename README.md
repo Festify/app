@@ -20,12 +20,17 @@ The app relies on the following external services. You need to obtain API creden
 
 - [Firebase](https://firebase.google.com/) (for state synchronization / database) - allow anonymous access
 - [Spotify API](https://developer.spotify.com/my-applications/)
+- [Voting Worker Process](https://github.com/Festify/politics)
 
 #### Spotify OAuth Code Grant Flow
 
 In order to succesfully authenticate with Spotify you need some HTTP endpoints that know your Spotify API Secret and are used for giving users long-lived access tokens.
 
 We recommend the usage of AWS Lambda functions for this purpose. See the [instructions in our Spotify Plugin](https://github.com/Festify/cordova-spotify#oauth-code-grant-flow) for details.
+
+#### Voting Worker Process
+
+To allow voting even in the absence of the hosts device, Festify uses a Firebase cloud function to update the track order each time the votes change. The cloud function is available [on Github](https://github.com/Festify/politics) and licensed under LGPLv3.
 
 #### `.env`
 
@@ -50,6 +55,7 @@ Install the following tools to build and run the project:
 - [Cordova](https://cordova.apache.org/#getstarted) - `npm i -g cordova` (only for mobile builds)
 - [XCode](https://developer.apple.com/xcode/) (for iOS builds)
 - [Android Studio](https://developer.android.com/studio/install.html) (for Android builds)
+- [Firebase Tools](https://github.com/firebase/firebase-tools) - `npm i -g firebase-tools`
 
 ### Build
 
@@ -59,6 +65,8 @@ Install the following tools to build and run the project:
 npm install
 bower install
 cordova prepare # if you want to build for native
+
+cd <worker process folder> && firebase deploy --only functions # Cloud functions for order calculation
 ```
 
 #### Web App only
@@ -87,7 +95,6 @@ cordova run android
 ## Roadmap
 
 - Closed beta (fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSdjYIMfbVAQ1ZwbpXoiedgA0rnu5FpLocO3moZIkSzhI8fNKQ/viewform) to participate)
-- Public beta
 - Stable MVP
   - Spotify only
   - basic features
@@ -104,7 +111,7 @@ cordova run android
 
 ## License
 
-This project is licensed under the LGPLv3 - see the [LICENSE file](https://github.com/Festify/app/blob/develop/LICENSE.md) for details
+This project is licensed under the LGPLv3 - see the [LICENSE file](https://github.com/Festify/app/blob/develop/LICENSE.md) for details.
 
 ## Sponsors
 
