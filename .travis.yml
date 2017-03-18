@@ -9,7 +9,7 @@ cache:
   directories:
     - "$HOME/.cache/bower"
 
-after_install:
+before_script:
   - bower install
 
 script:
