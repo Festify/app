@@ -13,3 +13,6 @@ www/*
 build/
 .env
 /images/manifest/*.png
+
+# Firebase
+.firebaserc
