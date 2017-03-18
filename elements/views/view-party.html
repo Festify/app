@@ -13,7 +13,7 @@
 <link rel="import" href="../providers/provider-search.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
-<link rel="import" href="components/festify-track.html">
+<link rel="import" href="components/queue-track.html">
 <link rel="import" href="components/playback-progress-bar.html">
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/search-bar.html">
@@ -75,19 +75,19 @@
                 position: relative;
             }
 
-            .track-list[view=search] festify-track:first-of-type {
+            .track-list[view=search] queue-track:first-of-type {
                 padding-top: 16px;
                 z-index: 1;
             }
 
-            .track-list festify-track[playing] {
+            .track-list queue-track[playing] {
                 background-color: #282828;
                 padding: 13px 16px;
 
                 transform: translateX(0px); /* Dirty hack */
             }
 
-            .track-list festify-track[playing] + festify-track {
+            .track-list queue-track[playing] + queue-track {
                 padding-top: 13px;
             }
 
@@ -162,20 +162,20 @@
                             <p id="skipIndicator">Skip</p>
                         </div>
                         <template is="dom-repeat" id="trackList" items="[[tracks]]" on-dom-change="_trackListChange">
-                            <festify-track metadata="[[meta]]"
+                            <queue-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
                                            user-votes="[[userVotes]]">
-                            </festify-track>
+                            </queue-track>
                         </template>
                     </div>
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
-                            <festify-track metadata="[[meta]]"
+                            <queue-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
                                            user-votes="[[userVotes]]">
-                            </festify-track>
+                            </queue-track>
                         </template>
                     </div>
                 </iron-pages>
@@ -345,7 +345,7 @@
             },
 
             _trackListChange: function () {
-                const el = this.$$('festify-track[playing]');
+                const el = this.$$('queue-track[playing]');
                 this._translateXTo(el, 0, 0);
                 this.set('_currentTrack', el);
             }
