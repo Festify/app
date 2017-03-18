@@ -143,7 +143,7 @@ gulp.task('serve', ['configure'], function () {
 });
 
 gulp.task('serve-output', ['configure'], function () {
-    return serve(['.tmp', 'build']);
+    return serve(['build']);
 });
 
 gulp.task("package-cordova", function (callback) {
