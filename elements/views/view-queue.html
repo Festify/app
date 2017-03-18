@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../behaviors/behavior-app-state.html">
+<link rel="import" href="view-party.html">
+<link rel="import" href="view-tv.html">
+
+<dom-module id="view-queue">
+    <template>
+        <iron-pages selected="[[_currentView]]" attr-for-selected="view">
+            <view-party view="party" state="{{state}}"></view-party>
+        </iron-pages>
+
+        <app-route route="{{route}}"
+                   pattern="/:partyId/"
+                   data="{{routeData}}">
+        </app-route>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-queue',
+
+            behaviors: [
+                FestifyBehaviors.StateBehavior
+            ],
+
+            properties: {
+                route: {
+                    type: Object,
+                    notify: true
+                },
+                routeData: {
+                    type: Object
+                },
+                _currentView: {
+                    type: String
+                }
+            },
+
+            observers: [
+                '_modeChanged(routeData.mode)',
+                '_partyRouteIdChanged(routeData.partyId)'
+            ],
+
+            _modeChanged: function(mode) {
+                this.set("_currentView", mode || "party");
+            },
+
+            _partyRouteIdChanged: function (partyId) {
+                this.set('state.partyId', partyId);
+            },
+        });
+    </script>
+</dom-module>

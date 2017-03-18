@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-firebase-paths.html">
@@ -34,16 +35,17 @@
             },
 
             createNewParty: function () {
-                const uid = this.get('state.auth.authedUser.uid');
-                if (!uid || uid.length < 1) {
+                const userId = this.get('state.auth.authedUser.uid');
+                if (!userId || userId.length < 1) {
                     throw new Error("Tried to create a party but user ID was null or empty!");
                 }
 
                 const now = firebase.database.ServerValue.TIMESTAMP;
-                this.set('state.party', {
+
+                const party = {
                     country: 'DE',
                     created_at: now,
-                    created_by: uid,
+                    created_by: userId,
                     name: "Today's Party",
                     playback: {
                         last_change: now,
@@ -51,9 +53,13 @@
                         playing: false
                     },
                     short_id: Math.floor(Math.random() * 1000000) + ''
-                });
-                return this.$.partyDocument.save(partiesKey)
-                    .then(() => this.set('state.partyId', this.$.partyDocument.ref.key));
+                };
+
+                const key = firebase.database()
+                    .ref(partiesKey)
+                    .push(party).key;
+
+                return [key, party];
             },
 
             openParty: function (shortId) {
@@ -68,29 +74,19 @@
                     .once('value')
                     .then(results => {
                         if (results.numChildren() < 1) {
-                            return false;
+                            return null;
                         }
 
-                        const [party, fbId] = _.reduce(results.val(), (result, value, key) => {
+                        return _.reduce(results.val(), (result, value, key) => {
                             return !result[0].created_at || value.created_at > result[0].created_at ?
                                 [value, key] :
                                 result;
                         }, [{}, '']);
-
-                        this.set('state.party', party);
-                        this.set('state.partyId', fbId);
-
-                        return true;
                     });
             },
 
             _partyChanged: function(change) {
                 if (!change || !change.base || !this.hasAttached) {
-                    return;
-                }
-
-                if (_.isEmpty(change.base)) {
-                    this.fire('party-notfound');
                     return;
                 }
 
