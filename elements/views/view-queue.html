@@ -9,10 +9,11 @@
     <template>
         <iron-pages selected="[[_currentView]]" attr-for-selected="view">
             <view-party view="party" state="{{state}}"></view-party>
+            <view-tv view="tv" state="{{state}}"></view-tv>
         </iron-pages>
 
         <app-route route="{{route}}"
-                   pattern="/:partyId/"
+                   pattern="/:partyId/:mode"
                    data="{{routeData}}">
         </app-route>
     </template>

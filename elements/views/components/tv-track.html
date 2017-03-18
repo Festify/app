@@ -1,0 +1,37 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../common/shared-styles.html">
+<link rel="import" href="size-aware-image.html">
+
+<dom-module id="tv-track">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+
+        </style>
+    </template>
+    <script>
+        Polymer({
+            is: 'tv-track',
+
+            properties: {
+                metadata: {
+                    type: Object
+                },
+                track: {
+                    type: Object
+                },
+                userVotes: {
+                    type: Object
+                }
+            },
+
+            _getArtistName: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
+            },
+
+            _getCoverImage: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
+            }
+        });
+    </script>
+</dom-module>
