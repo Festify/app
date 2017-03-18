@@ -4,8 +4,8 @@
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
-<link rel="import" href="components/size-aware-image.html">
 <link rel="import" href="components/playback-progress-bar.html">
+<link rel="import" href="components/size-aware-image.html">
 
 <dom-module id="view-tv">
     <template>
@@ -23,7 +23,7 @@
             .upper {
                 font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
                 display: flex;
-                flex-direction:column;
+                flex-direction: column;
                 justify-content: center;
                 height: 70%;
                 padding: 0 90px;
@@ -93,7 +93,6 @@
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-tracks>
-
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
 
         <div class="upper">
@@ -105,7 +104,8 @@
                     <h3>[[_getCurrentTrackArtist(meta.*, tracks.*)]]</h3>
 
                     <playback-progress-bar duration="[[_getTrackDuration(state.*, meta.*)]]"
-                                           playback="[[state.party.playback]]"></playback-progress-bar>
+                                           playback="[[state.party.playback]]">
+                    </playback-progress-bar>
 
                     <h4>Go to festify.us and vote!</h4>
                     <h5>[[state.party.short_id]]</h5>
@@ -135,19 +135,27 @@
 
             _getCurrentTrackArtist: function (metaChange, tracksChange) {
                 const track = tracksChange.base[0];
-                if(!track) return;
+                if (!track) {
+                    return;
+                }
 
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
             },
+
             _getCurrentTrackCover: function (metaChange, tracksChange) {
                 const track = tracksChange.base[0];
-                if(!track) return;
+                if (!track) {
+                    return;
+                }
 
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
             },
+
             _getCurrentTrackName: function (metaChange, tracksChange) {
                 const track = tracksChange.base[0];
-                if(!track) return;
+                if (!track) {
+                    return;
+                }
 
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'name']);
             },
