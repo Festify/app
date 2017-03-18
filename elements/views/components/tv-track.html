@@ -6,8 +6,62 @@
     <template>
         <style include="shared-styles"></style>
         <style>
+            .cover {
+                position: relative;
+                display: flex;
+                align-content: center;
+                justify-content: center;
+                width: 204px;
+                height: 204px;
+                box-shadow: 0 0 60px 0 rgba(0,0,0,0.5);
+            }
 
+            size-aware-image {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+            }
+
+            .overlay {
+                position: absolute;
+                z-index: 2;
+                top: 0; bottom: 0;
+                left: 0; right: 0;
+                background: rgba(0,0,0,0.6)
+            }
+
+            h2 {
+                z-index: 3;
+                font-size: 60px;
+                margin: auto;
+                text-shadow: 0 0 8px #000;
+            }
+
+            h3 {
+                font-size: 20px;
+                font-weight: normal;
+                margin: 10px 0 0;
+            }
+
+            h4 {
+                font-size: 12px;
+                font-weight: 100;
+                margin: 0;
+            }
+
+            h2, h3, h4 {
+                color: #fff;
+            }
         </style>
+
+
+        <div class="cover">
+            <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
+            <div class="overlay"></div>
+            <h2>[[track.vote_count]]</h2>
+        </div>
+        <h3>[[_getTrackName(metadata.*, track)]]</h3>
+        <h4>[[_getArtistName(metadata.*, track)]]</h4>
     </template>
     <script>
         Polymer({
@@ -27,6 +81,10 @@
 
             _getArtistName: function (metaChange, track) {
                 return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
+            },
+
+            _getTrackName: function (metaChange, track) {
+                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'name']);
             },
 
             _getCoverImage: function (metaChange, track) {
