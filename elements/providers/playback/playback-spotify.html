@@ -2,95 +2,93 @@
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 
-<dom-module id="playback-spotify">
-    <script>
-        Polymer({
-            is: 'playback-spotify',
+<script>
+    Polymer({
+        is: 'playback-spotify',
 
-            behaviors: [FestifyBehaviors.PlaybackProviderBehavior],
+        behaviors: [FestifyBehaviors.PlaybackProviderBehavior],
 
-            properties: {
-                config: {
-                    type: Object
-                },
-                _session: {
-                    type: Object
-                }
+        properties: {
+            config: {
+                type: Object
             },
-
-            init: function() {
-                const spotify = this._getPluginUnsafe();
-                if (!spotify) {
-                    return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
-                }
-
-                return spotify.login(this.config)
-                    .then(session => session ? session : spotify.authenticate(this.config))
-                    .then(session => {
-                        session.addListener('playbackevent', this._onPlaybackEvent, this);
-                        session.addListener('playbackerror', this._onPlaybackError, this);
-
-                        this.set('_session', session);
-                    });
-            },
-
-            deinit: function() {
-                return this._withSession(s => s.logout(), () => Promise.resolve());
-            },
-
-            play: function(ref) {
-                return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), () => Promise.reject());
-            },
-
-            pause: function() {
-                return this._withSession(s => s.pause(), () => Promise.reject());
-            },
-
-            getUsername: function() {
-                return this.get('_session.canonicalUsername');
-            },
-
-            getPosition: function () {
-                return this._withSession(s => s.getPosition(), () => Promise.reject());
-            },
-
-            getProviders: function () {
-                return ['spotify'];
-            },
-
-            isAvailable: function () {
-                return !!this._getPluginUnsafe();
-            },
-
-            _getPluginUnsafe: function () {
-                return this.get('cordova.plugins.spotify', window);
-            },
-
-            _onPlaybackEvent: function (event) {
-                switch(event) {
-                    case 'Pause':
-                    case 'Play':
-                        this.fire('player', { type: event.toLowerCase() }); break;
-                    case 'TrackDelivered':
-                        this.fire('player', { type: 'finished' }); break;
-                    case 'LostPermission':
-                        this.fire('error', {
-                            type: 'permissionlost',
-                            msg: "Somebody else started using your Spotify account."
-                        });
-                        break;
-                    default:
-                        console.log(event);
-                }
-            },
-
-            _onPlaybackError: function (err) {
-                this.fire('error', { type: err });
-            },
-
-            _withSession: function(body, defaultValue) {
-                return this._session ? body(this._session) : defaultValue();
+            _session: {
+                type: Object
             }
-        });
-    </script>
-</dom-module>
+        },
+
+        init: function() {
+            const spotify = this._getPluginUnsafe();
+            if (!spotify) {
+                return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
+            }
+
+            return spotify.login(this.config)
+                .then(session => session ? session : spotify.authenticate(this.config))
+                .then(session => {
+                    session.addListener('playbackevent', this._onPlaybackEvent, this);
+                    session.addListener('playbackerror', this._onPlaybackError, this);
+
+                    this.set('_session', session);
+                });
+        },
+
+        deinit: function() {
+            return this._withSession(s => s.logout(), () => Promise.resolve());
+        },
+
+        play: function(ref) {
+            return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), () => Promise.reject());
+        },
+
+        pause: function() {
+            return this._withSession(s => s.pause(), () => Promise.reject());
+        },
+
+        getUsername: function() {
+            return this.get('_session.canonicalUsername');
+        },
+
+        getPosition: function () {
+            return this._withSession(s => s.getPosition(), () => Promise.reject());
+        },
+
+        getProviders: function () {
+            return ['spotify'];
+        },
+
+        isAvailable: function () {
+            return !!this._getPluginUnsafe();
+        },
+
+        _getPluginUnsafe: function () {
+            return this.get('cordova.plugins.spotify', window);
+        },
+
+        _onPlaybackEvent: function (event) {
+            switch(event) {
+                case 'Pause':
+                case 'Play':
+                    this.fire('player', { type: event.toLowerCase() }); break;
+                case 'TrackDelivered':
+                    this.fire('player', { type: 'finished' }); break;
+                case 'LostPermission':
+                    this.fire('error', {
+                        type: 'permissionlost',
+                        msg: "Somebody else started using your Spotify account."
+                    });
+                    break;
+                default:
+                    console.log(event);
+            }
+        },
+
+        _onPlaybackError: function (err) {
+            this.fire('error', { type: err });
+        },
+
+        _withSession: function(body, defaultValue) {
+            return this._session ? body(this._session) : defaultValue();
+        }
+    });
+</script>

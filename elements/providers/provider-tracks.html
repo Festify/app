@@ -5,103 +5,101 @@
 <link rel="import" href="../behaviors/behavior-tracks.html">
 <link rel="import" href="../utils/lodash.html">
 
-<dom-module id="provider-tracks">
-    <script>
-        Polymer({
-            is: 'provider-tracks',
+<script>
+    Polymer({
+        is: 'provider-tracks',
 
-            behaviors: [
-                FestifyBehaviors.FirebasePathsBehavior,
-                FestifyBehaviors.StateBehavior,
-                FestifyBehaviors.TracksBehavior
-            ],
+        behaviors: [
+            FestifyBehaviors.FirebasePathsBehavior,
+            FestifyBehaviors.StateBehavior,
+            FestifyBehaviors.TracksBehavior
+        ],
 
-            properties: {
-                _fbQuery: {
-                    type: firebase.database.Query,
-                    computed: '_computeQuery(state.partyId, limit)',
-                    observer: '_queryChanged'
-                }
-            },
-
-            observers: [
-                '_tracksChanged(tracks.*)'
-            ],
-
-            removeTrack: function (track, moveToHistory) {
-                if (!track || !this.state || !this.state.isHost) {
-                    return;
-                }
-
-                const partyId = this.state.partyId;
-                const updateObject = {};
-
-                const tracksPath = this._getFbTracksPath(partyId);
-                const votesPath = this._getFbVotesPath(partyId);
-                const trackId = this._generateFbId(track);
-                updateObject[tracksPath + '/' + trackId] = null;
-                updateObject[votesPath + '/' + trackId] = null;
-
-                const updateVotes = firebase.database()
-                    .ref('/')
-                    .update(updateObject);
-                const updateUserVotes = firebase.database()
-                    .ref(this._getFbVotesByUserPath(partyId))
-                    .transaction(votes => {
-                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
-                    });
-                let pushToHistory;
-                if (moveToHistory) {
-                    pushToHistory = firebase.database()
-                        .ref(this._getFbHistoryPath(partyId))
-                        .push(track);
-                }
-
-                return Promise.all([
-                    updateUserVotes,
-                    updateVotes,
-                    (pushToHistory || Promise.resolve())
-                ]);
-            },
-
-            _computeQuery: function(partyId, limit) {
-                if (!partyId) {
-                    return null;
-                }
-
-                let query = firebase.database().ref(this._getFbTracksPath(partyId));
-                if (limit > 0) {
-                    query = query.limitToFirst(limit);
-                }
-                return query.orderByChild('order');
-            },
-
-            _fbValue: function(snap) {
-                const data = _.values(snap.val());
-
-                if (data.length > 0) {
-                    data.sort((a, b) => a.order - b.order);
-                }
-
-                this.splice('tracks', 0, this.tracks.length, ...data);
-            },
-
-            _queryChanged: function(query, oldQuery) {
-                if (oldQuery) {
-                    oldQuery.off('value');
-                }
-                if (this.tracks) {
-                    this.splice('tracks', 0, this.tracks.length);
-                }
-                if (query) {
-                    query.on('value', this._fbValue.bind(this));
-                }
-            },
-
-            _tracksChanged: function (change) {
-                const tracks = change.base;
-                this.set('state.currentTrack', (tracks && tracks.length > 0) ? tracks[0] : null);
+        properties: {
+            _fbQuery: {
+                type: firebase.database.Query,
+                computed: '_computeQuery(state.partyId, limit)',
+                observer: '_queryChanged'
             }
-        });
-    </script>
-</dom-module>
+        },
+
+        observers: [
+            '_tracksChanged(tracks.*)'
+        ],
+
+        removeTrack: function (track, moveToHistory) {
+            if (!track || !this.state || !this.state.isHost) {
+                return;
+            }
+
+            const partyId = this.state.partyId;
+            const updateObject = {};
+
+            const tracksPath = this._getFbTracksPath(partyId);
+            const votesPath = this._getFbVotesPath(partyId);
+            const trackId = this._generateFbId(track);
+            updateObject[tracksPath + '/' + trackId] = null;
+            updateObject[votesPath + '/' + trackId] = null;
+
+            const updateVotes = firebase.database()
+                .ref('/')
+                .update(updateObject);
+            const updateUserVotes = firebase.database()
+                .ref(this._getFbVotesByUserPath(partyId))
+                .transaction(votes => {
+                    return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
+                });
+            let pushToHistory;
+            if (moveToHistory) {
+                pushToHistory = firebase.database()
+                    .ref(this._getFbHistoryPath(partyId))
+                    .push(track);
+            }
+
+            return Promise.all([
+                updateUserVotes,
+                updateVotes,
+                (pushToHistory || Promise.resolve())
+            ]);
+        },
+
+        _computeQuery: function(partyId, limit) {
+            if (!partyId) {
+                return null;
+            }
+
+            let query = firebase.database().ref(this._getFbTracksPath(partyId));
+            if (limit > 0) {
+                query = query.limitToFirst(limit);
+            }
+            return query.orderByChild('order');
+        },
+
+        _fbValue: function(snap) {
+            const data = _.values(snap.val());
+
+            if (data.length > 0) {
+                data.sort((a, b) => a.order - b.order);
+            }
+
+            this.splice('tracks', 0, this.tracks.length, ...data);
+        },
+
+        _queryChanged: function(query, oldQuery) {
+            if (oldQuery) {
+                oldQuery.off('value');
+            }
+            if (this.tracks) {
+                this.splice('tracks', 0, this.tracks.length);
+            }
+            if (query) {
+                query.on('value', this._fbValue.bind(this));
+            }
+        },
+
+        _tracksChanged: function (change) {
+            const tracks = change.base;
+            this.set('state.currentTrack', (tracks && tracks.length > 0) ? tracks[0] : null);
+        }
+    });
+</script>
