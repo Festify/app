@@ -16,3 +16,4 @@ build/
 
 # Firebase
 .firebaserc
+database.rules.json
