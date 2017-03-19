@@ -45,4 +45,4 @@ notifications:
     rooms:
       - secure: CB5ldw1lb5UhwTSikqyXQsfqTzfAAeoZ3sfrt5P4DTkP+FuUcAaj7n7sHwouuRdwmDrG7dcIHNywmvnVEmGFXwlmSy3Vcx/5hDtAfAm0YvUt1MUDm4NBRgOMqrSs8E75aZtAKlfV7eW1hTyS6idEH9CPJIgrd9ImG1SeBgz7ZmWdb5sZWg0OgUaWUeUerydhrsDQsuR5B721dvea249Y38FOhvGybTA8YDTViMEghuTOCKmZ/0Qaw1XavnbR/dxgVp4kxWJ6bG/vOHT0aB3Y17hckg97eGztHqjgBeF6Z6dn+Kt1rHW5trgjskmCCSfZiijRs4L1J7rGCcjAxc33BubMHOkXep59MM9gT78XCZadZkrQU2DFCq5icZPKaE4GLDFmR75CHIAh1jnr+IfQAzGILUs2LWzfabhmsy6m5QMDKNZJm5txN5X/cuZT2MDchC0BY0OElOVY6CBIpV5EJSl5XOcYGoTYXkdvqh1J7WnJmrAmlWwxQjLX+wpR1dutSo9kxfas9rB3zFCdFZ8Sj2aQj9kG5HLC9A7anj8EFs+ricHU/iprL+mrd8pFBWPsupVN6YE+xGAKFAoU0FZbuKLOfo1Et9coZwkchSTAWfJFhyJC54VOtquOtQ3Lhx8lmw3dfvGiXhQ+aetGO03c+e11XvgZpi2Aj9QOyxXYs8U=
     template:
-      - "*<%{build_url}|#%{build_number}> passed:* <%{compare_url}|[%{repository_name}:%{branch}]> _by_ %{author} (in %{duration})"
+      - "<%{build_url}|#%{build_number}> passed: <%{compare_url}|[%{repository_name}:%{branch}]> by %{author} (in %{duration})"
