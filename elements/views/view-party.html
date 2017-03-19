@@ -265,8 +265,12 @@
             },
 
             _getCastUrl: function (partyId) {
+                if (!partyId) {
+                    return "https://festify.rocks/";
+                }
+
                 const domain = this.get('state.config.meta.domain');
-                return domain + '/party/' + partyId + '/tv';
+                return `https://${domain}/party/${partyId}/tv`;
             },
 
             _getCurrentView: function (q) {
