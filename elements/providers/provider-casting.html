@@ -7,7 +7,8 @@
 
             properties: {
                 url: {
-                    type: String
+                    type: String,
+                    observer: '_urlChanged'
                 },
                 _screenListener: {
                     type: Object
@@ -42,6 +43,14 @@
 
             _getPluginUnsafe: function(){
                 return this.get('cordova.plugins.externalScreen', window);
+            },
+
+            _urlChanged: function (url) {
+                if (!this._screenListener || !this._screenListener.hasExternalScreen) {
+                    return;
+                }
+
+                this._screenListener.loadUrl(url);
             }
         });
     </script>
