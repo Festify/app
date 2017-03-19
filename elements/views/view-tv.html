@@ -144,7 +144,8 @@
             <template is="dom-repeat" items="[[tracks]]">
                 <tv-track metadata="[[meta]]"
                           state="[[state]]"
-                          track="[[item]]"></tv-track>
+                          track="[[item]]">
+                </tv-track>
             </template>
         </div>
     </template>
@@ -152,9 +153,7 @@
         Polymer({
             is: 'view-tv',
 
-            behaviors: [
-                FestifyBehaviors.StateBehavior
-            ],
+            behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
                 meta: {
