@@ -6,13 +6,19 @@
     <template>
         <style include="shared-styles"></style>
         <style>
+            :host {
+                --max-width: 204px;
+                min-width: var(--max-width);
+                display: block;
+            }
+
             .cover {
                 position: relative;
                 display: flex;
                 align-content: center;
                 justify-content: center;
-                width: 204px;
-                height: 204px;
+                width: var(--max-width);
+                height: var(--max-width);
                 box-shadow: 0 0 60px 0 rgba(0,0,0,0.5);
             }
 
@@ -51,6 +57,13 @@
 
             h2, h3, h4 {
                 color: #fff;
+            }
+
+            h3, h4 {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                max-width: 100%;
             }
         </style>
 
