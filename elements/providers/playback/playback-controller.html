@@ -59,7 +59,7 @@
 
             play: function(ref) {
                 if (ref) {
-                    const providerList = _.get(this._providers, ref.provider);
+                    const providerList = this.get(ref.provider, this._providers);
                     if (!providerList || providerList.length < 1) {
                         return Promise.reject("Tried to play a track from " + ref.provider + ", but no provider available.");
                     }

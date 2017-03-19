@@ -118,7 +118,7 @@
             }
         </style>
 
-        <provider-casting></provider-casting>
+        <provider-casting url="[[_castUrl]]"></provider-casting>
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
         <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
         <provider-search search-query="[[searchQuery]]"
@@ -210,6 +210,10 @@
                 userVotes: {
                     type: Object
                 },
+                _castUrl: {
+                    type: String,
+                    computed: '_getCastUrl(state.partyId)'
+                },
                 _currentTrack: {
                     type: HTMLElement,
                     observer: '_currentTrackChanged'
@@ -258,6 +262,15 @@
                 if (newTrack) {
                     this.listen(newTrack, 'track', '_track');
                 }
+            },
+
+            _getCastUrl: function (partyId) {
+                if (!partyId) {
+                    return "https://festify.rocks/";
+                }
+
+                const domain = this.get('state.config.meta.domain');
+                return `https://${domain}/party/${partyId}/tv`;
             },
 
             _getCurrentView: function (q) {

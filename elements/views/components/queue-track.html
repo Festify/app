@@ -135,11 +135,11 @@
             },
 
             _getArtistName: function (metaChange, track) {
-                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'artistName']);
+                return this.get([track.reference.provider, track.reference.id, 'artistName'], metaChange.base);
             },
 
             _getCoverImage: function (metaChange, track) {
-                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'cover']);
+                return this.get([track.reference.provider, track.reference.id, 'cover'], metaChange.base);
             },
 
             _getHasVoted: function (votesChange, trackChange) {
@@ -150,7 +150,12 @@
             },
 
             _getIsPlaying: function (stateChange, t) {
-                return this.get('base.currentTrack', stateChange) == t;
+                if (t.isFromSearch) {
+                    return false;
+                }
+
+                const ref = this.get('base.currentTrack.reference', stateChange);
+                return _.isEqual(t.reference, ref);
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {
@@ -166,7 +171,7 @@
             },
 
             _getTrackName: function (metaChange, track) {
-                return _.get(metaChange.base, [track.reference.provider, track.reference.id, 'name']);
+                return this.get([track.reference.provider, track.reference.id, 'name'], metaChange.base);
             },
 
             _getVoteString: function (trackChange) {

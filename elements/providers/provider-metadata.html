@@ -52,7 +52,7 @@
 
                 changeRecord.indexSplices.forEach(splice => {
                     const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
-                        .filter(t => !_.get(cache, [t.reference.provider, t.reference.id]));
+                        .filter(t => !this.get([t.reference.provider, t.reference.id], cache));
                     this._waitingTracks.push(...newTracks);
                 });
 
@@ -60,7 +60,7 @@
                     const tracks = this._waitingTracks;
                     this._waitingTracks = [];
                     _.forOwn(_.groupBy(tracks, t => t.reference.provider), (tracks, provider) => {
-                        const processor = _.get(providers, provider);
+                        const processor = this.get(provider, providers);
                         if (processor) {
                             _.chunk(tracks, 50)
                                 .filter(chunk => chunk.length > 0)

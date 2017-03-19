@@ -5,6 +5,10 @@
         is: 'provider-casting',
 
         properties: {
+            url: {
+                type: String,
+                observer: '_urlChanged'
+            },
             _screenListener: {
                 type: Object
             }
@@ -21,24 +25,31 @@
 
             const plugin = this._getPluginUnsafe();
             plugin.createScreenListener().then(l => {
-                l.addListener("connect", this._connect, this);
-                l.addListener("disconnect", this._disconnect, this);
+                l.addListener('connect', this._connect, this);
+                l.addListener('disconnect', this._disconnect, this);
 
-                this.set("_screenListener", l);
+                this.set('_screenListener', l);
             });
         },
 
         _connect: function() {
-            // TODO: Add real url for party view
-            this._screenListener.loadUrl(window.location.href);
+            this._screenListener.loadUrl(this.url);
         },
 
         _disconnect: function() {
-            this.fire("toast", { text: "Lost screen connection." });
+            this.fire('toast', { text: "Lost screen connection." });
         },
 
         _getPluginUnsafe: function(){
             return this.get('cordova.plugins.externalScreen', window);
+        },
+
+        _urlChanged: function (url) {
+            if (!this._screenListener || !this._screenListener.hasExternalScreen) {
+                return;
+            }
+
+            this.debounce('url', () => this._screenListener.loadUrl(url), 50);
         }
     });
 </script>

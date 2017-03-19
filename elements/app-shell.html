@@ -9,7 +9,7 @@
 <link rel="import" href="providers/provider-party.html">
 <link rel="import" href="views/view-host.html">
 <link rel="import" href="views/view-join.html">
-<link rel="import" href="views/view-party.html">
+<link rel="import" href="views/view-queue.html">
 
 <dom-module id="app-shell">
     <template>
@@ -76,10 +76,6 @@
                        user="{{state.auth.authedUser}}">
         </firebase-auth>
 
-        <app-route route="{{route}}"
-                   pattern="/party/:partyId"
-                   data="{{partyRouteData}}">
-        </app-route>
         <provider-party id="partyProvider" state="{{state}}"></provider-party>
 
         <template is="dom-if" if="[[state.auth.signedIn]]">
@@ -90,7 +86,7 @@
                 <!-- No subroute for host / join as they do top level routing -->
                 <view-host view="host" class="centered" route="{{route}}" state="[[state]]"></view-host>
                 <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
-                <view-party view="party" class="centered" route="{{subroute}}" state="{{state}}"></view-party>
+                <view-queue view="party" class="centered" route="{{subroute}}" state="{{state}}"></view-queue>
             </iron-pages>
         </template>
 
@@ -121,6 +117,9 @@
                     value: () => ({
                         auth: {},
                         config: {
+                            meta: {
+                                domain: "<%= ENV.DOMAIN %>"
+                            },
                             spotify: {
                                 urlScheme: "festify-spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
@@ -136,14 +135,11 @@
             listeners: {
                 'host-createNewParty': '_createNewParty',
                 'join-openParty': '_openParty',
-                'party-notfound': '_partyNotFound',
                 'toast': '_showToast'
             },
 
             observers: [
-                '_currentPartyIdChanged(state.partyId)',
                 '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)',
-                '_partyRouteIdChanged(partyRouteData.partyId)',
                 '_routePageChanged(routeData.view)'
             ],
 
@@ -151,18 +147,22 @@
                 this.set('state.cordova', !!window.cordova);
                 this.set('state.isHost', window.isHost);
                 if (window.cordova) { // Cordova doesn't like app-location
-                    this.set("route", { path: "/host", prefix: "", __queryParams: {} });
-                    document.addEventListener("pause", this._appWillSuspend.bind(this));
-                    document.addEventListener("resume", this._appWillResume.bind(this));
+                    this.set('route', { path: '/host', prefix: '', __queryParams: {} });
+                    document.addEventListener('pause', this._appWillSuspend.bind(this));
+                    document.addEventListener('resume', this._appWillResume.bind(this));
                 }
             },
 
-            // Property Observers
+            _loadParty: function(partyId) {
+                if (!partyId) {
+                    this.fire('toast', {text: "Party not found!"});
+                    return;
+                }
 
-            _currentPartyIdChanged: function (val) {
-                this.set('route.path', '/party/' + val);
+                this.set('route.path', '/party/' + partyId)
             },
 
+            // Property Observers
             _loginStateChanged: function (statusKnown, signedIn) {
                 if (!statusKnown || signedIn) {
                     return;
@@ -173,10 +173,6 @@
                         text: "Could not authenticate with the Server. Please reload the site to try again.",
                         details: err
                     }));
-            },
-
-            _partyRouteIdChanged: function (partyId) {
-                this.set('state.partyId', partyId);
             },
 
             _routePageChanged: function (page) {
@@ -192,21 +188,14 @@
             },
 
             // Actions
-
             _createNewParty: function () {
-                this.$.partyProvider.createNewParty();
+                const [key] = this.$.partyProvider.createNewParty();
+                this._loadParty(key);
             },
 
             _openParty: function (ev) {
                 this.$.partyProvider.openParty(ev.detail.shortId)
-                    .then(result => result || this.fire('toast', { text: "Party not found!" }));
-            },
-
-            _partyNotFound: function() {
-                if (this.currentView == 'party') {
-                    this.fire('toast', { text: "Party not found!" });
-                    this.set('route.path', '/');
-                }
+                    .then(([key]) => this._loadParty(key));
             },
 
             _showToast: function(ev) {
@@ -215,13 +204,12 @@
             },
 
             // Event Handlers
-
             _appWillSuspend: function() {
                 localStorage.setItem("path", this.route.path);
             },
 
             _appWillResume: function() {
-                if(localStorage["path"]) {
+                if (localStorage["path"]) {
                     this.set("route.path", localStorage["path"]);
                 }
             }

@@ -1,0 +1,217 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/behavior-app-state.html">
+<link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../providers/provider-metadata.html">
+<link rel="import" href="../providers/provider-tracks.html">
+<link rel="import" href="components/playback-progress-bar.html">
+<link rel="import" href="components/tv-track.html">
+<link rel="import" href="components/size-aware-image.html">
+
+<dom-module id="view-tv">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                position: absolute;
+                top: 0; left: 0;
+                bottom: 0; right: 0;
+                min-height: 720px;
+                min-width: 1280px;
+            }
+
+            .upper, .lower {
+                font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+                display: flex;
+                z-index: 1;
+            }
+
+            .upper {
+                flex-direction:column;
+                justify-content: center;
+                padding: 0 90px;
+                overflow: hidden;
+                flex-grow: 1;
+                width: 100%;
+            }
+
+            .lower {
+                flex-direction: row;
+                height: 316px;
+            }
+
+            tv-track {
+                margin-right: 52px;
+            }
+
+            .playing-track {
+                display: flex;
+                align-items: center;
+                z-index: 1;
+            }
+
+            .playing-track size-aware-image {
+                margin-right: 90px;
+                height: 49vh;
+                width: 49vh;
+                background: rgba(0,0,0,0.5);
+            }
+
+            .background {
+                position: absolute;
+                left: -40px;
+                top: -40px;
+                right: -40px;
+                bottom: -40px;
+                filter: blur(100px);
+                opacity: 0.3;
+            }
+
+            playback-progress-bar {
+                margin: 45px 0;
+                height: 6px;
+                background: rgba(255, 255, 255, 0.6);
+            }
+
+            h2, h3, h4, h5 {
+                margin: 0;
+                opacity: 0.9;
+            }
+
+            h2 {
+                font-size: 57px;
+                font-weight: normal;
+                line-height: 80px;
+            }
+
+            h3 {
+                font-size: 57px;
+                font-weight: 100;
+                line-height: 80px;
+            }
+
+            h4 {
+                font-size: 48px;
+                font-weight: normal;
+                line-height: 56px;
+                margin-bottom: 8px;
+            }
+
+            h5 {
+                font-size: 48px;
+                font-weight: 100;
+                line-height: 56px;
+            }
+
+            .metadata {
+                flex-grow: 1;
+            }
+
+            .lower {
+                padding-left: 90px;
+            }
+        </style>
+
+        <provider-tracks state="{{state}}"
+                         tracks="{{tracks}}"
+                         limit="[[tracksShown]]">
+        </provider-tracks>
+        <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
+
+        <size-aware-image class="background"
+                          sorted-sizes="[[_getCurrentTrackCover(state.*, meta.*)]]">
+        </size-aware-image>
+
+        <div class="upper">
+            <div class="playing-track">
+                <size-aware-image sorted-sizes="[[_getCurrentTrackCover(state.*, meta.*)]]"></size-aware-image>
+
+                <div class="metadata">
+                    <h2>[[_getCurrentTrackName(state.*, meta.*)]]</h2>
+                    <h3>[[_getCurrentTrackArtist(state.*, meta.*)]]</h3>
+
+                    <playback-progress-bar duration="[[_getCurrentTrackDuration(state.*, meta.*)]]"
+                                           playback="[[state.party.playback]]">
+                    </playback-progress-bar>
+
+                    <h4>Go to festify.us and vote!</h4>
+                    <h5>[[state.party.short_id]]</h5>
+                </div>
+            </div>
+        </div>
+        <div class="lower">
+            <template is="dom-repeat" items="[[_getVisibleTracks(tracks.*)]]">
+                <tv-track metadata="[[meta]]"
+                          state="[[state]]"
+                          track="[[item]]">
+                </tv-track>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-tv',
+
+            behaviors: [FestifyBehaviors.StateBehavior],
+
+            properties: {
+                meta: {
+                    type: Object
+                },
+                tracks: {
+                    type: Array
+                },
+                tracksShown: {
+                    type: Number,
+                    value: 15
+                }
+            },
+
+            attached: function () {
+                window.addEventListener('resize', this._resize);
+            },
+
+            detached: function () {
+                window.removeEventListener('resize', this._resize);
+            },
+
+            _getCurrentTrackArtist: function (stateChange, metaChange) {
+                return this._getCurrentTrackMeta(stateChange, metaChange, 'artistName');
+            },
+
+            _getCurrentTrackCover: function (stateChange, metaChange) {
+                return this._getCurrentTrackMeta(stateChange, metaChange, 'cover');
+            },
+
+            _getCurrentTrackDuration: function (stateChange, metaChange) {
+                return this._getCurrentTrackMeta(stateChange, metaChange, 'durationMs', 0);
+            },
+
+            _getCurrentTrackName: function (stateChange, metaChange) {
+                return this._getCurrentTrackMeta(stateChange, metaChange, 'name');
+            },
+
+            _getCurrentTrackMeta: function (stateChange, metaChange, key, fallback) {
+                const provId = this.get('base.currentTrack.reference.provider', stateChange);
+                const trackId = this.get('base.currentTrack.reference.id', stateChange);
+                return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
+                    this.get([provId, trackId, key], metaChange.base) :
+                    fallback;
+            },
+
+            _getVisibleTracks: function (tracks) {
+                return tracks.base.slice(1);
+            },
+
+            _resize: function () {
+                const track = document.querySelector('tv-track');
+                if (track) {
+                    const width = track.getBoundingClientRect().width;
+                    this.set('tracksShown', Math.ceil(window.outerWidth / width));
+                }
+            }
+        });
+    </script>
+</dom-module>

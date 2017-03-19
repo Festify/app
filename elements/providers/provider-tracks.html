@@ -16,6 +16,14 @@
         ],
 
         properties: {
+            limit: {
+                type: Number,
+                value: 50
+            },
+            offset: {
+                type: Number,
+                value: 0
+            },
             _fbQuery: {
                 type: firebase.database.Query,
                 computed: '_computeQuery(state.partyId, limit)',
@@ -75,7 +83,8 @@
         },
 
         _fbValue: function(snap) {
-            const data = _.values(snap.val());
+            const data = _.values(snap.val())
+                .slice(this.offset || 0);
 
             if (data.length > 0) {
                 data.sort((a, b) => a.order - b.order);
@@ -87,9 +96,6 @@
         _queryChanged: function(query, oldQuery) {
             if (oldQuery) {
                 oldQuery.off('value');
-            }
-            if (this.tracks) {
-                this.splice('tracks', 0, this.tracks.length);
             }
             if (query) {
                 query.on('value', this._fbValue.bind(this));
