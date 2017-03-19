@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="utils/raven-js.html">
 <link rel="import" href="providers/provider-party.html">
 <link rel="import" href="views/view-host.html">
 <link rel="import" href="views/view-join.html">
@@ -225,5 +226,11 @@
                 }
             }
         });
+
+        // setup error logging with Sentry
+        const environment = '<%= ENV.ENVIRONMENT %>';
+        if(environment == 'production') {
+            Raven.config('<%= ENV.SENTRY_URL %>').install();
+        }
     </script>
 </dom-module>
