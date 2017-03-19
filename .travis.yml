@@ -33,6 +33,9 @@ before_script:
 script:
   - gulp build
 
+before_deploy:
+  - (cd ./functions && npm install)
+
 deploy:
   provider: firebase
   skip_cleanup: true
