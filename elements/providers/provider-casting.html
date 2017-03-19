@@ -25,10 +25,10 @@
 
                 const plugin = this._getPluginUnsafe();
                 plugin.createScreenListener().then(l => {
-                    l.addListener("connect", this._connect, this);
-                    l.addListener("disconnect", this._disconnect, this);
+                    l.addListener('connect', this._connect, this);
+                    l.addListener('disconnect', this._disconnect, this);
 
-                    this.set("_screenListener", l);
+                    this.set('_screenListener', l);
                 });
             },
 
@@ -37,7 +37,7 @@
             },
 
             _disconnect: function() {
-                this.fire("toast", { text: "Lost screen connection." });
+                this.fire('toast', { text: "Lost screen connection." });
             },
 
             _getPluginUnsafe: function(){
