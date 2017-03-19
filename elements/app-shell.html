@@ -116,6 +116,9 @@
                     value: () => ({
                         auth: {},
                         config: {
+                            meta: {
+                                domain: "<%= ENV.DOMAIN %>"
+                            },
                             spotify: {
                                 urlScheme: "festify-spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",

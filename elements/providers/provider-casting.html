@@ -6,6 +6,9 @@
             is: 'provider-casting',
 
             properties: {
+                url: {
+                    type: String
+                },
                 _screenListener: {
                     type: Object
                 }
@@ -30,8 +33,7 @@
             },
 
             _connect: function() {
-                // TODO: Add real url for party view
-                this._screenListener.loadUrl(window.location.href);
+                this._screenListener.loadUrl(this.url);
             },
 
             _disconnect: function() {
