@@ -150,7 +150,12 @@
             },
 
             _getIsPlaying: function (stateChange, t) {
-                return this.get('base.currentTrack', stateChange) == t;
+                if (t.isFromSearch) {
+                    return false;
+                }
+
+                const ref = this.get('base.currentTrack.reference', stateChange);
+                return _.isEqual(t.reference, ref);
             },
 
             _getLikeButtonIcon: function (track, hasVoted) {
