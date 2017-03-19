@@ -7,7 +7,7 @@ const processor = require('./lib/vote-processor');
 
 firebase.initializeApp(functions.config().firebase);
 
-Raven.config(functions.config().sentry.url).install();
+raven.config(functions.config().sentry.url).install();
 
 exports.processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
     .onWrite(event => {
