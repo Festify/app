@@ -33,34 +33,33 @@
             }
 
             const partyId = this.state.partyId;
-            const updateObject = {};
-
-            const tracksPath = this._getFbTracksPath(partyId);
-            const votesPath = this._getFbVotesPath(partyId);
             const trackId = this._generateFbId(track);
-            updateObject[tracksPath + '/' + trackId] = null;
-            updateObject[votesPath + '/' + trackId] = null;
 
-            const updateVotes = firebase.database()
-                .ref('/')
-                .update(updateObject);
-            const updateUserVotes = firebase.database()
-                .ref(this._getFbVotesByUserPath(partyId))
-                .transaction(votes => {
-                    return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
-                });
-            let pushToHistory;
+            const updates = [
+                firebase.database()
+                    .ref(this._getFbTracksPath(partyId))
+                    .child(trackId)
+                    .set(null),
+                firebase.database()
+                    .ref(this._getFbVotesPath(partyId))
+                    .child(trackId)
+                    .set(null),
+                firebase.database()
+                    .ref(this._getFbVotesByUserPath(partyId))
+                    .transaction(votes => {
+                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
+                    })
+            ];
+
             if (moveToHistory) {
-                pushToHistory = firebase.database()
-                    .ref(this._getFbHistoryPath(partyId))
-                    .push(track);
+                updates.push(
+                    firebase.database()
+                        .ref(this._getFbHistoryPath(partyId))
+                        .push(track)
+                );
             }
 
-            return Promise.all([
-                updateUserVotes,
-                updateVotes,
-                (pushToHistory || Promise.resolve())
-            ]);
+            return Promise.all(updates);
         },
 
         _computeQuery: function(partyId, limit) {
