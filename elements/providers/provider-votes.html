@@ -62,6 +62,10 @@
             },
 
             _playingTrackChanged: function(stateChange) {
+                if(!this.get('state.isOwner')) {
+                    return;
+                }
+
                 const track = this.get('base.currentTrack', stateChange);
                 if (!track) {
                     return;
