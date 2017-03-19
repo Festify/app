@@ -5,6 +5,7 @@
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="components/playback-progress-bar.html">
+<link rel="import" href="components/tv-track.html">
 <link rel="import" href="components/size-aware-image.html">
 
 <dom-module id="view-tv">
@@ -18,66 +19,91 @@
                 position: absolute;
                 top: 0; left: 0;
                 bottom: 0; right: 0;
+                min-height: 720px;
+                min-width: 1280px;
+            }
+
+            .upper, .lower {
+                font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+                display: flex;
+                z-index: 1;
             }
 
             .upper {
-                font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-                display: flex;
-                flex-direction: column;
+                flex-direction:column;
                 justify-content: center;
-                height: 70%;
                 padding: 0 90px;
                 overflow: hidden;
+                flex-grow: 1;
                 width: 100%;
+            }
+
+            .lower {
+                flex-direction: row;
+                height: 316px;
+            }
+
+            tv-track {
+                margin-right: 52px;
             }
 
             .playing-track {
                 display: flex;
                 align-items: center;
+                z-index: 1;
             }
 
-            size-aware-image {
+            .playing-track size-aware-image {
                 margin-right: 90px;
                 height: 49vh;
                 width: 49vh;
-                background: rgba(0,0,0,0.5)
+                background: rgba(0,0,0,0.5);
+            }
+
+            .background {
+                position: absolute;
+                left: -40px;
+                top: -40px;
+                right: -40px;
+                bottom: -40px;
+                filter: blur(20px);
+                opacity: 0.3;
             }
 
             playback-progress-bar {
-                margin: 55px 0;
+                margin: 45px 0;
                 height: 6px;
-                background: rgba(255, 255, 255, 0.4);
+                background: rgba(255, 255, 255, 0.6);
             }
 
             h2, h3, h4, h5 {
                 margin: 0;
-                opacity: 0.8;
+                opacity: 0.9;
             }
 
             h2 {
-                font-size: 70px;
+                font-size: 57px;
                 font-weight: normal;
                 line-height: 80px;
-                margin-bottom: 25px;
             }
 
             h3 {
-                font-size: 70px;
+                font-size: 57px;
                 font-weight: 100;
                 line-height: 80px;
             }
 
             h4 {
-                font-size: 54px;
+                font-size: 48px;
                 font-weight: normal;
-                line-height: 60px;
-                margin-bottom: 15px;
+                line-height: 56px;
+                margin-bottom: 8px;
             }
 
             h5 {
-                font-size: 54px;
+                font-size: 48px;
                 font-weight: 100;
-                line-height: 60px;
+                line-height: 56px;
             }
 
             .metadata {
@@ -94,6 +120,8 @@
                          tracks="{{tracks}}">
         </provider-tracks>
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
+
+        <size-aware-image class="background" sorted-sizes="[[_getCurrentTrackCover(meta.*, tracks.*)]]"></size-aware-image>
 
         <div class="upper">
             <div class="playing-track">
@@ -113,7 +141,11 @@
             </div>
         </div>
         <div class="lower">
-
+            <template is="dom-repeat" items="[[tracks]]">
+                <tv-track metadata="[[meta]]"
+                          state="[[state]]"
+                          track="[[item]]"></tv-track>
+            </template>
         </div>
     </template>
     <script>
@@ -130,7 +162,22 @@
                 },
                 tracks: {
                     type: Array
+                },
+                tracksShown: {
+                    type: Number,
+                    value: 10
                 }
+            },
+
+            attached: function() {
+                window.addEventListener("resize", function() {
+                    const width = window.outerWidth;
+                    const tracksVisible = 0;
+                });
+            },
+
+            _getVisibleTracks: function(tracks, tracksShown) {
+                return tracks.base;
             },
 
             _getCurrentTrackArtist: function (metaChange, tracksChange) {
