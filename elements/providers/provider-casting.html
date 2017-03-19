@@ -50,7 +50,7 @@
                     return;
                 }
 
-                this._screenListener.loadUrl(url);
+                this.debounce('url', () => this._screenListener.loadUrl(url), 50);
             }
         });
     </script>
