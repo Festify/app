@@ -12,6 +12,7 @@
     "cordova-lib": "^6.4.0",
     "del": "^2.2.2",
     "dotenv": "^4.0.0",
+    "firebase-bolt": "^0.8.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-clean-css": "^3.0.3",
