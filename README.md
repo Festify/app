@@ -37,6 +37,7 @@ To allow voting even in the absence of the hosts device, Festify uses a Firebase
 Use this template to have all the environment variables handy for building the app and put it in a file called `.env`, it will be loaded automatically.
 
 ```bash
+DOMAIN="<DOMAIN_FESTIFY_IS_HOSTED_ON>"
 FIREBASE_API_KEY="<YOUR_FIREBASE_API_KEY>"
 FIREBASE_AUTH_DOMAIN="<YOUR_DOMAIN>.firebaseapp.com"
 FIREBASE_DB_URL="https://<YOUR_DOMAIN>.firebaseio.com"
