@@ -1,10 +1,13 @@
 const _ = require('lodash');
 const firebase = require('firebase-admin');
 const functions = require('firebase-functions');
+const raven = require('raven');
 
 const processor = require('./lib/vote-processor');
 
 firebase.initializeApp(functions.config().firebase);
+
+Raven.config(functions.config().sentry.url).install();
 
 exports.processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
     .onWrite(event => {
@@ -35,5 +38,13 @@ exports.processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userI
                     event.params.partyId,
                     partySnap.val()
                 );
-            });
+            })
+            .then(({commited}) => {
+                if(!commited) {
+                    raven.captureMessage('Transaction has been aborted', {
+                        level: 'warning'
+                    });
+                }
+            })
+            .catch(raven.captureException);
     });
