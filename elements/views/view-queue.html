@@ -19,7 +19,10 @@
         </app-route>
 
         <iron-pages selected="[[_currentView]]" attr-for-selected="view">
-            <view-party view="party" state="{{state}}" search-query="{{_searchQuery}}"></view-party>
+            <view-party view="party"
+                        state="{{state}}"
+                        search-query="{{_searchQuery}}"
+                        route="{{subroute}}"></view-party>
             <view-tv view="tv" state="{{state}}"></view-tv>
         </iron-pages>
     </template>
@@ -61,7 +64,7 @@
             ],
 
             _modeChanged: function(mode) {
-                this.set('_currentView', mode || 'party');
+                this.set('_currentView', mode == 'tv' ? 'tv' : 'party');
             },
 
             _partyIdChanged: function (partyId) {
