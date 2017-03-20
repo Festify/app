@@ -223,7 +223,7 @@
 
         // setup error logging with Sentry
         const environment = '<%= ENV.ENVIRONMENT %>';
-        if(environment == 'production') {
+        if (environment == 'production') {
             Raven.config('<%= ENV.SENTRY_URL %>').install();
         }
     </script>

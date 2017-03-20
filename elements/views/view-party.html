@@ -337,7 +337,7 @@
             _getPartyUrl: function(partyId) {
                 const domain = this.get('state.config.meta.domain');
 
-                if(!partyId) {
+                if (!partyId) {
                     return `https://${domain}/`
                 }
 
@@ -345,15 +345,15 @@
             },
 
             _getCurrentView: function (dataChange, query) {
-                if(!dataChange) {
+                if (!dataChange) {
                     return;
                 }
 
                 const viewActive = Polymer.dom(this.root).querySelector('app-route').get('active');
 
-                if(!!query) {
+                if (!!query) {
                     this.set('page', 'search')
-                } else if(viewActive && dataChange.base && dataChange.base.view == 'share') {
+                } else if (viewActive && dataChange.base && dataChange.base.view == 'share') {
                     this.set('page', 'share');
                 } else {
                     this.set('page', 'queue');
@@ -378,14 +378,14 @@
             },
 
             _pageChanged: function(page) {
-                if(page == 'share') {
+                if (page == 'share') {
                     this.set('route.path', '/share');
                 } else {
                     this.set('route.path', '');
                 }
 
                 const drawer = Polymer.dom(this.root).querySelector('app-drawer');
-                if(!drawer.persistent) {
+                if (!drawer.persistent) {
                     drawer.close();
                 }
             },
