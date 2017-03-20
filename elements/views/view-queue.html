@@ -18,7 +18,9 @@
                    data="{{_modeRouteData}}">
         </app-route>
 
-        <iron-pages selected="[[_currentView]]" attr-for-selected="view">
+        <iron-pages selected="[[_modeRouteData.mode]]"
+                    attr-for-selected="view"
+                    fallback-selection="party">
             <view-party view="party"
                         state="{{state}}"
                         search-query="{{_searchQuery}}"
@@ -49,9 +51,6 @@
                 _partyRouteData: {
                     type: Object
                 },
-                _currentView: {
-                    type: String
-                },
                 _searchQuery: {
                     type: String,
                     value: () => ''
@@ -59,13 +58,8 @@
             },
 
             observers: [
-                '_modeChanged(_modeRouteData.mode)',
                 '_partyIdChanged(_partyRouteData.partyId)'
             ],
-
-            _modeChanged: function(mode) {
-                this.set('_currentView', mode == 'tv' ? 'tv' : 'party');
-            },
 
             _partyIdChanged: function (partyId) {
                 this.set('state.partyId', partyId);
