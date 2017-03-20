@@ -10,7 +10,8 @@
         <app-route route="{{route}}"
                    pattern="/:partyId"
                    data="{{_partyRouteData}}"
-                   tail="{{subroute}}">
+                   tail="{{subroute}}"
+                   query-params="{{queryParams}}">
         </app-route>
         <app-route route="{{subroute}}"
                    pattern="/:mode"
@@ -18,7 +19,7 @@
         </app-route>
 
         <iron-pages selected="[[_currentView]]" attr-for-selected="view">
-            <view-party view="party" state="{{state}}"></view-party>
+            <view-party view="party" state="{{state}}" search-query="{{_searchQuery}}"></view-party>
             <view-tv view="tv" state="{{state}}"></view-tv>
         </iron-pages>
     </template>
@@ -35,6 +36,10 @@
                     type: Object,
                     notify: true
                 },
+                queryParams: {
+                    type: Object,
+                    computed: '_computeParams(_searchQuery)'
+                },
                 _modeRouteData: {
                     type: Object
                 },
@@ -43,6 +48,10 @@
                 },
                 _currentView: {
                     type: String
+                },
+                _searchQuery: {
+                    type: String,
+                    value: () => ''
                 }
             },
 
@@ -58,6 +67,10 @@
             _partyIdChanged: function (partyId) {
                 this.set('state.partyId', partyId);
             },
+
+            _computeParams: function(searchQuery) {
+                return !searchQuery ? {} : { q: searchQuery };
+            }
         });
     </script>
 </dom-module>
