@@ -116,7 +116,7 @@
 
         <provider-tracks state="{{state}}"
                          tracks="{{tracks}}"
-                         limit="[[tracksShown]]">
+                         limit="[[_tracksShown]]">
         </provider-tracks>
         <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
 
@@ -163,7 +163,7 @@
                 tracks: {
                     type: Array
                 },
-                tracksShown: {
+                _tracksShown: {
                     type: Number,
                     value: 15
                 }
@@ -209,7 +209,7 @@
                 const track = document.querySelector('tv-track');
                 if (track) {
                     const width = track.getBoundingClientRect().width;
-                    this.set('tracksShown', Math.ceil(window.outerWidth / width));
+                    this.set('_tracksShown', Math.ceil(window.outerWidth / width));
                 }
             }
         });
