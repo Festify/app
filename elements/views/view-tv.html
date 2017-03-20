@@ -206,11 +206,13 @@
             },
 
             _resize: function () {
-                const track = document.querySelector('tv-track');
-                if (track) {
-                    const width = track.getBoundingClientRect().width;
-                    this.set('_tracksShown', Math.ceil(window.outerWidth / width));
-                }
+                this.debounce('resize', () => {
+                    const track = document.querySelector('tv-track');
+                    if (track) {
+                        const width = track.getBoundingClientRect().width;
+                        this.set('_tracksShown', Math.ceil(window.outerWidth / width));
+                    }
+                }, 100);
             }
         });
     </script>
