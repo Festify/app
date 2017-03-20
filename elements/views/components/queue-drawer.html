@@ -158,15 +158,15 @@
                     <iron-icon icon="social:share"></iron-icon>
                     Share Party
                 </a>
-                <a name="tvmode">
-                    <iron-icon icon="hardware:tv"></iron-icon>
-                    TV Mode
-                </a>
             </iron-selector>
             <!--a name="cast">
                 <iron-icon icon="hardware:cast"></iron-icon>
                 Cast to Screen
             </a-->
+            <a href$="[[tvUrl]]" target="_blank">
+                <iron-icon icon="hardware:tv"></iron-icon>
+                TV Mode
+            </a>
             <a href="https://festify.rocks/" target="_blank">
                 <iron-icon icon="home"></iron-icon>
                 Festify Homepage
@@ -191,6 +191,9 @@
                     value: () => 'queue'
                 },
                 userName: {
+                    type: String
+                },
+                tvUrl: {
                     type: String
                 }
             },
