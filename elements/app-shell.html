@@ -200,7 +200,8 @@
 
             _openParty: function (ev) {
                 this.$.partyProvider.openParty(ev.detail.shortId)
-                    .then(([key]) => this._loadParty(key));
+                    .then(([key]) => this._loadParty(key))
+                    .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
             },
 
             _showToast: function(ev) {
