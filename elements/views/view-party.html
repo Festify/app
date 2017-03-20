@@ -378,6 +378,11 @@
                 } else {
                     this.set('route.path', '');
                 }
+
+                const drawer = Polymer.dom(this.root).querySelector('app-drawer');
+                if(!drawer.persistent) {
+                    drawer.close();
+                }
             },
 
             /*
