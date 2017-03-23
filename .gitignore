@@ -17,3 +17,4 @@ build/
 # Firebase
 .firebaserc
 database.rules.json
+firebase-debug.log
