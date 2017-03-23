@@ -163,6 +163,9 @@
                 tracks: {
                     type: Array
                 },
+                _resizeListener: {
+                    type: Function
+                },
                 _tracksShown: {
                     type: Number,
                     value: 15
@@ -170,11 +173,13 @@
             },
 
             attached: function () {
-                window.addEventListener('resize', this._resize);
+                this._resizeListener = () => this._resize();
+                window.addEventListener('resize', this._resizeListener);
             },
 
             detached: function () {
-                window.removeEventListener('resize', this._resize);
+                window.removeEventListener('resize', this._resizeListener);
+                this._resizeListener = null;
             },
 
             _getCurrentTrackArtist: function (stateChange, metaChange) {
