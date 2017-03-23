@@ -5,7 +5,9 @@
     "firebase-admin": "^4.1.2",
     "firebase-functions": "^0.5",
     "lodash": "^4.17.4",
-    "raven": "^1.2.0"
+    "raven": "^1.2.0",
+    "request": "^2.81.0",
+    "sharp": "^0.17.2"
   },
   "private": true
 }
