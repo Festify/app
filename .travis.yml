@@ -27,6 +27,7 @@ cache:
   yarn: true
   directories:
     - "$HOME/.cache/bower"
+    - node_modules
 
 before_script:
   - bower install
