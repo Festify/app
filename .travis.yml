@@ -24,9 +24,9 @@ env:
     - secure: "FJtcQFUB2rbsvc8W/tYrZs2DPdLUKyc+6E8jhwhfMGeZTu8VkS7D9jusQS8VmvvMvPTrL8Dx2jK1M3m0zlmh/6OACcEd7CHFfmynWi8jjpOR+O7v3I+S4uL+opLxEtpix4zPLU6XJtU5ugUf8v7UYmTac5LsczXoPjt55Gu6WGf6RkuVY59TWppfwWafmwOZImq69MWxH+elnoWBNkoVWY+GSAFjFqEsWAzaLqVe9VfUydUwCOWKuJVPuGmcQVJWnP74XOxZ51WPFZIMsWAAAvEMOgd6T4GjqIkmiUF8wRiGKwnMS7B5+S4FykGdlzfFeeqvZzsQGYjo4ZbUVfFKYrPEnoJJkPyPNHWUyN0lATmEsW1CTYrIGgxcWqguZbYVQsuoOMWMOQ5qPQwsc43N1/NluaExfbCdSiJFwGMFB2Sp9ekQBy3ReoT94kylAfR4rW+Pgkz4onyJqjQONfqQUT5+CLU61eicmqordmJEOGnBtKikCwr2mDmKBmujHcPMvsK+TzqzkfZcl8T+o/M5XGKSNhDAuY86ivNguvFpZZ9wdYSNGjv+FVlorOOJPbz2/dZmrg1BAcIrxUgWcFQBfsTLKw+UjlSUqLERuOILnQjstwZmChkba0AdQAY7tIyGVJh4qJ+5w4t+12qVv6ppllTd8d1IAySVpLexi0DXKOw="
 
 cache:
-  yarn: true
   directories:
     - "$HOME/.cache/bower"
+    - node_modules
 
 before_script:
   - bower install
