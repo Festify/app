@@ -27,6 +27,7 @@ cache:
   directories:
     - "$HOME/.cache/bower"
     - node_modules
+    - functions/node_modules
 
 before_script:
   - bower install
