@@ -114,32 +114,21 @@ gulp.task('polymer-cordova:develop', function() {
 });
 
 gulp.task('generate-icons', function() {
-    function responsify(sizes) {
-        return $.responsive({
-            '*.png': sizes.map(w => ({
+    const fullSizes = [
+        29, 36, 40, 48,
+        50, 57, 58, 60,
+        72, 76, 80, 96,
+        100, 114, 120, 144,
+        152, 180, 192, 512
+    ];
+
+    return gulp.src(['images/icon-full.png', 'images/icon.png'])
+        .pipe($.responsive({
+            '*.png': fullSizes.map(w => ({
                 width: w,
                 rename: { suffix: `-${w}` }
             }))
-        }, { withMetadata: false });
-    }
-
-    const fullSizes = [
-        29, 40, 50, 57,
-        58, 60, 72, 76,
-        80, 100, 114, 120,
-        144, 152, 180
-    ];
-    const openSizes = [
-        36, 48, 72, 96,
-        144, 192, 512
-    ];
-
-    const full = gulp.src('images/icon-full.png')
-        .pipe(responsify(fullSizes));
-    const open = gulp.src('images/icon.png')
-        .pipe(responsify(openSizes));
-
-    return mergeStream(full, open)
+        }, { withMetadata: false }))
         .pipe(gulp.dest(path.join(appDir, 'images/manifest')))
         .pipe(gulp.dest(path.join(webDir, 'images/manifest')));
 });
