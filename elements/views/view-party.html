@@ -421,8 +421,10 @@
 
             _copyUrl: function() {
                 this.$.copyContent.select();
-                document.execCommand('copy');
-                this.fire('toast', { text: 'URL copied!' });
+                const text = document.execCommand('copy') ?
+                    "URL copied!" :
+                    "Failed to copy!";
+                this.fire('toast', { text });
             },
 
             _track: function (ev) {
