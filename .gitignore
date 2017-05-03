@@ -6,6 +6,7 @@ npm-debug.log
 # Cordova stuff
 plugins/
 platforms/
+res/
 www/*
 !www/.gitkeep
 
