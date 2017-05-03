@@ -26,7 +26,7 @@
     "gulp-uglify": "^2.1.0",
     "gulp-useref": "^3.1.2",
     "merge-stream": "^1.0.0",
-    "polymer-build": "^1.0.0",
+    "polymer-build": "^1.2.1",
     "polymer-lint": "^0.8.3",
     "run-sequence": "^1.2.2",
     "sharp": "^0.17.3",
