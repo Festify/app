@@ -146,18 +146,6 @@ gulp.task('serve-output', ['configure'], function () {
     return serve(['build']);
 });
 
-gulp.task("package-cordova", function (callback) {
-    cordova.build({
-        "options": {
-            argv: []
-        }
-    }, callback);
-});
-
-gulp.task("serve:cordova", ['build-cordova:develop'], function(cb) {
-    cordova.run({}, cb);
-});
-
 gulp.task('build', function(cb) {
     runSequence(
         'clean',
