@@ -9,48 +9,50 @@
     </author>
     <content src="app.html" />
     <access origin="*" />
+
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="mailto:*" />
-    <platform name="android">
-        <allow-intent href="market:*" />
-    </platform>
+
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-        <icon height="180" src="www/images/manifest/icon-full-180.png" width="180" />
-        <icon height="60" src="www/images/manifest/icon-full-60.png" width="60" />
-        <icon height="120" src="www/images/manifest/icon-full-120.png" width="120" />
-        <icon height="76" src="www/images/manifest/icon-full-76.png" width="76" />
-        <icon height="152" src="www/images/manifest/icon-full-152.png" width="152" />
-        <icon height="40" src="www/images/manifest/icon-full-40.png" width="40" />
-        <icon height="80" src="www/images/manifest/icon-full-80.png" width="80" />
-        <icon height="57" src="www/images/manifest/icon-full-57.png" width="57" />
-        <icon height="114" src="www/images/manifest/icon-full-114.png" width="114" />
-        <icon height="72" src="www/images/manifest/icon-full-72.png" width="72" />
-        <icon height="144" src="www/images/manifest/icon-full-144.png" width="144" />
+
         <icon height="29" src="www/images/manifest/icon-full-29.png" width="29" />
-        <icon height="58" src="www/images/manifest/icon-full-58.png" width="58" />
+        <icon height="40" src="www/images/manifest/icon-full-40.png" width="40" />
         <icon height="50" src="www/images/manifest/icon-full-50.png" width="50" />
+        <icon height="57" src="www/images/manifest/icon-full-57.png" width="57" />
+        <icon height="58" src="www/images/manifest/icon-full-58.png" width="58" />
+        <icon height="60" src="www/images/manifest/icon-full-60.png" width="60" />
+        <icon height="72" src="www/images/manifest/icon-full-72.png" width="72" />
+        <icon height="76" src="www/images/manifest/icon-full-76.png" width="76" />
+        <icon height="80" src="www/images/manifest/icon-full-80.png" width="80" />
         <icon height="100" src="www/images/manifest/icon-full-100.png" width="100" />
+        <icon height="114" src="www/images/manifest/icon-full-114.png" width="114" />
+        <icon height="120" src="www/images/manifest/icon-full-120.png" width="120" />
+        <icon height="144" src="www/images/manifest/icon-full-144.png" width="144" />
+        <icon height="152" src="www/images/manifest/icon-full-152.png" width="152" />
+        <icon height="180" src="www/images/manifest/icon-full-180.png" width="180" />
+
+        <splash src="res/ios/Default@2x~universal~anyany.png" />
+        <splash src="res/ios/Default@3x~universal~anyany.png" />
     </platform>
-    <splash height="480" platform="ios" src="res/screens/ios/screen-iphone-portrait.png" width="320" />
-    <splash height="960" platform="ios" src="res/screens/ios/screen-iphone-portrait-2x.png" width="640" />
-    <splash height="1136" platform="ios" src="res/screens/ios/screen-iphone-portrait-568h-2x.png" width="640" />
-    <splash height="1334" platform="ios" src="res/screens/ios/screen-iphone-portrait-667h.png" width="750" />
-    <splash height="2208" platform="ios" src="res/screens/ios/screen-iphone-portrait-736h.png" width="1242" />
-    <splash height="1024" platform="ios" src="res/screens/ios/screen-ipad-portrait.png" width="768" />
-    <splash height="2048" platform="ios" src="res/screens/ios/screen-ipad-portrait-2x.png" width="1536" />
-    <splash height="320" platform="android" qualifier="ldpi" src="res/screens/android/screen-ldpi-portrait.png" width="200" />
-    <splash height="480" platform="android" qualifier="mdpi" src="res/screens/android/screen-mdpi-portrait.png" width="320" />
-    <splash height="800" platform="android" qualifier="hdpi" src="res/screens/android/screen-hdpi-portrait.png" width="480" />
-    <splash height="1280" platform="android" qualifier="xhdpi" src="res/screens/android/screen-xhdpi-portrait.png" width="720" />
-    <icon platform="android" qualifier="ldpi" src="res/icons/android/icon-36-ldpi.png" width="36" />
-    <icon platform="android" qualifier="mdpi" src="res/icons/android/icon-48-mdpi.png" width="48" />
-    <icon platform="android" qualifier="hdpi" src="res/icons/android/icon-72-hdpi.png" width="72" />
-    <icon platform="android" qualifier="xhdpi" src="res/icons/android/icon-96-xhdpi.png" width="96" />
-    <icon platform="android" qualifier="xxhdpi" src="res/icons/android/icon-144-xxhdpi.png" width="144" />
-    <icon platform="android" qualifier="xxxhdpi" src="res/icons/android/icon-192-xxxhdpi.png" width="192" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+
+        <icon qualifier="ldpi" src="www/images/manifest/icon-36.png" width="36" />
+        <icon qualifier="mdpi" src="www/images/manifest/icon-48.png" width="48" />
+        <icon qualifier="hdpi" src="www/images/manifest/icon-72.png" width="72" />
+        <icon qualifier="xhdpi" src="www/images/manifest/icon-96.png" width="96" />
+        <icon qualifier="xxhdpi" src="www/images/manifest/icon-144.png" width="144" />
+        <icon qualifier="xxxhdpi" src="www/images/manifest/icon-192.png" width="192" />
+
+        <!--
+            Splash screens are implicitly taken from platforms/android/res folder.
+            No need to explicitly define them here. 🤦 I hate cordova.
+        -->
+    </platform>
+
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="false" />
     <preference name="BackgroundColor" value="0xff1c1f24" />
@@ -59,17 +61,21 @@
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <preference name="Orientation" value="portrait" />
-    <preference name="FadeSplashScreenDuration" value="500" />
-    <preference name="SplashScreenDelay" value="2000" />
+
     <preference name="ShowSplashScreenSpinner" value="true" />
-    <preference name="SplashScreen" value="images/icon.png" />
-    <preference name="SplashScreenBackgroundColor" value="#1c1f24" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="2000" />
+    <preference name="FadeSplashScreenDuration" value="500" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="SplashMaintainAspectRatio" value="true|false" />
+
+    <engine name="ios" spec="~4.3.0" />
+    <engine name="android" spec="~6.0.0" />
+
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
     <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
-    <engine name="ios" spec="~4.3.0" />
-    <engine name="android" spec="~6.0.0" />
     <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify" />
     <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper" />
     <plugin name="rocks.festify.cordova-external-screen" spec="https://github.com/Festify/cordova-external-screen" />
