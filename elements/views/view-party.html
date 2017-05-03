@@ -202,7 +202,10 @@
                         <div id="skipBackground" style$="display: [[_getDisplaySkipIndicator(tracks.length)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
-                        <template is="dom-repeat" id="trackList" items="[[tracks]]" on-dom-change="_trackListChange">
+                        <template is="dom-repeat"
+                                  id="trackList"
+                                  items="[[tracks]]"
+                                  on-dom-change="_trackListChange">
                             <queue-track metadata="[[meta]]"
                                            state="[[state]]"
                                            track="[[item]]"
@@ -220,8 +223,10 @@
                         </template>
                     </div>
                     <div class="share-view" view="share">
-                        <p class="description">Guests can vote on <span class="domain">[[state.config.meta.domain]]</span>
-                            using this code:</p>
+                        <p class="description">
+                            Guests can vote on <span class="domain">[[state.config.meta.domain]]</span>
+                            using this code:
+                        </p>
                         <p class="code">[[state.party.short_id]]</p>
                         <p class="copy">
                             <input id="copyContent" value$="[[_getPartyUrl(state.partyId)]]">
