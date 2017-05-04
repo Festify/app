@@ -62,12 +62,11 @@
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <preference name="Orientation" value="portrait" />
 
-    <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="2000" />
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="ShowSplashScreenSpinner" value="false" />
-    <preference name="SplashMaintainAspectRatio" value="true|false" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
 
     <engine name="ios" spec="~4.3.0" />
     <engine name="android" spec="~6.0.0" />
