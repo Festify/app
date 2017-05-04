@@ -169,15 +169,22 @@
 
             // Property Observers
             _loginStateChanged: function (statusKnown, signedIn) {
-                if (!statusKnown || signedIn) {
+                if (!statusKnown) {
+                    return;
+                }
+                if (signedIn) {
+                    this._hideSplash();
                     return;
                 }
 
                 return this.$.fbAuth.signInAnonymously()
-                    .catch(err => this.fire('toast', {
-                        text: "Could not authenticate with the Server. Please reload the site to try again.",
-                        details: err
-                    }));
+                    .catch(err => {
+                        this._hideSplash();
+                        this.fire('toast', {
+                            text: "Could not authenticate with the Server. Please reload the site to try again.",
+                            details: err
+                        });
+                    });
             },
 
             _routePageChanged: function (page) {
@@ -196,6 +203,13 @@
             _createNewParty: function () {
                 const [key] = this.$.partyProvider.createNewParty();
                 this._loadParty(key);
+            },
+
+            _hideSplash: function () {
+                if (navigator.splashscreen &&
+                    typeof navigator.splashscreen.hide === 'function') {
+                    navigator.splashscreen.hide();
+                }
             },
 
             _openParty: function (ev) {
