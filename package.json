@@ -1,6 +1,5 @@
 {
   "name": "festify-v2-app",
-  "version": "1.0.0",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
   "devDependencies": {
     "autoprefixer": "^6.7.7",
