@@ -16,8 +16,7 @@ function spotifyRequest(params) {
         headers: {
             'Authorization': `Basic ${authKey}`
         }
-    })
-    .then(resp => (resp.statusCode === 200) ? resp : Promise.reject(resp));
+    });
 }
 
 exports.exchangeCode = (req, res) => {
