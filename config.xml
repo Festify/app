@@ -47,10 +47,10 @@
         <icon qualifier="xxhdpi" src="www/images/manifest/icon-144.png" width="144" />
         <icon qualifier="xxxhdpi" src="www/images/manifest/icon-192.png" width="192" />
 
-        <!--
-            Splash screens are implicitly taken from platforms/android/res folder.
-            No need to explicitly define them here. 🤦 I hate cordova.
-        -->
+        <splash density="port-ldpi" src="www/images/manifest/splash-ldpi.png" />
+        <splash density="port-mdpi" src="www/images/manifest/splash-mdpi.png" />
+        <splash density="port-hdpi" src="www/images/manifest/splash-hdpi.png" />
+        <splash density="port-xhdpi" src="www/images/manifest/splash-xhdpi.png" />
     </platform>
 
     <preference name="DisallowOverscroll" value="true" />

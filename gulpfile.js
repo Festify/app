@@ -136,14 +136,14 @@ gulp.task('generate-icons', function() {
 gulp.task('generate-splash-screens', function () {
     const sizes = [
         // Android
-        { size: [200, 320], height: 80, name: "platforms/android/res/drawable-port-ldpi/screen" },
-        { size: [320, 480], height: 120, name: "platforms/android/res/drawable-port-mdpi/screen" },
-        { size: [480, 800], height: 192, name: "platforms/android/res/drawable-port-hdpi/screen" },
-        { size: [720, 1280], height: 288, name: "platforms/android/res/drawable-port-xhdpi/screen" },
+        { size: [200, 320], height: 80, name: "splash-ldpi" },
+        { size: [320, 480], height: 120, name: "splash-mdpi" },
+        { size: [480, 800], height: 192, name: "splash-hdpi" },
+        { size: [720, 1280], height: 288, name: "splash-xhdpi" },
 
         // iOS
-        { size: [2208, 2208], height: 497, name: "res/ios/Default@3x~universal~anyany" },
-        { size: [2732, 2732], height: 616, name: "res/ios/Default@2x~universal~anyany" },
+        { size: [2208, 2208], height: 497, name: "Default@3x~universal~anyany" },
+        { size: [2732, 2732], height: 616, name: "Default@2x~universal~anyany" },
     ];
 
     return gulp.src('images/icon.png')
@@ -174,7 +174,7 @@ gulp.task('generate-splash-screens', function () {
             })
                 .then(() => cb());
         }))
-        .pipe(gulp.dest(''));
+        .pipe(gulp.dest('www/images/manifest'));
 });
 
 gulp.task('configure', function() {
