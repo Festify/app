@@ -153,9 +153,9 @@ gulp.task('generate-splash-screens', function () {
                 .flatten();
 
             return Promise.map(sizes, ({ size, height, name }) => {
-                let [outputWidth, outputHeight] = size;
-                let tb = (outputHeight - height) / 2;
-                let lr = (outputWidth - height) / 2;
+                const [outputWidth, outputHeight] = size;
+                const tb = (outputHeight - height) / 2;
+                const lr = (outputWidth - height) / 2;
 
                 return img.clone()
                     .resize(height)
