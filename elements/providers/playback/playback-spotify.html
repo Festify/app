@@ -69,9 +69,11 @@
             switch(event) {
                 case 'Pause':
                 case 'Play':
-                    this.fire('player', { type: event.toLowerCase() }); break;
+                    this.fire('player', { type: event.toLowerCase() });
+                    break;
                 case 'TrackDelivered':
-                    this.fire('player', { type: 'finished' }); break;
+                    this.fire('player', { type: 'finished' });
+                    break;
                 case 'LostPermission':
                     this.fire('error', {
                         type: 'permissionlost',
@@ -80,6 +82,7 @@
                     break;
                 default:
                     console.log(event);
+                    break;
             }
         },
 
