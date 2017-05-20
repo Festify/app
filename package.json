@@ -2,7 +2,7 @@
   "name": "festify-v2-app",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
   "devDependencies": {
-    "autoprefixer": "^7.0.0",
+    "autoprefixer": "^7.1.1",
     "babel": "^6.5.2",
     "babel-preset-es2015": "^6.24.0",
     "bluebird": "^3.5.0",
