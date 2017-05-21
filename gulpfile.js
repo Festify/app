@@ -13,6 +13,7 @@ const runSequence = require('run-sequence');
 const sharp = require('sharp');
 const through2 = require('through2');
 const Vinyl = require('vinyl');
+const prompt = require('prompt');
 
 const autoprefixer = require('autoprefixer');
 const PolymerProject = require('polymer-build').PolymerProject;
@@ -229,4 +230,40 @@ gulp.task('build-all', ['clean'], function(cb) {
         ['build:web', 'build:mobile'],
         cb
     );
+});
+
+// Cordova tasks
+gulp.task('cordova:release:android-apk', ['build-cordova'], function(cb) {
+    prompt.message = "";
+    prompt.delimiter = "";
+    prompt.colors = false;
+    prompt.start();
+    prompt.get({
+        properties: {
+            password: {
+                description: "Keystore/Key password:",
+                hidden: true
+            }
+        }
+    }, function(err, result) {
+        if(err){
+            return cb(err);
+        }
+        cordova.raw.compile({
+            platforms: ['android'],
+            options: {
+                release: true,
+                argv: [
+                    "--keystore", "../android-sign/upload.keystore",
+                    "--alias", "upload",
+                    "--storePassword", result.password,
+                    "--password", result.password
+                ]
+            }
+        }).done(cb);
+    });
+});
+gulp.task('cordova:release:android', ['cordova:release:android-apk'], function() {
+    return gulp.src('platforms/android/build/outputs/apk/android-release.apk')
+        .pipe(gulp.dest('build-mobile'));
 });

@@ -12,6 +12,7 @@ www/*
 
 .tmp/
 build/
+build-mobile/
 .env
 /images/manifest/*.png
 

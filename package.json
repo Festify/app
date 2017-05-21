@@ -31,6 +31,7 @@
     "merge-stream": "^1.0.0",
     "polymer-build": "^1.2.1",
     "polymer-lint": "^0.8.3",
+    "prompt": "^1.0.0",
     "run-sequence": "^1.2.2",
     "sharp": "^0.17.3",
     "through2": "^2.0.3",
