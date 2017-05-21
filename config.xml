@@ -9,15 +9,12 @@
     </author>
     <content src="app.html" />
     <access origin="*" />
-
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="mailto:*" />
-
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-
         <icon height="29" src="www/images/manifest/icon-full-29.png" width="29" />
         <icon height="40" src="www/images/manifest/icon-full-40.png" width="40" />
         <icon height="50" src="www/images/manifest/icon-full-50.png" width="50" />
@@ -33,26 +30,22 @@
         <icon height="144" src="www/images/manifest/icon-full-144.png" width="144" />
         <icon height="152" src="www/images/manifest/icon-full-152.png" width="152" />
         <icon height="180" src="www/images/manifest/icon-full-180.png" width="180" />
-
-        <splash src="res/ios/Default@2x~universal~anyany.png" />
-        <splash src="res/ios/Default@3x~universal~anyany.png" />
+        <splash src="www/images/manifest/Default@2x~universal~anyany.png" />
+        <splash src="www/images/manifest/Default@3x~universal~anyany.png" />
     </platform>
     <platform name="android">
         <allow-intent href="market:*" />
-
         <icon qualifier="ldpi" src="www/images/manifest/icon-36.png" width="36" />
         <icon qualifier="mdpi" src="www/images/manifest/icon-48.png" width="48" />
         <icon qualifier="hdpi" src="www/images/manifest/icon-72.png" width="72" />
         <icon qualifier="xhdpi" src="www/images/manifest/icon-96.png" width="96" />
         <icon qualifier="xxhdpi" src="www/images/manifest/icon-144.png" width="144" />
         <icon qualifier="xxxhdpi" src="www/images/manifest/icon-192.png" width="192" />
-
         <splash density="port-ldpi" src="www/images/manifest/splash-ldpi.png" />
         <splash density="port-mdpi" src="www/images/manifest/splash-mdpi.png" />
         <splash density="port-hdpi" src="www/images/manifest/splash-hdpi.png" />
         <splash density="port-xhdpi" src="www/images/manifest/splash-xhdpi.png" />
     </platform>
-
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="false" />
     <preference name="BackgroundColor" value="0xff1c1f24" />
@@ -61,21 +54,24 @@
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
     <preference name="Orientation" value="portrait" />
-
     <preference name="SplashScreen" value="screen" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="FadeSplashScreenDuration" value="250" />
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="SplashMaintainAspectRatio" value="true" />
-
+    <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="~4.3.0" />
-    <engine name="android" spec="~6.0.0" />
-
-    <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
-    <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
-    <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify" />
-    <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper" />
-    <plugin name="rocks.festify.cordova-external-screen" spec="https://github.com/Festify/cordova-external-screen" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <plugin name="rocks.festify.cordova-external-screen" spec="https://github.com/Festify/cordova-external-screen">
+        <variable name="locator" value="https://github.com/Festify/cordova-external-screen" />
+    </plugin>
+    <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper">
+        <variable name="locator" value="https://github.com/Festify/festify-cordova-scheme-helper" />
+    </plugin>
+    <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify">
+        <variable name="locator" value="https://github.com/Festify/cordova-spotify" />
+    </plugin>
 </widget>
