@@ -90,6 +90,20 @@ function serve(directories) {
     });
 }
 
+gulp.task('polylint', function() {
+    return gulp.src('app/elements/**/*.html')
+        .pipe($.polylint())
+        .pipe($.polylint.reporter($.polylint.reporter.stylishlike))
+        .pipe($.polylint.reporter.fail({ buffer: true, ignoreWarnings: false }));
+});
+
+gulp.task('lint', ['polylint'], function() {
+    //return gulp.src(['**/*.{js,html}','!node_modules/**'])
+    // .pipe($.eslint())
+    // .pipe($.eslint.format())
+    // .pipe($.eslint.failAfterError());
+});
+
 gulp.task('polymer', function () {
     const project = new PolymerProject(require('./polymer.json'));
 
@@ -200,7 +214,7 @@ gulp.task('serve-output', ['configure'], function () {
 gulp.task('build', function(cb) {
     runSequence(
         'clean',
-        ['polymer', 'generate-icons'],
+        ['polymer', 'lint', 'generate-icons'],
         cb
     );
 });
@@ -208,7 +222,7 @@ gulp.task('build', function(cb) {
 gulp.task('build-cordova', function(cb) {
     runSequence(
         'clean',
-        ['polymer-cordova', 'generate-icons', 'generate-splash-screens'],
+        ['polymer-cordova', 'lint', 'generate-icons', 'generate-splash-screens'],
         cb
     );
 });
@@ -216,7 +230,7 @@ gulp.task('build-cordova', function(cb) {
 gulp.task('build-all', function(cb) {
     runSequence(
         'clean',
-        ['polymer', 'polymer-cordova', 'generate-icons', 'generate-splash-screens'],
+        ['polymer', 'polymer-cordova', 'lint', 'generate-icons', 'generate-splash-screens'],
         cb
     );
 });
