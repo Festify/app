@@ -249,7 +249,7 @@ gulp.task('cordova:release:android-apk', ['build-cordova'], function(cb) {
         if(err){
             return cb(err);
         }
-        cordova.raw.compile({
+        cordova.raw.build({
             platforms: ['android'],
             options: {
                 release: true,
