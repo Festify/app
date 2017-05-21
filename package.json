@@ -28,6 +28,7 @@
     "gulp-template": "^4.0.0",
     "gulp-uglify": "^2.1.0",
     "gulp-useref": "^3.1.2",
+    "lodash": "^4.17.4",
     "merge-stream": "^1.0.0",
     "polymer-build": "^1.2.1",
     "polymer-lint": "^0.8.3",
@@ -62,13 +63,13 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-whitelist": {},
       "rocks.festify.cordova-external-screen": {
-        "locator": "https://github.com/Festify/cordova-external-screen"
+        "spec": "https://github.com/Festify/cordova-external-screen"
       },
       "rocks.festify.cordova-scheme-helper": {
-        "locator": "https://github.com/Festify/festify-cordova-scheme-helper"
+        "spec": "https://github.com/Festify/festify-cordova-scheme-helper"
       },
       "rocks.festify.cordova-spotify": {
-        "locator": "https://github.com/Festify/cordova-spotify"
+        "spec": "https://github.com/Festify/cordova-spotify"
       },
       "cordova-plugin-firebase": {}
     }

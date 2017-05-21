@@ -59,6 +59,7 @@
     <preference name="FadeSplashScreenDuration" value="250" />
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="SplashMaintainAspectRatio" value="true" />
+    <hook src="scripts/cordova-prepare-nofetch.js" type="before_prepare" />
     <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="~4.3.0" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
@@ -67,12 +68,12 @@
     <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <plugin name="rocks.festify.cordova-external-screen">
-        <variable name="locator" value="https://github.com/Festify/cordova-external-screen" />
+        <variable name="spec" value="https://github.com/Festify/cordova-external-screen" />
     </plugin>
     <plugin name="rocks.festify.cordova-scheme-helper">
-        <variable name="locator" value="https://github.com/Festify/festify-cordova-scheme-helper" />
+        <variable name="spec" value="https://github.com/Festify/festify-cordova-scheme-helper" />
     </plugin>
     <plugin name="rocks.festify.cordova-spotify">
-        <variable name="locator" value="https://github.com/Festify/cordova-spotify" />
+        <variable name="spec" value="https://github.com/Festify/cordova-spotify" />
     </plugin>
 </widget>
