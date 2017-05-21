@@ -211,19 +211,22 @@ gulp.task('serve-output', ['configure'], function () {
     return serve(['build']);
 });
 
-gulp.task('build:base', ['clean'], function(cb) {
-    runSequence('generate-icons', cb);
+// Build bases
+gulp.task('build:web', ['polymer', 'generate-icons']);
+gulp.task('build:mobile', ['polymer-cordova', 'generate-splash-screens', 'generate-icons']);
+
+// User-facing tasks
+gulp.task('build', ['clean'], function(cb) {
+    runSequence('build:web', cb);
 });
 
-gulp.task('build', ['build:base'], function(cb) {
-    runSequence('polymer', cb);
+gulp.task('build-cordova', ['clean'], function(cb) {
+    runSequence('build:mobile', cb);
 });
 
-gulp.task('build-cordova', ['build:base'], function(cb) {
+gulp.task('build-all', ['clean'], function(cb) {
     runSequence(
-        ['polymer-cordova', 'generate-splash-screens'],
+        ['build:web', 'build:mobile'],
         cb
     );
 });
-
-gulp.task('build-all', ['build', 'build-cordova']);
