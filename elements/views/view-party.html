@@ -21,6 +21,7 @@
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/queue-track.html">
 <link rel="import" href="components/search-bar.html">
+<link rel="import" href="view-share.html">
 
 <dom-module id="view-party">
     <template>
@@ -125,36 +126,6 @@
                 margin: 0 32px 0 0;
                 text-align: right;
             }
-
-            .share-view {
-                padding: 10px 20px;
-            }
-
-            .share-view .description {
-                font-size: 20px;
-            }
-
-            .share-view .description .domain {
-                color: var(--primary-color);
-                white-space: nowrap;
-            }
-
-            .share-view .copy, .share-view .code {
-                text-align: center;
-            }
-
-            .share-view .code {
-                font-size: 35px;
-            }
-
-            .share-view #copyContent {
-                position: absolute;
-                top: -100%;
-            }
-
-            .share-view paper-button {
-                display: inline-block;
-            }
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
@@ -212,6 +183,9 @@
                                            user-votes="[[userVotes]]">
                             </queue-track>
                         </template>
+
+
+                        <view-share state="[[state]]" style$="display: [[_getDisplayProactiveSharing(tracks.length)]]"></view-share>
                     </div>
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
@@ -223,17 +197,7 @@
                         </template>
                     </div>
                     <div class="share-view" view="share">
-                        <p class="description">
-                            Guests can vote on <span class="domain">[[state.config.meta.domain]]</span>
-                            using this code:
-                        </p>
-                        <p class="code">[[state.party.short_id]]</p>
-                        <p class="copy">
-                            <input id="copyContent" value$="[[_getPartyUrl(state.partyId)]]">
-                            <paper-button raised on-tap="_copyUrl">
-                                <iron-icon icon="content-copy"></iron-icon> Copy link
-                            </paper-button>
-                        </p>
+                        <view-share state="[[state]]"></view-share>
                     </div>
                 </iron-pages>
             </div>
@@ -367,6 +331,10 @@
 
             _getDisplaySkipIndicator: function (tracksLength) {
                 return this.state.isOwner && tracksLength > 0 ? 'flex' : 'none';
+            },
+
+            _getDisplayProactiveSharing: function (tracksLength) {
+                return tracksLength < 2 ? 'block' : 'none';
             },
 
             _getTrackDuration: function (tChange, metaChange) {
