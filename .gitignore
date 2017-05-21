@@ -19,3 +19,5 @@ build/
 .firebaserc
 database.rules.json
 firebase-debug.log
+GoogleService-Info.plist
+google-services.json

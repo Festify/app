@@ -65,13 +65,15 @@
             },
             "rocks.festify.cordova-spotify": {
                 "locator": "https://github.com/Festify/cordova-spotify"
-            }
+            },
+            "cordova-plugin-firebase": {}
         }
     },
     "dependencies": {
         "com.peerio.cordova.plugin.insomnia": "~4.2.0",
         "cordova-android": "^6.2.3",
         "cordova-ios": "~4.3.0",
+        "cordova-plugin-firebase": "^0.1.20",
         "cordova-plugin-splashscreen": "~4.0.0",
         "cordova-plugin-statusbar": "~2.2.1",
         "cordova-plugin-whitelist": "1"

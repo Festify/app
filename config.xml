@@ -62,6 +62,7 @@
     <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="~4.3.0" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
+    <plugin name="cordova-plugin-firebase" spec="^0.1.20" />
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
     <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
