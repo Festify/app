@@ -175,8 +175,8 @@
                 if (signedIn) {
                     this._hideSplash();
 
-                    if(this.state.cordova && state.auth.authedUser) {
-                        window.FirebasePlugin.setUserId(state.auth.authedUser.uid);
+                    if(this.state.cordova && this.state.auth.authedUser) {
+                        window.FirebasePlugin.setUserId(this.state.auth.authedUser.uid);
                     }
 
                     return;
