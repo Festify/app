@@ -60,6 +60,7 @@
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <hook src="scripts/cordova-prepare-nofetch.js" type="before_prepare" />
+    <hook src="scripts/fix-package-indent.js" type="after_prepare" />
     <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="~4.3.0" />
     <plugin name="com.peerio.cordova.plugin.insomnia" spec="~4.2.0" />
