@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../common/shared-styles.html">
+<link rel="import" href="../behaviors/behavior-app-state.html">
+
+<dom-module id="view-share">
+    <template>
+        <style include="shared-styles"></style>
+
+        <style>
+            :host {
+                padding: 10px 20px;
+            }
+
+            .description {
+                font-size: 20px;
+            }
+
+            .description .domain {
+                color: var(--primary-color);
+                white-space: nowrap;
+            }
+
+            .copy, .code {
+                text-align: center;
+            }
+
+            .code {
+                font-size: 35px;
+            }
+
+            paper-button {
+                display: inline-block;
+            }
+        </style>
+
+        <p class="description">
+            Add new songs to the queue by searching for them or ask your guests to go to
+            <span class="domain">[[state.config.meta.domain]]</span>
+            and enter this code:
+        </p>
+        <p class="code">[[state.party.short_id]]</p>
+        <p class="copy">
+            <paper-button raised on-tap="_copyUrl">
+                <iron-icon icon="content-copy"></iron-icon> Share link
+            </paper-button>
+        </p>
+    </template>
+    <script>
+        Polymer({
+            is: 'view-share',
+
+            behaviors: [FestifyBehaviors.StateBehavior],
+
+            properties: {
+
+            },
+
+            _getPartyUrl: function(partyId) {
+                const domain = this.get('state.config.meta.domain');
+
+                if (!partyId) {
+                    return `https://${domain}/`
+                }
+
+                return `https://${domain}/party/${partyId}`;
+            },
+
+            _copyUrl: function() {
+                window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
+            },
+        });
+    </script>
+</dom-module>
