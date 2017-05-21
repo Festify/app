@@ -74,9 +74,6 @@
         "cordova-ios": "~4.3.0",
         "cordova-plugin-splashscreen": "~4.0.0",
         "cordova-plugin-statusbar": "~2.2.1",
-        "cordova-plugin-whitelist": "1",
-        "rocks.festify.cordova-external-screen": "https://github.com/Festify/cordova-external-screen",
-        "rocks.festify.cordova-scheme-helper": "https://github.com/Festify/festify-cordova-scheme-helper",
-        "rocks.festify.cordova-spotify": "https://github.com/Festify/cordova-spotify"
+        "cordova-plugin-whitelist": "1"
     }
 }

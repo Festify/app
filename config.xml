@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="rocks.festify.app" version="0.1.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="rocks.festify.app" version="0.1.1" xmlns="http://www.w3.org/ns/widgets">
     <name>Festify</name>
     <description>
         Get your party started!
@@ -65,13 +65,13 @@
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
     <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
-    <plugin name="rocks.festify.cordova-external-screen" spec="https://github.com/Festify/cordova-external-screen">
+    <plugin name="rocks.festify.cordova-external-screen">
         <variable name="locator" value="https://github.com/Festify/cordova-external-screen" />
     </plugin>
-    <plugin name="rocks.festify.cordova-scheme-helper" spec="https://github.com/Festify/festify-cordova-scheme-helper">
+    <plugin name="rocks.festify.cordova-scheme-helper">
         <variable name="locator" value="https://github.com/Festify/festify-cordova-scheme-helper" />
     </plugin>
-    <plugin name="rocks.festify.cordova-spotify" spec="https://github.com/Festify/cordova-spotify">
+    <plugin name="rocks.festify.cordova-spotify">
         <variable name="locator" value="https://github.com/Festify/cordova-spotify" />
     </plugin>
 </widget>
