@@ -11,11 +11,14 @@ const ENCRYPTION_SECRET = functions.config().spotify.enc_secret;
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 
 function spotifyRequest(params) {
-    return request(API_URL, {
+    return request({
+        method: 'POST',
+        uri: API_URL,
         form: params,
         headers: {
             'Authorization': `Basic ${authKey}`
-        }
+        },
+        json: true
     });
 }
 
@@ -32,7 +35,7 @@ exports.exchangeCode = (req, res) => {
         redirect_uri: CLIENT_CALLBACK_URL,
         code: req.body.code
     })
-    .then(({ body }) => {
+    .then(body => {
         res.json({
             access_token: body.access_token,
             expires_in: body.expires_in,
@@ -61,7 +64,7 @@ exports.refreshToken = (req, res) => {
         grant_type: 'refresh_token',
         refresh_token: crypto.decrypt(req.body.refresh_token, ENCRYPTION_SECRET)
     })
-    .then(({ body }) => {
+    .then(body => {
         res.json({
             access_token: body.access_token,
             expires_in: body.expires_in,
