@@ -195,7 +195,7 @@
             _routePageChanged: function (page) {
                 window.fixStatusBar();
 
-                if(this.state.cordova) {
+                if(this.state.cordova && 'FirebasePlugin' in window) {
                     window.FirebasePlugin.setScreenName(page);
                 }
 
