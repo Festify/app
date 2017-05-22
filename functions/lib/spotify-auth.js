@@ -22,6 +22,16 @@ function spotifyRequest(params) {
     });
 }
 
+function handleSpotifyRejection(res) {
+    return err => {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            msg: `Received invalid status code '${err.statusCode}' from Spotify.`
+        });
+    };
+}
+
 exports.exchangeCode = (req, res) => {
     if (!req.body.code) {
         return res.status(400).json({
@@ -44,12 +54,7 @@ exports.exchangeCode = (req, res) => {
             success: true
         });
     })
-    .catch(({ statusCode }) => {
-        res.status(500).json({
-            success: false,
-            msg: `Received invalid status code '${statusCode}' from Spotify.`
-        });
-    });
+    .catch(handleSpotifyRejection(res));
 };
 
 exports.refreshToken = (req, res) => {
@@ -71,10 +76,5 @@ exports.refreshToken = (req, res) => {
             success: true
         });
     })
-    .catch(({ statusCode }) => {
-        res.status(500).json({
-            success: false,
-            msg: `Received invalid status code '${statusCode}' from Spotify.`
-        });
-    });
+    .catch(handleSpotifyRejection(res));
 };
