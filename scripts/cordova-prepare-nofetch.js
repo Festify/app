@@ -1,5 +1,5 @@
 const cordova = require('cordova-lib').cordova.raw;
-const difference = require('lodash').difference;
+const { difference } = require('lodash');
 
 module.exports = function(context) {
     const plugins = require('../package.json').cordova.plugins;
