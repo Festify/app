@@ -16,8 +16,7 @@ const Vinyl = require('vinyl');
 const prompt = require('prompt');
 
 const autoprefixer = require('autoprefixer');
-const PolymerProject = require('polymer-build').PolymerProject;
-const htmlSplitter = new (require('polymer-build').HtmlSplitter)();
+const { HtmlSplitter, PolymerProject } = require('polymer-build');
 
 const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
@@ -53,6 +52,7 @@ function buildPolymer(project, develop) {
         return stream.pipe(project.bundler());
     }
 
+    const htmlSplitter = new HtmlSplitter();
     return stream
         .pipe(htmlSplitter.split())
         .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
