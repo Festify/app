@@ -1,8 +1,8 @@
 'use strict';
 
-require('dotenv').config({silent: true});
-
+const dotenv = require('dotenv');
 const cordova = require('cordova-lib').cordova;
+const fs = require('fs');
 const gulp = require('gulp');
 const $ = require('gulp-load-plugins')();
 const del = require('del');
@@ -13,7 +13,10 @@ const runSequence = require('run-sequence');
 const sharp = require('sharp');
 const through2 = require('through2');
 const Vinyl = require('vinyl');
+const request = require('request');
+const git = require('git-rev');
 const prompt = require('prompt');
+const util = require('util');
 
 const autoprefixer = require('autoprefixer');
 const { HtmlSplitter, PolymerProject } = require('polymer-build');
@@ -21,8 +24,12 @@ const { HtmlSplitter, PolymerProject } = require('polymer-build');
 const browserSync = require('browser-sync').create();
 const historyApiFallback = require('connect-history-api-fallback');
 
+dotenv.config({ path: '.env-default' });
+
 const webDir = 'build';
 const appDir = 'www';
+
+const envFiles = ['.env', 'google-services.json', 'GoogleService-Info.plist'];
 
 const watches = [{
     src: ["elements/**/*", "index.html"],
@@ -88,16 +95,54 @@ function serve(directories) {
 gulp.task('clean', function() {
     return del([
         webDir,
-        path.join(appDir, '**/*')
+        path.join(appDir, '**/*'),
+        ...envFiles
     ]);
 });
 
-gulp.task('configure', function() {
+gulp.task('configure', ['prepare-env'], function() {
     return gulp.src("elements/app-shell.html", { base: '.' })
         .pipe($.template({
             ENV: process.env
         }))
         .pipe(gulp.dest('.tmp'));
+});
+
+gulp.task('prepare-env', function () {
+    const fileTemplate = process.env.FILE_URL_TEMPLATE;
+
+    if (!fileTemplate) {
+        console.warn("Cannot find .env file URL template. Per-branch env configuration will not be performed.")
+        return Promise.resolve();
+    }
+
+    return Promise.all([
+        Promise.filter(envFiles, file => {
+            return new Promise(res => fs.access(file, e => res(!!e)));
+        }),
+        new Promise((res, rej) => {
+            try {
+                git.branch(b => {
+                    res((b == 'master' || b == 'testing') ? b : 'develop')
+                });
+            } catch (e) {
+                rej(e);
+            }
+        })
+    ])
+        .then(([files, branch]) => Promise.map(files, file => {
+            const url = util.format(fileTemplate, branch, file);
+            return new Promise((res, rej) => {
+                request(url)
+                    .pipe(fs.createWriteStream(file))
+                    .once('error', rej)
+                    .once('finish', res);
+            });
+        }))
+        .then(() => {
+            const { error } = dotenv.load();
+            return !error ? Promise.resolve() : Promise.reject(error);
+        });
 });
 
 gulp.task('polylint', function() {
@@ -114,14 +159,14 @@ gulp.task('lint', ['polylint'], function() {
     // .pipe($.eslint.failAfterError());
 });
 
-gulp.task('polymer', function () {
+gulp.task('polymer', ['prepare-env'], function () {
     const project = new PolymerProject(require('./polymer.json'));
 
     return buildPolymer(project)
         .pipe(gulp.dest(webDir));
 });
 
-gulp.task('polymer-cordova', function() {
+gulp.task('polymer-cordova', ['prepare-env'], function() {
     const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
 
     return buildPolymer(projectCordova)
@@ -129,7 +174,7 @@ gulp.task('polymer-cordova', function() {
         .pipe(gulp.dest(appDir))
 });
 
-gulp.task('polymer-cordova:develop', function() {
+gulp.task('polymer-cordova:develop', ['prepare-env'], function() {
     const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
 
     return buildPolymer(projectCordova, true)
