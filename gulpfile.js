@@ -95,8 +95,7 @@ function serve(directories) {
 gulp.task('clean', function() {
     return del([
         webDir,
-        path.join(appDir, '**/*'),
-        ...envFiles
+        path.join(appDir, '**/*')
     ]);
 });
 
@@ -116,21 +115,16 @@ gulp.task('prepare-env', function () {
         return Promise.resolve();
     }
 
-    return Promise.all([
-        Promise.filter(envFiles, file => {
-            return new Promise(res => fs.access(file, e => res(!!e)));
-        }),
-        new Promise((res, rej) => {
-            try {
-                git.branch(b => {
-                    res((b == 'master' || b == 'testing') ? b : 'develop')
-                });
-            } catch (e) {
-                rej(e);
-            }
-        })
-    ])
-        .then(([files, branch]) => Promise.map(files, file => {
+    return new Promise((res, rej) => {
+        try {
+            git.branch(b => {
+                res((b == 'master' || b == 'testing') ? b : 'develop')
+            });
+        } catch (e) {
+            rej(e);
+        }
+    })
+        .then((branch) => Promise.map(envFiles, file => {
             const url = util.format(fileTemplate, branch, file);
             return new Promise((res, rej) => {
                 request(url)
