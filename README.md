@@ -8,7 +8,7 @@ Festify is a free Spotify-powered app that lets your guests choose which music s
 
 ### Project status
 
-*The state of the project is considered* **alpha** *right now. Please refer to the [roadmap](#roadmap) for details.*
+_The state of the project is considered_ **alpha** _right now. Please refer to the [roadmap](#roadmap) for details._
 
 ## Getting started
 
@@ -20,21 +20,16 @@ The app relies on the following external services. You need to obtain API creden
 
 - [Firebase](https://firebase.google.com/) (for state synchronization / database) - allow anonymous access
 - [Spotify API](https://developer.spotify.com/my-applications/)
-- [Voting Worker Process](https://github.com/Festify/politics)
 
 #### Spotify OAuth Code Grant Flow
 
 In order to succesfully authenticate with Spotify you need some HTTP endpoints that know your Spotify API Secret and are used for giving users long-lived access tokens.
 
-We recommend the usage of AWS Lambda functions for this purpose. See the [instructions in our Spotify Plugin](https://github.com/Festify/cordova-spotify#oauth-code-grant-flow) for details.
+We recommend the usage of cloud functions for this purpose. See the [functions folder](https://github.com/Festify/app/tree/develop/functions) or the [instructions in our Spotify Plugin](https://github.com/Festify/cordova-spotify#oauth-code-grant-flow) for details.
 
-#### Voting Worker Process
+#### Environment
 
-To allow voting even in the absence of the hosts device, Festify uses a Firebase cloud function to update the track order each time the votes change. The cloud function is available [on Github](https://github.com/Festify/politics) and licensed under LGPLv3.
-
-#### `.env`
-
-Use this template to have all the environment variables handy for building the app and put it in a file called `.env`, it will be loaded automatically.
+Use this template to have all the environment variables handy for building the app and put it in a file called `.env-default`, it will be loaded automatically.
 
 ```bash
 DOMAIN="<DOMAIN_FESTIFY_IS_HOSTED_ON>"
@@ -45,6 +40,10 @@ SPOTIFY_CLIENT_ID="<YOUR_SPOTIFY_CLIENT_ID>"
 SPOTIFY_TOKEN_SWAP_URL="<YOUR_TOKEN_SWAP_URL>"
 SPOTIFY_TOKEN_REFRESH_URL="<YOUR_TOKEN_REFRESH_URL>"
 ```
+
+You will also need two files from Firebase for correctly building Festify. For iOS, you will need your `GoogleService-Info.plist` and for Android builds you need the `google-services.json` file. You can obtain them from the Firebase Dev Console.
+
+If you want to support multiple build environments there is support through a link provided as environment variable `FILE_URL_TEMPLATE`. The value must be a `util.format` compatible format string that, when formatted with the current branch name and the file to download, creates a link to download the given file. E.g.: `https://example.com/config/%s/%s`. During the build, Gulp will download these files and place them in the project root. It will also rerun `dotenv`, so that when a `.env`-file is downloaded, the process environment will be updated.
 
 ### Prerequisites
 
@@ -67,7 +66,7 @@ npm install
 bower install
 cordova prepare # if you want to build for native
 
-cd <worker process folder> && firebase deploy --only functions # Cloud functions for order calculation
+cd ./functions && npm install && firebase deploy --only functions # Cloud functions for order calculation
 ```
 
 #### Web App only
