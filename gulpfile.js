@@ -117,9 +117,7 @@ gulp.task('prepare-env', function () {
 
     return new Promise((res, rej) => {
         try {
-            git.branch(b => {
-                res((b == 'master' || b == 'testing') ? b : 'develop')
-            });
+            git.branch(b => res((b === 'master' || b === 'testing') ? b : 'develop'));
         } catch (e) {
             rej(e);
         }
