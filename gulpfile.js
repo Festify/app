@@ -24,21 +24,13 @@ const historyApiFallback = require('connect-history-api-fallback');
 const webDir = 'build';
 const appDir = 'www';
 
-let watches = [{
+const watches = [{
     src: ["elements/**/*", "index.html"],
     tasks: browserSync.reload
+}, {
+    src: ["elements/app-shell.html"],
+    tasks: ['configure', browserSync.reload]
 }];
-
-gulp.task('clean', function() {
-    return del([
-        webDir,
-        path.join(appDir, '**/*')
-    ]);
-});
-
-const cssProcessors = [
-    autoprefixer({ browsers: ['last 2 versions'] })
-];
 
 function buildPolymer(project, develop) {
     const sources = project.sources()
@@ -55,7 +47,9 @@ function buildPolymer(project, develop) {
     const htmlSplitter = new HtmlSplitter();
     return stream
         .pipe(htmlSplitter.split())
-        .pipe($.if(/\.html$/, $.htmlPostcss(cssProcessors)))
+        .pipe($.if(/\.html$/, $.htmlPostcss([
+            autoprefixer({ browsers: ['last 2 versions'] })
+        ])))
         .pipe($.if(['elements/**/*.js'], $.babel()))
         .pipe($.if(function(file) {
             return path.extname(file.path) === '.js' &&
@@ -90,6 +84,21 @@ function serve(directories) {
         gulp.watch(item.src, item.tasks);
     });
 }
+
+gulp.task('clean', function() {
+    return del([
+        webDir,
+        path.join(appDir, '**/*')
+    ]);
+});
+
+gulp.task('configure', function() {
+    return gulp.src("elements/app-shell.html", { base: '.' })
+        .pipe($.template({
+            ENV: process.env
+        }))
+        .pipe(gulp.dest('.tmp'));
+});
 
 gulp.task('polylint', function() {
     return gulp.src('app/elements/**/*.html')
@@ -192,26 +201,6 @@ gulp.task('generate-splash-screens', function () {
         .pipe(gulp.dest('www/images/manifest'));
 });
 
-gulp.task('configure', function() {
-    return gulp.src("elements/app-shell.html", { base: '.' })
-        .pipe($.template({
-            ENV: process.env
-        }))
-        .pipe(gulp.dest('.tmp'));
-});
-watches.push({
-    src: ["elements/app-shell.html"],
-    tasks: ['configure', browserSync.reload]
-});
-
-gulp.task('serve', ['configure'], function () {
-    return serve(['.tmp', '.']);
-});
-
-gulp.task('serve-output', ['configure'], function () {
-    return serve(['build']);
-});
-
 // Build bases
 gulp.task('build:web', ['polymer', 'generate-icons']);
 gulp.task('build:mobile', ['polymer-cordova', 'generate-splash-screens', 'generate-icons']);
@@ -263,7 +252,16 @@ gulp.task('cordova:release:android-apk', ['build-cordova'], function(cb) {
         }).done(cb);
     });
 });
+
 gulp.task('cordova:release:android', ['cordova:release:android-apk'], function() {
     return gulp.src('platforms/android/build/outputs/apk/android-release.apk')
         .pipe(gulp.dest('build-mobile'));
+});
+
+gulp.task('serve', ['configure'], function () {
+    return serve(['.tmp', '.']);
+});
+
+gulp.task('serve-output', ['configure'], function () {
+    return serve(['build']);
 });
