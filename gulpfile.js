@@ -116,12 +116,17 @@ gulp.task('prepare-env', function () {
     }
 
     return new Promise((res, rej) => {
-        try {
-            git.branch(b => res((b === 'master' || b === 'testing') ? b : 'develop'));
-        } catch (e) {
-            rej(e);
+        if (process.env.CI) {
+            res(process.env.TRAVIS_BRANCH);
+        } else {
+            try {
+                git.branch(res);
+            } catch (e) {
+                rej(e);
+            }
         }
     })
+        .then(b => (b === 'master' || b === 'testing') ? b : 'develop')
         .then((branch) => Promise.map(envFiles, file => {
             const url = util.format(fileTemplate, branch, file);
             return new Promise((res, rej) => {
