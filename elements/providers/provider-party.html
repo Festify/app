@@ -62,7 +62,7 @@
                 return [key, party];
             },
 
-            openParty: function (shortId) {
+            getParty: function (shortId) {
                 if (typeof shortId != 'string' || shortId.length < 1) {
                     throw new Error("ShortId not string or empty");
                 }
