@@ -391,14 +391,6 @@
                 this.$.voteProvider.toggleVote(ev.detail.track);
             },
 
-            _copyUrl: function() {
-                this.$.copyContent.select();
-                const text = document.execCommand('copy') ?
-                    "URL copied!" :
-                    "Failed to copy!";
-                this.fire('toast', { text });
-            },
-
             _track: function (ev) {
                 const { ddx, state } = ev.detail;
                 const indicator = this.$.skipIndicator;
