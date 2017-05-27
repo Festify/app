@@ -285,7 +285,7 @@ gulp.task('cordova:release:android-apk', ['build-cordova'], function(cb) {
             options: {
                 release: true,
                 argv: [
-                    "--keystore", "../android-sign/upload.keystore",
+                    "--keystore", "upload.keystore",
                     "--alias", "upload",
                     "--storePassword", result.password,
                     "--password", result.password

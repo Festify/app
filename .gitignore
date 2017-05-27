@@ -10,6 +10,7 @@ res/
 www/*
 !www/.gitkeep
 
+# Build Output
 .tmp/
 build/
 build-mobile/
@@ -22,3 +23,7 @@ database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
 google-services.json
+
+# Sign Keys
+*.jks
+*.keystore
