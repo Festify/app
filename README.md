@@ -43,7 +43,7 @@ SPOTIFY_TOKEN_REFRESH_URL="<YOUR_TOKEN_REFRESH_URL>"
 
 You will also need two files from Firebase for correctly building Festify. For iOS, you will need your `GoogleService-Info.plist` and for Android builds you need the `google-services.json` file. You can obtain them from the Firebase Dev Console.
 
-If you want to support multiple build environments there is support through a link provided as environment variable `FILE_URL_TEMPLATE`. The value must be a `util.format` compatible format string that, when formatted with the current branch name and the file to download, creates a link to download the given file. E.g.: `https://example.com/config/%s/%s`. During the build, Gulp will download these files and place them in the project root. It will also rerun `dotenv`, so that when a `.env`-file is downloaded, the process environment will be updated.
+If you want to support multiple build environments, you can make Gulp download the environment-specific files `.env`, `google-services.json` and `GoogleService-Info.plist`. The link is given as environment variable `FILE_URL_TEMPLATE`. The value must be a `util.format` compatible format string that, when formatted with the current branch name and the file to download, makes a valid link to the given file. E.g.: `https://example.com/config/%s/%s`. During the build, Gulp will download these files and place them where they're needed. It will also run `dotenv`, so that when the `.env`-file is downloaded, the process environment will be updated.
 
 ### Prerequisites
 
