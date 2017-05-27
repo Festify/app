@@ -68,6 +68,7 @@
     <plugin name="cordova-plugin-splashscreen" spec="~4.0.0" />
     <plugin name="cordova-plugin-statusbar" spec="~2.2.1" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
+    <plugin name="cordova-plugin-x-socialsharing" spec="^5.1.8" />
     <plugin name="rocks.festify.cordova-external-screen">
         <variable name="spec" value="https://github.com/Festify/cordova-external-screen" />
     </plugin>

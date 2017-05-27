@@ -73,7 +73,8 @@
       "rocks.festify.cordova-spotify": {
         "spec": "https://github.com/Festify/cordova-spotify"
       },
-      "cordova-plugin-firebase": {}
+      "cordova-plugin-firebase": {},
+      "cordova-plugin-x-socialsharing": {}
     }
   },
   "dependencies": {
@@ -83,6 +84,8 @@
     "cordova-plugin-firebase": "^0.1.20",
     "cordova-plugin-splashscreen": "~4.0.0",
     "cordova-plugin-statusbar": "~2.2.1",
-    "cordova-plugin-whitelist": "1"
+    "cordova-plugin-whitelist": "1",
+    "cordova-plugin-x-socialsharing": "^5.1.8",
+    "es6-promise-plugin": "^4.1.0"
   }
 }
