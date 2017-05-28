@@ -55,7 +55,10 @@
                     return;
                 }
 
-                const playbackData = ch.base;
+                const playbackData = this.get('base', ch);
+                if (!playbackData) {
+                    return;
+                }
 
                 let currentPercentage = playbackData.last_position_ms / durationMs;
                 if (playbackData.playing) {
