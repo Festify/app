@@ -115,11 +115,8 @@
 
                 if (change.base.length == 0) {
                     this._setPlayerState(false, null);
-                } else if (this._playerState && this._playerState.playing) {
-                    this._setPlayerState(
-                        this._playerState ? this._playerState.playing : true,
-                        change.base[0]
-                    );
+                } else if (this._playerState && change.base.length === 1) {
+                    this._setPlayerState(true, change.base[0]);
                 }
             },
 
