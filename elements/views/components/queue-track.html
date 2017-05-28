@@ -178,7 +178,7 @@
                 const track = trackChange.base;
                 return (track.vote_count > 1) ?
                     track.vote_count + ' Votes' :
-                    (track.vote_count == 1) ?
+                    (track.vote_count === 1) ?
                         'One Vote' :
                         track.isFromSearch ?
                             'Not in queue' :

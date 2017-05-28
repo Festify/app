@@ -326,7 +326,7 @@
 
                 if (!!query) {
                     this.set('page', 'search')
-                } else if (viewActive && dataChange.base && dataChange.base.view == 'share') {
+                } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
                     this.set('page', 'share');
                 } else {
                     this.set('page', 'queue');
@@ -355,7 +355,7 @@
             },
 
             _pageChanged: function(page) {
-                if (page == 'share') {
+                if (page === 'share') {
                     this.set('route.path', '/share');
                 } else {
                     this.set('route.path', '');

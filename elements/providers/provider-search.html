@@ -44,7 +44,7 @@
                             }))
                             .then(results => this.push('tracks', ...results))
                             .catch(function (err) {
-                                if (err.message == "Request aborted.") {
+                                if (err.message === "Request aborted.") {
                                     return Promise.resolve();
                                 }
                             });
