@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../utils/lodash.html">
 
@@ -13,83 +13,87 @@
                    handle-as="json">
         </iron-ajax>
     </template>
-    <script>
-        (function () {
-            const cache = {};
-
-            Polymer({
-                is: 'provider-spotify',
-
-                properties: {
-                    _searchRequest: {
-                        type: Object
-                    }
-                },
-
-                getTrackInfo: function (id, market) {
-                    return this.getTracksInfo([id], market)
-                        .then(tracks => (tracks.length > 0) > 0 ? tracks[0] : null);
-                },
-
-                // This does not guarantee ordering!
-                getTracksInfo: function (ids, market) {
-                    return this._fetchIds(_.without(ids, ...Object.keys(cache)), market)
-                        .then(() => ids.map(id => cache[id]));
-                },
-
-                search: function (query, market, limit) {
-                    if (query.length < 2) {
-                        return Promise.resolve([]);
-                    }
-                    if (this._searchRequest) {
-                        this._searchRequest.abort();
-                    }
-
-                    const xhr = this.$.searchXhr;
-                    xhr.set('params', {
-                        limit: limit || 20,
-                        q: query.replace('-', ' ') + '*',
-                        type: 'track'
-                    });
-                    if (market) {
-                        xhr.set('params.market', market);
-                    }
-
-                    this.set('_searchRequest', xhr.generateRequest());
-                    return this._searchRequest.completes
-                        .then(xhr => {
-                            this.set('_searchRequest', null);
-
-                            const tracks = _.get(xhr, 'response.tracks.items', []);
-                            tracks.forEach(t => cache[t.id] = t);
-                            return tracks.map(track => ({
-                                reference: {
-                                    id: track.id,
-                                    provider: 'spotify'
-                                }
-                            }));
-                        });
-                },
-
-                _fetchIds: function (ids, market) {
-                    if (!ids || ids.length < 1) {
-                        return Promise.resolve([]);
-                    }
-
-                    const xhr = this.$.trackXhr;
-                    xhr.set('params', { ids: ids.join(',') });
-                    if (market) {
-                        xhr.set('params.market', { market: market });
-                    }
-
-                    return xhr.generateRequest().completes
-                        .then(xhr => _.get(xhr, 'response.tracks', []))
-                        .then(tracks => {
-                            tracks.forEach(t => cache[t.id] = t);
-                            return tracks;
-                        });
-                }
-            });
-        })();
-    </script>
 </dom-module>
+
+<script>
+    class SpotifyProvider extends Polymer.Element {
+        static get is() {
+            return 'provider-spotify';
+        }
+
+        static get properties() {
+            return {
+                _searchRequest: {
+                    type: Object
+                }
+            };
+        }
+
+        getTrackInfo(id, market) {
+            return this.getTracksInfo([id], market)
+                .then(tracks => (tracks.length > 0) > 0 ? tracks[0] : null);
+        }
+
+        // This does not guarantee ordering!
+        getTracksInfo(ids, market) {
+            return this._fetchIds(_.without(ids, ...Object.keys(SpotifyProvider.cache)), market)
+                .then(() => ids.map(id => SpotifyProvider.cache[id]));
+        }
+
+        search(query, market, limit) {
+            if (query.length < 2) {
+                return Promise.resolve([]);
+            }
+            if (this._searchRequest) {
+                this._searchRequest.abort();
+            }
+
+            const xhr = this.shadowRoot.children.searchXhr;
+            xhr.set('params', {
+                limit: limit || 20,
+                q: query.replace('-', ' ') + '*',
+                type: 'track'
+            });
+            if (market) {
+                xhr.set('params.market', market);
+            }
+
+            this.set('_searchRequest', xhr.generateRequest());
+            return this._searchRequest.completes
+                .then(xhr => {
+                    this.set('_searchRequest', null);
+
+                    const tracks = _.get(xhr, 'response.tracks.items', []);
+                    tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
+                    return tracks.map(track => ({
+                        reference: {
+                            id: track.id,
+                            provider: 'spotify'
+                        }
+                    }));
+                });
+        }
+
+        _fetchIds(ids, market) {
+            if (!ids || ids.length < 1) {
+                return Promise.resolve([]);
+            }
+
+            const xhr = this.shadowRoot.children.trackXhr;
+            xhr.set('params', { ids: ids.join(',') });
+            if (market) {
+                xhr.set('params.market', { market: market });
+            }
+
+            return xhr.generateRequest().completes
+                .then(xhr => _.get(xhr, 'response.tracks', []))
+                .then(tracks => {
+                    tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
+                    return tracks;
+                });
+        }
+    }
+
+    SpotifyProvider.cache = {};
+    customElements.define(SpotifyProvider.is, SpotifyProvider);
+</script>
