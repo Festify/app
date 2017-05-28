@@ -1,41 +1,43 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <!-- shared styles for all views -->
 <dom-module id="shared-styles">
     <template>
-        <style>
-            :host, * {
-                box-sizing: border-box;
-                color: white;
-            }
-
-            :root {
-                --paper-button-disabled: {
-                    background: var(--primary-color-dark);
+        <custom-style>
+            <style>
+                :host, * {
+                    box-sizing: border-box;
+                    color: white;
                 }
-            }
 
-            input {
-                font-family: 'Roboto', 'Noto', sans-serif;
-            }
+                :host > * {
+                    --paper-button-disabled: {
+                        background: var(--primary-color-dark);
+                    }
+                }
 
-            paper-button {
-                background: var(--primary-color);
-                display: block;
-                margin: 0;
-            }
+                input {
+                    font-family: 'Roboto', 'Noto', sans-serif;
+                }
 
-            paper-input {
-                text-align: center;
-            }
+                paper-button {
+                    background: var(--primary-color);
+                    display: block;
+                    margin: 0;
+                }
 
-            h1 {
-                margin: 16px 0;
+                paper-input {
+                    text-align: center;
+                }
 
-                color: #212121;
+                h1 {
+                    margin: 16px 0;
 
-                font-size: 22px;
-            }
-        </style>
+                    color: #212121;
+
+                    font-size: 22px;
+                }
+            </style>
+        </custom-style>
     </template>
 </dom-module>
