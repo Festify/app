@@ -182,21 +182,20 @@
                                   items="[[tracks]]"
                                   on-dom-change="_trackListChange">
                             <queue-track metadata="[[meta]]"
-                                           state="[[state]]"
-                                           track="[[item]]"
-                                           user-votes="[[userVotes]]">
+                                         state="[[state]]"
+                                         track="[[item]]"
+                                         user-votes="[[userVotes]]">
                             </queue-track>
                         </template>
-
 
                         <view-share state="[[state]]" style$="display: [[_getDisplayProactiveSharing(tracks.length)]]"></view-share>
                     </div>
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
                             <queue-track metadata="[[meta]]"
-                                           state="[[state]]"
-                                           track="[[item]]"
-                                           user-votes="[[userVotes]]">
+                                         state="[[state]]"
+                                         track="[[item]]"
+                                         user-votes="[[userVotes]]">
                             </queue-track>
                         </template>
                     </div>
