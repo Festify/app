@@ -67,7 +67,7 @@
                 }
 
                 const track = this.get('base.currentTrack', stateChange);
-                if (!track) {
+                if (!track || !track.reference) {
                     return;
                 }
                 const partyId = this.get('base.partyId', stateChange);
