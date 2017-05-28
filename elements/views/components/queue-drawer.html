@@ -6,7 +6,7 @@
 <link rel="import" href="../../../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
-<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../common/app-icons-festify.html">
 
@@ -118,6 +118,7 @@
             <div class="darken">
                 <iron-icon icon="festify:logo" class="festify-icon" aria-hidden></iron-icon>
 
+
                 <template is="dom-if" if="[[isAdmin]]">
                     <div class="meta">
                         <aside>
@@ -127,12 +128,12 @@
 
                         <paper-menu-button>
                             <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
-                            <paper-menu class="dropdown-content">
+                            <paper-listbox class="dropdown-content">
                                 <paper-icon-item>
                                     <iron-icon icon="exit-to-app" item-icon></iron-icon>
                                     Sign out
                                 </paper-icon-item>
-                            </paper-menu>
+                            </paper-listbox>
                         </paper-menu-button>
                     </div>
                 </template>
