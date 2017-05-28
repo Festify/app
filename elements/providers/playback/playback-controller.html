@@ -29,7 +29,7 @@
             },
 
             ready: function () {
-                Polymer.dom(this.root).children.forEach(element => {
+                for (element of Polymer.dom(this.root).children) {
                     if (typeof element.getProviders !== 'function' ||
                         typeof element.isAvailable !== 'function' ||
                         !element.isAvailable()) {
@@ -44,7 +44,7 @@
                         }
                         this.push(path, element);
                     });
-                });
+                }
             },
 
             init: function() {
