@@ -133,8 +133,8 @@
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
-        <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
-        <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
+        <provider-metadata data="{{_trackMeta}}" tracks="[[tracks]]"></provider-metadata>
+        <provider-metadata data="{{_searchMeta}}" tracks="[[searchResults]]"></provider-metadata>
         <provider-search search-query="[[searchQuery]]"
                          state="[[state]]"
                          tracks="{{searchResults}}">
@@ -149,7 +149,7 @@
         </provider-player>
         <provider-votes id="voteProvider"
                         state="[[state]]"
-                        user-votes="{{userVotes}}">
+                        user-votes="{{_userVotes}}">
         </provider-votes>
 
         <app-route route="{{route}}" pattern="/:view" data="{{_pageData}}"></app-route>
@@ -166,7 +166,7 @@
                         <div main-title>[[state.party.name]]</div>
                     </app-toolbar>
                     <search-bar value="{{searchQuery}}" placeholder="Add Tracks"></search-bar>
-                    <playback-progress-bar duration="[[_getTrackDuration(state.*, meta.*)]]"
+                    <playback-progress-bar duration="[[_getTrackDuration(state.*, _trackMeta.*)]]"
                                            playback="[[state.party.playback]]">
                     </playback-progress-bar>
                 </header>
@@ -181,10 +181,10 @@
                                   id="trackList"
                                   items="[[tracks]]"
                                   on-dom-change="_trackListChange">
-                            <queue-track metadata="[[meta]]"
+                            <queue-track metadata="[[_trackMeta]]"
                                          state="[[state]]"
                                          track="[[item]]"
-                                         user-votes="[[userVotes]]">
+                                         user-votes="[[_userVotes]]">
                             </queue-track>
                         </template>
 
@@ -192,10 +192,10 @@
                     </div>
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
-                            <queue-track metadata="[[meta]]"
+                            <queue-track metadata="[[_searchMeta]]"
                                          state="[[state]]"
                                          track="[[item]]"
-                                         user-votes="[[userVotes]]">
+                                         user-votes="[[_userVotes]]">
                             </queue-track>
                         </template>
                     </div>
@@ -215,10 +215,6 @@
             behaviors: [FestifyBehaviors.StateBehavior],
 
             properties: {
-                meta: {
-                    type: Object,
-                    value: () => ({})
-                },
                 page: {
                     type: String,
                     observer: '_pageChanged'
@@ -233,9 +229,6 @@
                 tracks: {
                     type: Array
                 },
-                userVotes: {
-                    type: Object
-                },
                 route: {
                     type: Object,
                     notify: true
@@ -248,11 +241,22 @@
                     type: HTMLElement,
                     observer: '_currentTrackChanged'
                 },
+                _pageData: {
+                    type: Object
+                },
                 _skipOffset: {
                     type: Number,
                     value: 0
                 },
-                _pageData: {
+                _searchMeta: {
+                    type: Object,
+                    value: () => ({})
+                },
+                _trackMeta: {
+                    type: Object,
+                    value: () => ({})
+                },
+                _userVotes: {
                     type: Object
                 }
             },

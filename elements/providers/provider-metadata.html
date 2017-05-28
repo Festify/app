@@ -1,6 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/utils/async.html">
-<link rel="import" href="../../bower_components/polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="../utils/lodash.html">
 <link rel="import" href="./provider-spotify.html">
 
@@ -11,7 +9,7 @@
 </dom-module>
 
 <script>
-    class MetadataProvider extends Polymer.MutableData(Polymer.Element) {
+    class MetadataProvider extends Polymer.Element {
         static get is() {
             return 'provider-metadata';
         }
@@ -21,7 +19,7 @@
                 data: {
                     type: Object,
                     notify: true,
-                    value: () => ({ spotify: {} })
+                    value: () => ({})
                 },
                 tracks: {
                     type: Array
@@ -82,15 +80,9 @@
                         .forEach(chunk => {
                             processor(chunk)
                                 .then(results => {
-                                    for (const key in results) {
-                                        if (!results.hasOwnProperty(key)) {
-                                            continue;
-                                        }
-
-                                        const path = ['data', provider, key];
-                                        _.set(this, path, results[key]);
-                                        this.notifyPath(path);
-                                    }
+                                    const obj = {};
+                                    obj[provider] = results;
+                                    this.data = _.assign({}, this.data, obj);
                                 });
                         });
                 });

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
@@ -103,16 +103,19 @@
             </template>
         </div>
     </template>
-    <script>
-        Polymer({
-            is: 'queue-track',
+</dom-module>
 
-            behaviors: [
-                FestifyBehaviors.FirebasePathsBehavior,
-                FestifyBehaviors.StateBehavior
-            ],
+<script>
+    class QueueTrack extends Polymer.mixinBehaviors([
+        FestifyBehaviors.FirebasePathsBehavior,
+        FestifyBehaviors.StateBehavior
+    ], Polymer.Element) {
+        static get is() {
+            return 'queue-track';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 metadata: {
                     type: Object
                 },
@@ -132,69 +135,71 @@
                     type: Boolean,
                     computed: '_getHasVoted(userVotes.*, track.*)'
                 }
-            },
+            };
+        }
 
-            _getArtistName: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'artistName'], metaChange.base);
-            },
+        _getArtistName(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'artistName'], metaChange.base);
+        }
 
-            _getCoverImage: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'cover'], metaChange.base);
-            },
+        _getCoverImage(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'cover'], metaChange.base);
+        }
 
-            _getHasVoted: function (votesChange, trackChange) {
-                if (!votesChange.base || !trackChange.base) {
-                    return;
-                }
-                return votesChange.base[this._generateFbId(trackChange.base)] === true;
-            },
-
-            _getIsPlaying: function (stateChange, t) {
-                if (t.isFromSearch) {
-                    return false;
-                }
-
-                const ref = this.get('base.currentTrack.reference', stateChange);
-                return _.isEqual(t.reference, ref);
-            },
-
-            _getLikeButtonIcon: function (track, hasVoted) {
-                return hasVoted === true ? // We get an empty object from firebase once the vote is deleted
-                    'favorite' :
-                    track.vote_count > 0 || track.is_fallback ?
-                        'favorite-border' :
-                        'add';
-            },
-
-            _getPlayPauseButtonIcon: function (isPlaying) {
-                return isPlaying ? 'av:pause' : 'av:play-arrow';
-            },
-
-            _getTrackName: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'name'], metaChange.base);
-            },
-
-            _getVoteString: function (trackChange) {
-                const track = trackChange.base;
-                return (track.vote_count > 1) ?
-                    track.vote_count + ' Votes' :
-                    (track.vote_count == 1) ?
-                        'One Vote' :
-                        track.isFromSearch ?
-                            'Not in queue' :
-                            'Fallback Track';
-            },
-
-            _tapLikeIcon: function () {
-                this.fire('track-toggleVote', { track: this.track });
-            },
-
-            _tapPlayPauseBtn: function () {
-                const state = this.state;
-                if (state && state.isHost) {
-                    this.fire('track-togglePlayPause');
-                }
+        _getHasVoted(votesChange, trackChange) {
+            if (!votesChange.base || !trackChange.base) {
+                return;
             }
-        });
-    </script>
-</dom-module>
+            return votesChange.base[this._generateFbId(trackChange.base)] === true;
+        }
+
+        _getIsPlaying(stateChange, t) {
+            if (t.isFromSearch) {
+                return false;
+            }
+
+            const ref = this.get('base.currentTrack.reference', stateChange);
+            return _.isEqual(t.reference, ref);
+        }
+
+        _getLikeButtonIcon(track, hasVoted) {
+            return hasVoted === true ? // We get an empty object from firebase once the vote is deleted
+                'favorite' :
+                track.vote_count > 0 || track.is_fallback ?
+                    'favorite-border' :
+                    'add';
+        }
+
+        _getPlayPauseButtonIcon(isPlaying) {
+            return isPlaying ? 'av:pause' : 'av:play-arrow';
+        }
+
+        _getTrackName(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'name'], metaChange.base);
+        }
+
+        _getVoteString(trackChange) {
+            const track = trackChange.base;
+            return (track.vote_count > 1) ?
+                track.vote_count + ' Votes' :
+                (track.vote_count == 1) ?
+                    'One Vote' :
+                    track.isFromSearch ?
+                        'Not in queue' :
+                        'Fallback Track';
+        }
+
+        _tapLikeIcon() {
+            this.fire('track-toggleVote', { track: this.track });
+        }
+
+        _tapPlayPauseBtn() {
+            const state = this.state;
+            if (state && state.isHost) {
+                this.fire('track-togglePlayPause');
+            }
+        }
+    }
+
+    customElements.define(QueueTrack.is, QueueTrack);
+</script>
