@@ -91,7 +91,7 @@
                             this._setPlayerState(false, playerState.currentTrack);
                             this.fire('player-playbackFailed', "Failed to play track: " + err);
                         });
-                } else if (playerState.playing != oldPlayerState.playing) {
+                } else if (playerState.playing !== oldPlayerState.playing) {
                     return (playerState.playing ? this.$.playback.play() : this.$.playback.pause())
                         .then(() => this.$.playback.getPosition())
                         .then(posMs => {
@@ -113,13 +113,10 @@
                     return;
                 }
 
-                if (change.base.length == 0) {
+                if (change.base.length === 0) {
                     this._setPlayerState(false, null);
-                } else if (this._playerState && this._playerState.playing) {
-                    this._setPlayerState(
-                        this._playerState ? this._playerState.playing : true,
-                        change.base[0]
-                    );
+                } else if (this._playerState && change.base.length === 1) {
+                    this._setPlayerState(true, change.base[0]);
                 }
             },
 
@@ -151,22 +148,22 @@
 
             _playerEvent: function(e) {
                 const type = e.detail.type;
-                if (type == 'play' || type == 'pause') {
+                if (type === 'play' || type === 'pause') {
                     this.$.playback.getPosition()
                         .then(posMs => {
                             this.set('state.party.playback', {
                                 last_change: firebase.database.ServerValue.TIMESTAMP,
                                 last_position_ms: posMs,
-                                playing: (type == 'play')
+                                playing: (type === 'play')
                             });
                         });
-                } else if (type == 'finished') {
+                } else if (type === 'finished') {
                     this.fire('player-skip');
                 }
             },
 
             _playerError: function(e) {
-                if (e.detail.type == 'permissionlost') {
+                if (e.detail.type === 'permissionlost') {
                     this.fire('player-playbackInterrupted', "Playback was paused: " + e.detail.msg);
                 } else {
                     console.error(e.detail);
