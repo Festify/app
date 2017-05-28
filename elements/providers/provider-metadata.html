@@ -1,5 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/async.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="../utils/lodash.html">
 <link rel="import" href="./provider-spotify.html">
 
@@ -7,15 +8,20 @@
     <template>
         <provider-spotify id="spotifyProvider"></provider-spotify>
     </template>
-    <script>
-        Polymer({
-            is: 'provider-metadata',
+</dom-module>
 
-            properties: {
+<script>
+    class MetadataProvider extends Polymer.MutableData(Polymer.Element) {
+        static get is() {
+            return 'provider-metadata';
+        }
+
+        static get properties() {
+            return {
                 data: {
                     type: Object,
                     notify: true,
-                    value: () => ({})
+                    value: () => ({ spotify: {} })
                 },
                 tracks: {
                     type: Array
@@ -27,73 +33,94 @@
                     type: Array,
                     value: () => ([])
                 }
-            },
+            };
+        }
 
-            ready: function () {
-                this.set('_providers', {
-                    spotify: chunk => this._processSpotifyChunk(this.$.spotifyProvider, chunk)
-                });
-            },
-
-            observers: [
+        static get observers() {
+            return [
                 '_spliceTracks(tracks.splices, data, _providers)'
-            ],
+            ];
+        }
 
-            _formatArtistName: function (artists) {
-                if (artists.length > 0) {
-                    return artists[0] + (artists.length > 1 ? " feat. " + artists.slice(1).join(', ') : '');
-                }
-            },
+        ready() {
+            super.ready();
 
-            _spliceTracks: function (changeRecord, cache, providers) {
-                if (!changeRecord) {
-                    return;
-                }
+            this.set('_providers', {
+                spotify: chunk => this._processSpotifyChunk(chunk)
+            });
+        }
 
-                changeRecord.indexSplices.forEach(splice => {
-                    const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
-                        .filter(t => !this.get([t.reference.provider, t.reference.id], cache));
-                    this._waitingTracks.push(...newTracks);
-                });
-
-                this.debounce('processTracks', () => {
-                    const tracks = this._waitingTracks;
-                    this._waitingTracks = [];
-                    _.forOwn(_.groupBy(tracks, t => t.reference.provider), (tracks, provider) => {
-                        const processor = this.get(provider, providers);
-                        if (processor) {
-                            _.chunk(tracks, 50)
-                                .filter(chunk => chunk.length > 0)
-                                .forEach(chunk => processor(chunk));
-                        } else {
-                            console.error("Could not find metadata chunk processor for provider", provider);
-                        }
-                    });
-                }, 50);
-            },
-
-            _processSpotifyChunk: function (provider, chunk) {
-                provider.getTracksInfo(chunk.map(t => t.reference.id))
-                    .then(tracks => {
-                        if (!tracks || tracks.length < 1) {
-                            return;
-                        }
-
-                        tracks.forEach(t => {
-                            const artists = t.artists.map(a => a.name);
-                            // Using this.set does not pass the dirty checking for some reason
-                            _.set(this.data, ['spotify', t.id], {
-                                artists: artists,
-                                artistName: this._formatArtistName(artists),
-                                cover: _.sortBy(t.album.images, img => img.height),
-                                durationMs: t.duration_ms,
-                                name: t.name
-                            });
-                            this.notifyPath(['data.spotify', t.id]);
-                        });
-                    })
-                    .catch(err => console.error("Failed to fetch metadata for track chunk", chunk, "An error", err, "was thrown."));
+        _formatArtistName(artists) {
+            if (artists.length > 0) {
+                return artists[0] + (artists.length > 1 ? " feat. " + artists.slice(1).join(', ') : '');
             }
-        });
-    </script>
-</dom-module>
+        }
+
+        _spliceTracks(changeRecord, cache, providers) {
+            if (!changeRecord) {
+                return;
+            }
+
+            changeRecord.indexSplices.forEach(splice => {
+                const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
+                    .filter(t => !this.get([t.reference.provider, t.reference.id], cache));
+                this._waitingTracks.push(...newTracks);
+            });
+
+            this._processTracks = this._processTracks || _.debounce(() => {
+                const tracks = this._waitingTracks;
+                this._waitingTracks = [];
+                _.forOwn(_.groupBy(tracks, t => t.reference.provider), (tracks, provider) => {
+                    const processor = this.get(provider, providers);
+                    if (!processor) {
+                        console.error("Could not find metadata chunk processor for provider", provider);
+                        return;
+                    }
+
+                    _.chunk(tracks, 50)
+                        .filter(chunk => chunk.length > 0)
+                        .forEach(chunk => {
+                            processor(chunk)
+                                .then(results => {
+                                    for (const key in results) {
+                                        if (!results.hasOwnProperty(key)) {
+                                            continue;
+                                        }
+
+                                        const path = ['data', provider, key];
+                                        _.set(this, path, results[key]);
+                                        this.notifyPath(path);
+                                    }
+                                });
+                        });
+                });
+            }, 50);
+
+            this._processTracks();
+        }
+
+        _processSpotifyChunk(chunk) {
+            const provider = this.shadowRoot.children.spotifyProvider;
+            return provider.getTracksInfo(chunk.map(t => t.reference.id))
+                .then(tracks => {
+                    if (!tracks || tracks.length < 1) {
+                        return;
+                    }
+
+                    return _.mapValues(_.keyBy(tracks, 'id'), t => {
+                        const artists = t.artists.map(a => a.name);
+                        return {
+                            artists: artists,
+                            artistName: this._formatArtistName(artists),
+                            cover: _.sortBy(t.album.images, img => img.height),
+                            durationMs: t.duration_ms,
+                            name: t.name
+                        };
+                    });
+                })
+                .catch(err => console.error("Failed to fetch metadata for track chunk", chunk, "An error", err, "was thrown."));
+        }
+    }
+
+    customElements.define(MetadataProvider.is, MetadataProvider);
+</script>
