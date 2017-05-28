@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -28,7 +28,7 @@
                 --iron-icon-width: 24px;
             }
 
-            input {
+            input, iron-input {
                 background: transparent;
                 border: 0;
                 color: black;
@@ -49,13 +49,20 @@
         </style>
 
         <paper-icon-button icon="[[_getIcon(value)]]" on-tap="_tapIconButton"></paper-icon-button>
-        <input is="iron-input" bind-value="{{value}}" placeholder="[[placeholder]]">
+        <iron-input bind-value="{{value}}">
+            <input value="{{value::input}}" placeholder="[[placeholder]]">
+        </iron-input>
     </template>
-    <script>
-        Polymer({
-            is: 'search-bar',
+</dom-module>
 
-            properties: {
+<script>
+    class SearchBar extends Polymer.Element {
+        static get is() {
+            return 'search-bar';
+        }
+
+        static get properties() {
+            return {
                 placeholder: {
                     type: String
                 },
@@ -63,20 +70,22 @@
                     type: String,
                     notify: true
                 }
-            },
+            };
+        }
 
-            _getIcon: function (input) {
-                return (typeof input == 'string' && input.length > 0) ?
-                    'arrow-back' :
-                    'festify:logo';
-            },
+        _getIcon(input) {
+            return (typeof input == 'string' && input.length > 0) ?
+                'arrow-back' :
+                'festify:logo';
+        }
 
-            _tapIconButton: function () {
-                const input = this.value;
-                if (input && input.length > 0) {
-                    this.set('value', null);
-                }
+        _tapIconButton() {
+            const input = this.value;
+            if (input && input.length > 0) {
+                this.set('value', null);
             }
-        });
-    </script>
-</dom-module>
+        }
+    }
+
+    customElements.define(SearchBar.is, SearchBar);
+</script>
