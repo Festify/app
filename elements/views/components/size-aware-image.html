@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 
 <dom-module id="size-aware-image">
     <template>
@@ -15,34 +15,41 @@
 
         <div id="container" role="img"></div>
     </template>
-    <script>
-        Polymer({
-            is: 'size-aware-image',
+</dom-module>
 
-            properties: {
+<script>
+    class SizeAwareImage extends Polymer.Element {
+        static get is() {
+            return 'size-aware-image';
+        }
+
+        static get properties() {
+            return {
                 sortedSizes: {
                     type: Array,
                     observer: '_sortedSizesChanged'
                 }
-            },
+            };
+        }
 
-            _sortedSizesChanged: function (sizes) {
-                if (!sizes || sizes.length < 1) {
-                    return;
-                }
-
-                const requiredHeight = this.getBoundingClientRect().height * (window.devicePixelRatio || 1);
-                let currentImage = sizes[sizes.length - 1];
-                for (let i = sizes.length - 1; i >= 0; i--) {
-                    if (sizes[i].height >= requiredHeight) {
-                        currentImage = sizes[i];
-                    } else {
-                        break;
-                    }
-                }
-
-                this.$.container.style.backgroundImage = 'url(' + currentImage.url + ')';
+        _sortedSizesChanged(sizes) {
+            if (!sizes || sizes.length < 1) {
+                return;
             }
-        });
-    </script>
-</dom-module>
+
+            const requiredHeight = this.getBoundingClientRect().height * (window.devicePixelRatio || 1);
+            let currentImage = sizes[sizes.length - 1];
+            for (let i = sizes.length - 1; i >= 0; i--) {
+                if (sizes[i].height >= requiredHeight) {
+                    currentImage = sizes[i];
+                } else {
+                    break;
+                }
+            }
+
+            this.shadowRoot.children.container.style.backgroundImage = 'url(' + currentImage.url + ')';
+        }
+    }
+
+    customElements.define(SizeAwareImage.is, SizeAwareImage);
+</script>
