@@ -63,7 +63,7 @@
 
             changeRecord.indexSplices.forEach(splice => {
                 const newTracks = splice.object.slice(splice.index, splice.index + splice.addedCount)
-                    .filter(t => !this.get([t.reference.provider, t.reference.id], cache));
+                    .filter(t => t.reference && !this.get([t.reference.provider, t.reference.id], cache));
                 this._waitingTracks.push(...newTracks);
             });
 
