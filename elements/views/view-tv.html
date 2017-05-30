@@ -119,7 +119,10 @@
                          tracks="{{tracks}}"
                          limit="[[_tracksShown]]">
         </provider-tracks>
-        <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
+        <provider-metadata data="{{meta}}"
+                           tracks="[[tracks]]"
+                           state="[[state]]">
+        </provider-metadata>
 
         <size-aware-image class="background"
                           sorted-sizes="[[_getCurrentTrackCover(state.*, meta.*)]]">

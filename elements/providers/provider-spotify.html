@@ -4,6 +4,11 @@
 
 <dom-module id="provider-spotify">
     <template>
+        <iron-ajax id="authXhr"
+                   url="[[state.config.spotify.clientTokenUrl]]"
+                   method="POST"
+                   handle-as="json">
+        </iron-ajax>
         <iron-ajax id="searchXhr"
                    url="https://api.spotify.com/v1/search"
                    handle-as="json">
@@ -20,7 +25,17 @@
             Polymer({
                 is: 'provider-spotify',
 
+                behaviors: [
+                    FestifyBehaviors.StateBehavior
+                ],
+
                 properties: {
+                    _authToken: {
+                        type: String
+                    },
+                    _authRequest: {
+                        type: Object
+                    },
                     _searchRequest: {
                         type: Object
                     }
@@ -46,29 +61,31 @@
                     }
 
                     const xhr = this.$.searchXhr;
-                    xhr.set('params', {
-                        limit: limit || 20,
-                        q: query.replace('-', ' ') + '*',
-                        type: 'track'
-                    });
-                    if (market) {
-                        xhr.set('params.market', market);
-                    }
-
-                    this.set('_searchRequest', xhr.generateRequest());
-                    return this._searchRequest.completes
-                        .then(xhr => {
-                            this.set('_searchRequest', null);
-
-                            const tracks = _.get(xhr, 'response.tracks.items', []);
-                            tracks.forEach(t => cache[t.id] = t);
-                            return tracks.map(track => ({
-                                reference: {
-                                    id: track.id,
-                                    provider: 'spotify'
-                                }
-                            }));
+                    return this._withAuth(xhr, xhr => {
+                        xhr.set('params', {
+                            limit: limit || 20,
+                            q: query.replace('-', ' ') + '*',
+                            type: 'track'
                         });
+                        if (market) {
+                            xhr.set('params.market', market);
+                        }
+
+                        this._searchRequest = xhr.generateRequest();
+                        return this._searchRequest.completes
+                            .then(xhr => {
+                                this.set('_searchRequest', null);
+
+                                const tracks = _.get(xhr, 'response.tracks.items', []);
+                                tracks.forEach(t => cache[t.id] = t);
+                                return tracks.map(track => ({
+                                    reference: {
+                                        id: track.id,
+                                        provider: 'spotify'
+                                    }
+                                }));
+                            });
+                    });
                 },
 
                 _fetchIds: function (ids, market) {
@@ -77,17 +94,45 @@
                     }
 
                     const xhr = this.$.trackXhr;
-                    xhr.set('params', { ids: ids.join(',') });
-                    if (market) {
-                        xhr.set('params.market', { market: market });
-                    }
+                    return this._withAuth(xhr, xhr => {
+                        xhr.set('params', { ids: ids.join(',') });
+                        if (market) {
+                            xhr.set('params.market', { market: market });
+                        }
 
-                    return xhr.generateRequest().completes
-                        .then(xhr => _.get(xhr, 'response.tracks', []))
-                        .then(tracks => {
-                            tracks.forEach(t => cache[t.id] = t);
-                            return tracks;
-                        });
+                        return xhr.generateRequest().completes
+                            .then(xhr => _.get(xhr, 'response.tracks', []))
+                            .then(tracks => {
+                                tracks.forEach(t => cache[t.id] = t);
+                                return tracks;
+                            });
+                    });
+                },
+
+                _withAuth: function (xhr, reqFn) {
+                     if (!this._authToken) {
+                         if (this._authRequest) {
+                             this._authRequest.abort();
+                         }
+
+                         this._authRequest = this.$.authXhr.generateRequest();
+                         return this._authRequest.completes
+                             .then(xhr => this.get('response.access_token', xhr))
+                             .then(token => this.set('_authToken', token))
+                             .then(() => this._withAuth(xhr, reqFn));
+                     }
+
+                     xhr.headers.Authorization = `Bearer ${this._authToken}`;
+                     return reqFn(xhr)
+                         .catch(err => {
+                             // This case occurs when the token expires.
+                             if (err.message.indexOf("401") !== -1) {
+                                 this.set('_authToken', null);
+                                 return this._withAuth(xhr, reqFn);
+                             } else {
+                                 return Promise.reject(xhr);
+                             }
+                         });
                 }
             });
         })();

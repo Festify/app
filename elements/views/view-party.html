@@ -133,8 +133,14 @@
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
-        <provider-metadata data="{{meta}}" tracks="[[tracks]]"></provider-metadata>
-        <provider-metadata data="{{meta}}" tracks="[[searchResults]]"></provider-metadata>
+        <provider-metadata data="{{meta}}"
+                           tracks="[[tracks]]"
+                           state="[[state]]">
+        </provider-metadata>
+        <provider-metadata data="{{meta}}"
+                           tracks="[[searchResults]]"
+                           state="[[state]]">
+        </provider-metadata>
         <provider-search search-query="[[searchQuery]]"
                          state="[[state]]"
                          tracks="{{searchResults}}">

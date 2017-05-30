@@ -1,3 +1,4 @@
+const cors = require('cors')({ origin: true });
 const { crypto } = require('./utils');
 const functions = require('firebase-functions');
 const request = require('request-promise');
@@ -32,6 +33,19 @@ function handleSpotifyRejection(res) {
     };
 }
 
+exports.clientToken = (req, res) => {
+    return cors(req, res, () => {
+        return spotifyRequest({ grant_type: 'client_credentials' })
+            .then(body => {
+                res.json({
+                    access_token: body.access_token,
+                    expires_in: body.expires_in
+                });
+            })
+            .catch(handleSpotifyRejection(res));
+    });
+};
+
 exports.exchangeCode = (req, res) => {
     if (!req.body.code) {
         return res.status(400).json({
@@ -45,16 +59,16 @@ exports.exchangeCode = (req, res) => {
         redirect_uri: CLIENT_CALLBACK_URL,
         code: req.body.code
     })
-    .then(body => {
-        res.json({
-            access_token: body.access_token,
-            expires_in: body.expires_in,
-            refresh_token: crypto.encrypt(body.refresh_token, ENCRYPTION_SECRET),
-            token_type: body.token_type,
-            success: true
-        });
-    })
-    .catch(handleSpotifyRejection(res));
+        .then(body => {
+            res.json({
+                access_token: body.access_token,
+                expires_in: body.expires_in,
+                refresh_token: crypto.encrypt(body.refresh_token, ENCRYPTION_SECRET),
+                token_type: body.token_type,
+                success: true
+            });
+        })
+        .catch(handleSpotifyRejection(res));
 };
 
 exports.refreshToken = (req, res) => {
@@ -69,12 +83,12 @@ exports.refreshToken = (req, res) => {
         grant_type: 'refresh_token',
         refresh_token: crypto.decrypt(req.body.refresh_token, ENCRYPTION_SECRET)
     })
-    .then(body => {
-        res.json({
-            access_token: body.access_token,
-            expires_in: body.expires_in,
-            success: true
-        });
-    })
-    .catch(handleSpotifyRejection(res));
+        .then(body => {
+            res.json({
+                access_token: body.access_token,
+                expires_in: body.expires_in,
+                success: true
+            });
+        })
+        .catch(handleSpotifyRejection(res));
 };

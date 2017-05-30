@@ -5,11 +5,15 @@
 
 <dom-module id="provider-metadata">
     <template>
-        <provider-spotify id="spotifyProvider"></provider-spotify>
+        <provider-spotify id="spotifyProvider" state="[[state]]"></provider-spotify>
     </template>
     <script>
         Polymer({
             is: 'provider-metadata',
+
+            behaviors: [
+                FestifyBehaviors.StateBehavior
+            ],
 
             properties: {
                 data: {
