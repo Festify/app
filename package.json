@@ -36,7 +36,7 @@
     "prompt": "^1.0.0",
     "request": "^2.81.0",
     "run-sequence": "^1.2.2",
-    "sharp": "^0.17.3",
+    "sharp": "^0.18.0",
     "through2": "^2.0.3",
     "vinyl": "^2.0.2"
   },
