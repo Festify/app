@@ -86,7 +86,7 @@
                                 .then(results => {
                                     const obj = {};
                                     obj[provider] = results;
-                                    this.data = _.assign({}, this.data, obj);
+                                    this.data = _.merge({}, this.data, obj);
                                 });
                         });
                 });
