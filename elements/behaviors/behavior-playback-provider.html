@@ -4,36 +4,36 @@
     /**
      * @polymerBehavior
      */
-    FestifyBehaviors.PlaybackProviderBehavior = {
-        init: function() {
+    FestifyBehaviors.PlaybackProvider = klass => class extends klass {
+        init() {
             throw new Error("Not implemented.");
-        },
+        }
 
-        deinit: function() {
+        deinit() {
             throw new Error("Not implemented.");
-        },
+        }
 
-        play: function(ref) {
+        play(ref) {
             throw new Error("Not implemented.");
-        },
+        }
 
-        pause: function() {
+        pause() {
             throw new Error("Not implemented.");
-        },
+        }
 
-        getPosition: function () {
+        getPosition () {
             throw new Error("Not implemented.");
-        },
+        }
 
-        getProviders: function() {
+        getProviders() {
             throw new Error("Not implemented.");
-        },
+        }
 
-        getUsername: function() {
+        getUsername() {
             throw new Error("Not implemented.");
-        },
+        }
 
-        isAvailable: function() {
+        isAvailable() {
             throw new Error("Not implemented.");
         }
     }

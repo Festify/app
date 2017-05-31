@@ -1,14 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 
 <script>
-    class SpotifyPlayback extends FestifyBehaviors.Fire(Polymer.mixinBehaviors(
-        [FestifyBehaviors.PlaybackProviderBehavior],
-        Polymer.Element
-    )) {
+    class SpotifyPlayback extends FestifyBehaviors.Fire(FestifyBehaviors.PlaybackProvider(Polymer.Element)) {
         static get is() {
             return 'playback-spotify';
         }
