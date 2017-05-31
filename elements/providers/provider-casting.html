@@ -1,24 +1,31 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../behaviors/behavior-fire-events.html">
 
 <script>
-    Polymer({
-        is: 'provider-casting',
+    class CastingProvider extends FestifyBehaviors.Fire(Polymer.Element) {
+        static get is() {
+            return 'provider-casting';
+        }
 
-        properties: {
-            url: {
-                type: String,
-                observer: '_urlChanged'
-            },
-            _screenListener: {
-                type: Object
-            }
-        },
+        static get properties() {
+            return {
+                url: {
+                    type: String,
+                    observer: '_urlChanged'
+                },
+                _screenListener: {
+                    type: Object
+                }
+            };
+        }
 
-        isAvailable: function() {
+        isAvailable() {
             return !!this._getPluginUnsafe();
-        },
+        }
 
-        ready: function() {
+        ready() {
+            super.ready();
+
             if (!this.isAvailable()) {
                 return;
             }
@@ -30,28 +37,30 @@
 
                 this.set('_screenListener', l);
             });
-        },
+        }
 
-        _connect: function() {
+        _connect() {
             this._screenListener.loadUrl(this.url);
-        },
+        }
 
-        _disconnect: function() {
+        _disconnect() {
             this.fire('toast', { text: "Lost screen connection." });
-        },
+        }
 
-        _getPluginUnsafe: function(){
+        _getPluginUnsafe(){
             return this.get('cordova.plugins.externalScreen', window);
-        },
+        }
 
-        _urlChanged: function (url) {
+        _urlChanged (url) {
             if (!this._screenListener || !this._screenListener.hasExternalScreen) {
                 return;
             }
 
             this.debounce('url', () => this._screenListener.loadUrl(url), 50);
         }
-    });
+    }
+
+    customElements.define(CastingProvider.is, CastingProvider);
 </script>
 
 <!-- Couch -->
