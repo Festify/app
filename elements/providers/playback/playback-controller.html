@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 <link rel="import" href="playback-spotify.html">
@@ -7,11 +7,16 @@
     <template>
         <playback-spotify config="[[config.spotify]]"></playback-spotify>
     </template>
-    <script>
-        Polymer({
-            is: 'playback-controller',
+</dom-module>
 
-            properties: {
+<script>
+    class PlaybackController extends Polymer.Element {
+        static get is() {
+            return 'playback-controller';
+        }
+
+        static get properties() {
+            return {
                 config: {
                     type: Object
                 },
@@ -26,78 +31,82 @@
                     type: Object,
                     value: () => ({})
                 }
-            },
+            };
+        }
 
-            ready: function () {
-                for (element of Polymer.dom(this.root).children) {
-                    if (typeof element.getProviders !== 'function' ||
-                        typeof element.isAvailable !== 'function' ||
-                        !element.isAvailable()) {
-                        return;
+        ready () {
+            super.ready();
+
+            for (const element of this.shadowRoot.children) {
+                if (typeof element.getProviders !== 'function' ||
+                    typeof element.isAvailable !== 'function' ||
+                    !element.isAvailable()) {
+                    return;
+                }
+
+                this._hasAvailableProviders = true;
+                element.getProviders().forEach(provider => {
+                    const path = ['_providers', provider];
+                    if (!Array.isArray(this.get(path))) {
+                        this.set(path, [])
                     }
-
-                    this._hasAvailableProviders = true;
-                    element.getProviders().forEach(provider => {
-                        const path = ['_providers', provider];
-                        if (!Array.isArray(this.get(path))) {
-                            this.set(path, [])
-                        }
-                        this.push(path, element);
-                    });
-                }
-            },
-
-            init: function() {
-                return this._hasAvailableProviders ?
-                    this._forAllProviders(element => element.init(), true) :
-                    Promise.reject("Got no playback providers to initialize. Are you hosting a party from a browser?");
-            },
-
-            deinit: function() {
-                return this._forAllProviders(element => element.deinit());
-            },
-
-            play: function(ref) {
-                if (ref) {
-                    const providerList = this.get(ref.provider, this._providers);
-                    if (!providerList || providerList.length < 1) {
-                        return Promise.reject("Tried to play a track from " + ref.provider + ", but no provider available.");
-                    }
-
-                    this._activeProvider = providerList[0];
-                }
-
-                return this._activeProvider.play(ref);
-            },
-
-            pause: function() {
-                return this._activeProvider ?
-                    this._activeProvider.pause() :
-                    Promise.resolve();
-            },
-
-            stop: function() {
-                return this.pause().then(() => this._activeProvider = null);
-            },
-
-            getPosition: function() {
-                return this._activeProvider ?
-                    this._activeProvider.getPosition() :
-                    Promise.reject("Not currently playing.");
-            },
-
-            _forAllProviders: function(body, sequential) {
-                const providers = _.uniq(_.flatten(_.values(this._providers)));
-                if (sequential) {
-                    return _.reduce(
-                        providers,
-                        (p, prov) => p.then(() => body(prov)),
-                        Promise.resolve()
-                    );
-                } else {
-                    return Promise.all(providers.map(body));
-                }
+                    this.push(path, element);
+                });
             }
-        });
-    </script>
-</dom-module>
+        }
+
+        init() {
+            return this._hasAvailableProviders ?
+                this._forAllProviders(element => element.init(), true) :
+                Promise.reject("Got no playback providers to initialize. Are you hosting a party from a browser?");
+        }
+
+        deinit() {
+            return this._forAllProviders(element => element.deinit());
+        }
+
+        play(ref) {
+            if (ref) {
+                const providerList = this.get(ref.provider, this._providers);
+                if (!providerList || providerList.length < 1) {
+                    return Promise.reject("Tried to play a track from " + ref.provider + ", but no provider available.");
+                }
+
+                this._activeProvider = providerList[0];
+            }
+
+            return this._activeProvider.play(ref);
+        }
+
+        pause() {
+            return this._activeProvider ?
+                this._activeProvider.pause() :
+                Promise.resolve();
+        }
+
+        stop() {
+            return this.pause().then(() => this._activeProvider = null);
+        }
+
+        getPosition() {
+            return this._activeProvider ?
+                this._activeProvider.getPosition() :
+                Promise.reject("Not currently playing.");
+        }
+
+        _forAllProviders(body, sequential) {
+            const providers = _.uniq(_.flatten(_.values(this._providers)));
+            if (sequential) {
+                return _.reduce(
+                    providers,
+                    (p, prov) => p.then(() => body(prov)),
+                    Promise.resolve()
+                );
+            } else {
+                return Promise.all(providers.map(body));
+            }
+        }
+    }
+
+    customElements.define(PlaybackController.is, PlaybackController);
+</script>
