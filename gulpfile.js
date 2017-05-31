@@ -57,16 +57,23 @@ function buildPolymer(project, develop) {
         .pipe($.if(/\.html$/, $.htmlPostcss([
             autoprefixer({ browsers: ['last 2 versions'] })
         ])))
-        .pipe($.if(['elements/**/*.js'], $.babel()))
-        .pipe($.if(function(file) {
-            return path.extname(file.path) === '.js' &&
-                file.contents.toString().indexOf('@polymerBehavior') === -1;
-        }, $.uglify({ preserveComments: 'license' })))
+        .pipe($.if(
+            file => path.extname(file.path) === '.js' &&
+                file.path.indexOf('webcomponentsjs') === -1,
+            $.babel()
+        ))
+        .pipe($.if(
+            file => path.extname(file.path) === '.js' &&
+                file.path.indexOf('webcomponentsjs') === -1 &&
+                file.contents.toString().indexOf('@polymerBehavior') === -1,
+            $.uglify({ preserveComments: 'license' })
+        ))
         .pipe(htmlSplitter.rejoin())
         .pipe($.if(/\.html$/, $.htmlmin({
             collapseWhitespace: true,
             removeComments: true
         })))
+        .pipe(project.addCustomElementsEs5Adapter())
         .pipe(project.bundler());
 }
 
