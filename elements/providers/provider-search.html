@@ -1,4 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-tracks.html">
 <link rel="import" href="provider-spotify.html">
@@ -7,50 +9,71 @@
     <template>
         <provider-spotify id="spotifyProvider" state="[[state]]"></provider-spotify>
     </template>
-    <script>
-        Polymer({
-            is: 'provider-search',
+</dom-module>
 
-            behaviors: [
-                FestifyBehaviors.StateBehavior,
-                FestifyBehaviors.TracksBehavior
-            ],
+<script>
+    class SearchProvider extends Polymer.mixinBehaviors([
+        FestifyBehaviors.StateBehavior,
+        FestifyBehaviors.TracksBehavior
+    ], Polymer.Element) {
+        static get is() {
+            return 'provider-search';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 searchQuery: {
                     type: String
+                },
+                _providers: {
+                    type: Array,
+                    value: () => []
+                },
+                _searchDeb: {
+                    type: Polymer.Debouncer,
+                    value: () => new Polymer.Debouncer()
                 }
-            },
+            };
+        }
 
-            observers: [
+        static get observers() {
+            return [
                 '_searchQueryChanged(searchQuery, state.party.country, limit)',
-            ],
+            ];
+        }
 
-            _searchQueryChanged: function (query, market, limit) {
-                this.debounce('queryChanged', function () {
-                    this.set('tracks', []);
+        ready() {
+            super.ready();
 
-                    if (!query || query.length < 1) {
-                        return;
-                    }
-
-                    [ // Enter the other providers here
-                        this.$.spotifyProvider
-                    ].map(provider => {
-                        provider.search(query, market, limit)
-                            .then(results => results.map(track => {
-                                track.isFromSearch = true;
-                                return track;
-                            }))
-                            .then(results => this.push('tracks', ...results))
-                            .catch(function (err) {
-                                if (err.message === "Request aborted.") {
-                                    return Promise.resolve();
-                                }
-                            });
-                    });
-                }, 200);
+            for (const prov of this.shadowRoot.children) {
+                this._providers.push(prov);
             }
-        });
-    </script>
-</dom-module>
+        }
+
+        _searchQueryChanged(query, market, limit) {
+            Polymer.Debouncer.debounce(this._searchDeb, Polymer.Async.timeOut.after(200), () => {
+                this.set('tracks', []);
+
+                if (!query || query.length < 1) {
+                    return;
+                }
+
+                this._providers.map(provider => {
+                    provider.search(query, market, limit)
+                        .then(results => results.map(track => {
+                            track.isFromSearch = true;
+                            return track;
+                        }))
+                        .then(results => this.push('tracks', ...results))
+                        .catch(function (err) {
+                            if (err.message === "Request aborted.") {
+                                return Promise.resolve();
+                            }
+                        });
+                });
+            });
+        }
+    }
+
+    customElements.define(SearchProvider.is, SearchProvider);
+</script>
