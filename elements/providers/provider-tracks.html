@@ -7,11 +7,10 @@
 <link rel="import" href="../utils/lodash.html">
 
 <script>
-    class TracksProvider extends Polymer.mixinBehaviors([
-        FestifyBehaviors.FirebasePathsBehavior,
+    class TracksProvider extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors([
         FestifyBehaviors.StateBehavior,
         FestifyBehaviors.TracksBehavior
-    ], Polymer.Element) {
+    ], Polymer.Element)) {
         static get is() {
             return 'provider-tracks';
         }

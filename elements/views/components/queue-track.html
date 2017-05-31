@@ -106,10 +106,10 @@
 </dom-module>
 
 <script>
-    class QueueTrack extends Polymer.mixinBehaviors([
-        FestifyBehaviors.FirebasePathsBehavior,
-        FestifyBehaviors.StateBehavior
-    ], Polymer.Element) {
+    class QueueTrack extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    )) {
         static get is() {
             return 'queue-track';
         }

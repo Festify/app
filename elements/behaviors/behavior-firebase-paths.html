@@ -4,42 +4,42 @@
     /**
      * @polymerBehavior
      */
-    FestifyBehaviors.FirebasePathsBehavior = {
-        _generateFbId: function (track) {
+    FestifyBehaviors.FbPaths = klass => class extends klass {
+        _generateFbId(track) {
             return track.reference.provider + '-' + track.reference.id;
-        },
+        }
 
-        _getFbPartiesPath: function (partyId) {
+        _getFbPartiesPath(partyId) {
             return typeof partyId === 'string' && partyId.length > 0 ?
                 '/parties/' + partyId :
                 '';
-        },
+        }
 
-        _getFbHistoryPath: function (partyId) {
+        _getFbHistoryPath(partyId) {
             return typeof partyId === 'string' && partyId.length > 0 ?
                 '/tracks_played/' + partyId :
                 '';
-        },
+        }
 
-        _getFbTracksPath: function (partyId) {
+        _getFbTracksPath(partyId) {
             return typeof partyId === 'string' && partyId.length > 0 ?
                 '/tracks/' + partyId :
                 '';
-        },
+        }
 
-        _getFbVotesPath: function (partyId) {
+        _getFbVotesPath(partyId) {
             return typeof partyId === 'string' && partyId.length > 0 ?
                 '/votes/' + partyId :
                 '';
-        },
+        }
 
-        _getFbVotesByUserPath: function (partyId) {
+        _getFbVotesByUserPath(partyId) {
             return typeof partyId === 'string' && partyId.length > 0 ?
                 '/votes_by_user/' + partyId :
                 '';
-        },
+        }
 
-        _unsafeGetProviderAndId: function (trackId) {
+        _unsafeGetProviderAndId(trackId) {
             const separatorIndex = trackId.indexOf('-');
             return [trackId.substring(0, separatorIndex), trackId.substring(separatorIndex + 1)];
         }

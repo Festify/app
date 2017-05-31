@@ -17,10 +17,10 @@
 
 <script>
 
-    class PartyProvider extends Polymer.mixinBehaviors([
-        FestifyBehaviors.FirebasePathsBehavior,
-        FestifyBehaviors.StateBehavior
-    ], Polymer.Element) {
+    class PartyProvider extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    )) {
         static get is() {
             return 'provider-party';
         }

@@ -19,10 +19,10 @@
 </dom-module>
 
 <script>
-    class PlayerProvider extends FestifyBehaviors.Fire(Polymer.mixinBehaviors([
-        FestifyBehaviors.FirebasePathsBehavior,
-        FestifyBehaviors.StateBehavior
-    ], Polymer.Element)) {
+    class PlayerProvider extends FestifyBehaviors.Fire(FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    ))) {
         static get is() {
             return 'provider-player';
         }
