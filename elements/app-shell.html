@@ -53,7 +53,7 @@
 
             #toast {
                 --paper-toast-background-color: var(--primary-color);
-                box-shadow: 0px 1px 10px 0px rgba(0,0,0,1);
+                box-shadow: 0 1px 10px 0 rgba(0,0,0,1);
             }
         </style>
 
@@ -95,7 +95,7 @@
     <script>
         // Fix statusbar fuckups on iOS
         window.fixStatusBar = () => {};
-        if (window.cordova && cordova.platformId == 'ios') {
+        if (window.cordova && cordova.platformId === 'ios') {
             window.fixStatusBar = function() {
                 StatusBar.hide();
                 StatusBar.show();
@@ -124,6 +124,7 @@
                                 urlScheme: "festify-spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
                                 scopes: ['streaming'],
+                                clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
                                 tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
@@ -247,7 +248,7 @@
 
         // setup error logging with Sentry
         const environment = '<%= ENV.ENVIRONMENT %>';
-        if (environment == 'production') {
+        if (environment === 'production') {
             Raven.config('<%= ENV.SENTRY_URL %>').install();
         }
     </script>

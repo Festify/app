@@ -1,9 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../utils/lodash.html">
 
 <dom-module id="provider-spotify">
     <template>
+        <iron-ajax id="authXhr"
+                   url="[[state.config.spotify.clientTokenUrl]]"
+                   method="POST"
+                   handle-as="json">
+        </iron-ajax>
         <iron-ajax id="searchXhr"
                    url="https://api.spotify.com/v1/search"
                    handle-as="json">
@@ -23,6 +29,12 @@
 
         static get properties() {
             return {
+                _authToken: {
+                    type: String
+                },
+                _authRequest: {
+                    type: Object
+                },
                 _searchRequest: {
                     type: Object
                 }
@@ -49,29 +61,31 @@
             }
 
             const xhr = this.shadowRoot.children.searchXhr;
-            xhr.set('params', {
-                limit: limit || 20,
-                q: query.replace('-', ' ') + '*',
-                type: 'track'
-            });
-            if (market) {
-                xhr.set('params.market', market);
-            }
-
-            this.set('_searchRequest', xhr.generateRequest());
-            return this._searchRequest.completes
-                .then(xhr => {
-                    this.set('_searchRequest', null);
-
-                    const tracks = _.get(xhr, 'response.tracks.items', []);
-                    tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
-                    return tracks.map(track => ({
-                        reference: {
-                            id: track.id,
-                            provider: 'spotify'
-                        }
-                    }));
+            return this._withAuth(xhr, xhr => {
+                xhr.set('params', {
+                    limit: limit || 20,
+                    q: query.replace('-', ' ') + '*',
+                    type: 'track'
                 });
+                if (market) {
+                    xhr.set('params.market', market);
+                }
+
+                this._searchRequest = xhr.generateRequest();
+                return this._searchRequest.completes
+                    .then(xhr => {
+                        this._searchRequest = null;
+
+                        const tracks = _.get(xhr, 'response.tracks.items', []);
+                        tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
+                        return tracks.map(track => ({
+                            reference: {
+                                id: track.id,
+                                provider: 'spotify'
+                            }
+                        }));
+                    });
+            });
         }
 
         _fetchIds(ids, market) {
@@ -80,16 +94,44 @@
             }
 
             const xhr = this.shadowRoot.children.trackXhr;
-            xhr.set('params', { ids: ids.join(',') });
-            if (market) {
-                xhr.set('params.market', { market: market });
+            return this._withAuth(xhr, xhr => {
+                xhr.set('params', { ids: ids.join(',') });
+                if (market) {
+                    xhr.set('params.market', { market: market });
+                }
+
+                return xhr.generateRequest().completes
+                    .then(xhr => _.get(xhr, 'response.tracks', []))
+                    .then(tracks => {
+                        tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
+                        return tracks;
+                    });
+            });
+        }
+
+        _withAuth(xhr, reqFn) {
+            if (!this._authToken) {
+                if (this._authRequest) {
+                    this._authRequest.abort();
+                }
+
+                this._authRequest = this.shadowRoot.children.authXhr.generateRequest();
+                return this._authRequest.completes
+                    .then(xhr => this.get('response.access_token', xhr))
+                    .then(token => this._authToken = token)
+                    .then(() => this._withAuth(xhr, reqFn));
             }
 
-            return xhr.generateRequest().completes
-                .then(xhr => _.get(xhr, 'response.tracks', []))
-                .then(tracks => {
-                    tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
-                    return tracks;
+            xhr.headers.Authorization = `Bearer ${this._authToken}`;
+            return reqFn(xhr)
+                .catch(err => {
+                    // This case occurs when the token expires.
+                    if (err.message.indexOf("401") !== -1) {
+                        this._authToken = null;
+                        return this._withAuth(xhr, reqFn);
+                    } else {
+                        return Promise.reject(xhr);
+                    }
                 });
         }
     }

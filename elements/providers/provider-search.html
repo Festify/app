@@ -5,7 +5,7 @@
 
 <dom-module id="provider-search">
     <template>
-        <provider-spotify id="spotifyProvider"></provider-spotify>
+        <provider-spotify id="spotifyProvider" state="[[state]]"></provider-spotify>
     </template>
     <script>
         Polymer({
@@ -44,7 +44,7 @@
                             }))
                             .then(results => this.push('tracks', ...results))
                             .catch(function (err) {
-                                if (err.message == "Request aborted.") {
+                                if (err.message === "Request aborted.") {
                                     return Promise.resolve();
                                 }
                             });

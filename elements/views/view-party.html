@@ -133,8 +133,14 @@
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
-        <provider-metadata data="{{_trackMeta}}" tracks="[[tracks]]"></provider-metadata>
-        <provider-metadata data="{{_searchMeta}}" tracks="[[searchResults]]"></provider-metadata>
+        <provider-metadata data="{{_trackMeta}}"
+                           tracks="[[tracks]]"
+                           state="[[state]]">
+        </provider-metadata>
+        <provider-metadata data="{{_searchMeta}}"
+                           tracks="[[searchResults]]"
+                           state="[[state]]">
+        </provider-metadata>
         <provider-search search-query="[[searchQuery]]"
                          state="[[state]]"
                          tracks="{{searchResults}}">
@@ -329,7 +335,7 @@
 
                 if (!!query) {
                     this.set('page', 'search')
-                } else if (viewActive && dataChange.base && dataChange.base.view == 'share') {
+                } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
                     this.set('page', 'share');
                 } else {
                     this.set('page', 'queue');
@@ -358,7 +364,7 @@
             },
 
             _pageChanged: function(page) {
-                if (page == 'share') {
+                if (page === 'share') {
                     this.set('route.path', '/share');
                 } else {
                     this.set('route.path', '');

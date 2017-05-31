@@ -5,6 +5,8 @@ const raven = require('raven');
 firebase.initializeApp(functions.config().firebase);
 raven.config(functions.config().sentry.url).install();
 
+exports.clientToken = functions.https.onRequest(require('./lib/spotify-auth').clientToken);
+
 exports.exchangeCode = functions.https.onRequest(require('./lib/spotify-auth').exchangeCode);
 
 exports.processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')

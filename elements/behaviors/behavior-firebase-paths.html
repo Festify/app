@@ -10,31 +10,31 @@
         },
 
         _getFbPartiesPath: function (partyId) {
-            return typeof partyId == 'string' && partyId.length > 0 ?
+            return typeof partyId === 'string' && partyId.length > 0 ?
                 '/parties/' + partyId :
                 '';
         },
 
         _getFbHistoryPath: function (partyId) {
-            return typeof partyId == 'string' && partyId.length > 0 ?
+            return typeof partyId === 'string' && partyId.length > 0 ?
                 '/tracks_played/' + partyId :
                 '';
         },
 
         _getFbTracksPath: function (partyId) {
-            return typeof partyId == 'string' && partyId.length > 0 ?
+            return typeof partyId === 'string' && partyId.length > 0 ?
                 '/tracks/' + partyId :
                 '';
         },
 
         _getFbVotesPath: function (partyId) {
-            return typeof partyId == 'string' && partyId.length > 0 ?
+            return typeof partyId === 'string' && partyId.length > 0 ?
                 '/votes/' + partyId :
                 '';
         },
 
         _getFbVotesByUserPath: function (partyId) {
-            return typeof partyId == 'string' && partyId.length > 0 ?
+            return typeof partyId === 'string' && partyId.length > 0 ?
                 '/votes_by_user/' + partyId :
                 '';
         },
