@@ -3,13 +3,11 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-firebase-paths.html">
-<link rel="import" href="../behaviors/behavior-tracks.html">
 <link rel="import" href="../utils/lodash.html">
 
 <script>
     class TracksProvider extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors([
-        FestifyBehaviors.StateBehavior,
-        FestifyBehaviors.TracksBehavior
+        FestifyBehaviors.StateBehavior
     ], Polymer.Element)) {
         static get is() {
             return 'provider-tracks';
@@ -24,6 +22,11 @@
                 offset: {
                     type: Number,
                     value: 0
+                },
+                tracks: {
+                    type: Array,
+                    notify: true,
+                    value: () => ([])
                 },
                 _fbQuery: {
                     type: firebase.database.Query,

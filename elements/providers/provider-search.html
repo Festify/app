@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
-<link rel="import" href="../behaviors/behavior-tracks.html">
 <link rel="import" href="provider-spotify.html">
 
 <dom-module id="provider-search">
@@ -12,18 +11,27 @@
 </dom-module>
 
 <script>
-    class SearchProvider extends Polymer.mixinBehaviors([
-        FestifyBehaviors.StateBehavior,
-        FestifyBehaviors.TracksBehavior
-    ], Polymer.Element) {
+    class SearchProvider extends Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    ) {
         static get is() {
             return 'provider-search';
         }
 
         static get properties() {
             return {
+                limit: {
+                    type: Number,
+                    value: 50
+                },
                 searchQuery: {
                     type: String
+                },
+                tracks: {
+                    type: Array,
+                    notify: true,
+                    value: () => ([])
                 },
                 _providers: {
                     type: Array,
