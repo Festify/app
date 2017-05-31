@@ -1,4 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
@@ -11,76 +12,83 @@
                            data="{{userVotes}}">
         </firebase-document>
     </template>
-    <script>
-        Polymer({
-            is: 'provider-votes',
+</dom-module>
 
-            behaviors: [
-                FestifyBehaviors.FirebasePathsBehavior,
-                FestifyBehaviors.StateBehavior
-            ],
+<script>
+    class VotesProvider extends Polymer.mixinBehaviors([
+        FestifyBehaviors.FirebasePathsBehavior,
+        FestifyBehaviors.StateBehavior
+    ], Polymer.Element) {
+        static get is() {
+            return 'provider-votes';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 userVotes: {
                     type: Object,
                     notify: true
                 }
-            },
+            };
+        }
 
-            observers: [
+        static get observers() {
+            return [
                 '_playingTrackChanged(state.*)'
-            ],
+            ];
+        }
 
-            toggleVote: function (track) {
-                const userId = this.get('state.auth.authedUser.uid');
-                if (!userId) {
-                    this.fire('toast', { text: "Tried to toggle a vote, but no user was logged in." });
-                    return;
-                }
-                const partyId = this.get('state.partyId');
-                if (!partyId) {
-                    this.fire('toast', { text: "Tried to toggle a vote, but party ID wasn't set." });
-                    return;
-                }
-
-                const trackId = this._generateFbId(track);
-                const a = firebase.database()
-                    .ref(this._getFbVotesPath(partyId))
-                    .child(trackId)
-                    .child(userId)
-                    .transaction(currentVote => !currentVote);
-                const b = firebase.database()
-                    .ref(this._getFbVotesByUserPath(partyId))
-                    .child(userId)
-                    .child(trackId)
-                    .transaction(currentVote => !currentVote);
-                return Promise.all([a, b]);
-            },
-
-            _getFbUserVotesPath: function (partyId, userId) {
-                return this._getFbVotesByUserPath(partyId) + '/' + userId;
-            },
-
-            _playingTrackChanged: function(stateChange) {
-                if (!this.get('state.isOwner')) {
-                    return;
-                }
-
-                const track = this.get('base.currentTrack', stateChange);
-                if (!track || !track.reference) {
-                    return;
-                }
-                const partyId = this.get('base.partyId', stateChange);
-                if (!partyId) {
-                    console.error("Tried to update votes from topmost track, but party ID was null.");
-                    return;
-                }
-
-                firebase.database()
-                    .ref(this._getFbTracksPath(partyId))
-                    .child(this._generateFbId(track))
-                    .update({ order: Number.MIN_SAFE_INTEGER + 1 });
+        toggleVote (track) {
+            const userId = this.get('state.auth.authedUser.uid');
+            if (!userId) {
+                this.fire('toast', { text: "Tried to toggle a vote, but no user was logged in." });
+                return;
             }
-        });
-    </script>
-</dom-module>
+            const partyId = this.get('state.partyId');
+            if (!partyId) {
+                this.fire('toast', { text: "Tried to toggle a vote, but party ID wasn't set." });
+                return;
+            }
+
+            const trackId = this._generateFbId(track);
+            const a = firebase.database()
+                .ref(this._getFbVotesPath(partyId))
+                .child(trackId)
+                .child(userId)
+                .transaction(currentVote => !currentVote);
+            const b = firebase.database()
+                .ref(this._getFbVotesByUserPath(partyId))
+                .child(userId)
+                .child(trackId)
+                .transaction(currentVote => !currentVote);
+            return Promise.all([a, b]);
+        }
+
+        _getFbUserVotesPath (partyId, userId) {
+            return this._getFbVotesByUserPath(partyId) + '/' + userId;
+        }
+
+        _playingTrackChanged(stateChange) {
+            if (!this.get('state.isOwner')) {
+                return;
+            }
+
+            const track = this.get('base.currentTrack', stateChange);
+            if (!track || !track.reference) {
+                return;
+            }
+            const partyId = this.get('base.partyId', stateChange);
+            if (!partyId) {
+                console.error("Tried to update votes from topmost track, but party ID was null.");
+                return;
+            }
+
+            firebase.database()
+                .ref(this._getFbTracksPath(partyId))
+                .child(this._generateFbId(track))
+                .update({ order: Number.MIN_SAFE_INTEGER + 1 });
+        }
+    }
+
+    customElements.define(VotesProvider.is, VotesProvider);
+</script>
