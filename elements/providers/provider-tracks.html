@@ -1,4 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-firebase-paths.html">
@@ -6,36 +7,40 @@
 <link rel="import" href="../utils/lodash.html">
 
 <script>
-    Polymer({
-        is: 'provider-tracks',
+    class TracksProvider extends Polymer.mixinBehaviors([
+        FestifyBehaviors.FirebasePathsBehavior,
+        FestifyBehaviors.StateBehavior,
+        FestifyBehaviors.TracksBehavior
+    ], Polymer.Element) {
+        static get is() {
+            return 'provider-tracks';
+        }
 
-        behaviors: [
-            FestifyBehaviors.FirebasePathsBehavior,
-            FestifyBehaviors.StateBehavior,
-            FestifyBehaviors.TracksBehavior
-        ],
+        static get properties() {
+            return {
+                limit: {
+                    type: Number,
+                    value: 50
+                },
+                offset: {
+                    type: Number,
+                    value: 0
+                },
+                _fbQuery: {
+                    type: firebase.database.Query,
+                    computed: '_computeQuery(state.partyId, limit)',
+                    observer: '_queryChanged'
+                }
+            };
+        }
 
-        properties: {
-            limit: {
-                type: Number,
-                value: 50
-            },
-            offset: {
-                type: Number,
-                value: 0
-            },
-            _fbQuery: {
-                type: firebase.database.Query,
-                computed: '_computeQuery(state.partyId, limit)',
-                observer: '_queryChanged'
-            }
-        },
+        static get observers() {
+            return [
+                '_tracksChanged(tracks.*)'
+            ];
+        }
 
-        observers: [
-            '_tracksChanged(tracks.*)'
-        ],
-
-        removeTrack: function (track, moveToHistory) {
+        removeTrack(track, moveToHistory) {
             if (!track || !this.state || !this.state.isHost) {
                 return;
             }
@@ -68,9 +73,9 @@
             }
 
             return Promise.all(updates);
-        },
+        }
 
-        _computeQuery: function(partyId, limit) {
+        _computeQuery(partyId, limit) {
             if (!partyId) {
                 return null;
             }
@@ -80,9 +85,9 @@
                 query = query.limitToFirst(limit);
             }
             return query.orderByChild('order');
-        },
+        }
 
-        _fbValue: function(snap) {
+        _fbValue(snap) {
             const data = _.values(snap.val())
                 .slice(this.offset || 0);
 
@@ -91,20 +96,22 @@
             }
 
             this.splice('tracks', 0, this.tracks.length, ...data);
-        },
+        }
 
-        _queryChanged: function(query, oldQuery) {
+        _queryChanged(query, oldQuery) {
             if (oldQuery) {
                 oldQuery.off('value');
             }
             if (query) {
                 query.on('value', this._fbValue.bind(this));
             }
-        },
+        }
 
-        _tracksChanged: function (change) {
+        _tracksChanged(change) {
             const tracks = change.base;
             this.set('state.currentTrack', (tracks && tracks.length > 0) ? tracks[0] : null);
         }
-    });
+    }
+
+    customElements.define(TracksProvider.is, TracksProvider);
 </script>
