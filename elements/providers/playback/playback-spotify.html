@@ -1,23 +1,30 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/polymer/lib/legacy/class.html">
+<link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 
 <script>
-    Polymer({
-        is: 'playback-spotify',
+    class SpotifyPlayback extends FestifyBehaviors.Fire(Polymer.mixinBehaviors(
+        [FestifyBehaviors.PlaybackProviderBehavior],
+        Polymer.Element
+    )) {
+        static get is() {
+            return 'playback-spotify';
+        }
 
-        behaviors: [FestifyBehaviors.PlaybackProviderBehavior],
+        static get properties() {
+            return {
+                config: {
+                    type: Object
+                },
+                _session: {
+                    type: Object
+                }
+            };
+        }
 
-        properties: {
-            config: {
-                type: Object
-            },
-            _session: {
-                type: Object
-            }
-        },
-
-        init: function() {
+        init() {
             const spotify = this._getPluginUnsafe();
             if (!spotify) {
                 return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
@@ -31,41 +38,41 @@
 
                     this.set('_session', session);
                 });
-        },
+        }
 
-        deinit: function() {
+        deinit() {
             return this._withSession(s => s.logout(), () => Promise.resolve());
-        },
+        }
 
-        play: function(ref) {
+        play(ref) {
             return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), () => Promise.reject());
-        },
+        }
 
-        pause: function() {
+        pause() {
             return this._withSession(s => s.pause(), () => Promise.reject());
-        },
+        }
 
-        getUsername: function() {
+        getUsername() {
             return this.get('_session.canonicalUsername');
-        },
+        }
 
-        getPosition: function () {
+        getPosition () {
             return this._withSession(s => s.getPosition(), () => Promise.reject());
-        },
+        }
 
-        getProviders: function () {
+        getProviders () {
             return ['spotify'];
-        },
+        }
 
-        isAvailable: function () {
+        isAvailable () {
             return !!this._getPluginUnsafe();
-        },
+        }
 
-        _getPluginUnsafe: function () {
+        _getPluginUnsafe () {
             return this.get('cordova.plugins.spotify', window);
-        },
+        }
 
-        _onPlaybackEvent: function (event) {
+        _onPlaybackEvent (event) {
             switch(event) {
                 case 'Pause':
                 case 'Play':
@@ -84,14 +91,16 @@
                     console.log(event);
                     break;
             }
-        },
+        }
 
-        _onPlaybackError: function (err) {
+        _onPlaybackError (err) {
             this.fire('error', { type: err });
-        },
+        }
 
-        _withSession: function(body, defaultValue) {
+        _withSession(body, defaultValue) {
             return this._session ? body(this._session) : defaultValue();
         }
-    });
+    }
+
+    customElements.define(SpotifyPlayback.is, SpotifyPlayback);
 </script>
