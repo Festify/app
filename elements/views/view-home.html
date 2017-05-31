@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../common/app-icons-festify.html">
 <link rel="import" href="../common/shared-styles.html">
@@ -41,11 +41,14 @@
             <slot></slot>
         </div>
     </template>
-    <script>
-        Polymer({
-            is: 'view-home',
-
-            properties: {}
-        });
-    </script>
 </dom-module>
+
+<script>
+    class HomeView extends Polymer.Element {
+        static get is() {
+            return 'view-home';
+        }
+    }
+
+    customElements.define(HomeView.is, HomeView);
+</script>
