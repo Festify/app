@@ -1,4 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
@@ -28,15 +29,19 @@
             <view-tv view="tv" state="{{state}}"></view-tv>
         </iron-pages>
     </template>
-    <script>
-        Polymer({
-            is: 'view-queue',
+</dom-module>
 
-            behaviors: [
-                FestifyBehaviors.StateBehavior
-            ],
+<script>
+    class QueueView extends Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    ) {
+        static get is() {
+            return 'view-queue';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 route: {
                     type: Object,
                     notify: true
@@ -55,19 +60,23 @@
                     type: String,
                     value: () => ''
                 }
-            },
+            };
+        }
 
-            observers: [
+        static get observers() {
+            return [
                 '_partyIdChanged(_partyRouteData.partyId)'
-            ],
+            ];
+        }
 
-            _partyIdChanged: function (partyId) {
-                this.set('state.partyId', partyId);
-            },
+        _partyIdChanged(partyId) {
+            this.set('state.partyId', partyId);
+        }
 
-            _computeParams: function(searchQuery) {
-                return !searchQuery ? {} : { q: searchQuery };
-            }
-        });
-    </script>
-</dom-module>
+        _computeParams(searchQuery) {
+            return !searchQuery ? {} : { q: searchQuery };
+        }
+    }
+
+    customElements.define(QueueView.is, QueueView);
+</script>
