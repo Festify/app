@@ -60,7 +60,7 @@
                 this._searchRequest.abort();
             }
 
-            const xhr = this.shadowRoot.children.searchXhr;
+            const xhr = this.$.searchXhr;
             return this._withAuth(xhr, xhr => {
                 xhr.set('params', {
                     limit: limit || 20,
@@ -93,7 +93,7 @@
                 return Promise.resolve([]);
             }
 
-            const xhr = this.shadowRoot.children.trackXhr;
+            const xhr = this.$.trackXhr;
             return this._withAuth(xhr, xhr => {
                 xhr.set('params', { ids: ids.join(',') });
                 if (market) {
@@ -115,7 +115,7 @@
                     this._authRequest.abort();
                 }
 
-                this._authRequest = this.shadowRoot.children.authXhr.generateRequest();
+                this._authRequest = this.$.authXhr.generateRequest();
                 return this._authRequest.completes
                     .then(xhr => this.get('response.access_token', xhr))
                     .then(token => this._authToken = token)

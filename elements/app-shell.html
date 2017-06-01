@@ -220,7 +220,7 @@
 
         // Actions
         _createNewParty() {
-            const [key] = this.shadowRoot.children.partyProvider.createNewParty();
+            const [key] = this.$.partyProvider.createNewParty();
             this._loadParty(key);
         }
 
@@ -233,13 +233,13 @@
 
         _openParty(ev) {
             // ES6-destructuring doesn't work here since party provider returns null when not found
-            this.shadowRoot.children.partyProvider.getParty(ev.detail.shortId)
+            this.$.partyProvider.getParty(ev.detail.shortId)
                 .then(maybeKey => this._loadParty((maybeKey || [])[0]))
                 .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
         }
 
         _showToast(ev) {
-            this.shadowRoot.children.toast.show(ev.detail);
+            this.$.toast.show(ev.detail);
             console.log("Toast:", ev.detail.text);
         }
 

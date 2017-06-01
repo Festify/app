@@ -96,7 +96,7 @@
         }
 
         _processSpotifyChunk(chunk) {
-            const provider = this.shadowRoot.children.spotifyProvider;
+            const provider = this.$.spotifyProvider;
             return provider.getTracksInfo(chunk.map(t => t.reference.id))
                 .then(tracks => {
                     if (!tracks || tracks.length < 1) {

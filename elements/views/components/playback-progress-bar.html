@@ -47,7 +47,7 @@
         _transitionTo(percentage, durationMs, isPlaying) {
             const value = 'opacity 0.25s ease, width ' + durationMs + 'ms linear';
             /** @type CSSStyleDeclaration */
-            const style = this.shadowRoot.children.indicator.style;
+            const style = this.$.indicator.style;
 
             style.oTransition = value;
             style.mozTransition = value;
