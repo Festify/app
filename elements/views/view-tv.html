@@ -1,4 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
@@ -154,18 +156,28 @@
             </template>
         </div>
     </template>
-    <script>
-        Polymer({
-            is: 'view-tv',
+</dom-module>
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+<script>
+    class TvView extends Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    ) {
+        static get is() {
+            return 'view-tv';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 meta: {
                     type: Object
                 },
                 tracks: {
                     type: Array
+                },
+                _resizeDebouncer: {
+                    type: Polymer.Debouncer,
+                    value: () => new Polymer.Debouncer()
                 },
                 _resizeListener: {
                     type: Function
@@ -174,55 +186,61 @@
                     type: Number,
                     value: 15
                 }
-            },
+            };
+        }
 
-            attached: function () {
-                this._resizeListener = () => this._resize();
-                window.addEventListener('resize', this._resizeListener);
-            },
+        connectedCallback() {
+            super.connectedCallback();
 
-            detached: function () {
-                window.removeEventListener('resize', this._resizeListener);
-                this._resizeListener = null;
-            },
+            this._resizeListener = () => this._resize();
+            window.addEventListener('resize', this._resizeListener);
+        }
 
-            _getCurrentTrackArtist: function (stateChange, metaChange) {
-                return this._getCurrentTrackMeta(stateChange, metaChange, 'artistName');
-            },
+        disconnectedCallback() {
+            super.disconnectedCallback();
 
-            _getCurrentTrackCover: function (stateChange, metaChange) {
-                return this._getCurrentTrackMeta(stateChange, metaChange, 'cover');
-            },
+            window.removeEventListener('resize', this._resizeListener);
+            this._resizeListener = null;
+        }
 
-            _getCurrentTrackDuration: function (stateChange, metaChange) {
-                return this._getCurrentTrackMeta(stateChange, metaChange, 'durationMs', 0);
-            },
+        _getCurrentTrackArtist(stateChange, metaChange) {
+            return this._getCurrentTrackMeta(stateChange, metaChange, 'artistName');
+        }
 
-            _getCurrentTrackName: function (stateChange, metaChange) {
-                return this._getCurrentTrackMeta(stateChange, metaChange, 'name');
-            },
+        _getCurrentTrackCover(stateChange, metaChange) {
+            return this._getCurrentTrackMeta(stateChange, metaChange, 'cover');
+        }
 
-            _getCurrentTrackMeta: function (stateChange, metaChange, key, fallback) {
-                const provId = this.get('base.currentTrack.reference.provider', stateChange);
-                const trackId = this.get('base.currentTrack.reference.id', stateChange);
-                return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
-                    this.get([provId, trackId, key], metaChange.base) :
-                    fallback;
-            },
+        _getCurrentTrackDuration(stateChange, metaChange) {
+            return this._getCurrentTrackMeta(stateChange, metaChange, 'durationMs', 0);
+        }
 
-            _getVisibleTracks: function (tracks) {
-                return tracks.base.slice(1);
-            },
+        _getCurrentTrackName(stateChange, metaChange) {
+            return this._getCurrentTrackMeta(stateChange, metaChange, 'name');
+        }
 
-            _resize: function () {
-                this.debounce('resize', () => {
-                    const track = document.querySelector('tv-track');
-                    if (track) {
-                        const width = track.getBoundingClientRect().width;
-                        this.set('_tracksShown', Math.ceil(window.outerWidth / width));
-                    }
-                }, 100);
-            }
-        });
-    </script>
-</dom-module>
+        _getCurrentTrackMeta(stateChange, metaChange, key, fallback) {
+            const provId = this.get('base.currentTrack.reference.provider', stateChange);
+            const trackId = this.get('base.currentTrack.reference.id', stateChange);
+            return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
+                this.get([provId, trackId, key], metaChange.base) :
+                fallback;
+        }
+
+        _getVisibleTracks(tracks) {
+            return tracks.base.slice(1);
+        }
+
+        _resize() {
+            Polymer.Debouncer.debounce(this._resizeDebouncer, Polymer.Async.timeOut.after(100), () => {
+                const track = document.querySelector('tv-track');
+                if (track) {
+                    const width = track.getBoundingClientRect().width;
+                    this.set('_tracksShown', Math.ceil(window.outerWidth / width));
+                }
+            });
+        }
+    }
+
+    customElements.define(TvView.is, TvView);
+</script>
