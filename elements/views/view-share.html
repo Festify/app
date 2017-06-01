@@ -1,7 +1,7 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
 
@@ -48,29 +48,35 @@
             </paper-button>
         </p>
     </template>
-    <script>
-        Polymer({
-            is: 'view-share',
-
-            behaviors: [FestifyBehaviors.StateBehavior],
-
-            properties: {
-
-            },
-
-            _getPartyUrl: function(partyId) {
-                const domain = this.get('state.config.meta.domain');
-
-                if (!partyId) {
-                    return `https://${domain}/`
-                }
-
-                return `https://${domain}/party/${partyId}`;
-            },
-
-            _copyUrl: function() {
-                window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
-            },
-        });
-    </script>
 </dom-module>
+
+<script>
+    class ShareView extends Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    ) {
+        static get is() {
+            return 'view-share';
+        }
+
+        static get properties() {
+            return {};
+        }
+
+        _getPartyUrl(partyId) {
+            const domain = this.get('state.config.meta.domain');
+
+            if (!partyId) {
+                return `https://${domain}/`
+            }
+
+            return `https://${domain}/party/${partyId}`;
+        }
+
+        _copyUrl() {
+            window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
+        }
+    }
+
+    customElements.define(ShareView.is, ShareView);
+</script>
