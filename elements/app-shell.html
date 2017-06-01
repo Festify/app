@@ -1,10 +1,11 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="behaviors/behavior-fire-events.html">
 <link rel="import" href="utils/raven-js.html">
 <link rel="import" href="providers/provider-party.html">
 <link rel="import" href="views/view-host.html">
@@ -92,20 +93,25 @@
 
         <paper-toast id="toast"></paper-toast>
     </template>
-    <script>
-        // Fix statusbar fuckups on iOS
-        window.fixStatusBar = () => {};
-        if (window.cordova && cordova.platformId === 'ios') {
-            window.fixStatusBar = function() {
-                StatusBar.hide();
-                StatusBar.show();
-            };
+</dom-module>
+
+<script>
+    // Fix statusbar fuckups on iOS
+    window.fixStatusBar = () => {};
+    if (window.cordova && cordova.platformId === 'ios') {
+        window.fixStatusBar = function() {
+            StatusBar.hide();
+            StatusBar.show();
+        };
+    }
+
+    class AppShell extends FestifyBehaviors.Fire(Polymer.Element) {
+        static get is() {
+            return 'app-shell';
         }
 
-        Polymer({
-            is: 'app-shell',
-
-            properties: {
+        static get properties() {
+            return {
                 currentView: {
                     type: String
                 },
@@ -131,125 +137,123 @@
                         }
                     })
                 }
-            },
+            };
+        }
 
-            listeners: {
-                'host-createNewParty': '_createNewParty',
-                'join-openParty': '_openParty',
-                'toast': '_showToast',
-                'exitParty': '_exitParty'
-            },
-
-            observers: [
+        static get observers() {
+            return [
                 '_loginStateChanged(state.auth.statusKnown, state.auth.signedIn)',
                 '_routePageChanged(routeData.view)'
-            ],
-
-            ready: function() {
-                this.set('state.cordova', !!window.cordova);
-                this.set('state.isHost', window.isHost);
-                if (window.cordova) { // Cordova doesn't like app-location
-                    this.set('route', { path: '/host', prefix: '', __queryParams: {} });
-                    document.addEventListener('pause', this._appWillSuspend.bind(this));
-                    document.addEventListener('resume', this._appWillResume.bind(this));
-                }
-            },
-
-            _loadParty: function(partyId) {
-                if (!partyId) {
-                    this.fire('toast', {text: "Party not found!"});
-                    return;
-                }
-
-                this.set('route.path', '/party/' + partyId)
-            },
-
-            _exitParty: function() {
-                this.set('route.path', '/');
-            },
-
-            // Property Observers
-            _loginStateChanged: function (statusKnown, signedIn) {
-                if (!statusKnown) {
-                    return;
-                }
-                if (signedIn) {
-                    this._hideSplash();
-
-                    if(this.state.cordova && this.state.auth.authedUser) {
-                        window.FirebasePlugin.setUserId(this.state.auth.authedUser.uid);
-                    }
-
-                    return;
-                }
-
-                return this.$.fbAuth.signInAnonymously()
-                    .catch(err => {
-                        this._hideSplash();
-                        this.fire('toast', {
-                            text: "Could not authenticate with the Server. Please reload the site to try again.",
-                            details: err
-                        });
-                    });
-            },
-
-            _routePageChanged: function (page) {
-                window.fixStatusBar();
-
-                if(this.state.cordova && 'FirebasePlugin' in window) {
-                    window.FirebasePlugin.setScreenName(page);
-                }
-
-                if (page && page.length > 0) {
-                    this.set('currentView', page);
-                } else {
-                    const view = this.state.isHost ? 'host' : 'join';
-                    this.set('route.path', '/' + view);
-                    this.set('currentView', view);
-                }
-            },
-
-            // Actions
-            _createNewParty: function () {
-                const [key] = this.$.partyProvider.createNewParty();
-                this._loadParty(key);
-            },
-
-            _hideSplash: function () {
-                if (navigator.splashscreen &&
-                    typeof navigator.splashscreen.hide === 'function') {
-                    navigator.splashscreen.hide();
-                }
-            },
-
-            _openParty: function (ev) {
-                // ES6-destructuring doesn't work here since party provider returns null when not found
-                this.$.partyProvider.getParty(ev.detail.shortId)
-                    .then(maybeKey => this._loadParty((maybeKey || [])[0]))
-                    .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
-            },
-
-            _showToast: function(ev) {
-                this.$.toast.show(ev.detail);
-                console.log("Toast:", ev.detail.text);
-            },
-
-            // Event Handlers
-            _appWillSuspend: function() {
-                localStorage.setItem("path", this.route.path);
-            },
-
-            _appWillResume: function() {
-                if (localStorage["path"]) {
-                    this.set("route.path", localStorage["path"]);
-                }
-            }
-        });
-
-        // setup error logging with Sentry
-        const environment = '<%= ENV.ENVIRONMENT %>';
-        if (environment === 'production') {
-            Raven.config('<%= ENV.SENTRY_URL %>').install();
+            ];
         }
-    </script>
-</dom-module>
+
+        ready() {
+            super.ready();
+
+            this.addEventListener('host-createNewParty', ev => this._createNewParty(ev));
+            this.addEventListener('join-openParty', ev => this._openParty(ev));
+            this.addEventListener('toast', ev => this._showToast(ev));
+            this.addEventListener('exitParty', ev => this._exitParty(ev));
+
+            this.set('state.cordova', !!window.cordova);
+            this.set('state.isHost', window.isHost);
+            if (window.cordova) { // Cordova doesn't like app-location
+                this.set('route', { path: '/host', prefix: '', __queryParams: {} });
+                document.addEventListener('pause', this._appWillSuspend.bind(this));
+                document.addEventListener('resume', this._appWillResume.bind(this));
+            }
+        }
+
+        _loadParty(partyId) {
+            if (!partyId) {
+                this.fire('toast', {text: "Party not found!"});
+                return;
+            }
+
+            this.set('route.path', '/party/' + partyId)
+        }
+
+        _exitParty() {
+            this.set('route.path', '/');
+        }
+
+        // Property Observers
+        _loginStateChanged(statusKnown, signedIn) {
+            if (!statusKnown) {
+                return;
+            }
+            if (signedIn) {
+                this._hideSplash();
+
+                if (this.state.cordova && this.state.auth.authedUser) {
+                    window.FirebasePlugin.setUserId(this.state.auth.authedUser.uid);
+                }
+
+                return;
+            }
+
+            return this.shadowRoow.children.fbAuth.signInAnonymously()
+                .catch(err => {
+                    this._hideSplash();
+                    this.fire('toast', {
+                        text: "Could not authenticate with the Server. Please reload the site to try again.",
+                        details: err
+                    });
+                });
+        }
+
+        _routePageChanged(page) {
+            window.fixStatusBar();
+
+            if(this.state.cordova && 'FirebasePlugin' in window) {
+                window.FirebasePlugin.setScreenName(page);
+            }
+
+            if (page && page.length > 0) {
+                this.set('currentView', page);
+            } else {
+                const view = this.state.isHost ? 'host' : 'join';
+                this.set('route.path', '/' + view);
+                this.set('currentView', view);
+            }
+        }
+
+        // Actions
+        _createNewParty() {
+            const [key] = this.shadowRoot.children.partyProvider.createNewParty();
+            this._loadParty(key);
+        }
+
+        _hideSplash() {
+            if (navigator.splashscreen &&
+                typeof navigator.splashscreen.hide === 'function') {
+                navigator.splashscreen.hide();
+            }
+        }
+
+        _openParty(ev) {
+            // ES6-destructuring doesn't work here since party provider returns null when not found
+            this.shadowRoot.children.partyProvider.getParty(ev.detail.shortId)
+                .then(maybeKey => this._loadParty((maybeKey || [])[0]))
+                .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
+        }
+
+        _showToast(ev) {
+            this.shadowRoot.children.toast.show(ev.detail);
+            console.log("Toast:", ev.detail.text);
+        }
+
+        // Event Handlers
+        _appWillSuspend() {
+            localStorage.setItem('path', this.route.path);
+        }
+
+        _appWillResume() {
+            if (localStorage['path']) {
+                this.set("route.path", localStorage['path']);
+            }
+        }
+    }
+
+    customElements.define(AppShell.is, AppShell);
+</script>
