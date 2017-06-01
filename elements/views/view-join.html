@@ -1,7 +1,9 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
+<link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="view-home.html">
 
@@ -53,13 +55,19 @@
             </paper-button>
         </view-home>
     </template>
-    <script>
-        Polymer({
-            is: 'view-join',
+</dom-module>
 
-            behaviors: [FestifyBehaviors.StateBehavior],
+<script>
+    class JoinView extends FestifyBehaviors.Fire(Polymer.mixinBehaviors(
+        [FestifyBehaviors.StateBehavior],
+        Polymer.Element
+    )) {
+        static get is() {
+            return 'view-join';
+        }
 
-            properties: {
+        static get properties() {
+            return {
                 inputInvalid: {
                     type: Boolean,
                     value: true
@@ -71,27 +79,31 @@
                     type: Object,
                     notify: true
                 }
-            },
+            };
+        }
 
-            listeners: {
-                'keypress': '_keypress'
-            },
+        ready() {
+            super.ready();
 
-            _keypress: function (ev) {
-                if (ev.which === 13) {
-                    this._tapJoinParty();
-                }
-            },
+            this.addEventListener('keypress', ev => this._keypress(ev));
+        }
 
-            _tapBack: function() {
-                this.set('route.path', '/host');
-            },
-
-            _tapJoinParty: function () {
-                if (!this.inputInvalid) {
-                    this.fire('join-openParty', { shortId: this.joinInput });
-                }
+        _keypress(ev) {
+            if (ev.which === 13) {
+                this._tapJoinParty();
             }
-        });
-    </script>
-</dom-module>
+        }
+
+        _tapBack() {
+            this.set('route.path', '/host');
+        }
+
+        _tapJoinParty() {
+            if (!this.inputInvalid) {
+                this.fire('join-openParty', { shortId: this.joinInput });
+            }
+        }
+    }
+
+    customElements.define(JoinView.is, JoinView);
+</script>
