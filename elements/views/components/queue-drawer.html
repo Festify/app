@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/hardware-icons.html">
@@ -8,6 +8,7 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../common/app-icons-festify.html">
 
 <dom-module id="queue-drawer">
@@ -177,11 +178,16 @@
             </a>
         </div>
     </template>
-    <script>
-        Polymer({
-            is: 'queue-drawer',
+</dom-module>
 
-            properties: {
+<script>
+    class QueueDrawer extends FestifyBehaviors.Fire(Polymer.Element) {
+        static get is() {
+            return 'queue-drawer';
+        }
+
+        static get properties() {
+            return {
                 isAdmin: {
                     type: Boolean
                 },
@@ -196,11 +202,13 @@
                 tvUrl: {
                     type: String
                 }
-            },
+            };
+        }
 
-            _tapExit: function (event) {
-                this.fire('exitParty', event.detail);
-            }
-        });
-    </script>
-</dom-module>
+        _tapExit(event) {
+            this.fire('exitParty', event.detail);
+        }
+    }
+
+    customElements.define(QueueDrawer.is, QueueDrawer);
+</script>
