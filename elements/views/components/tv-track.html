@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../common/shared-styles.html">
 <link rel="import" href="size-aware-image.html">
 
@@ -76,11 +76,16 @@
         <h3>[[_getTrackName(metadata.*, track)]]</h3>
         <h4>[[_getArtistName(metadata.*, track)]]</h4>
     </template>
-    <script>
-        Polymer({
-            is: 'tv-track',
+</dom-module>
 
-            properties: {
+<script>
+    class TvTrack extends Polymer.Element {
+        static get is() {
+            return 'tv-track';
+        }
+
+        static get properties() {
+            return {
                 metadata: {
                     type: Object
                 },
@@ -90,19 +95,21 @@
                 userVotes: {
                     type: Object
                 }
-            },
+            };
+        }
 
-            _getArtistName: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'artistName'], metaChange.base);
-            },
+        _getArtistName(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'artistName'], metaChange.base);
+        }
 
-            _getTrackName: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'name'], metaChange.base);
-            },
+        _getTrackName(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'name'], metaChange.base);
+        }
 
-            _getCoverImage: function (metaChange, track) {
-                return this.get([track.reference.provider, track.reference.id, 'cover'], metaChange.base);
-            }
-        });
-    </script>
-</dom-module>
+        _getCoverImage(metaChange, track) {
+            return this.get([track.reference.provider, track.reference.id, 'cover'], metaChange.base);
+        }
+    }
+
+    customElements.define(TvTrack.is, TvTrack);
+</script>
