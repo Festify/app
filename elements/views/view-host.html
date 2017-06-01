@@ -1,6 +1,7 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="view-home.html">
 
@@ -23,28 +24,35 @@
             <paper-button raised on-tap="_tapPreviousParties" hidden>Previous Parties</paper-button>
         </view-home>
     </template>
-    <script>
-        Polymer({
-            is: 'view-host',
+</dom-module>
 
-            properties: {
+<script>
+    class HostView extends FestifyBehaviors.Fire(Polymer.Element) {
+        static get is() {
+            return 'view-host';
+        }
+
+        static get properties() {
+            return {
                 route: {
                     type: Object,
                     notify: true
                 }
-            },
+            };
+        }
 
-            _tapCreateParty: function () {
-                this.fire('host-createNewParty');
-            },
+        _tapCreateParty() {
+            this.fire('host-createNewParty');
+        }
 
-            _tapJoinParty: function () {
-                this.set('route.path', '/join');
-            },
+        _tapJoinParty() {
+            this.set('route.path', '/join');
+        }
 
-            _tapPreviousParties: function () {
-                this.set('route.path', '/previous');
-            }
-        });
-    </script>
-</dom-module>
+        _tapPreviousParties() {
+            this.set('route.path', '/previous');
+        }
+    }
+
+    customElements.define(HostView.is, HostView);
+</script>
