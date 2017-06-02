@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/utils/gestures.html">
+<link rel="import" href="../../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -218,7 +218,7 @@
 <script>
     class PartyView extends FestifyBehaviors.Fire(
         Polymer.GestureEventListeners(Polymer.Element)
-    ){
+    ) {
         static get is() {
             return 'view-party';
         }
@@ -252,8 +252,12 @@
                     computed: '_getCastUrl(state.partyId)'
                 },
                 _currentTrack: {
+                    type: HTMLElement
+                },
+                _dragTrack: {
                     type: HTMLElement,
-                    observer: '_currentTrackChanged'
+                    computed: '_computeDragTrack(_currentTrack, state.isOwner)',
+                    observer: '_dragTrackChanged'
                 },
                 _pageData: {
                     type: Object
@@ -313,16 +317,16 @@
          * Observers and UI getters
          */
 
-        _currentTrackChanged(newTrack, oldTrack) {
-            if (!this.state.isOwner) {
-                return;
+        _computeDragTrack(currentTrack, isOwner) {
+            if (currentTrack && isOwner) {
+                Polymer.Gestures.addListener(currentTrack, 'track', this._trackListener);
             }
+            return currentTrack;
+        }
 
-            if (oldTrack) {
-                Polymer.Gestures.removeListener(oldTrack, 'track', this._trackListener);
-            }
-            if (newTrack) {
-                Polymer.Gestures.addListener(newTrack, 'track', this._trackListener);
+        _dragTrackChanged(_, oldValue) {
+            if (oldValue) {
+                Polymer.Gestures.removeListener(currentTrack, 'track', this._trackListener);
             }
         }
 
@@ -459,8 +463,11 @@
 
         _trackListChange() {
             const el = this.shadowRoot.querySelector('queue-track[playing]');
+            if (!el) {
+                return;
+            }
             this._translateXTo(el, 0, 0);
-            this.set('_currentTrack', el);
+            this._currentTrack = el;
         }
     }
 
