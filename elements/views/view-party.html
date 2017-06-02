@@ -1,4 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/gestures.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -10,6 +12,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../behaviors/behavior-app-state.html">
+<link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-casting.html">
 <link rel="import" href="../providers/provider-metadata.html">
@@ -212,15 +215,23 @@
             </div>
         </app-drawer-layout>
     </template>
-    <script>
-        const SKIP_TRACK_THRESHOLD = -94.5;
+</dom-module>
 
-        Polymer({
-            is: 'view-party',
+<script>
+    class PartyView extends FestifyBehaviors.Fire(
+        Polymer.GestureEventListeners(
+            Polymer.mixinBehaviors(
+                [FestifyBehaviors.StateBehavior],
+                Polymer.Element
+            )
+        )
+    ){
+        static get is() {
+            return 'view-party';
+        }
 
-            behaviors: [FestifyBehaviors.StateBehavior],
-
-            properties: {
+        static get properties() {
+            return {
                 page: {
                     type: String,
                     observer: '_pageChanged'
@@ -262,188 +273,200 @@
                     type: Object,
                     value: () => ({})
                 },
+                _trackListener: {
+                    type: Function
+                },
                 _userVotes: {
                     type: Object
                 }
-            },
+            };
+        }
 
-            listeners: {
-                'player-initFailed': '_playerEvent',
-                'player-playbackFailed': '_playerEvent',
-                'player-playbackInterrupted': '_playerEvent',
-                'player-playPauseFailed': '_playerEvent',
-                'player-skip': '_skipTrack',
-                'track-togglePlayPause': '_togglePlay',
-                'track-toggleVote': '_toggleVote'
-            },
-
-            observers: [
+        static get observers() {
+            return [
                 '_tracksChanged(tracks.*)',
                 '_getCurrentView(_pageData.*, searchQuery)'
-            ],
+            ];
+        }
 
-            _translateXTo: function (element, offsetX, durationMs) {
-                if (!element || !element.style) {
-                    return;
-                }
+        ready() {
+            super.ready();
 
-                element.style.transition = 'transform ' + durationMs + 'ms';
-                element.style.transform = 'translateX(' + offsetX + 'px)';
-            },
+            const playerEventHandler = ev => this._playerEvent(ev);
+            this.addEventListener('player-initFailed', playerEventHandler);
+            this.addEventListener('player-playbackInterrupted', playerEventHandler);
+            this.addEventListener('player-playPauseFailed', playerEventHandler);
+            this.addEventListener('player-skip', ev => this._skipTrack(ev));
+            this.addEventListener('track-togglePlayPause', ev => this._togglePlay(ev));
+            this.addEventListener('track-toggleVote', ev => this._toggleVote(ev));
 
-            /*
-             * Observers and UI getters
-             */
+            this._trackListener = ev => this._track(ev);
+        }
 
-            _currentTrackChanged: function (newTrack, oldTrack) {
-                if (!this.state.isOwner) {
-                    return;
-                }
-
-                if (oldTrack) {
-                    this.unlisten(oldTrack, 'track', '_track');
-                }
-                if (newTrack) {
-                    this.listen(newTrack, 'track', '_track');
-                }
-            },
-
-            _getCastUrl: function (partyId) {
-                if (!partyId) {
-                    return "https://festify.rocks/";
-                }
-
-                return `${this._getPartyUrl(partyId)}/tv`;
-            },
-
-            _getPartyUrl: function(partyId) {
-                const domain = this.get('state.config.meta.domain');
-
-                if (!partyId) {
-                    return `https://${domain}/`
-                }
-
-                return `https://${domain}/party/${partyId}`;
-            },
-
-            _getCurrentView: function (dataChange, query) {
-                if (!dataChange) {
-                    return;
-                }
-
-                const viewActive = Polymer.dom(this.root).querySelector('app-route').get('active');
-
-                if (!!query) {
-                    this.set('page', 'search')
-                } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
-                    this.set('page', 'share');
-                } else {
-                    this.set('page', 'queue');
-                }
-            },
-
-            _getDisplaySkipIndicator: function (tracksLength) {
-                return this.state.isOwner && tracksLength > 0 ? 'flex' : 'none';
-            },
-
-            _getDisplayProactiveSharing: function (tracksLength) {
-                return tracksLength < 2 ? 'block' : 'none';
-            },
-
-            _getTrackDuration: function (tChange, metaChange) {
-                const provId = this.get('currentTrack.reference.provider', tChange.base);
-                const trackId = this.get('currentTrack.reference.id', tChange.base);
-                return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
-                    this.get([provId, trackId, 'durationMs'], metaChange.base) :
-                    0;
-            },
-
-            _tracksChanged: function () {
-                // dom-repeat doesn't like splicing with objects
-                this.$.trackList.render();
-            },
-
-            _pageChanged: function(page) {
-                if (page === 'share') {
-                    this.set('route.path', '/share');
-                } else {
-                    this.set('route.path', '');
-                }
-
-                const drawer = Polymer.dom(this.root).querySelector('app-drawer');
-                if (!drawer.persistent) {
-                    drawer.close();
-                }
-            },
-
-            /*
-             * Event Handlers
-             */
-
-            _playerEvent: function (ev) {
-                this.fire('toast', { text: ev.detail, duration: 5000 });
-            },
-
-            _skipTrack: function () {
-                if (!this.tracks || this.tracks.length < 1) {
-                    return;
-                }
-
-                this.$.tracksProvider.removeTrack(this.tracks[0], true);
-            },
-
-            _togglePlay: function() {
-                this.$.playerProvider.togglePlay();
-            },
-
-            _toggleVote: function (ev) {
-                this.$.voteProvider.toggleVote(ev.detail.track);
-            },
-
-            _track: function (ev) {
-                const { ddx, state } = ev.detail;
-                const indicator = this.$.skipIndicator;
-                const t = this._currentTrack;
-
-                switch (state) {
-                    case 'track':
-                        if (isNaN(ddx)) {
-                            return;
-                        }
-
-                        this._skipOffset = Math.min(this._skipOffset + ddx, 0);
-
-                        const background = this.$.skipBackground;
-                        if (this._skipOffset <= SKIP_TRACK_THRESHOLD) {
-                            background.classList.add('active');
-                        } else {
-                            background.classList.remove('active');
-                        }
-
-                        this._translateXTo(t, this._skipOffset, 0);
-                        this._translateXTo(indicator, Math.min(this._skipOffset - SKIP_TRACK_THRESHOLD, 0), 0);
-                        break;
-                    case 'end':
-                        if (this._skipOffset <= SKIP_TRACK_THRESHOLD) {
-                            const offset = -t.getBoundingClientRect().width;
-                            this._translateXTo(t, offset, 300);
-                            this._translateXTo(indicator, offset - SKIP_TRACK_THRESHOLD, 300);
-
-                            setTimeout(() => this._skipTrack(), 300);
-                        } else {
-                            this._translateXTo(t, 0, 500);
-                        }
-
-                        this._skipOffset = 0;
-                        break;
-                }
-            },
-
-            _trackListChange: function () {
-                const el = this.$$('queue-track[playing]');
-                this._translateXTo(el, 0, 0);
-                this.set('_currentTrack', el);
+        _translateXTo(element, offsetX, durationMs) {
+            if (!element || !element.style) {
+                return;
             }
-        });
-    </script>
-</dom-module>
+
+            element.style.transition = 'transform ' + durationMs + 'ms';
+            element.style.transform = 'translateX(' + offsetX + 'px)';
+        }
+
+        /*
+         * Observers and UI getters
+         */
+
+        _currentTrackChanged(newTrack, oldTrack) {
+            if (!this.state.isOwner) {
+                return;
+            }
+
+            if (oldTrack) {
+                Polymer.Gestures.removeListener(oldTrack, 'track', this._trackListener);
+            }
+            if (newTrack) {
+                Polymer.Gestures.addListener(newTrack, 'track', this._trackListener);
+            }
+        }
+
+        _getCastUrl(partyId) {
+            if (!partyId) {
+                return "https://festify.rocks/";
+            }
+
+            return `${this._getPartyUrl(partyId)}/tv`;
+        }
+
+        _getPartyUrl(partyId) {
+            const domain = this.get('state.config.meta.domain');
+
+            if (!partyId) {
+                return `https://${domain}/`
+            }
+
+            return `https://${domain}/party/${partyId}`;
+        }
+
+        _getCurrentView(dataChange, query) {
+            if (!dataChange) {
+                return;
+            }
+
+            const viewActive = this.shadowRoot.querySelector('app-route').get('active');
+
+            if (!!query) {
+                this.set('page', 'search')
+            } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
+                this.set('page', 'share');
+            } else {
+                this.set('page', 'queue');
+            }
+        }
+
+        _getDisplaySkipIndicator(tracksLength) {
+            return this.state.isOwner && tracksLength > 0 ? 'flex' : 'none';
+        }
+
+        _getDisplayProactiveSharing(tracksLength) {
+            return tracksLength < 2 ? 'block' : 'none';
+        }
+
+        _getTrackDuration(tChange, metaChange) {
+            const provId = this.get('currentTrack.reference.provider', tChange.base);
+            const trackId = this.get('currentTrack.reference.id', tChange.base);
+            return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
+                this.get([provId, trackId, 'durationMs'], metaChange.base) :
+                0;
+        }
+
+        _tracksChanged() {
+            // dom-repeat doesn't like splicing with objects
+            this.$.trackList.render();
+        }
+
+        _pageChanged(page) {
+            if (page === 'share') {
+                this.set('route.path', '/share');
+            } else {
+                this.set('route.path', '');
+            }
+
+            const drawer = this.shadowRoot.querySelector('app-drawer');
+            if (!drawer.persistent) {
+                drawer.close();
+            }
+        }
+
+        /*
+         * Event Handlers
+         */
+
+        _playerEvent(ev) {
+            this.fire('toast', { text: ev.detail, duration: 5000 });
+        }
+
+        _skipTrack() {
+            if (!this.tracks || this.tracks.length < 1) {
+                return;
+            }
+
+            this.$.tracksProvider.removeTrack(this.tracks[0], true);
+        }
+
+        _togglePlay() {
+            this.$.playerProvider.togglePlay();
+        }
+
+        _toggleVote(ev) {
+            this.$.voteProvider.toggleVote(ev.detail.track);
+        }
+
+        _track(ev) {
+            const { ddx, state } = ev.detail;
+            const indicator = this.$.skipIndicator;
+            const t = this._currentTrack;
+
+            switch (state) {
+                case 'track':
+                    if (isNaN(ddx)) {
+                        return;
+                    }
+
+                    this._skipOffset = Math.min(this._skipOffset + ddx, 0);
+
+                    const background = this.$.skipBackground;
+                    if (this._skipOffset <= PartyView.SKIP_TRACK_THRESHOLD) {
+                        background.classList.add('active');
+                    } else {
+                        background.classList.remove('active');
+                    }
+
+                    this._translateXTo(t, this._skipOffset, 0);
+                    this._translateXTo(indicator, Math.min(this._skipOffset - PartyView.SKIP_TRACK_THRESHOLD, 0), 0);
+                    break;
+                case 'end':
+                    if (this._skipOffset <= PartyView.SKIP_TRACK_THRESHOLD) {
+                        const offset = -t.getBoundingClientRect().width;
+                        this._translateXTo(t, offset, 300);
+                        this._translateXTo(indicator, offset - PartyView.SKIP_TRACK_THRESHOLD, 300);
+
+                        setTimeout(() => this._skipTrack(), 300);
+                    } else {
+                        this._translateXTo(t, 0, 500);
+                    }
+
+                    this._skipOffset = 0;
+                    break;
+            }
+        }
+
+        _trackListChange() {
+            const el = this.shadowRoot.querySelector('queue-track[playing]');
+            this._translateXTo(el, 0, 0);
+            this.set('_currentTrack', el);
+        }
+    }
+
+    PartyView.SKIP_TRACK_THRESHOLD = -94.5;
+    customElements.define(PartyView.is, PartyView);
+</script>
