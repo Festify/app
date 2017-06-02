@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/gestures.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
@@ -11,7 +10,6 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-casting.html">
@@ -220,10 +218,7 @@
 <script>
     class PartyView extends FestifyBehaviors.Fire(
         Polymer.GestureEventListeners(
-            Polymer.mixinBehaviors(
-                [FestifyBehaviors.StateBehavior],
-                Polymer.Element
-            )
+            Polymer.Element
         )
     ){
         static get is() {
@@ -242,6 +237,10 @@
                 },
                 searchResults: {
                     type: Array
+                },
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 tracks: {
                     type: Array

@@ -1,8 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="view-party.html">
 <link rel="import" href="view-tv.html">
 
@@ -32,10 +30,7 @@
 </dom-module>
 
 <script>
-    class QueueView extends Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    ) {
+    class QueueView extends Polymer.Element {
         static get is() {
             return 'view-queue';
         }
@@ -49,6 +44,10 @@
                 queryParams: {
                     type: Object,
                     computed: '_computeParams(_searchQuery)'
+                },
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 _modeRouteData: {
                     type: Object

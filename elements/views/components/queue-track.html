@@ -3,7 +3,6 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../behaviors/behavior-app-state.html">
 <link rel="import" href="../../behaviors/behavior-firebase-paths.html">
 <link rel="import" href="../../common/shared-styles.html">
 <link rel="import" href="../../utils/lodash.html">
@@ -106,10 +105,7 @@
 </dom-module>
 
 <script>
-    class QueueTrack extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    )) {
+    class QueueTrack extends FestifyBehaviors.FbPaths(Polymer.Element) {
         static get is() {
             return 'queue-track';
         }
@@ -124,6 +120,10 @@
                     reflectToAttribute: true,
                     value: false,
                     computed: '_getIsPlaying(state.*, track)'
+                },
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 track: {
                     type: Object

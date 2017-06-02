@@ -1,8 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../behaviors/behavior-firebase-paths.html">
 <link rel="import" href="../utils/lodash.html">
@@ -19,16 +17,21 @@
 </dom-module>
 
 <script>
-    class PlayerProvider extends FestifyBehaviors.Fire(FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    ))) {
+    class PlayerProvider extends FestifyBehaviors.Fire(
+        FestifyBehaviors.FbPaths(
+            Polymer.Element
+        )
+    ) {
         static get is() {
             return 'provider-player';
         }
 
         static get properties() {
             return {
+                state: {
+                    type: Object,
+                    notify: true
+                },
                 tracks: {
                     type: Array
                 },

@@ -1,9 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-database-script.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-firebase-paths.html">
 <link rel="import" href="../utils/lodash.html">
 
@@ -17,16 +15,18 @@
 
 <script>
 
-    class PartyProvider extends FestifyBehaviors.FbPaths(Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    )) {
+    class PartyProvider extends FestifyBehaviors.FbPaths(Polymer.Element) {
         static get is() {
             return 'provider-party';
         }
 
         static get properties() {
-            return {};
+            return {
+                state: {
+                    type: Object,
+                    notify: true
+                },
+            };
         }
 
         static get observers() {

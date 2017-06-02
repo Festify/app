@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="view-home.html">
@@ -58,10 +57,7 @@
 </dom-module>
 
 <script>
-    class JoinView extends FestifyBehaviors.Fire(Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    )) {
+    class JoinView extends FestifyBehaviors.Fire(Polymer.Element) {
         static get is() {
             return 'view-join';
         }
@@ -76,6 +72,10 @@
                     type: String
                 },
                 route: {
+                    type: Object,
+                    notify: true
+                },
+                state: {
                     type: Object,
                     notify: true
                 }

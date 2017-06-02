@@ -1,7 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
-<link rel="import" href="../behaviors/behavior-app-state.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
@@ -159,10 +157,7 @@
 </dom-module>
 
 <script>
-    class TvView extends Polymer.mixinBehaviors(
-        [FestifyBehaviors.StateBehavior],
-        Polymer.Element
-    ) {
+    class TvView extends Polymer.Element {
         static get is() {
             return 'view-tv';
         }
@@ -171,6 +166,10 @@
             return {
                 meta: {
                     type: Object
+                },
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 tracks: {
                     type: Array
