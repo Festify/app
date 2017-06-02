@@ -47,48 +47,52 @@ exports.clientToken = (req, res) => {
 };
 
 exports.exchangeCode = (req, res) => {
-    if (!req.body.code) {
-        return res.status(400).json({
-            success: false,
-            msg: "Missing 'code' parameter"
-        });
-    }
-
-    return spotifyRequest({
-        grant_type: 'authorization_code',
-        redirect_uri: CLIENT_CALLBACK_URL,
-        code: req.body.code
-    })
-        .then(body => {
-            res.json({
-                access_token: body.access_token,
-                expires_in: body.expires_in,
-                refresh_token: crypto.encrypt(body.refresh_token, ENCRYPTION_SECRET),
-                token_type: body.token_type,
-                success: true
+    return cors(req, res, () => {
+        if (!req.body.code) {
+            return res.status(400).json({
+                success: false,
+                msg: "Missing 'code' parameter"
             });
+        }
+
+        return spotifyRequest({
+            grant_type: 'authorization_code',
+            redirect_uri: CLIENT_CALLBACK_URL,
+            code: req.body.code
         })
-        .catch(handleSpotifyRejection(res));
+            .then(body => {
+                res.json({
+                    access_token: body.access_token,
+                    expires_in: body.expires_in,
+                    refresh_token: crypto.encrypt(body.refresh_token, ENCRYPTION_SECRET),
+                    token_type: body.token_type,
+                    success: true
+                });
+            })
+            .catch(handleSpotifyRejection(res));
+    });
 };
 
 exports.refreshToken = (req, res) => {
-    if (!req.body.refresh_token) {
-        return res.status(400).json({
-            success: false,
-            msg: "Missing 'refresh_token' parameter"
-        });
-    }
-
-    return spotifyRequest({
-        grant_type: 'refresh_token',
-        refresh_token: crypto.decrypt(req.body.refresh_token, ENCRYPTION_SECRET)
-    })
-        .then(body => {
-            res.json({
-                access_token: body.access_token,
-                expires_in: body.expires_in,
-                success: true
+    return cors(req, res, () => {
+        if (!req.body.refresh_token) {
+            return res.status(400).json({
+                success: false,
+                msg: "Missing 'refresh_token' parameter"
             });
+        }
+
+        return spotifyRequest({
+            grant_type: 'refresh_token',
+            refresh_token: crypto.decrypt(req.body.refresh_token, ENCRYPTION_SECRET)
         })
-        .catch(handleSpotifyRejection(res));
+            .then(body => {
+                res.json({
+                    access_token: body.access_token,
+                    expires_in: body.expires_in,
+                    success: true
+                });
+            })
+            .catch(handleSpotifyRejection(res));
+    });
 };
