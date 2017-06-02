@@ -4,7 +4,9 @@
 <link rel="import" href="../../utils/lodash.html">
 
 <script>
-    class SpotifyPlayback extends FestifyBehaviors.Fire(FestifyBehaviors.PlaybackProvider(Polymer.Element)) {
+    class SpotifyPlayback extends FestifyBehaviors.Fire(
+        FestifyBehaviors.PlaybackProvider(Polymer.Element)
+    ) {
         static get is() {
             return 'playback-spotify';
         }
