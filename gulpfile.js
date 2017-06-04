@@ -59,13 +59,14 @@ function buildPolymer(project, develop) {
         ])))
         .pipe($.if(
             file => path.extname(file.path) === '.js' &&
-                file.path.indexOf('webcomponentsjs') === -1,
+                file.path.indexOf('webcomponentsjs') === -1 &&
+                file.path.indexOf('firebase') === -1,
             $.babel()
         ))
         .pipe($.if(
             file => path.extname(file.path) === '.js' &&
                 file.path.indexOf('webcomponentsjs') === -1 &&
-                file.contents.toString().indexOf('@polymerBehavior') === -1,
+                file.path.indexOf('firebase') === -1,
             $.uglify({ preserveComments: 'license' })
         ))
         .pipe(htmlSplitter.rejoin())
