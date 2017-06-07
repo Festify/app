@@ -76,7 +76,5 @@
     <plugin name="rocks.festify.cordova-scheme-helper">
         <variable name="spec" value="https://github.com/Festify/festify-cordova-scheme-helper" />
     </plugin>
-    <plugin name="rocks.festify.cordova-spotify">
-        <variable name="spec" value="https://github.com/Festify/cordova-spotify" />
-    </plugin>
+    <plugin name="rocks.festify.cordova-spotify" spec="~0.2.5" />
 </widget>
