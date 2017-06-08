@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
@@ -39,7 +40,8 @@
                 <paper-icon-button icon="arrow-back" on-tap="_tapBack"></paper-icon-button>
             </template>
 
-            <paper-input label="Party ID"
+            <paper-input id="input"
+                         label="Party ID"
                          value="{{joinInput}}"
                          type="tel"
                          auto-validate="true"
@@ -52,6 +54,11 @@
                           on-tap="_tapJoinParty">
                 Join Party
             </paper-button>
+
+            <iron-a11y-keys target="[[_inputElement]]"
+                            keys="enter"
+                            on-keys-pressed="_tapJoinParty">
+            </iron-a11y-keys>
         </view-home>
     </template>
 </dom-module>
@@ -78,6 +85,9 @@
                 state: {
                     type: Object,
                     notify: true
+                },
+                _inputElement: {
+                    type: HTMLElement
                 }
             };
         }
@@ -85,13 +95,7 @@
         ready() {
             super.ready();
 
-            this.addEventListener('keypress', ev => this._keypress(ev));
-        }
-
-        _keypress(ev) {
-            if (ev.which === 13) {
-                this._tapJoinParty();
-            }
+            this._inputElement = this.$.input;
         }
 
         _tapBack() {
