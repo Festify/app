@@ -64,7 +64,7 @@
             }
 
             const playbackData = this.get('base', ch);
-            if (!playbackData) {
+            if (!playbackData || typeof playbackData.last_change !== 'number') {
                 return;
             }
 
