@@ -174,11 +174,15 @@
             if (type === 'play' || type === 'pause') {
                 this._playback.getPosition()
                     .then(posMs => {
+                        const isPlaying = type === 'play';
+
                         this.set('state.party.playback', {
                             last_change: firebase.database.ServerValue.TIMESTAMP,
                             last_position_ms: posMs,
-                            playing: (type === 'play')
+                            playing: isPlaying
                         });
+
+                        this.set('_playerState.playing', isPlaying);
                     });
             } else if (type === 'finished') {
                 this.fire('player-skip');
