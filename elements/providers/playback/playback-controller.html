@@ -41,7 +41,7 @@
                 if (typeof element.getProviders !== 'function' ||
                     typeof element.isAvailable !== 'function' ||
                     !element.isAvailable()) {
-                    return;
+                    continue;
                 }
 
                 this._hasAvailableProviders = true;
