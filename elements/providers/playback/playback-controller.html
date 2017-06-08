@@ -91,7 +91,7 @@
         getPosition() {
             return this._activeProvider ?
                 this._activeProvider.getPosition() :
-                Promise.reject("Not currently playing.");
+                Promise.resolve(0);
         }
 
         _forAllProviders(body, sequential) {
