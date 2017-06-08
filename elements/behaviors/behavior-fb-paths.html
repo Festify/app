@@ -1,10 +1,10 @@
 <script>
-    window.FestifyBehaviors = window.FestifyBehaviors || {};
+    window.Festify = window.Festify || {};
 
     /**
      * @polymerMixin
      */
-    FestifyBehaviors.FbPaths = klass => class extends klass {
+    Festify.FbPaths = klass => class extends klass {
         _generateFbId(track) {
             return track.reference.provider + '-' + track.reference.id;
         }

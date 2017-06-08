@@ -1,10 +1,10 @@
 <script>
-    window.FestifyBehaviors = window.FestifyBehaviors || {};
+    window.Festify = window.Festify || {};
 
     /**
      * @polymerMixin
      */
-    FestifyBehaviors.Fire = klass => class extends klass {
+    Festify.Fire = klass => class extends klass {
         fire(name, detail) {
             const ev = new CustomEvent(name, { detail: detail, bubbles: true, composed: true });
             this.dispatchEvent(ev);
