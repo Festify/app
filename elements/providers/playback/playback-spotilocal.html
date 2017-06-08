@@ -98,16 +98,6 @@
 
         _checkStatus() {
             this._spotify.getStatus().then(s => {
-                if(this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
-                    this.play(this._currentTrack);
-
-                    this.fire('toast', {
-                        text: "Somebody tried to change the current track in Spotify, but he didn't know our true power! We just changed back to your queue. ¯\\_(ツ)_/¯"
-                    });
-
-                    return;
-                }
-
                 if(s.playing_position < this._currentPosition) {
                     clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
@@ -123,6 +113,16 @@
                 if(s.playing !== this._lastPlaybackStatus) {
                     this.set('_lastPlaybackStatus', s.playing);
                     this.fire('player', { type: s.playing ? 'play' : 'pause' });
+                }
+
+                if(this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
+                    this.play(this._currentTrack);
+
+                    this.fire('toast', {
+                        text: "Somebody tried to change the current track in Spotify, but he didn't know our true power! We just changed back to your queue. ¯\\_(ツ)_/¯"
+                    });
+
+                    return;
                 }
             });
         }
