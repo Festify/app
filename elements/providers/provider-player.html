@@ -89,9 +89,9 @@
                         });
                     });
             } else if (!_.isEqual(
-                    this.get('currentTrack.reference', playerState),
-                    this.get('currentTrack.reference', oldPlayerState)
-                )) {
+                this.get('currentTrack.reference', playerState),
+                this.get('currentTrack.reference', oldPlayerState)
+            )) {
                 return this._playback.play(playerState.currentTrack.reference)
                     .then(() => this._playback.getPosition())
                     .then(posMs => {
@@ -163,10 +163,10 @@
                 return;
             }
 
-            this.set('_playerState', {
+            this._playerState = {
                 currentTrack: currentTrack,
                 playing: playing
-            });
+            };
         }
 
         _playerEvent(e) {
