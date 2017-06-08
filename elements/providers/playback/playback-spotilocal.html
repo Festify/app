@@ -1,0 +1,128 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../behaviors/behavior-fire-events.html">
+<link rel="import" href="../../behaviors/behavior-playback-provider.html">
+<link rel="import" href="../../utils/lodash.html">
+
+<script>
+    class SpotilocalPlayback extends Festify.FireBehavior(
+        Festify.PlaybackProviderBehavior(Polymer.Element)
+    ) {
+        static get is() {
+            return 'playback-spotilocal';
+        }
+
+        static get properties() {
+            return {
+                _spotify: {
+                    type: Object
+                },
+                _spotilocal: {
+                    type: Object
+                },
+                _currentTrack: {
+                    type: String
+                },
+                _currentPosition: {
+                    type: Number
+                },
+                _lastPlaybackStatus: {
+                    type: Boolean
+                },
+                _interval: {
+                    type: Number
+                },
+                _session: {
+                    type: Object
+                }
+            };
+        }
+
+        ready() {
+            super.ready();
+
+            if(window.require) {
+                this._spotilocal = require('spotilocal');
+            }
+        }
+
+        init() {
+            if (!this._spotilocal) {
+                return Promise.reject("Tried to initialize Spotilocal, but not in Electron context or plugin not loaded.");
+            }
+
+            const spotify = new this._spotilocal.Spotilocal();
+
+            return spotify.init()
+                .then(() => this._spotify = spotify);
+        }
+
+        deinit() {
+            return this.pause();
+        }
+
+        play(ref) {
+            return this._withSpotify(s => {
+                if (ref) {
+                    const uri = typeof ref !== 'string' ? 'spotify:track:' + ref.id : ref;
+                    this._currentTrack = uri;
+                    this._currentPosition = 0;
+                    return s.play(uri, uri)
+                        .then(() => this._interval = setInterval(() => this._checkStatus(), 1000));
+                } else {
+                    return s.pause(false);
+                }
+            }, () => Promise.reject());
+        }
+
+        pause() {
+            return this._withSpotify(s => s.pause(), () => Promise.reject());
+        }
+
+        getUsername() {
+            return "N/A";
+        }
+
+        getPosition () {
+            return this._spotify.getStatus().then(s => Math.floor(s.playing_position * 1000));
+        }
+
+        getProviders () {
+            return ['spotify'];
+        }
+
+        isAvailable () {
+            return !!this._spotilocal;
+        }
+
+        _checkStatus() {
+            this._spotify.getStatus().then(s => {
+                if(s.playing_position < this._currentPosition) {
+                    clearInterval(this._interval);
+                    this.fire('player', { type: 'finished' });
+                    return;
+                }
+
+                this._currentPosition = s.playing_position;
+
+                if(s.playing !== this._lastPlaybackStatus) {
+                    this.set('_lastPlaybackStatus', s.playing);
+                    this.fire('player', { type: s.playing ? 'play' : 'pause' });
+                }
+
+                if(this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
+                    this.play(this._currentTrack);
+
+                    this.fire('toast', {
+                        text: "Somebody tried to change the current track in Spotify, but he didn't know our true power! We just changed back to your queue. ¯\\_(ツ)_/¯"
+                    });
+                }
+            });
+        }
+
+        _withSpotify(handler, defaultValue) {
+            return this._spotify ? handler(this._spotify) : defaultValue();
+        }
+    }
+
+    customElements.define(SpotilocalPlayback.is, SpotilocalPlayback);
+</script>
