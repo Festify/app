@@ -186,6 +186,14 @@
                     });
             } else if (type === 'finished') {
                 this.fire('player-skip');
+            } else if (type === 'scroll') {
+                const isPlaying = this.get('state.party.playback.playing');
+
+                this.set('state.party.playback', {
+                    last_change: firebase.database.ServerValue.TIMESTAMP,
+                    last_position_ms: e.detail.posMs,
+                    playing: isPlaying
+                })
             }
         }
 

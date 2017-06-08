@@ -83,7 +83,7 @@
         }
 
         getPosition () {
-            return this._spotify.getStatus().then(s => Math.floor(s.playing_position * 1000));
+            return this._spotify.getStatus().then(s => s.playing_position * 1000);
         }
 
         getProviders () {
@@ -100,6 +100,10 @@
                     clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
                     return;
+                }
+
+                if(s.playing_position > this._currentPosition + 1) {
+                    this.fire('player', { type: 'scroll', posMs: s.playing_position * 1000 });
                 }
 
                 this._currentPosition = s.playing_position;
