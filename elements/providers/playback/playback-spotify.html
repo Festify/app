@@ -5,7 +5,7 @@
 
 <script>
     class SpotifyPlayback extends Festify.FireBehavior(
-        Festify.PlaybackProvider(Polymer.Element)
+        Festify.PlaybackProviderBehavior(Polymer.Element)
     ) {
         static get is() {
             return 'playback-spotify';
