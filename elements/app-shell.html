@@ -197,7 +197,7 @@
                 return;
             }
 
-            return this.shadowRoot.children.fbAuth.signInAnonymously()
+            return this.$.fbAuth.signInAnonymously()
                 .catch(err => {
                     this._hideSplash();
                     this.fire('toast', {
