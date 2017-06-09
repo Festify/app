@@ -22,7 +22,6 @@
     "gulp-babel": "^6.1.2",
     "gulp-babili": "^0.1.2",
     "gulp-clean-css": "^3.2.0",
-    "gulp-crisper": "^1.1.0",
     "gulp-eslint": "^3.0.1",
     "gulp-html-postcss": "^6.0.1",
     "gulp-htmlmin": "^3.0.0",
