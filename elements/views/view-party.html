@@ -297,6 +297,7 @@
             super.ready();
 
             const playerEventHandler = ev => this._playerEvent(ev);
+            this.addEventListener('exitParty', ev => this._exitParty(ev));
             this.addEventListener('player-initFailed', playerEventHandler);
             this.addEventListener('player-playbackInterrupted', playerEventHandler);
             this.addEventListener('player-playPauseFailed', playerEventHandler);
@@ -404,6 +405,10 @@
         /*
          * Event Handlers
          */
+
+        _exitParty() {
+            this.$.playerProvider.pause();
+        }
 
         _playerEvent(ev) {
             this.fire('toast', { text: ev.detail, duration: 5000 });

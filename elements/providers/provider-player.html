@@ -64,6 +64,12 @@
             this._playback = this.$.playback;
         }
 
+        pause() {
+            if (this._playerState) {
+                this._setPlayerState(false, this.tracks[0] || null);
+            }
+        }
+
         togglePlay() {
             if (this._playerState) {
                 this._setPlayerState(!this._playerState.playing, this.tracks[0] || null);
