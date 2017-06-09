@@ -115,7 +115,7 @@
             }
         </style>
 
-        <header style$="[[generateBackground()]]">
+        <header style$="[[_getBackground(state.isHost)]]">
             <div class="darken">
                 <iron-icon icon="festify:logo" class="festify-icon" aria-hidden="true"></iron-icon>
 
@@ -205,12 +205,12 @@
             };
         }
 
-        _tapExit(event) {
-            this.fire('exitParty', event.detail);
+        _getBackground(isHost) {
+            return `background-image: url(${isHost ? Polymer.rootPath : "/"}images/bg-top.jpg)`;
         }
 
-        generateBackground() {
-            return "background-image: url(" + (this.state.isHost ? Polymer.rootPath : "/") + "images/bg-top.jpg)";
+        _tapExit(event) {
+            this.fire('exitParty', event.detail);
         }
     }
 
