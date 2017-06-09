@@ -329,7 +329,7 @@
 
         _dragTrackChanged(_, oldValue) {
             if (oldValue) {
-                Polymer.Gestures.removeListener(currentTrack, 'track', this._trackListener);
+                Polymer.Gestures.removeListener(oldValue, 'track', this._trackListener);
             }
         }
 
