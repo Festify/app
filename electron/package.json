@@ -31,7 +31,6 @@
       "target": "appx"
     },
     "dmg": {
-      "backgroundColor": "#1c1f24",
       "title": "Festify"
     },
     "appx": {
