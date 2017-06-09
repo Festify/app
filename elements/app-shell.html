@@ -258,7 +258,7 @@
             // ES6-destructuring doesn't work here since party provider returns null when not found
             this.$.partyProvider.getParty(ev.detail.shortId)
                 .then(maybeKey => this._loadParty((maybeKey || [])[0]))
-                .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
+                .then(() => this.shadowRoot.querySelector('view-join').set('joinInput', ''));
         }
 
         _showToast(ev) {
