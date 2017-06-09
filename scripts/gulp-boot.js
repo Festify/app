@@ -19,6 +19,7 @@ gulp.task('configure', ['prepare-env'], function() {
 gulp.task('clean', function() {
     return del([
         paths.webDir,
+        paths.electronDir,
         path.join(paths.appDir, '**/*')
     ]);
 });
