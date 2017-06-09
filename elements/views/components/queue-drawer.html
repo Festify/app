@@ -59,35 +59,6 @@
                 --iron-icon-width: 64px;
             }
 
-            .meta {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-
-                display: flex;
-                align-items: center;
-                flex-direction: row;
-                justify-content: space-between;
-            }
-
-            .meta aside {
-                font-weight: lighter;
-                margin-left: 16px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .meta span + span::before {
-                content: "· ";
-            }
-
-            .meta paper-menu-button {
-                align-self: flex-end;
-                flex-shrink: 0;
-            }
-
             /*
              * Menu
              */
@@ -118,26 +89,6 @@
         <header style$="[[_getBackground(state.isHost)]]">
             <div class="darken">
                 <iron-icon icon="festify:logo" class="festify-icon" aria-hidden="true"></iron-icon>
-
-
-                <template is="dom-if" if="[[isAdmin]]">
-                    <div class="meta">
-                        <aside>
-                            <span>[[userName]]</span>
-                            <span>Admin</span>
-                        </aside>
-
-                        <paper-menu-button>
-                            <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
-                            <paper-listbox class="dropdown-content">
-                                <paper-icon-item>
-                                    <iron-icon icon="exit-to-app" item-icon></iron-icon>
-                                    Sign out
-                                </paper-icon-item>
-                            </paper-listbox>
-                        </paper-menu-button>
-                    </div>
-                </template>
             </div>
         </header>
 
@@ -188,9 +139,6 @@
 
         static get properties() {
             return {
-                isAdmin: {
-                    type: Boolean
-                },
                 page: {
                     type: String,
                     notify: true,
@@ -198,9 +146,6 @@
                 },
                 state: {
                     type: Object
-                },
-                userName: {
-                    type: String
                 },
                 tvUrl: {
                     type: String
