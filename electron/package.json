@@ -27,9 +27,6 @@
       "category": "public.app-category.music",
       "target": "dmg"
     },
-    "win": {
-      "target": "appx"
-    },
     "dmg": {
       "title": "Festify"
     },
