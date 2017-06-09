@@ -24,7 +24,8 @@
       "buildResources": "www/images"
     },
     "mac": {
-      "category": "public.app-category.music"
+      "category": "public.app-category.music",
+      "target": "dmg"
     },
     "win": {
       "target": "appx"
