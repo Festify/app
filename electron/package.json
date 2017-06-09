@@ -18,24 +18,6 @@
     "url": "https://github.com/Festify/app/issues"
   },
   "homepage": "https://github.com/Festify/app#readme",
-  "build": {
-    "appId": "rocks.festify.app",
-    "directories": {
-      "buildResources": "www/images"
-    },
-    "mac": {
-      "category": "public.app-category.music",
-      "target": "dmg"
-    },
-    "dmg": {
-      "title": "Festify"
-    },
-    "appx": {
-      "backgroundColor": "#1c1f24",
-      "displayName": "Festify",
-      "publisherDisplayName": "Festify Dev Team"
-    }
-  },
   "dependencies": {
     "spotilocal": "^0.1.0",
     "start-spotify": "^0.1.1"
