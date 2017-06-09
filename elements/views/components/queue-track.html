@@ -98,7 +98,8 @@
             <template is="dom-if" if="[[playing]]">
                 <paper-fab mini
                            icon="[[_getPlayPauseButtonIcon(state.party.playback.playing)]]"
-                           on-tap="_tapPlayPauseBtn">
+                           on-tap="_tapPlayPauseBtn"
+                           disabled$="[[!state.isOwner]]">
                 </paper-fab>
             </template>
         </div>
