@@ -30,7 +30,7 @@
     "gulp-polylint": "^1.0.3",
     "gulp-responsive": "^2.6.0",
     "gulp-template": "^4.0.0",
-    "gulp-uglify": "^2.1.0",
+    "gulp-uglify": "^3.0.0",
     "gulp-useref": "^3.1.2",
     "lodash": "^4.17.4",
     "merge-stream": "^1.0.0",
@@ -39,7 +39,7 @@
     "prompt": "^1.0.0",
     "request": "^2.81.0",
     "run-sequence": "^1.2.2",
-    "sharp": "^0.17.3",
+    "sharp": "^0.18.1",
     "through2": "^2.0.3",
     "vinyl": "^2.0.2"
   },
