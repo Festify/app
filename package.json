@@ -2,7 +2,6 @@
   "name": "festify",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
   "version": "2.0.0",
-  "main": "electron.js",
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel": "^6.5.2",
