@@ -163,7 +163,10 @@
 
         <app-drawer-layout fullbleed>
             <app-drawer slot="drawer">
-                <queue-drawer page="{{page}}" tv-url="[[_castUrl]]"></queue-drawer>
+                <queue-drawer page="{{page}}"
+                              state="[[state]]"
+                              tv-url="[[_castUrl]]">
+                </queue-drawer>
             </app-drawer>
 
             <div>
