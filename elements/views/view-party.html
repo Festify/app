@@ -181,7 +181,8 @@
                 <iron-pages selected="[[page]]"
                             attr-for-selected="view">
                     <div class="track-list" view="queue">
-                        <div id="skipBackground" style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
+                        <div id="skipBackground"
+                             style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
                         <template is="dom-repeat"
@@ -195,7 +196,9 @@
                             </queue-track>
                         </template>
 
-                        <view-share state="[[state]]" style$="display: [[_getDisplayProactiveSharing(tracks.length)]]"></view-share>
+                        <view-share state="[[state]]"
+                                    style$="display: [[_getDisplayProactiveSharing(tracks.length)]]">
+                        </view-share>
                     </div>
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
