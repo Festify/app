@@ -37,7 +37,7 @@
              */
 
             header {
-                background: url([[rootPath]]images/bg-top.jpg) center;
+                background: no-repeat center;
                 background-size: cover;
 
                 color: white;
@@ -115,7 +115,7 @@
             }
         </style>
 
-        <header>
+        <header style$="[[generateBackground()]]">
             <div class="darken">
                 <iron-icon icon="festify:logo" class="festify-icon" aria-hidden="true"></iron-icon>
 
@@ -207,6 +207,10 @@
 
         _tapExit(event) {
             this.fire('exitParty', event.detail);
+        }
+
+        generateBackground() {
+            return "background-image: url(" + Polymer.rootPath + "images/bg-top.jpg)";
         }
     }
 
