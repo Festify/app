@@ -39,11 +39,11 @@
         ready () {
             super.ready();
 
-            for (const element of this.shadowRoot.children) {
+            Array.from(this.shadowRoot.children).forEach(element => {
                 if (typeof element.getProviders !== 'function' ||
                     typeof element.isAvailable !== 'function' ||
                     !element.isAvailable()) {
-                    continue;
+                    return;
                 }
 
                 this._hasAvailableProviders = true;
@@ -54,7 +54,7 @@
                     }
                     this.push(path, element);
                 });
-            }
+            });
         }
 
         init() {
