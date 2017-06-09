@@ -1,0 +1,64 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="view-settings">
+    <template>
+        <style include="shared-styles"></style>
+
+        <style>
+            :host {
+                display: flex;
+                flex-direction: column;
+                position: relative;
+            }
+
+            .upper, .lower {
+                padding: 10px 20px;
+            }
+
+            @media (min-width: 1024px) {
+                :host {
+                    flex-direction: row;
+                }
+
+                .upper, .lower {
+                    width: 50%;
+                }
+            }
+        </style>
+
+        <div class="upper">
+            <paper-input id="partyName"
+                         label="Party Name"
+                         value="{{state.party.name}}"
+                         type="text">
+            </paper-input>
+        </div>
+
+        <div class="lower">
+            <p>Fallback Playlist:</p>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    class SettingsView extends Polymer.Element {
+        static get is() {
+            return 'view-settings';
+        }
+
+        static get properties() {
+            return {
+                state: {
+                    type: Object,
+                    notify: true
+                },
+                _playlists: {
+                    type: Array
+                }
+            };
+        }
+    }
+
+    customElements.define(SettingsView.is, SettingsView);
+</script>

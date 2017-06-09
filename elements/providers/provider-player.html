@@ -9,7 +9,7 @@
 <dom-module id="provider-player">
     <template>
         <playback-controller id="playback"
-                             config="[[state.config]]"
+                             state="{{state}}"
                              on-player="_playerEvent"
                              on-error="_playerError">
         </playback-controller>

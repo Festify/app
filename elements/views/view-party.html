@@ -22,6 +22,7 @@
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/queue-track.html">
 <link rel="import" href="components/search-bar.html">
+<link rel="import" href="view-settings.html">
 <link rel="import" href="view-share.html">
 
 <dom-module id="view-party">
@@ -127,10 +128,6 @@
                 margin: 0 32px 0 0;
                 text-align: right;
             }
-
-            view-share {
-                display: block;
-            }
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
@@ -200,6 +197,7 @@
                                     style$="display: [[_getDisplayProactiveSharing(tracks.length)]]">
                         </view-share>
                     </div>
+
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
                             <queue-track metadata="[[_searchMeta]]"
@@ -209,9 +207,10 @@
                             </queue-track>
                         </template>
                     </div>
-                    <div class="share-view" view="share">
-                        <view-share state="[[state]]"></view-share>
-                    </div>
+
+                    <view-settings view="settings" state="{{state}}"></view-settings>
+
+                    <view-share view="share" state="[[state]]"></view-share>
                 </iron-pages>
             </div>
         </app-drawer-layout>
@@ -359,11 +358,11 @@
             const viewActive = this.shadowRoot.querySelector('app-route').get('active');
 
             if (!!query) {
-                this.set('page', 'search')
-            } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
-                this.set('page', 'share');
+                this.page = 'search';
+            } else if (viewActive) {
+                this.page = this.get('base.view', dataChange);
             } else {
-                this.set('page', 'queue');
+                this.page = 'queue';
             }
         }
 
@@ -389,11 +388,7 @@
         }
 
         _pageChanged(page) {
-            if (page === 'share') {
-                this.set('route.path', '/share');
-            } else {
-                this.set('route.path', '');
-            }
+            this.set('route.path', (page !== 'queue' && page !== 'search') ? `/${page}` : '');
 
             const drawer = this.shadowRoot.querySelector('app-drawer');
             if (!drawer.persistent) {
