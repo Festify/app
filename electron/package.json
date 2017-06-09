@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Festify/app#readme",
   "dependencies": {
+    "electron-updater": "^2.1.2",
     "spotilocal": "^0.1.0",
     "start-spotify": "^0.1.1"
   }
