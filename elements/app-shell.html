@@ -244,6 +244,8 @@
                 typeof navigator.splashscreen.hide === 'function') {
                 navigator.splashscreen.hide();
             }
+
+            document.getElementById("loader").remove();
         }
 
         _openParty(ev) {
