@@ -86,7 +86,7 @@
             }
         </style>
 
-        <header style$="[[_getBackground(state.isHost)]]">
+        <header style$="[[_getBackground(state.isWeb)]]">
             <div class="darken">
                 <iron-icon icon="festify:logo" class="festify-icon" aria-hidden="true"></iron-icon>
             </div>
@@ -153,8 +153,8 @@
             };
         }
 
-        _getBackground(isHost) {
-            return `background-image: url(${isHost ? Polymer.rootPath : "/"}images/bg-top.jpg)`;
+        _getBackground(isWeb) {
+            return `background-image: url(${!isWeb ? Polymer.rootPath : "/"}images/bg-top.jpg)`;
         }
 
         _tapExit(event) {
