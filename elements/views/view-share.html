@@ -40,11 +40,13 @@
             and enter this code:
         </p>
         <p class="code">[[state.party.short_id]]</p>
-        <p class="copy">
-            <paper-button raised on-tap="_copyUrl">
-                <iron-icon icon="content-copy"></iron-icon> Share link
-            </paper-button>
-        </p>
+        <template is="dom-if" if="[[state.isHost]]">
+            <p class="copy">
+                <paper-button raised on-tap="_copyUrl">
+                    <iron-icon icon="content-copy"></iron-icon> Share link
+                </paper-button>
+            </p>
+        </template>
     </template>
 </dom-module>
 
@@ -74,7 +76,12 @@
         }
 
         _copyUrl() {
-            window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
+            if(window.plugins) {
+                window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
+            } else if(window.require) {
+                const {shell} = require('electron');
+                shell.openExternal(this._getPartyUrl(this.state.partyId));
+            }
         }
     }
 
