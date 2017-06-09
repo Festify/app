@@ -7,8 +7,8 @@ let win;
 
 function createWindow () {
     win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1024,
+        height: 900,
         backgroundColor: '#1c1f24',
         title: 'Festify'
     });
