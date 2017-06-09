@@ -155,6 +155,16 @@
             this.addEventListener('toast', ev => this._showToast(ev));
             this.addEventListener('exitParty', ev => this._exitParty(ev));
 
+            if(window.require) {
+                const {ipcRenderer} = require('electron');
+
+                ipcRenderer.on('update-available', (event, arg) => {
+                    if(confirm("An update for Festify is available. Would you like to install it?")) {
+                        ipcRenderer.send('install-update');
+                    }
+                });
+            }
+
             this.set('state.cordova', !!window.cordova);
             this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
