@@ -79,27 +79,6 @@
       "rocks.festify.cordova-spotify": {}
     }
   },
-  "build": {
-    "appId": "rocks.festify.app",
-    "directories": {
-      "buildResources": "images"
-    },
-    "mac": {
-      "category": "public.app-category.music"
-    },
-    "win": {
-      "target": "appx"
-    },
-    "dmg": {
-      "backgroundColor": "#1c1f24",
-      "title": "Festify"
-    },
-    "appx": {
-      "backgroundColor": "#1c1f24",
-      "displayName": "Festify",
-      "publisherDisplayName": "Festify Dev Team"
-    }
-  },
   "dependencies": {
     "com.peerio.cordova.plugin.insomnia": "^4.2.1",
     "cordova-android": "^6.2.3",
