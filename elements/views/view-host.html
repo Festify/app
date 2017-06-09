@@ -21,7 +21,7 @@
         <view-home>
             <paper-button raised on-tap="_tapCreateParty">Create a new Party</paper-button>
             <paper-button raised on-tap="_tapJoinParty">Join a Party</paper-button>
-            <paper-button raised disabled$="[[!_hasLastParty()]]" on-tap="_tapReopenParty">Reopen Last Party</paper-button>
+            <paper-button raised disabled$="[[!_hasLastParty(state.party.*)]]" on-tap="_tapReopenParty">Reopen Last Party</paper-button>
         </view-home>
     </template>
 </dom-module>
@@ -37,6 +37,9 @@
                 route: {
                     type: Object,
                     notify: true
+                },
+                state: {
+                    type: Object
                 }
             };
         }
@@ -61,7 +64,7 @@
             }
         }
 
-        _hasLastParty() {
+        _hasLastParty(state) {
             return localStorage.getItem('last_party') !== null;
         }
     }
