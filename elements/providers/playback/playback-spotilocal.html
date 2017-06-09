@@ -40,7 +40,7 @@
         ready() {
             super.ready();
 
-            if(window.require) {
+            if (window.require) {
                 this._spotilocal = require('spotilocal');
             }
         }
@@ -98,9 +98,9 @@
 
         _checkStatus() {
             this._spotify.getStatus().then(s => {
-                if(!this._interval) return;
+                if (!this._interval) return;
 
-                if(this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
+                if (this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
                     this.play(this._currentTrack);
 
                     this.fire('toast', {
@@ -110,19 +110,19 @@
                     return;
                 }
 
-                if(s.playing_position < this._currentPosition) {
+                if (s.playing_position < this._currentPosition) {
                     this._interval = clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
                     return;
                 }
 
-                if(s.playing_position > this._currentPosition + 2) {
+                if (s.playing_position > this._currentPosition + 2) {
                     this.fire('player', { type: 'scroll', posMs: s.playing_position * 1000 });
                 }
 
                 this._currentPosition = s.playing_position;
 
-                if(s.playing !== this._lastPlaybackStatus) {
+                if (s.playing !== this._lastPlaybackStatus) {
                     this.set('_lastPlaybackStatus', s.playing);
                     this.fire('player', { type: s.playing ? 'play' : 'pause' });
                 }

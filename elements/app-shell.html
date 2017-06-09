@@ -158,10 +158,11 @@
             this.set('state.cordova', !!window.cordova);
             this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
+
             if (!window.isWeb) { // Hosted environments don't like app-location
                 this.set('route', { path: '/host', prefix: '', __queryParams: {} });
 
-                if(this.state.cordova) {
+                if (this.state.cordova) {
                     document.addEventListener('pause', this._appWillSuspend.bind(this));
                     document.addEventListener('resume', this._appWillResume.bind(this));
                 }
@@ -209,7 +210,7 @@
         _routePageChanged(page) {
             window.fixStatusBar();
 
-            if(this.state.cordova && 'FirebasePlugin' in window) {
+            if (this.state.cordova && 'FirebasePlugin' in window) {
                 window.FirebasePlugin.setScreenName(page);
             }
 
