@@ -142,7 +142,7 @@
                 return;
             }
 
-            if (change.base.length === 0) {
+            if (!this._playerState || change.base.length === 0) {
                 this._setPlayerState(false, null);
             } else if (this._playerState && (change.base.length === 1 || this._playerState.playing)) {
                 this._setPlayerState(true, change.base[0]);
