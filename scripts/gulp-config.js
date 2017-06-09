@@ -5,8 +5,7 @@ module.exports = {
             buildResources: "www/images"
         },
         mac: {
-            category: "public.app-category.music",
-            target: "dmg"
+            category: "public.app-category.music"
         },
         dmg: {
             title: "Festify"
