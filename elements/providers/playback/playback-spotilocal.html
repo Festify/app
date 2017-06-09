@@ -61,7 +61,8 @@
         }
 
         play(ref) {
-            this._interval = clearInterval(this._interval);
+            clearInterval(this._interval);
+            this._interval = null;
 
             return this._withSpotify(s => {
                 if (ref) {
