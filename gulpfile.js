@@ -71,7 +71,7 @@ gulp.task('release:cordova:android-apk', ['build-cordova'], function(cb) {
     });
 });
 
-gulp.task('release:cordova:android', ['cordova:release:android-apk'], function() {
+gulp.task('release:cordova:android', ['release:cordova:android-apk'], function() {
     return gulp.src('platforms/android/build/outputs/apk/android-release.apk')
         .pipe(gulp.dest('build-mobile'));
 });
