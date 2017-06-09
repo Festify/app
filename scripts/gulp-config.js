@@ -4,7 +4,11 @@ module.exports = {
         directories: {
             buildResources: "www/images"
         },
+        win: {
+            publish: ["github"]
+        },
         mac: {
+            publish: ["github"],
             category: "public.app-category.music"
         },
         dmg: {
