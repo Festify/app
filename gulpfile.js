@@ -175,7 +175,7 @@ gulp.task('polymer', ['prepare-env'], function () {
 gulp.task('polymer-electron', ['prepare-env'], function() {
     const projectElectron = new PolymerProject(require('./polymer-electron.json'));
 
-    return buildPolymer(projectElectron)
+    return buildPolymer(projectElectron, true)
         .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(electronDir))
 });
