@@ -2,6 +2,7 @@ const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 const startSpotify = require('start-spotify');
+const {autoUpdater} = require('electron-updater');
 
 let win;
 
@@ -28,7 +29,16 @@ function createWindow () {
     win.on('closed', () => win = null);
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+    createWindow();
+    autoUpdater.checkForUpdates();
+});
+
+autoUpdater.on('update-downloaded', (ev, info) => {
+    if(confirm("An update for Festify Beta is available. Would you like to install it now?")) {
+        autoUpdater.quitAndInstall();
+    }
+});
 
 app.on('window-all-closed', () => app.quit());
 

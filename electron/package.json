@@ -24,8 +24,7 @@
       "buildResources": "www/images"
     },
     "mac": {
-      "category": "public.app-category.music",
-      "target": "dmg"
+      "category": "public.app-category.music"
     },
     "win": {
       "target": "appx"
@@ -40,6 +39,7 @@
     }
   },
   "dependencies": {
+    "electron-updater": "^2.1.2",
     "spotilocal": "^0.1.0",
     "start-spotify": "^0.1.1"
   }
