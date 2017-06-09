@@ -3,16 +3,17 @@ node_modules/
 .idea/
 npm-debug.log
 
-# Cordova stuff
+# Cordova and Electron stuff
 plugins/
 platforms/
 res/
-www/*
+www/
 !www/.gitkeep
 
 .tmp/
 build/
 build-mobile/
+dist/
 .env*
 /images/manifest/*.png
 

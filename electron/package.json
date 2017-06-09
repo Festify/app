@@ -1,0 +1,46 @@
+{
+  "name": "Festify",
+  "description": "The Festify app that allows hosting parties and voting for tracks.",
+  "version": "2.0.0",
+  "main": "electron.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Festify/app.git"
+  },
+  "keywords": [
+    "Festify",
+    "Client"
+  ],
+  "author": "Festify Dev Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Festify/app/issues"
+  },
+  "homepage": "https://github.com/Festify/app#readme",
+  "build": {
+    "appId": "rocks.festify.app",
+    "directories": {
+      "buildResources": "www/images"
+    },
+    "mac": {
+      "category": "public.app-category.music"
+    },
+    "win": {
+      "target": "appx"
+    },
+    "dmg": {
+      "backgroundColor": "#1c1f24",
+      "title": "Festify"
+    },
+    "appx": {
+      "backgroundColor": "#1c1f24",
+      "displayName": "Festify",
+      "publisherDisplayName": "Festify Dev Team"
+    }
+  },
+  "dependencies": {
+    "spotilocal": "^0.1.0",
+    "start-spotify": "^0.1.1"
+  }
+}

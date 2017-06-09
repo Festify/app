@@ -28,6 +28,7 @@ dotenv.config({ path: '.env-default' });
 
 const webDir = 'build';
 const appDir = 'www';
+const electronDir = 'electron/www';
 
 const envFiles = ['.env', 'google-services.json', 'GoogleService-Info.plist'];
 
@@ -171,6 +172,14 @@ gulp.task('polymer', ['prepare-env'], function () {
         .pipe(gulp.dest(webDir));
 });
 
+gulp.task('polymer-electron', ['prepare-env'], function() {
+    const projectElectron = new PolymerProject(require('./polymer-electron.json'));
+
+    return buildPolymer(projectElectron)
+        .pipe($.if('elements/app-shell.html', $.crisper()))
+        .pipe(gulp.dest(electronDir))
+});
+
 gulp.task('polymer-cordova', ['prepare-env'], function() {
     const projectCordova = new PolymerProject(require('./polymer-cordova.json'));
 
@@ -254,6 +263,7 @@ gulp.task('generate-splash-screens', function () {
 // Build bases
 gulp.task('build:web', ['polymer', 'generate-icons']);
 gulp.task('build:mobile', ['polymer-cordova', 'generate-splash-screens', 'generate-icons']);
+gulp.task('build:desktop', ['polymer-electron']);
 
 // User-facing tasks
 gulp.task('build', ['clean'], function(cb) {
@@ -266,7 +276,7 @@ gulp.task('build-cordova', ['clean'], function(cb) {
 
 gulp.task('build-all', ['clean'], function(cb) {
     runSequence(
-        ['build:web', 'build:mobile'],
+        ['build:web', 'build:mobile', 'build:desktop'],
         cb
     );
 });
