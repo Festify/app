@@ -13,7 +13,8 @@
             div {
                 background: white;
                 height: 100%;
-                width: 0;
+                width: 100%;
+                transform-origin: left;
             }
         </style>
 
@@ -45,7 +46,7 @@
         }
 
         _transitionTo(percentage, durationMs, isPlaying) {
-            const value = 'opacity 0.25s ease, width ' + durationMs + 'ms linear';
+            const value = 'opacity 0.25s ease, transform ' + durationMs + 'ms linear';
             /** @type CSSStyleDeclaration */
             const style = this.$.indicator.style;
 
@@ -55,7 +56,7 @@
             style.transition = value;
 
             style.opacity = isPlaying ? 1 : 0.5;
-            style.width = percentage + '%';
+            style.transform = `scaleX(${percentage / 100})`;
         }
 
         _updateIndicator(ch, durationMs) {
