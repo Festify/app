@@ -210,7 +210,7 @@
         }
 
         generateBackground() {
-            return "background-image: url(" + Polymer.rootPath + "images/bg-top.jpg)";
+            return "background-image: url(" + (this.state.isHost ? Polymer.rootPath : "/") + "images/bg-top.jpg)";
         }
     }
 
