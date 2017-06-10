@@ -112,7 +112,7 @@
                     return;
                 }
 
-                if (s.playing_position < this._currentPosition) {
+                if (s.playing_position < this._currentPosition || s.playing_position === s.track.length) {
                     this._interval = clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
                     return;
