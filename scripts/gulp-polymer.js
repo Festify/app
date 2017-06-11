@@ -36,7 +36,7 @@ function buildPolymer(project, develop) {
             file => path.extname(file.path) === '.js' &&
                 file.path.indexOf('webcomponentsjs') === -1 &&
                 file.path.indexOf('firebase') === -1,
-            $.uglify()
+            $.babili()
         ))
         .pipe(htmlSplitter.rejoin())
         .pipe($.if(/\.html$/, $.htmlmin({
@@ -58,7 +58,6 @@ gulp.task('polymer-electron', ['prepare-env'], function() {
     const projectElectron = new PolymerProject(require('../polymer-electron.json'));
 
     return buildPolymer(projectElectron, true)
-        .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(paths.electronDir))
 });
 
@@ -66,7 +65,6 @@ gulp.task('polymer-cordova', ['prepare-env'], function() {
     const projectCordova = new PolymerProject(require('../polymer-cordova.json'));
 
     return buildPolymer(projectCordova)
-        .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(paths.appDir))
 });
 
@@ -74,6 +72,5 @@ gulp.task('polymer-cordova:develop', ['prepare-env'], function() {
     const projectCordova = new PolymerProject(require('../polymer-cordova.json'));
 
     return buildPolymer(projectCordova, true)
-        .pipe($.if('elements/app-shell.html', $.crisper()))
         .pipe(gulp.dest(paths.appDir));
 });

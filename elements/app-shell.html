@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
@@ -155,6 +156,16 @@
             this.addEventListener('toast', ev => this._showToast(ev));
             this.addEventListener('exitParty', ev => this._exitParty(ev));
 
+            if(window.require) {
+                const {ipcRenderer} = require('electron');
+
+                ipcRenderer.on('update-available', (event, arg) => {
+                    if(confirm("An update for Festify is available. Would you like to install it?")) {
+                        ipcRenderer.send('install-update');
+                    }
+                });
+            }
+
             this.set('state.cordova', !!window.cordova);
             this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
@@ -227,6 +238,7 @@
         _createNewParty() {
             const [key] = this.$.partyProvider.createNewParty();
             this._loadParty(key);
+            localStorage.setItem('last_party', key);
         }
 
         _hideSplash() {
@@ -234,13 +246,20 @@
                 typeof navigator.splashscreen.hide === 'function') {
                 navigator.splashscreen.hide();
             }
+
+            document.getElementById("loader").remove();
         }
 
         _openParty(ev) {
+            if(ev.detail.id) {
+                this._loadParty(ev.detail.id);
+                return;
+            }
+
             // ES6-destructuring doesn't work here since party provider returns null when not found
             this.$.partyProvider.getParty(ev.detail.shortId)
                 .then(maybeKey => this._loadParty((maybeKey || [])[0]))
-                .then(() => Polymer.dom(this.root).querySelector('view-join').set('joinInput', ''));
+                .then(() => this.shadowRoot.querySelector('view-join').set('joinInput', ''));
         }
 
         _showToast(ev) {

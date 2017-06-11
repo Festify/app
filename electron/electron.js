@@ -3,6 +3,7 @@ const path = require('path');
 const url = require('url');
 const startSpotify = require('start-spotify');
 const {autoUpdater} = require('electron-updater');
+const {ipcMain} = require('electron');
 
 let win;
 
@@ -35,9 +36,11 @@ app.on('ready', () => {
 });
 
 autoUpdater.on('update-downloaded', (ev, info) => {
-    if(confirm("An update for Festify Beta is available. Would you like to install it now?")) {
-        autoUpdater.quitAndInstall();
-    }
+    win.webContent.send('update-available');
+});
+
+ipcMain.on('install-update', (event, arg) => {
+    autoUpdater.quitAndInstall();
 });
 
 app.on('window-all-closed', () => app.quit());

@@ -39,14 +39,6 @@
     <meta name="msapplication-TileColor" content="#1C1F24">
     <meta name="msapplication-tap-highlight" content="no">
 
-    <!-- Cordova APIs -->
-    <script type="text/javascript" src="cordova.js"></script>
-    <meta name="format-detection" content="telephone=no">
-
-    <!-- Do not prepend with slash! -->
-    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-    <link rel="import" href="elements/app-shell.html">
-
     <style>
         body {
             margin: 0;
@@ -54,6 +46,16 @@
             line-height: 1.5;
             min-height: 100vh;
             background-color: #1c1f24;
+            user-select: none;
+        }
+
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
         }
     </style>
 </head>
@@ -63,10 +65,16 @@
         window.isWeb = false;
     </script>
 
+    <img src="images/loader.svg" id="loader" width="196" height="196">
+
     <!-- build:remove -->
     <span id="browser-sync-binding"></span>
     <!-- endbuild -->
 
     <app-shell></app-shell>
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="elements/app-shell.html">
 </body>
 </html>

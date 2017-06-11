@@ -71,7 +71,7 @@ gulp.task('release:cordova:android-apk', ['build-cordova'], function(cb) {
     });
 });
 
-gulp.task('release:cordova:android', ['cordova:release:android-apk'], function() {
+gulp.task('release:cordova:android', ['release:cordova:android-apk'], function() {
     return gulp.src('platforms/android/build/outputs/apk/android-release.apk')
         .pipe(gulp.dest('build-mobile'));
 });
@@ -80,7 +80,8 @@ gulp.task('release:electron:mac', ['build-electron'], function () {
     process.chdir('./electron');
     return builder.build({
         targets: builder.Platform.MAC.createTarget(),
-        config: config.electron
+        config: config.electron,
+        publish: 'always'
     });
 });
 
@@ -88,6 +89,9 @@ gulp.task('release:electron:win', ['build-electron'], function () {
     process.chdir('./electron');
     return builder.build({
         targets: builder.Platform.WINDOWS.createTarget(),
-        config: config.electron
+        config: config.electron,
+        publish: 'always'
     });
 });
+
+gulp.task('release:electron', ['release:electron:mac', 'release:electron:win']);

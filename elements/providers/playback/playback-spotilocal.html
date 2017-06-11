@@ -61,13 +61,15 @@
         }
 
         play(ref) {
-            this._interval = clearInterval(this._interval);
+            clearInterval(this._interval);
+            this._interval = null;
 
             return this._withSpotify(s => {
                 if (ref) {
                     const uri = typeof ref !== 'string' ? 'spotify:track:' + ref.id : ref;
                     this._currentTrack = uri;
                     this._currentPosition = 0;
+                    this.fire('player', { type: 'scroll', posMs: 0 });
                     return s.play(uri, uri)
                         .then(() => this._interval = setInterval(() => this._checkStatus(), 1000));
                 } else {
@@ -110,7 +112,7 @@
                     return;
                 }
 
-                if (s.playing_position < this._currentPosition) {
+                if (s.playing_position < this._currentPosition || (s.playing_position === s.track.length && s.playing === false)) {
                     this._interval = clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
                     return;
