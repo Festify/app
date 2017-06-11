@@ -94,12 +94,4 @@ gulp.task('release:electron:win', ['build-electron'], function () {
     });
 });
 
-
-gulp.task('release:electron', ['build-electron'], function () {
-    process.chdir('./electron');
-    return builder.build({
-        targets: [builder.Platform.WINDOWS.createTarget(), builder.Platform.MAC.createTarget()],
-        config: config.electron,
-        publish: 'always'
-    });
-});
+gulp.task('release:electron', ['release:electron:mac', 'release:electron:win']);
