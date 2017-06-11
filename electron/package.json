@@ -1,7 +1,7 @@
 {
   "name": "Festify",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
-  "version": "0.1.9",
+  "version": "0.2.2",
   "main": "electron.js",
   "private": true,
   "repository": {
