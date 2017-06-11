@@ -100,7 +100,9 @@
 
         _checkStatus() {
             this._spotify.getStatus().then(s => {
-                if (!this._interval) return;
+                if (!this._interval) {
+                    return;
+                }
 
                 if (this._currentTrack && s.track.track_resource.uri !== this._currentTrack) {
                     this.play(this._currentTrack);
@@ -112,7 +114,8 @@
                     return;
                 }
 
-                if (s.playing_position < this._currentPosition || (s.playing_position === s.track.length && s.playing === false)) {
+                if (s.playing_position < this._currentPosition ||
+                    (s.playing_position === s.track.length && s.playing === false)) {
                     this._interval = clearInterval(this._interval);
                     this.fire('player', { type: 'finished' });
                     return;

@@ -59,7 +59,7 @@
         _tapReopenParty() {
             const key = localStorage.getItem('last_party');
 
-            if(key) {
+            if (key) {
                 this.fire('join-openParty', { id: key });
             }
         }

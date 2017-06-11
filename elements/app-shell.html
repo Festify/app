@@ -168,11 +168,11 @@
             this.addEventListener('toast', ev => this._showToast(ev));
             this.addEventListener('exitParty', ev => this._exitParty(ev));
 
-            if(window.require) {
+            if (window.require) {
                 const {ipcRenderer} = require('electron');
 
                 ipcRenderer.on('update-available', (event, arg) => {
-                    if(confirm("An update for Festify is available. Would you like to install it?")) {
+                    if (confirm("An update for Festify is available. Would you like to install it?")) {
                         ipcRenderer.send('install-update');
                     }
                 });
@@ -263,7 +263,7 @@
         }
 
         _openParty(ev) {
-            if(ev.detail.id) {
+            if (ev.detail.id) {
                 this._loadParty(ev.detail.id);
                 return;
             }
