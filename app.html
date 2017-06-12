@@ -60,18 +60,18 @@
     </style>
 </head>
 <body>
+    <img src="images/loader.svg" id="loader" width="196" height="196">
+
+    <app-shell></app-shell>
+
     <script>
         window.isHost = true;
         window.isWeb = false;
     </script>
 
-    <img src="images/loader.svg" id="loader" width="196" height="196">
-
     <!-- build:remove -->
     <span id="browser-sync-binding"></span>
     <!-- endbuild -->
-
-    <app-shell></app-shell>
 
     <script type="text/javascript" src="cordova.js"></script>
     <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
