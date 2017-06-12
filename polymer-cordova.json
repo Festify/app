@@ -6,6 +6,11 @@
     "images/**/*",
     "bower.json"
   ],
+  "fragments": [
+    "elements/views/view-host.html",
+    "elements/views/view-join.html",
+    "elements/views/view-queue.html"
+  ],
   "extraDependencies": [
     "manifest.json",
     "bower_components/webcomponentsjs/*.js"
