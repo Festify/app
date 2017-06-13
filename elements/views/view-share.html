@@ -77,9 +77,9 @@
         }
 
         _copyUrl() {
-            if(window.plugins) {
+            if (window.plugins) {
                 window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
-            } else if(window.require) {
+            } else if (window.require) {
                 const {shell} = require('electron');
                 shell.openExternal(this._getPartyUrl(this.state.partyId));
             }

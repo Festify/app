@@ -5,13 +5,10 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="behaviors/behavior-fire-events.html">
 <link rel="import" href="utils/raven-js.html">
 <link rel="import" href="providers/provider-party.html">
-<link rel="import" href="views/view-host.html">
-<link rel="import" href="views/view-join.html">
-<link rel="import" href="views/view-queue.html">
 
 <dom-module id="app-shell">
     <template>
@@ -81,15 +78,30 @@
         <provider-party id="partyProvider" state="{{state}}"></provider-party>
 
         <template is="dom-if" if="[[state.auth.signedIn]]">
-            <iron-pages selected="[[currentView]]"
-                        attr-for-selected="view"
-                        selected-attribute="active"
-                        role="main">
+            <iron-lazy-pages selected="[[currentView]]"
+                             attr-for-selected="view"
+                             selected-attribute="active"
+                             role="main">
                 <!-- No subroute for host / join as they do top level routing -->
-                <view-host view="host" class="centered" route="{{route}}" state="[[state]]"></view-host>
-                <view-join view="join" class="centered" route="{{route}}" state="[[state]]"></view-join>
-                <view-queue view="party" class="centered" route="{{subroute}}" state="{{state}}"></view-queue>
-            </iron-pages>
+                <view-host view="host"
+                           data-path="views/view-host.html"
+                           class="centered"
+                           route="{{route}}"
+                           state="[[state]]">
+                </view-host>
+                <view-join view="join"
+                           data-path="views/view-join.html"
+                           class="centered"
+                           route="{{route}}"
+                           state="[[state]]">
+                </view-join>
+                <view-queue view="party"
+                            data-path="views/view-queue.html"
+                            class="centered"
+                            route="{{subroute}}"
+                            state="{{state}}">
+                </view-queue>
+            </iron-lazy-pages>
         </template>
 
         <paper-toast id="toast"></paper-toast>
@@ -156,11 +168,11 @@
             this.addEventListener('toast', ev => this._showToast(ev));
             this.addEventListener('exitParty', ev => this._exitParty(ev));
 
-            if(window.require) {
+            if (window.require) {
                 const {ipcRenderer} = require('electron');
 
                 ipcRenderer.on('update-available', (event, arg) => {
-                    if(confirm("An update for Festify is available. Would you like to install it?")) {
+                    if (confirm("An update for Festify is available. Would you like to install it?")) {
                         ipcRenderer.send('install-update');
                     }
                 });
@@ -251,7 +263,7 @@
         }
 
         _openParty(ev) {
-            if(ev.detail.id) {
+            if (ev.detail.id) {
                 this._loadParty(ev.detail.id);
                 return;
             }

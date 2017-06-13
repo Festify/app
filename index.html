@@ -59,6 +59,9 @@
     </style>
 </head>
 <body>
+    <img src="images/loader.svg" id="loader" width="196" height="196">
+    <app-shell></app-shell>
+
     <script>
         window.isHost = false;
         window.isWeb = true;
@@ -70,10 +73,6 @@
         window.isHost = true;
     </script>
     <!-- endbuild -->
-
-    <img src="images/loader.svg" id="loader" width="196" height="196">
-
-    <app-shell></app-shell>
 
     <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" href="/elements/app-shell.html">
