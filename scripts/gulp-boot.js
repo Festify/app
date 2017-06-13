@@ -33,7 +33,7 @@ gulp.task('prepare-env', function () {
     }
 
     return new Promise((res, rej) => {
-        if (process.env.CI) {
+        if (process.env.TRAVIS_BRANCH) {
             res(process.env.TRAVIS_BRANCH);
         } else {
             try {

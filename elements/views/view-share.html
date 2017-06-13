@@ -78,13 +78,13 @@
         }
 
         _copyUrl() {
-            const url = this._getPartyUrl(this.state.partyId);
-            const shareFn = this.get('plugins.socialsharing.share', window);
+            const url = this._getPartyUrl(this.state.partyId) ;
+                const shareFn = this.get('plugins.socialsharing.share', window);
 
             if (typeof shareFn === 'function') {
                 shareFn('Join my party!', null, null, url);
-            } else if (window.require) {
-                const { shell } = require('electron');
+            } else if(window.require) {
+                const {shell} = require('electron');
                 shell.openExternal(url);
             }
         }
