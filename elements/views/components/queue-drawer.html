@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/hardware-icons.html">
@@ -102,10 +103,12 @@
                     <iron-icon icon="history"></iron-icon>
                     Track History
                 </a-->
-                <a name="settings">
-                    <iron-icon icon="settings"></iron-icon>
-                    Party Settings
-                </a>
+                <template is="dom-if" if="[[state.isOwner]]">
+                    <a name="settings">
+                        <iron-icon icon="settings"></iron-icon>
+                        Party Settings
+                    </a>
+                </template>
                 <a name="share">
                     <iron-icon icon="social:share"></iron-icon>
                     Share Party
