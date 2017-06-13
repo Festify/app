@@ -1,0 +1,21 @@
+<link rel="import" href="../../bower_components/polymer/lib/mixins/element-mixin.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/mixin.html">
+
+<script>
+    window.Festify = window.Festify || {};
+
+    /**
+     * @polymerMixin
+     */
+    Festify.CordovaSpotifyBehavior = Polymer.dedupingMixin(klass => {
+        return class extends Polymer.ElementMixin(klass) {
+            isAvailable() {
+                return !!this._getPluginUnsafe();
+            }
+
+            _getPluginUnsafe() {
+                return this.get('cordova.plugins.spotify', window);
+            }
+        }
+    });
+</script>

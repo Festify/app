@@ -1,11 +1,14 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../behaviors/behavior-cordova-spotify.html">
 <link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 
 <script>
-    class SpotifyPlayback extends Festify.FireBehavior(
-        Festify.PlaybackProviderBehavior(Polymer.Element)
+    class SpotifyPlayback extends Festify.CordovaSpotifyBehavior(
+        Festify.FireBehavior(
+            Festify.PlaybackProviderBehavior(Polymer.Element)
+        )
     ) {
         static get is() {
             return 'playback-spotify';
@@ -63,14 +66,6 @@
 
         getProviders () {
             return ['spotify'];
-        }
-
-        isAvailable () {
-            return !!this._getPluginUnsafe();
-        }
-
-        _getPluginUnsafe () {
-            return this.get('cordova.plugins.spotify', window);
         }
 
         _onPlaybackEvent (event) {
