@@ -8,7 +8,11 @@
      */
     Festify.FireBehavior = Polymer.dedupingMixin(klass => class extends klass {
         fire(name, detail) {
-            const ev = new CustomEvent(name, { detail: detail, bubbles: true, composed: true });
+            const ev = new CustomEvent(name, {
+                detail: detail,
+                bubbles: true,
+                composed: true
+            });
             this.dispatchEvent(ev);
         }
     });
