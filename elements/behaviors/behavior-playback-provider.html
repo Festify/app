@@ -1,10 +1,12 @@
+<link rel="import" href="../../bower_components/polymer/lib/utils/mixin.html">
+
 <script>
     window.Festify = window.Festify || {};
 
     /**
      * @polymerMixin
      */
-    Festify.PlaybackProviderBehavior = klass => class extends klass {
+    Festify.PlaybackProviderBehavior = Polymer.dedupingMixin(klass => class extends klass {
         init() {
             throw new Error("Not implemented.");
         }
@@ -39,5 +41,5 @@
         isAvailable() {
             throw new Error("Not implemented.");
         }
-    }
+    });
 </script>
