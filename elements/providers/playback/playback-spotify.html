@@ -30,7 +30,7 @@
             }
 
             const config = this.get('state.config.spotify');
-            if (!config) {
+            if (!_.isEmpty(config)) {
                 return Promise.reject("Spotify configuration was empty!");
             }
 
