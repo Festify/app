@@ -36,7 +36,7 @@
     "polymer-lint": "^0.8.3",
     "prompt": "^1.0.0",
     "request": "^2.81.0",
-    "run-sequence": "^1.2.2",
+    "run-sequence": "^2.0.0",
     "sharp": "^0.18.1",
     "through2": "^2.0.3",
     "vinyl": "^2.0.2"
