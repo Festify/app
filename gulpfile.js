@@ -88,7 +88,11 @@ gulp.task('release:electron:mac', ['build-electron'], function () {
 gulp.task('release:electron:win', ['build-electron'], function () {
     process.chdir('./electron');
     return builder.build({
-        targets: builder.Platform.WINDOWS.createTarget(),
+        targets: builder.Platform.WINDOWS.createTarget(
+            'nsis',
+            builder.Arch.x64,
+            builder.Arch.ia32
+        ),
         config: config.electron,
         publish: 'always'
     });
