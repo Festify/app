@@ -1,14 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../behaviors/behavior-cordova-spotify.html">
 <link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
 <link rel="import" href="../../utils/lodash.html">
 
 <script>
-    class SpotifyPlayback extends Festify.CordovaSpotifyBehavior(
-        Festify.FireBehavior(
-            Festify.PlaybackProviderBehavior(Polymer.Element)
-        )
+    class SpotifyPlayback extends Festify.FireBehavior(
+        Festify.PlaybackProviderBehavior(Polymer.Element)
     ) {
         static get is() {
             return 'playback-spotify';
@@ -60,15 +57,23 @@
             return this.get('state.auth.spotify.canonicalUsername');
         }
 
-        getPosition () {
+        getPosition() {
             return this._withSession(s => s.getPosition(), () => Promise.reject());
         }
 
-        getProviders () {
+        getProviders() {
             return ['spotify'];
         }
 
-        _onPlaybackEvent (event) {
+        isAvailable() {
+            return !!this._getPluginUnsafe();
+        }
+
+        _getPluginUnsafe() {
+            return this.get('cordova.plugins.spotify', window);
+        }
+
+        _onPlaybackEvent(event) {
             switch(event) {
                 case 'Pause':
                 case 'Play':
@@ -89,7 +94,7 @@
             }
         }
 
-        _onPlaybackError (err) {
+        _onPlaybackError(err) {
             this.fire('error', { type: err });
         }
 
