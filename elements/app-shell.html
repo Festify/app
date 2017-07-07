@@ -50,7 +50,7 @@
                 --paper-spinner-color: var(--primary-color);
             }
 
-            #toast {
+            paper-toast {
                 --paper-toast-background-color: var(--primary-color);
                 box-shadow: 0 1px 10px 0 rgba(0,0,0,1);
             }
@@ -105,6 +105,12 @@
         </template>
 
         <paper-toast id="toast"></paper-toast>
+        <paper-toast id="updateToast"
+                     duration="0"
+                     text="An update for Festify is available.">
+            <paper-button on-tap="_confirmInstallUpdate">Install now</paper-button>
+            <paper-button on-tap="_dismissUpdate">Later</paper-button>
+        </paper-toast>
     </template>
 </dom-module>
 
@@ -171,10 +177,9 @@
             if (window.require) {
                 const {ipcRenderer} = require('electron');
 
-                ipcRenderer.on('update-available', (event, arg) => {
-                    if (confirm("An update for Festify is available. Would you like to install it?")) {
-                        ipcRenderer.send('install-update');
-                    }
+                ipcRenderer.on('update-available', () => {
+                    console.log("Received update-available event");
+                    this.$.updateToast.show();
                 });
             }
 
@@ -247,10 +252,23 @@
         }
 
         // Actions
+        _confirmInstallUpdate() {
+            if (!window.require) {
+                return;
+            }
+
+            require('electron').ipcRenderer.send('install-update');
+            this._dismissUpdate();
+        }
+
         _createNewParty() {
             const [key] = this.$.partyProvider.createNewParty();
             this._loadParty(key);
             localStorage.setItem('last_party', key);
+        }
+
+        _dismissUpdate() {
+            this.$.updateToast.hide();
         }
 
         _hideSplash() {
