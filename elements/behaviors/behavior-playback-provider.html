@@ -4,40 +4,81 @@
     window.Festify = window.Festify || {};
 
     /**
+     * A class that supplys playback functionality for Festify.
+     *
      * @polymerMixin
      */
     Festify.PlaybackProviderBehavior = Polymer.dedupingMixin(klass => class extends klass {
+        /**
+         * Asynchronously initialize the playback provider behavior.
+         *
+         * @returns Promise
+         */
         init() {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * Asynchronously deinitialize the provider.
+         *
+         * @returns Promise
+         */
         deinit() {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * Play the track with the given ref.
+         *
+         * @param ref Object the track reference.
+         * @returns Promise
+         */
         play(ref) {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * Pause the current playback.
+         *
+         * @returns Promise
+         */
         pause() {
             throw new Error("Not implemented.");
         }
 
         /**
-         * Get Position in Milliseconds
+         * Asynchronusly get the playback position in milliseconds.
+         *
+         * @returns Promise<Number>
          */
         getPosition () {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * *Synchronously* get a list of all supported providers.
+         *
+         * @returns String[]
+         */
         getProviders() {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * Asynchronously get the name of the current user.
+         *
+         * @returns Promise<String>
+         */
         getUsername() {
             throw new Error("Not implemented.");
         }
 
+        /**
+         * *Synchronously* determine whether the playback provider can be used
+         * in the current environment.
+         *
+         * @returns Boolean
+         */
         isAvailable() {
             throw new Error("Not implemented.");
         }
