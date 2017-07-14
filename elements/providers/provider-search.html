@@ -58,7 +58,7 @@
 
         _searchQueryChanged(query, market, limit) {
             Polymer.Debouncer.debounce(this._searchDeb, Polymer.Async.timeOut.after(200), () => {
-                this.set('tracks', []);
+                this.tracks = [];
 
                 if (!query || query.length < 1) {
                     return;

@@ -147,6 +147,7 @@
                          tracks="{{searchResults}}">
         </provider-search>
         <provider-tracks id="tracksProvider"
+                         limit="0"
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-tracks>
@@ -363,11 +364,11 @@
             const viewActive = this.shadowRoot.querySelector('app-route').get('active');
 
             if (!!query) {
-                this.set('page', 'search')
+                this.page = 'search';
             } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
-                this.set('page', 'share');
+                this.page = 'share';
             } else {
-                this.set('page', 'queue');
+                this.page = 'queue';
             }
         }
 
