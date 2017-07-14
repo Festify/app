@@ -236,7 +236,7 @@
                 const track = document.querySelector('tv-track');
                 if (track) {
                     const width = track.getBoundingClientRect().width;
-                    this.set('_tracksShown', Math.ceil(window.outerWidth / width));
+                    this._tracksShown = Math.ceil(window.outerWidth / width);
                 }
             });
         }

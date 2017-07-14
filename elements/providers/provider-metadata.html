@@ -47,9 +47,9 @@
         ready() {
             super.ready();
 
-            this.set('_providers', {
+            this._providers = {
                 spotify: chunk => this._processSpotifyChunk(chunk)
-            });
+            };
         }
 
         _formatArtistName(artists) {

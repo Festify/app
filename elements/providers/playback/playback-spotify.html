@@ -34,7 +34,7 @@
                     session.addListener('playbackevent', this._onPlaybackEvent, this);
                     session.addListener('playbackerror', this._onPlaybackError, this);
 
-                    this.set('_session', session);
+                    this._session = session;
                 });
         }
 

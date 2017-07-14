@@ -188,7 +188,7 @@
             this.set('state.isHost', window.isHost);
 
             if (!window.isWeb) { // Hosted environments don't like app-location
-                this.set('route', { path: '/host', prefix: '', __queryParams: {} });
+                this.route = { path: '/host', prefix: '', __queryParams: {} };
 
                 if (this.state.cordova) {
                     document.addEventListener('pause', this._appWillSuspend.bind(this));
@@ -243,11 +243,11 @@
             }
 
             if (page && page.length > 0) {
-                this.set('currentView', page);
+                this.currentView = page;
             } else {
                 const view = this.state.isHost ? 'host' : 'join';
                 this.set('route.path', '/' + view);
-                this.set('currentView', view);
+                this.currentView = view;
             }
         }
 
