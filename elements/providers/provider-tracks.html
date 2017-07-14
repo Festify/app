@@ -83,7 +83,7 @@
             }
 
             let query = firebase.database().ref(this._getFbTracksPath(partyId));
-            if (limit > 0) {
+            if (isFinite(limit) && limit > 0) {
                 query = query.limitToFirst(limit);
             }
             return query.orderByChild('order');
