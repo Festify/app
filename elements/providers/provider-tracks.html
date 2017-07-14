@@ -43,8 +43,11 @@
         }
 
         removeTrack(track, moveToHistory) {
-            if (!track || !this.state || !this.state.isHost) {
-                return;
+            if (!track || !this.state) {
+                return Promise.reject(new Error("Track parameter null or state missing."));
+            }
+            if (!this.state.isHost) {
+                return Promise.reject(new Error("Not party host."));
             }
 
             const partyId = this.state.partyId;
