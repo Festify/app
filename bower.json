@@ -12,6 +12,7 @@
     "iron-input": "PolymerElements/iron-input#^2.0.0",
     "iron-lazy-pages": "^2.0.2",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
+    "iron-resizable-behavior": "^2.0.1",
     "iron-selector": "PolymerElements/iron-selector#^2.0.0",
     "lodash": "^4.17.3",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
