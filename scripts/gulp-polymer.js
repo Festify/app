@@ -44,7 +44,8 @@ function buildPolymer(project, develop) {
             removeComments: true
         })))
         .pipe(project.addCustomElementsEs5Adapter())
-        .pipe(project.bundler());
+        .pipe(project.bundler())
+        .pipe(project.addPushManifest());
 }
 
 gulp.task('polymer', ['prepare-env'], function () {
