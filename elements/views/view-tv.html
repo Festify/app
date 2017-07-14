@@ -233,7 +233,7 @@
 
         _resize() {
             Polymer.Debouncer.debounce(this._resizeDebouncer, Polymer.Async.timeOut.after(100), () => {
-                const track = document.querySelector('tv-track');
+                const track = this.shadowRoot.querySelector('tv-track');
                 if (track) {
                     const width = track.getBoundingClientRect().width;
                     this._tracksShown = Math.ceil(window.outerWidth / width);
