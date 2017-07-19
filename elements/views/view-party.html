@@ -236,6 +236,10 @@
                     type: String,
                     observer: '_pageChanged'
                 },
+                route: {
+                    type: Object,
+                    notify: true
+                },
                 searchQuery: {
                     type: String,
                     notify: true
@@ -249,10 +253,6 @@
                 },
                 tracks: {
                     type: Array
-                },
-                route: {
-                    type: Object,
-                    notify: true
                 },
                 _castUrl: {
                     type: String,
@@ -269,20 +269,20 @@
                 _pageData: {
                     type: Object
                 },
-                _skipOffset: {
-                    type: Number,
-                    value: 0
-                },
                 _searchMeta: {
                     type: Object,
                     value: () => ({})
                 },
-                _trackMeta: {
-                    type: Object,
-                    value: () => ({})
+                _skipOffset: {
+                    type: Number,
+                    value: 0
                 },
                 _trackListener: {
                     type: Function
+                },
+                _trackMeta: {
+                    type: Object,
+                    value: () => ({})
                 },
                 _userVotes: {
                     type: Object
