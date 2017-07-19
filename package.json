@@ -32,7 +32,7 @@
     "gulp-useref": "^3.1.2",
     "lodash": "^4.17.4",
     "merge-stream": "^1.0.0",
-    "polymer-build": "^1.5.1",
+    "polymer-build": "^2.0.0",
     "polymer-lint": "^0.8.3",
     "prompt": "^1.0.0",
     "request": "^2.81.0",
