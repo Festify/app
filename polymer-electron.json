@@ -10,7 +10,9 @@
   "fragments": [
     "elements/views/view-host.html",
     "elements/views/view-join.html",
-    "elements/views/view-queue.html"
+    "elements/views/view-party.html",
+    "elements/views/view-queue.html",
+    "elements/views/view-tv.html"
   ],
   "extraDependencies": [
     "manifest.json",
