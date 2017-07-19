@@ -99,6 +99,16 @@
                 padding-top: 13px;
             }
 
+            .track-list p {
+                margin: 0;
+                text-align: center;
+            }
+
+            .track-list paper-button {
+                display: inline-block;
+                margin: 20px;
+            }
+
             #skipBackground {
                 position: absolute;
                 right: 0;
@@ -144,7 +154,7 @@
                          tracks="{{searchResults}}">
         </provider-search>
         <provider-tracks id="tracksProvider"
-                         limit="0"
+                         limit="[[_trackLimit]]"
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-tracks>
@@ -186,6 +196,7 @@
                              style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
+
                         <template is="dom-repeat"
                                   id="trackList"
                                   items="[[tracks]]"
@@ -196,6 +207,14 @@
                                          user-votes="[[_userVotes]]">
                             </queue-track>
                         </template>
+
+                        <p>
+                            <paper-button hidden$="[[_getDisplayLoadRestButton(tracks.length, _trackLimit)]]"
+                                          on-tap="_loadAllTracks"
+                                          raised>
+                                There's more! Load the rest
+                            </paper-button>
+                        </p>
 
                         <view-share state="[[state]]"
                                     style$="display: [[_getDisplayProactiveSharing(tracks.length)]]">
@@ -273,6 +292,10 @@
                 _skipOffset: {
                     type: Number,
                     value: 0
+                },
+                _trackLimit: {
+                    type: Number,
+                    value: 50
                 },
                 _trackListener: {
                     type: Function
@@ -373,6 +396,10 @@
             return tracksLength < 2 ? 'block' : 'none';
         }
 
+        _getDisplayLoadRestButton(tracksCount, tracksLimit) {
+            return tracksCount < tracksLimit || tracksLimit == 0;
+        }
+
         _getDisplaySkipIndicator(tracksLength, isOwner) {
             return isOwner && tracksLength > 0 ? 'flex' : 'none';
         }
@@ -383,6 +410,10 @@
             return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
                 this.get([provId, trackId, 'durationMs'], metaChange.base) :
                 0;
+        }
+
+        _loadAllTracks() {
+            setTimeout(() => this._trackLimit = 0, 100);
         }
 
         _tracksChanged() {
