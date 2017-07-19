@@ -23,9 +23,9 @@ function buildPolymer(project, develop) {
     const htmlSplitter = new HtmlSplitter();
     return stream
         .pipe(htmlSplitter.split())
-        .pipe($.if(/\.html$/, $.htmlPostcss([
-            autoprefixer({ browsers: ['last 2 versions'] })
-        ])))
+        .pipe($.if(/\.html$/, $.htmlPostcss({
+            plugins: [autoprefixer({ browsenrs: ['last 2 versions'] })]
+        })))
         .pipe($.if(
             file => path.extname(file.path) === '.js' &&
                 file.path.indexOf('webcomponentsjs') === -1 &&
