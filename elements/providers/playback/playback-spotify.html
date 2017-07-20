@@ -16,6 +16,9 @@
                 state: {
                     type: Object,
                     notify: true
+                },
+                _session: {
+                    type: Object
                 }
             };
         }
@@ -37,7 +40,7 @@
                     session.addListener('playbackevent', this._onPlaybackEvent, this);
                     session.addListener('playbackerror', this._onPlaybackError, this);
 
-                    this.set('state.auth.spotify', session);
+                    this._session = session;
                 });
         }
 
@@ -54,7 +57,7 @@
         }
 
         getUsername() {
-            return this.get('state.auth.spotify.canonicalUsername');
+            return this.get('_session.canonicalUsername');
         }
 
         getPosition() {
@@ -99,8 +102,7 @@
         }
 
         _withSession(body, defaultValue) {
-            const s = this.get('state.auth.spotify');
-            return s ? body(s) : defaultValue();
+            return this._session ? body(this._session) : defaultValue();
         }
     }
 

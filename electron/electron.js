@@ -12,21 +12,26 @@ function createWindow () {
         width: 1024,
         height: 900,
         backgroundColor: '#1c1f24',
+        show: false,
         title: 'Festify'
     });
 
+    win.loadURL(url.format({
+        pathname: path.join(__dirname, 'www', 'app.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
     startSpotify()
-        .then(() => win.loadURL(url.format({
-            pathname: path.join(__dirname, 'www', 'app.html'),
-            protocol: 'file:',
-            slashes: true
-        })))
         .catch(() => win.loadURL(url.format({
             pathname: path.join(__dirname, 'www', 'spotify-missing.html'),
             protocol: 'file:',
             slashes: true
         })));
 
+    win.once('ready-to-show', () => {
+        win.show();
+        win.focus();
+    });
     win.on('closed', () => win = null);
 }
 

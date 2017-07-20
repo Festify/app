@@ -4,12 +4,9 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-casting.html">
@@ -103,6 +100,16 @@
                 padding-top: 13px;
             }
 
+            .track-list p {
+                margin: 0;
+                text-align: center;
+            }
+
+            .track-list paper-button {
+                display: inline-block;
+                margin: 20px;
+            }
+
             #skipBackground {
                 position: absolute;
                 right: 0;
@@ -144,6 +151,7 @@
                          tracks="{{searchResults}}">
         </provider-search>
         <provider-tracks id="tracksProvider"
+                         limit="[[_trackLimit]]"
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-tracks>
@@ -185,6 +193,7 @@
                              style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
+
                         <template is="dom-repeat"
                                   id="trackList"
                                   items="[[tracks]]"
@@ -195,6 +204,14 @@
                                          user-votes="[[_userVotes]]">
                             </queue-track>
                         </template>
+
+                        <p>
+                            <paper-button hidden$="[[_getDisplayLoadRestButton(tracks.length, _trackLimit)]]"
+                                          on-tap="_loadAllTracks"
+                                          raised>
+                                There's more! Load the rest
+                            </paper-button>
+                        </p>
 
                         <view-share state="[[state]]"
                                     style$="display: [[_getDisplayProactiveSharing(tracks.length)]]">
@@ -234,6 +251,10 @@
                     type: String,
                     observer: '_pageChanged'
                 },
+                route: {
+                    type: Object,
+                    notify: true
+                },
                 searchQuery: {
                     type: String,
                     notify: true
@@ -247,10 +268,6 @@
                 },
                 tracks: {
                     type: Array
-                },
-                route: {
-                    type: Object,
-                    notify: true
                 },
                 _castUrl: {
                     type: String,
@@ -267,20 +284,24 @@
                 _pageData: {
                     type: Object
                 },
-                _skipOffset: {
-                    type: Number,
-                    value: 0
-                },
                 _searchMeta: {
                     type: Object,
                     value: () => ({})
                 },
-                _trackMeta: {
-                    type: Object,
-                    value: () => ({})
+                _skipOffset: {
+                    type: Number,
+                    value: 0
+                },
+                _trackLimit: {
+                    type: Number,
+                    value: 50
                 },
                 _trackListener: {
                     type: Function
+                },
+                _trackMeta: {
+                    type: Object,
+                    value: () => ({})
                 },
                 _userVotes: {
                     type: Object
@@ -374,6 +395,10 @@
             return tracksLength < 2 ? 'block' : 'none';
         }
 
+        _getDisplayLoadRestButton(tracksCount, tracksLimit) {
+            return tracksCount < tracksLimit || tracksLimit == 0;
+        }
+
         _getDisplaySkipIndicator(tracksLength, isOwner) {
             return isOwner && tracksLength > 0 ? 'flex' : 'none';
         }
@@ -384,6 +409,10 @@
             return (provId && provId.length > 0 && trackId && trackId.length > 0) ?
                 this.get([provId, trackId, 'durationMs'], metaChange.base) :
                 0;
+        }
+
+        _loadAllTracks() {
+            setTimeout(() => this._trackLimit = 0, 100);
         }
 
         _tracksChanged() {

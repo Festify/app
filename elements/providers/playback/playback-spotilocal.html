@@ -128,7 +128,7 @@
                 this._currentPosition = s.playing_position;
 
                 if (s.playing !== this._lastPlaybackStatus) {
-                    this.set('_lastPlaybackStatus', s.playing);
+                    this._lastPlaybackStatus = s.playing;
                     this.fire('player', { type: s.playing ? 'play' : 'pause' });
                 }
             });

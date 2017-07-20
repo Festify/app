@@ -35,7 +35,7 @@
                 l.addListener('connect', this._connect, this);
                 l.addListener('disconnect', this._disconnect, this);
 
-                this.set('_screenListener', l);
+                this._screenListener = l;
             });
         }
 
