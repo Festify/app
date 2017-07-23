@@ -11,18 +11,18 @@ type Party {
     country: SpotifyCountry,
     created_at: CreatedTimestamp,
     created_by: CreatedUser,
-    fallback_playlist: Object,
+    fallback_playlist: Object | Null,
     name: String,
     playback: PlaybackState,
     short_id: PartyShortId
 }
 
-type SpotifyCountry extends String {
-    validate() { this.length == 2 }
-}
-
 type NonEmptyString extends String {
     validate() { this.length > 0 }
+}
+
+type PartyShortId extends NonEmptyString {
+    validate() { this.length <= 50 }
 }
 
 type PlaybackState {
@@ -31,8 +31,8 @@ type PlaybackState {
     playing: Boolean
 }
 
-type PartyShortId extends NonEmptyString {
-    validate() { this.length <= 50 }
+type SpotifyCountry extends String {
+    validate() { this.length == 2 }
 }
 
 path /tracks/{partyId} {
