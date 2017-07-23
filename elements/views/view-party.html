@@ -471,7 +471,7 @@
         _setFallbackPlaylist({ playlist, shuffle }) {
             this.$.playlistProvider.getTracks(playlist)
                 .then(tracks => this.$.tracksProvider.setFallbackPlaylist(playlist, tracks, shuffle))
-                .then(() => this.set('party.fallback_playlist', playlist))
+                .then(() => this.set('state.party.fallback_playlist', playlist.reference))
                 .catch(err => {
                     console.error(err);
                     this.fire('toast', { text: "Failed to set fallback playlist. :(" })

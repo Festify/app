@@ -15,8 +15,8 @@
                 position: relative;
             }
 
-            :host[active] {
-                background: rgba(255, 255, 255, .2);
+            :host([active]) {
+                background: rgba(255, 255, 255, .15);
             }
 
             :host(:hover) {
@@ -64,6 +64,10 @@
 
         static get properties() {
             return {
+                active: {
+                    type: Boolean,
+                    reflectToAttribute: true
+                },
                 playlist: {
                     type: Object
                 },
