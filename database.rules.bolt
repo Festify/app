@@ -11,6 +11,7 @@ type Party {
     country: SpotifyCountry,
     created_at: CreatedTimestamp,
     created_by: CreatedUser,
+    fallback_playlist: Object,
     name: String,
     playback: PlaybackState,
     short_id: PartyShortId
@@ -36,7 +37,7 @@ type PartyShortId extends NonEmptyString {
 
 path /tracks/{partyId} {
     read() { true }
-    index() { "order" }
+    index() { ["order", "vote_count"] }
 }
 
 path /tracks/{partyId}/{trackId} is TracksPermissions {

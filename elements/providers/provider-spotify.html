@@ -17,7 +17,76 @@
         }
 
         getPlaylists() {
+            const token = this.get('state.auth.spotify');
+            if (!token) {
+                return Promise.resolve([]);
+            }
 
+            const url = 'https://api.spotify.com/v1/me/playlists';
+
+            const playlists = [];
+            const handleResponse = ({ items, next }) => {
+                playlists.push(...items);
+
+                if (next) {
+                    return this._fetchAuthed(next, null, token)
+                        .then(resp => resp.json())
+                        .then(handleResponse);
+                }
+            };
+
+            return this._fetchAuthed(url, null, token)
+                .then(resp => resp.json())
+                .then(handleResponse)
+                .then(() => playlists.map(({ name, id, owner }) => ({
+                    name: name,
+                    reference: {
+                        id: id,
+                        owner: owner.id,
+                        provider: 'spotify'
+                    }
+                })));
+        }
+
+        getPlaylistTracks(playlist) {
+            if (!playlist) {
+                return Promise.reject(new Error("Missing playlist argument!"));
+            }
+            if (!playlist.reference.provider || playlist.reference.provider !== 'spotify') {
+                return Promise.reject(new Error("Playlist not from Spotify!"));
+            }
+
+            const token = this.get('state.auth.spotify');
+            if (!token) {
+                return Promise.reject(new Error("Missing access token."));
+            }
+
+            const url = `https://api.spotify.com/v1/users/${playlist.reference.owner}/playlists/${playlist.reference.id}/tracks`;
+
+            const tracks = [];
+            const handleResponse = ({ items, next }) => {
+                tracks.push(...items);
+
+                if (next) {
+                    return this._fetchAuthed(next, null, token)
+                        .then(resp => resp.json())
+                        .then(handleResponse);
+                }
+            };
+
+            return this._fetchAuthed(url, null, token)
+                .then(resp => resp.json())
+                .then(handleResponse)
+                .then(() => tracks.map(({ track }) => ({
+                    reference: {
+                        id: track.id,
+                        provider: 'spotify'
+                    }
+                })));
+        }
+
+        getProviders() {
+            return ['spotify'];
         }
 
         getTrackInfo(id, market) {
@@ -27,7 +96,7 @@
 
         // This does not guarantee ordering!
         getTracksInfo(ids, market) {
-            return this._fetchIds(_.without(ids, ...Object.keys(SpotifyProvider.cache)), market)
+            return this._fetchTracks(_.without(ids, ...Object.keys(SpotifyProvider.cache)), market)
                 .then(() => ids.map(id => SpotifyProvider.cache[id]));
         }
 
@@ -55,7 +124,7 @@
                 });
         }
 
-        _fetchIds(ids, market) {
+        _fetchTracks(ids, market) {
             if (!ids || ids.length < 1) {
                 return Promise.resolve([]);
             }
@@ -67,14 +136,14 @@
 
             return this._fetchAuthed(url)
                 .then(resp => resp.json())
-                .then(resp => {
-                    (resp.tracks || []).forEach(t => SpotifyProvider.cache[t.id] = t);
+                .then(({ tracks }) => {
+                    (tracks || []).forEach(t => SpotifyProvider.cache[t.id] = t);
                     return tracks;
                 });
         }
 
-        _fetchAuthed(url, options) {
-            if (!this._authToken) {
+        _fetchAuthed(url, options, token) {
+            if (!token && !this._authToken) {
                 const authUrl = this.get('state.config.spotify.clientTokenUrl');
                 return fetch(authUrl)
                     .then(resp => resp.json())
@@ -84,11 +153,11 @@
 
             return fetch(url, _.merge((options || {}), {
                 headers: {
-                    Authorization: `Bearer ${this._authToken}`
+                    Authorization: `Bearer ${token || this._authToken}`
                 }
             }))
                 .then(resp => {
-                    if (resp.status !== 401) {
+                    if (token || resp.status !== 401) {
                         return resp;
                     }
 

@@ -42,6 +42,61 @@
             ];
         }
 
+        setFallbackPlaylist(playlist, tracks, shuffle) {
+            if (!tracks || !this.state) {
+                return Promise.reject(new Error("Track parameter null or state missing."));
+            }
+            if (!this.state.isHost) {
+                return Promise.reject(new Error("Not party host."));
+            }
+
+            const partyId = this.state.partyId;
+            const tracksPath = this._getFbTracksPath(partyId);
+
+            const t = firebase.database()
+                .ref(tracksPath)
+                .orderByChild('vote_count')
+                .equalTo(0)
+                .once('value')
+                .then(snap => {
+                    const tracksToRemove = _.keys(snap.val());
+                    const updateObject = {};
+                    for (const trackId of tracksToRemove) {
+                        updateObject[trackId] = null;
+                    }
+
+                    return firebase.database()
+                        .ref(tracksPath)
+                        .update(updateObject);
+                })
+                .then(() => {
+                    if (shuffle) {
+                        tracks = _.shuffle(tracks);
+                    }
+
+                    const now = Date.now();
+                    const base = now - this.get('state.party.created_at');
+                    const trackUpdates = _.keyBy(tracks.map((track, index) => ({
+                        added_at: now + index,
+                        is_fallback: true,
+                        order: base + index,
+                        reference: track.reference,
+                        vote_count: 0
+                    })), t => this._generateFbId(t));
+
+                    return firebase.database()
+                        .ref(tracksPath)
+                        .update(trackUpdates);
+                });
+
+            const p = firebase.database()
+                .ref(this._getFbPartiesPath(partyId))
+                .child('fallback_playlist')
+                .set(playlist);
+
+            return Promise.all([t, p]);
+        }
+
         removeTrack(track, moveToHistory) {
             if (!track || !this.state) {
                 return Promise.reject(new Error("Track parameter null or state missing."));

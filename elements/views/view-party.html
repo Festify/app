@@ -159,6 +159,10 @@
                          state="{{state}}"
                          tracks="[[tracks]]">
         </provider-player>
+        <provider-playlists id="playlistProvider"
+                            playlists="{{_playlists}}"
+                            state="[[state]]">
+        </provider-playlists>
         <provider-votes id="voteProvider"
                         state="[[state]]"
                         user-votes="{{_userVotes}}">
@@ -228,7 +232,10 @@
                         </template>
                     </div>
 
-                    <view-settings view="settings" state="{{state}}"></view-settings>
+                    <view-settings view="settings"
+                                   playlists="[[_playlists]]"
+                                   state="{{state}}">
+                    </view-settings>
 
                     <view-share view="share" state="[[state]]"></view-share>
                 </iron-pages>
@@ -284,6 +291,9 @@
                 _pageData: {
                     type: Object
                 },
+                _playlists: {
+                    type: Array
+                },
                 _searchMeta: {
                     type: Object,
                     value: () => ({})
@@ -321,6 +331,7 @@
 
             const playerEventHandler = ev => this._playerEvent(ev);
             this.addEventListener('exitParty', ev => this._exitParty(ev));
+            this.addEventListener('fallbackPlaylist-set', ev => this._setFallbackPlaylist(ev.detail));
             this.addEventListener('player-initFailed', playerEventHandler);
             this.addEventListener('player-playbackInterrupted', playerEventHandler);
             this.addEventListener('player-playPauseFailed', playerEventHandler);
@@ -455,6 +466,16 @@
 
         _toggleVote(ev) {
             this.$.voteProvider.toggleVote(ev.detail.track);
+        }
+
+        _setFallbackPlaylist({ playlist, shuffle }) {
+            this.$.playlistProvider.getTracks(playlist)
+                .then(tracks => this.$.tracksProvider.setFallbackPlaylist(playlist, tracks, shuffle))
+                .then(() => this.set('party.fallback_playlist', playlist))
+                .catch(err => {
+                    console.error(err);
+                    this.fire('toast', { text: "Failed to set fallback playlist. :(" })
+                });
         }
 
         _track(ev) {

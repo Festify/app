@@ -146,9 +146,13 @@
                                 domain: "<%= ENV.DOMAIN %>"
                             },
                             spotify: {
-                                urlScheme: "festify-spotify",
+                                redirectUrl: "https://auth.festify.us",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
-                                scopes: ['playlist-read-private', 'streaming'],
+                                scopes: [
+                                    'playlist-read-collaborative',
+                                    'playlist-read-private',
+                                    'streaming'
+                                ],
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
                                 tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"

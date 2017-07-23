@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../providers/provider-playlists.html">
+<link rel="import" href="components/fallback-playlist.html">
 
 <dom-module id="view-settings">
     <template>
@@ -16,6 +19,16 @@
                 padding: 10px 20px;
             }
 
+            h3 {
+                border-bottom: 1px solid #333;
+                margin-bottom: 0;
+            }
+
+            fallback-playlist {
+                margin-top: 4px;
+                margin-bottom: 4px;
+            }
+
             @media (min-width: 1024px) {
                 :host {
                     flex-direction: row;
@@ -28,15 +41,29 @@
         </style>
 
         <div class="upper">
+            <h3>General Settings</h3>
             <paper-input id="partyName"
                          label="Party Name"
                          value="{{state.party.name}}"
+                         title="Change the name of your party"
                          type="text">
             </paper-input>
         </div>
 
         <div class="lower">
-            <p>Fallback Playlist:</p>
+            <h3>Fallback Playlist</h3>
+            <paper-input label="Search your playlists"
+                         value="{{_search}}"
+                         type="text">
+            </paper-input>
+
+            <template is="dom-repeat"
+                      items="[[playlists]]"
+                      filter="[[_computeFilter(_search)]]">
+                <fallback-playlist active="[[_playlistActive(item, state.party.fallback_playlist)]]"
+                                   playlist="[[item]]">
+                </fallback-playlist>
+            </template>
         </div>
     </template>
 </dom-module>
@@ -49,14 +76,31 @@
 
         static get properties() {
             return {
+                playlists: {
+                    type: Array
+                },
                 state: {
                     type: Object,
                     notify: true
                 },
-                _playlists: {
-                    type: Array
+                _search: {
+                    type: String
                 }
             };
+        }
+
+        _computeFilter(input) {
+            let filter = (input || '').toLowerCase();
+            return playlist => !filter || playlist.name.toLowerCase().indexOf(filter) !== -1;
+        }
+
+        _playlistActive(list, current) {
+            if (!list || !current) {
+                return false;
+            }
+
+            return list.reference.id === current.id &&
+                list.reference.provider === current.provider;
         }
     }
 
