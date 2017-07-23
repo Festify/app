@@ -59,9 +59,14 @@
                 .equalTo(0)
                 .once('value')
                 .then(snap => {
-                    const tracksToRemove = _.keys(snap.val());
+                    const tracks = snap.val();
                     const updateObject = {};
-                    for (const trackId of tracksToRemove) {
+                    for (const trackId in tracks) {
+                        if (!tracks.hasOwnProperty(trackId) ||
+                            tracks[trackId].played_at) { // Don't overwrite the currently playing track
+                            continue;
+                        }
+
                         updateObject[trackId] = null;
                     }
 
