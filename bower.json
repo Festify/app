@@ -4,7 +4,7 @@
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#^2.0.0",
     "app-route": "PolymerElements/app-route#^2.0.0",
-    "fetch": "^2.0.3",
+    "fetch-import": "^1.0.0",
     "iron-a11y-keys": "^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
     "iron-icons": "PolymerElements/iron-icons#^2.0.0",
