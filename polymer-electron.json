@@ -4,7 +4,6 @@
   "sources": [
     "elements/**/*",
     "images/**/*",
-    "bower.json",
     "spotify-missing.html"
   ],
   "fragments": [
