@@ -200,7 +200,7 @@
 
         _tapPlayPauseBtn() {
             const state = this.state;
-            if (state && state.isHost) {
+            if (state && state.isOwner) {
                 this.fire('track-togglePlayPause');
             }
         }

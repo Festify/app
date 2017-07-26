@@ -188,16 +188,16 @@
             }
 
             this.set('state.cordova', !!window.cordova);
-            this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
+            this.set('state.isWeb', window.isWeb);
 
             if (!window.isWeb) { // Hosted environments don't like app-location
                 this.route = { path: '/host', prefix: '', __queryParams: {} };
+            }
 
-                if (this.state.cordova) {
-                    document.addEventListener('pause', this._appWillSuspend.bind(this));
-                    document.addEventListener('resume', this._appWillResume.bind(this));
-                }
+            if (this.state.cordova) {
+                document.addEventListener('pause', this._appWillSuspend.bind(this));
+                document.addEventListener('resume', this._appWillResume.bind(this));
             }
         }
 
