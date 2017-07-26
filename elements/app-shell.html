@@ -82,6 +82,9 @@
                              attr-for-selected="view"
                              selected-attribute="active"
                              role="main">
+                <view-receive-oauth view="auth"
+                                    data-path="views/view-receive-oauth.html">
+                </view-receive-oauth>
                 <!-- No subroute for host / join as they do top level routing -->
                 <view-host view="host"
                            data-path="views/view-host.html"
@@ -146,14 +149,14 @@
                                 domain: "<%= ENV.DOMAIN %>"
                             },
                             spotify: {
-                                redirectUrl: "https://festify.us/auth/spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
+                                clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
+                                redirectUrl: "https://festify-dev.netlify.com/auth",
                                 scopes: [
                                     'playlist-read-collaborative',
                                     'playlist-read-private',
                                     'streaming'
                                 ],
-                                clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
                                 tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
