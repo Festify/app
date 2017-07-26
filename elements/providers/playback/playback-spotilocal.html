@@ -9,7 +9,7 @@
                             access-token="{{state.auth.spotify}}"
                             authorization-url="https://accounts.spotify.com/authorize"
                             client-id="[[state.config.spotify.clientId]]"
-                            redirect-url="https://auth.festify.us/"
+                            redirect-url="[[state.config.spotify.redirectUrl]]"
                             scopes="[[state.config.spotify.scopes]]"
                             token-exchange-url="[[state.config.spotify.tokenSwapUrl]]"
                             token-refresh-url="[[state.config.spotify.tokenRefreshUrl]]">
