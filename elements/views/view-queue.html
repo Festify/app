@@ -1,8 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
-<link rel="import" href="view-party.html">
-<link rel="import" href="view-tv.html">
 
 <dom-module id="view-queue">
     <template>
@@ -17,15 +15,20 @@
                    data="{{_modeRouteData}}">
         </app-route>
 
-        <iron-pages selected="[[_modeRouteData.mode]]"
-                    attr-for-selected="view"
-                    fallback-selection="party">
+        <iron-lazy-pages selected="[[_modeRouteData.mode]]"
+                         attr-for-selected="view"
+                         fallback-selection="party">
             <view-party view="party"
+                        data-path="view-party.html"
                         state="{{state}}"
                         search-query="{{_searchQuery}}"
-                        route="{{subroute}}"></view-party>
-            <view-tv view="tv" state="{{state}}"></view-tv>
-        </iron-pages>
+                        route="{{subroute}}">
+            </view-party>
+            <view-tv view="tv"
+                     data-path="view-tv.html"
+                     state="{{state}}">
+            </view-tv>
+        </iron-lazy-pages>
     </template>
 </dom-module>
 

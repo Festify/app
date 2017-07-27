@@ -4,12 +4,9 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-casting.html">
@@ -22,6 +19,7 @@
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/queue-track.html">
 <link rel="import" href="components/search-bar.html">
+<link rel="import" href="view-settings.html">
 <link rel="import" href="view-share.html">
 
 <dom-module id="view-party">
@@ -102,6 +100,16 @@
                 padding-top: 13px;
             }
 
+            .track-list p {
+                margin: 0;
+                text-align: center;
+            }
+
+            .track-list paper-button {
+                display: inline-block;
+                margin: 20px;
+            }
+
             #skipBackground {
                 position: absolute;
                 right: 0;
@@ -127,10 +135,6 @@
                 margin: 0 32px 0 0;
                 text-align: right;
             }
-
-            view-share {
-                display: block;
-            }
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
@@ -147,7 +151,7 @@
                          tracks="{{searchResults}}">
         </provider-search>
         <provider-tracks id="tracksProvider"
-                         limit="0"
+                         limit="[[_trackLimit]]"
                          state="{{state}}"
                          tracks="{{tracks}}">
         </provider-tracks>
@@ -155,6 +159,10 @@
                          state="{{state}}"
                          tracks="[[tracks]]">
         </provider-player>
+        <provider-playlists id="playlistProvider"
+                            playlists="{{_playlists}}"
+                            state="[[state]]">
+        </provider-playlists>
         <provider-votes id="voteProvider"
                         state="[[state]]"
                         user-votes="{{_userVotes}}">
@@ -189,6 +197,7 @@
                              style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
                             <p id="skipIndicator">Skip</p>
                         </div>
+
                         <template is="dom-repeat"
                                   id="trackList"
                                   items="[[tracks]]"
@@ -200,10 +209,19 @@
                             </queue-track>
                         </template>
 
+                        <p>
+                            <paper-button hidden$="[[_getDisplayLoadRestButton(tracks.length, _trackLimit)]]"
+                                          on-tap="_loadAllTracks"
+                                          raised>
+                                There's more! Load the rest
+                            </paper-button>
+                        </p>
+
                         <view-share state="[[state]]"
                                     style$="display: [[_getDisplayProactiveSharing(tracks.length)]]">
                         </view-share>
                     </div>
+
                     <div class="track-list" view="search">
                         <template is="dom-repeat" items="[[searchResults]]">
                             <queue-track metadata="[[_searchMeta]]"
@@ -213,9 +231,13 @@
                             </queue-track>
                         </template>
                     </div>
-                    <div class="share-view" view="share">
-                        <view-share state="[[state]]"></view-share>
-                    </div>
+
+                    <view-settings view="settings"
+                                   playlists="[[_playlists]]"
+                                   state="{{state}}">
+                    </view-settings>
+
+                    <view-share view="share" state="[[state]]"></view-share>
                 </iron-pages>
             </div>
         </app-drawer-layout>
@@ -236,6 +258,10 @@
                     type: String,
                     observer: '_pageChanged'
                 },
+                route: {
+                    type: Object,
+                    notify: true
+                },
                 searchQuery: {
                     type: String,
                     notify: true
@@ -249,10 +275,6 @@
                 },
                 tracks: {
                     type: Array
-                },
-                route: {
-                    type: Object,
-                    notify: true
                 },
                 _castUrl: {
                     type: String,
@@ -269,20 +291,27 @@
                 _pageData: {
                     type: Object
                 },
-                _skipOffset: {
-                    type: Number,
-                    value: 0
+                _playlists: {
+                    type: Array
                 },
                 _searchMeta: {
                     type: Object,
                     value: () => ({})
                 },
-                _trackMeta: {
-                    type: Object,
-                    value: () => ({})
+                _skipOffset: {
+                    type: Number,
+                    value: 0
+                },
+                _trackLimit: {
+                    type: Number,
+                    value: 50
                 },
                 _trackListener: {
                     type: Function
+                },
+                _trackMeta: {
+                    type: Object,
+                    value: () => ({})
                 },
                 _userVotes: {
                     type: Object
@@ -302,6 +331,7 @@
 
             const playerEventHandler = ev => this._playerEvent(ev);
             this.addEventListener('exitParty', ev => this._exitParty(ev));
+            this.addEventListener('fallbackPlaylist-set', ev => this._setFallbackPlaylist(ev.detail));
             this.addEventListener('player-initFailed', playerEventHandler);
             this.addEventListener('player-playbackInterrupted', playerEventHandler);
             this.addEventListener('player-playPauseFailed', playerEventHandler);
@@ -365,8 +395,8 @@
 
             if (!!query) {
                 this.page = 'search';
-            } else if (viewActive && dataChange.base && dataChange.base.view === 'share') {
-                this.page = 'share';
+            } else if (viewActive) {
+                this.page = this.get('base.view', dataChange);
             } else {
                 this.page = 'queue';
             }
@@ -374,6 +404,10 @@
 
         _getDisplayProactiveSharing(tracksLength) {
             return tracksLength < 2 ? 'block' : 'none';
+        }
+
+        _getDisplayLoadRestButton(tracksCount, tracksLimit) {
+            return tracksCount < tracksLimit || tracksLimit == 0;
         }
 
         _getDisplaySkipIndicator(tracksLength, isOwner) {
@@ -388,17 +422,17 @@
                 0;
         }
 
+        _loadAllTracks() {
+            setTimeout(() => this._trackLimit = 0, 100);
+        }
+
         _tracksChanged() {
             // dom-repeat doesn't like splicing with objects
             this.$.trackList.render();
         }
 
         _pageChanged(page) {
-            if (page === 'share') {
-                this.set('route.path', '/share');
-            } else {
-                this.set('route.path', '');
-            }
+            this.set('route.path', (page !== 'queue' && page !== 'search') ? `/${page}` : '');
 
             const drawer = this.shadowRoot.querySelector('app-drawer');
             if (!drawer.persistent) {
@@ -432,6 +466,16 @@
 
         _toggleVote(ev) {
             this.$.voteProvider.toggleVote(ev.detail.track);
+        }
+
+        _setFallbackPlaylist({ playlist, shuffle }) {
+            this.$.playlistProvider.getTracks(playlist)
+                .then(tracks => this.$.tracksProvider.setFallbackPlaylist(playlist, tracks, shuffle))
+                .then(() => this.set('state.party.fallback_playlist', playlist.reference))
+                .catch(err => {
+                    console.error(err);
+                    this.fire('toast', { text: "Failed to set fallback playlist. :(" })
+                });
         }
 
         _track(ev) {

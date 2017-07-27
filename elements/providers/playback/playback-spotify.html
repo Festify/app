@@ -13,8 +13,9 @@
 
         static get properties() {
             return {
-                config: {
-                    type: Object
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 _session: {
                     type: Object
@@ -28,8 +29,13 @@
                 return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
             }
 
-            return spotify.login(this.config)
-                .then(session => session ? session : spotify.authenticate(this.config))
+            const config = this.get('state.config.spotify');
+            if (!_.isEmpty(config)) {
+                return Promise.reject("Spotify configuration was empty!");
+            }
+
+            return spotify.login(config)
+                .then(session => session ? session : spotify.authenticate(config))
                 .then(session => {
                     session.addListener('playbackevent', this._onPlaybackEvent, this);
                     session.addListener('playbackerror', this._onPlaybackError, this);
@@ -54,23 +60,23 @@
             return this.get('_session.canonicalUsername');
         }
 
-        getPosition () {
+        getPosition() {
             return this._withSession(s => s.getPosition(), () => Promise.reject());
         }
 
-        getProviders () {
+        getProviders() {
             return ['spotify'];
         }
 
-        isAvailable () {
+        isAvailable() {
             return !!this._getPluginUnsafe();
         }
 
-        _getPluginUnsafe () {
+        _getPluginUnsafe() {
             return this.get('cordova.plugins.spotify', window);
         }
 
-        _onPlaybackEvent (event) {
+        _onPlaybackEvent(event) {
             switch(event) {
                 case 'Pause':
                 case 'Play':
@@ -91,7 +97,7 @@
             }
         }
 
-        _onPlaybackError (err) {
+        _onPlaybackError(err) {
             this.fire('error', { type: err });
         }
 

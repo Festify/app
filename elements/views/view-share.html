@@ -10,6 +10,7 @@
 
         <style>
             :host {
+                display: block;
                 padding: 10px 20px;
             }
 
@@ -77,11 +78,14 @@
         }
 
         _copyUrl() {
-            if (window.plugins) {
-                window.plugins.socialsharing.share('Join my party!', null, null, this._getPartyUrl(this.state.partyId));
-            } else if (window.require) {
+            const url = this._getPartyUrl(this.state.partyId) ;
+                const shareFn = this.get('plugins.socialsharing.share', window);
+
+            if (typeof shareFn === 'function') {
+                shareFn('Join my party!', null, null, url);
+            } else if(window.require) {
                 const {shell} = require('electron');
-                shell.openExternal(this._getPartyUrl(this.state.partyId));
+                shell.openExternal(url);
             }
         }
     }

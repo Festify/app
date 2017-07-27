@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
@@ -158,7 +160,7 @@
 </dom-module>
 
 <script>
-    class TvView extends Polymer.Element {
+    class TvView extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
         static get is() {
             return 'view-tv';
         }
@@ -193,13 +195,13 @@
             super.connectedCallback();
 
             this._resizeListener = () => this._resize();
-            window.addEventListener('resize', this._resizeListener);
+            this.addEventListener('iron-resize', this._resizeListener);
         }
 
         disconnectedCallback() {
             super.disconnectedCallback();
 
-            window.removeEventListener('resize', this._resizeListener);
+            this.removeEventListener('iron-resize', this._resizeListener);
             this._resizeListener = null;
         }
 
@@ -232,8 +234,9 @@
         }
 
         _resize() {
-            Polymer.Debouncer.debounce(this._resizeDebouncer, Polymer.Async.timeOut.after(100), () => {
-                const track = document.querySelector('tv-track');
+            const timeout = Polymer.Async.timeOut.after(100);
+            Polymer.Debouncer.debounce(this._resizeDebouncer, timeout, () => {
+                const track = this.shadowRoot.querySelector('tv-track');
                 if (track) {
                     const width = track.getBoundingClientRect().width;
                     this._tracksShown = Math.ceil(window.outerWidth / width);

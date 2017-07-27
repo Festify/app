@@ -7,8 +7,8 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="behaviors/behavior-fire-events.html">
-<link rel="import" href="utils/raven-js.html">
 <link rel="import" href="providers/provider-party.html">
+<link rel="import" href="utils/raven-js.html">
 
 <dom-module id="app-shell">
     <template>
@@ -82,6 +82,9 @@
                              attr-for-selected="view"
                              selected-attribute="active"
                              role="main">
+                <view-receive-oauth view="auth"
+                                    data-path="views/view-receive-oauth.html">
+                </view-receive-oauth>
                 <!-- No subroute for host / join as they do top level routing -->
                 <view-host view="host"
                            data-path="views/view-host.html"
@@ -146,10 +149,14 @@
                                 domain: "<%= ENV.DOMAIN %>"
                             },
                             spotify: {
-                                urlScheme: "festify-spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
-                                scopes: ['streaming'],
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
+                                redirectUrl: "<%= ENV.SPOTIFY_REDIRECT_URL %>",
+                                scopes: [
+                                    'playlist-read-collaborative',
+                                    'playlist-read-private',
+                                    'streaming'
+                                ],
                                 tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
@@ -184,16 +191,16 @@
             }
 
             this.set('state.cordova', !!window.cordova);
-            this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
+            this.set('state.isWeb', window.isWeb);
 
             if (!window.isWeb) { // Hosted environments don't like app-location
                 this.route = { path: '/host', prefix: '', __queryParams: {} };
+            }
 
-                if (this.state.cordova) {
-                    document.addEventListener('pause', this._appWillSuspend.bind(this));
-                    document.addEventListener('resume', this._appWillResume.bind(this));
-                }
+            if (this.state.cordova) {
+                document.addEventListener('pause', this._appWillSuspend.bind(this));
+                document.addEventListener('resume', this._appWillResume.bind(this));
             }
         }
 

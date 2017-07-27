@@ -1,7 +1,21 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/oauth-authorizator/oauth-authorizator.html">
 <link rel="import" href="../../behaviors/behavior-fire-events.html">
 <link rel="import" href="../../behaviors/behavior-playback-provider.html">
-<link rel="import" href="../../utils/lodash.html">
+
+<dom-module id="playback-spotilocal">
+    <template>
+        <oauth-authorizator id="auth"
+                            access-token="{{state.auth.spotify}}"
+                            authorization-url="https://accounts.spotify.com/authorize"
+                            client-id="[[state.config.spotify.clientId]]"
+                            redirect-url="[[state.config.spotify.redirectUrl]]"
+                            scopes="[[state.config.spotify.scopes]]"
+                            token-exchange-url="[[state.config.spotify.tokenSwapUrl]]"
+                            token-refresh-url="[[state.config.spotify.tokenRefreshUrl]]">
+        </oauth-authorizator>
+    </template>
+</dom-module>
 
 <script>
     class SpotilocalPlayback extends Festify.FireBehavior(
@@ -13,6 +27,10 @@
 
         static get properties() {
             return {
+                state: {
+                    type: Object,
+                    notify: true
+                },
                 _spotify: {
                     type: Object
                 },
@@ -51,9 +69,11 @@
             }
 
             const spotify = new this._spotilocal.Spotilocal();
-
-            return spotify.init()
+            const s = spotify.init()
                 .then(() => this._spotify = spotify);
+            const o = this.$.auth.login();
+
+            return Promise.all([s, o]);
         }
 
         deinit() {

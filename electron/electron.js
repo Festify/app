@@ -12,8 +12,11 @@ function createWindow () {
         width: 1024,
         height: 900,
         backgroundColor: '#1c1f24',
-        show: false,
-        title: 'Festify'
+        show: true,
+        title: 'Festify',
+        webPreferences: {
+            nativeWindowOpen: true
+        }
     });
 
     win.loadURL(url.format({
@@ -28,10 +31,7 @@ function createWindow () {
             slashes: true
         })));
 
-    win.once('ready-to-show', () => {
-        win.show();
-        win.focus();
-    });
+    win.once('ready-to-show', () => win.focus());
     win.on('closed', () => win = null);
 }
 
