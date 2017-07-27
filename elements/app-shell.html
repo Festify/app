@@ -2,13 +2,13 @@
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/iron-lazy-pages/iron-lazy-pages.html">
 <link rel="import" href="behaviors/behavior-fire-events.html">
-<link rel="import" href="utils/raven-js.html">
 <link rel="import" href="providers/provider-party.html">
+<link rel="import" href="utils/raven-js.html">
 
 <dom-module id="app-shell">
     <template>
@@ -50,7 +50,7 @@
                 --paper-spinner-color: var(--primary-color);
             }
 
-            #toast {
+            paper-toast {
                 --paper-toast-background-color: var(--primary-color);
                 box-shadow: 0 1px 10px 0 rgba(0,0,0,1);
             }
@@ -82,6 +82,9 @@
                              attr-for-selected="view"
                              selected-attribute="active"
                              role="main">
+                <view-receive-oauth view="auth"
+                                    data-path="views/view-receive-oauth.html">
+                </view-receive-oauth>
                 <!-- No subroute for host / join as they do top level routing -->
                 <view-host view="host"
                            data-path="views/view-host.html"
@@ -105,6 +108,12 @@
         </template>
 
         <paper-toast id="toast"></paper-toast>
+        <paper-toast id="updateToast"
+                     duration="0"
+                     text="An update for Festify is available.">
+            <paper-button on-tap="_confirmInstallUpdate">Install now</paper-button>
+            <paper-button on-tap="_dismissUpdate">Later</paper-button>
+        </paper-toast>
     </template>
 </dom-module>
 
@@ -140,10 +149,14 @@
                                 domain: "<%= ENV.DOMAIN %>"
                             },
                             spotify: {
-                                urlScheme: "festify-spotify",
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
-                                scopes: ['streaming'],
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
+                                redirectUrl: "<%= ENV.SPOTIFY_REDIRECT_URL %>",
+                                scopes: [
+                                    'playlist-read-collaborative',
+                                    'playlist-read-private',
+                                    'streaming'
+                                ],
                                 tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
@@ -171,24 +184,23 @@
             if (window.require) {
                 const {ipcRenderer} = require('electron');
 
-                ipcRenderer.on('update-available', (event, arg) => {
-                    if (confirm("An update for Festify is available. Would you like to install it?")) {
-                        ipcRenderer.send('install-update');
-                    }
+                ipcRenderer.on('update-available', () => {
+                    console.log("Received update-available event");
+                    this.$.updateToast.show();
                 });
             }
 
             this.set('state.cordova', !!window.cordova);
-            this.set('state.isWeb', window.isWeb);
             this.set('state.isHost', window.isHost);
+            this.set('state.isWeb', window.isWeb);
 
             if (!window.isWeb) { // Hosted environments don't like app-location
-                this.set('route', { path: '/host', prefix: '', __queryParams: {} });
+                this.route = { path: '/host', prefix: '', __queryParams: {} };
+            }
 
-                if (this.state.cordova) {
-                    document.addEventListener('pause', this._appWillSuspend.bind(this));
-                    document.addEventListener('resume', this._appWillResume.bind(this));
-                }
+            if (this.state.cordova) {
+                document.addEventListener('pause', this._appWillSuspend.bind(this));
+                document.addEventListener('resume', this._appWillResume.bind(this));
             }
         }
 
@@ -238,19 +250,32 @@
             }
 
             if (page && page.length > 0) {
-                this.set('currentView', page);
+                this.currentView = page;
             } else {
                 const view = this.state.isHost ? 'host' : 'join';
                 this.set('route.path', '/' + view);
-                this.set('currentView', view);
+                this.currentView = view;
             }
         }
 
         // Actions
+        _confirmInstallUpdate() {
+            if (!window.require) {
+                return;
+            }
+
+            require('electron').ipcRenderer.send('install-update');
+            this._dismissUpdate();
+        }
+
         _createNewParty() {
             const [key] = this.$.partyProvider.createNewParty();
             this._loadParty(key);
             localStorage.setItem('last_party', key);
+        }
+
+        _dismissUpdate() {
+            this.$.updateToast.hide();
         }
 
         _hideSplash() {

@@ -1,10 +1,12 @@
+<link rel="import" href="../../bower_components/polymer/lib/utils/mixin.html">
+
 <script>
     window.Festify = window.Festify || {};
 
     /**
      * @polymerMixin
      */
-    Festify.FbPathsBehavior = klass => class extends klass {
+    Festify.FbPathsBehavior = Polymer.dedupingMixin(klass => class extends klass {
         _generateFbId(track) {
             return track.reference.provider + '-' + track.reference.id;
         }
@@ -43,5 +45,5 @@
             const separatorIndex = trackId.indexOf('-');
             return [trackId.substring(0, separatorIndex), trackId.substring(separatorIndex + 1)];
         }
-    }
+    });
 </script>

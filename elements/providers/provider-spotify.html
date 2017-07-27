@@ -1,24 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/fetch-import/fetch.html">
 <link rel="import" href="../utils/lodash.html">
-
-<dom-module id="provider-spotify">
-    <template>
-        <iron-ajax id="authXhr"
-                   url="[[state.config.spotify.clientTokenUrl]]"
-                   method="POST"
-                   handle-as="json">
-        </iron-ajax>
-        <iron-ajax id="searchXhr"
-                   url="https://api.spotify.com/v1/search"
-                   handle-as="json">
-        </iron-ajax>
-        <iron-ajax id="trackXhr"
-                   url="https://api.spotify.com/v1/tracks"
-                   handle-as="json">
-        </iron-ajax>
-    </template>
-</dom-module>
 
 <script>
     class SpotifyProvider extends Polymer.Element {
@@ -30,14 +12,81 @@
             return {
                 _authToken: {
                     type: String
-                },
-                _authRequest: {
-                    type: Object
-                },
-                _searchRequest: {
-                    type: Object
                 }
             };
+        }
+
+        getPlaylists() {
+            const token = this.get('state.auth.spotify');
+            if (!token) {
+                return Promise.resolve([]);
+            }
+
+            const url = 'https://api.spotify.com/v1/me/playlists';
+
+            const playlists = [];
+            const handleResponse = ({ items, next }) => {
+                playlists.push(...items);
+
+                if (next) {
+                    return this._fetchAuthed(next, null, token)
+                        .then(resp => resp.json())
+                        .then(handleResponse);
+                }
+            };
+
+            return this._fetchAuthed(url, null, token)
+                .then(resp => resp.json())
+                .then(handleResponse)
+                .then(() => playlists.map(({ name, id, owner }) => ({
+                    name: name,
+                    reference: {
+                        id: id,
+                        owner: owner.id,
+                        provider: 'spotify'
+                    }
+                })));
+        }
+
+        getPlaylistTracks(playlist) {
+            if (!playlist) {
+                return Promise.reject(new Error("Missing playlist argument!"));
+            }
+            if (!playlist.reference.provider || playlist.reference.provider !== 'spotify') {
+                return Promise.reject(new Error("Playlist not from Spotify!"));
+            }
+
+            const token = this.get('state.auth.spotify');
+            if (!token) {
+                return Promise.reject(new Error("Missing access token."));
+            }
+
+            const url = `https://api.spotify.com/v1/users/${playlist.reference.owner}/playlists/${playlist.reference.id}/tracks`;
+
+            const tracks = [];
+            const handleResponse = ({ items, next }) => {
+                tracks.push(...items);
+
+                if (next) {
+                    return this._fetchAuthed(next, null, token)
+                        .then(resp => resp.json())
+                        .then(handleResponse);
+                }
+            };
+
+            return this._fetchAuthed(url, null, token)
+                .then(resp => resp.json())
+                .then(handleResponse)
+                .then(() => tracks.map(({ track }) => ({
+                    reference: {
+                        id: track.id,
+                        provider: 'spotify'
+                    }
+                })));
+        }
+
+        getProviders() {
+            return ['spotify'];
         }
 
         getTrackInfo(id, market) {
@@ -47,7 +96,7 @@
 
         // This does not guarantee ordering!
         getTracksInfo(ids, market) {
-            return this._fetchIds(_.without(ids, ...Object.keys(SpotifyProvider.cache)), market)
+            return this._fetchTracks(_.without(ids, ...Object.keys(SpotifyProvider.cache)), market)
                 .then(() => ids.map(id => SpotifyProvider.cache[id]));
         }
 
@@ -55,82 +104,72 @@
             if (query.length < 2) {
                 return Promise.resolve([]);
             }
-            if (this._searchRequest) {
-                this._searchRequest.abort();
+
+            let url = `https://api.spotify.com/v1/search?type=track&limit=${limit || 20}&q=${encodeURIComponent(query.replace('-', ' ') + '*')}`;
+            if (market) {
+                url += `&market=${market}`;
             }
 
-            const xhr = this.$.searchXhr;
-            return this._withAuth(xhr, xhr => {
-                xhr.set('params', {
-                    limit: limit || 20,
-                    q: query.replace('-', ' ') + '*',
-                    type: 'track'
+            return this._fetchAuthed(url)
+                .then(resp => resp.json())
+                .then(resp => {
+                    const tracks = _.get(resp, 'tracks.items', []);
+                    tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
+                    return tracks.map(track => ({
+                        reference: {
+                            id: track.id,
+                            provider: 'spotify'
+                        }
+                    }));
                 });
-                if (market) {
-                    xhr.set('params.market', market);
-                }
-
-                this._searchRequest = xhr.generateRequest();
-                return this._searchRequest.completes
-                    .then(xhr => {
-                        this._searchRequest = null;
-
-                        const tracks = _.get(xhr, 'response.tracks.items', []);
-                        tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
-                        return tracks.map(track => ({
-                            reference: {
-                                id: track.id,
-                                provider: 'spotify'
-                            }
-                        }));
-                    });
-            });
         }
 
-        _fetchIds(ids, market) {
+        _fetchTracks(ids, market) {
             if (!ids || ids.length < 1) {
                 return Promise.resolve([]);
             }
 
-            const xhr = this.$.trackXhr;
-            return this._withAuth(xhr, xhr => {
-                xhr.set('params', { ids: ids.join(',') });
-                if (market) {
-                    xhr.set('params.market', { market: market });
-                }
-
-                return xhr.generateRequest().completes
-                    .then(xhr => _.get(xhr, 'response.tracks', []))
-                    .then(tracks => {
-                        tracks.forEach(t => SpotifyProvider.cache[t.id] = t);
-                        return tracks;
-                    });
-            });
-        }
-
-        _withAuth(xhr, reqFn) {
-            if (!this._authToken) {
-                if (this._authRequest) {
-                    this._authRequest.abort();
-                }
-
-                this._authRequest = this.$.authXhr.generateRequest();
-                return this._authRequest.completes
-                    .then(xhr => this.get('response.access_token', xhr))
-                    .then(token => this._authToken = token)
-                    .then(() => this._withAuth(xhr, reqFn));
+            let url = `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(ids.join(','))}`;
+            if (market) {
+                url += `&market=${market}`;
             }
 
-            xhr.headers.Authorization = `Bearer ${this._authToken}`;
-            return reqFn(xhr)
-                .catch(err => {
-                    // This case occurs when the token expires.
-                    if (err.message.indexOf("401") !== -1) {
-                        this._authToken = null;
-                        return this._withAuth(xhr, reqFn);
-                    } else {
-                        return Promise.reject(xhr);
+            return this._fetchAuthed(url)
+                .then(resp => resp.json())
+                .then(({ tracks }) => {
+                    (tracks || []).forEach(t => SpotifyProvider.cache[t.id] = t);
+                    return tracks;
+                });
+        }
+
+        _fetchAuthed(url, options, token) {
+            if (!token && !this._authToken) {
+                const authUrl = this.get('state.config.spotify.clientTokenUrl');
+                return fetch(authUrl)
+                    .then(resp => resp.json())
+                    .then(resp => this._authToken = resp.access_token)
+                    .then(() => this._fetchAuthed(url, options));
+            }
+
+            return fetch(url, _.merge((options || {}), {
+                headers: {
+                    Authorization: `Bearer ${token || this._authToken}`
+                }
+            }))
+                .then(resp => {
+                    if (token || resp.status !== 401) {
+                        return resp;
                     }
+
+                    this._authToken = null;
+                    return this._fetchAuthed(url, options);
+                })
+                .then(resp => {
+                    if (resp.ok) {
+                        return resp;
+                    }
+
+                    return Promise.reject(new Error(`Received invalid status code ${resp.status} from Spotify.`));
                 });
         }
     }

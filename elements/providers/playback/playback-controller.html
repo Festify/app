@@ -6,8 +6,8 @@
 
 <dom-module id="playback-controller">
     <template>
-        <playback-spotify config="[[config.spotify]]"></playback-spotify>
-        <playback-spotilocal></playback-spotilocal>
+        <playback-spotify state="{{state}}"></playback-spotify>
+        <playback-spotilocal state="{{state}}"></playback-spotilocal>
     </template>
 </dom-module>
 
@@ -19,8 +19,9 @@
 
         static get properties() {
             return {
-                config: {
-                    type: Object
+                state: {
+                    type: Object,
+                    notify: true
                 },
                 _activeProvider: {
                     type: Festify.PlaybackProviderBehavior

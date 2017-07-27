@@ -21,6 +21,6 @@
   "dependencies": {
     "electron-updater": "^2.1.2",
     "spotilocal": "^0.1.0",
-    "start-spotify": "^0.1.1"
+    "start-spotify": "^0.2.1"
   }
 }
