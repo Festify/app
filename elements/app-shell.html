@@ -151,7 +151,7 @@
                             spotify: {
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
-                                redirectUrl: "https://festify-dev.netlify.com/auth",
+                                redirectUrl: "<%= ENV.SPOTIFY_REDIRECT_URL %>",
                                 scopes: [
                                     'playlist-read-collaborative',
                                     'playlist-read-private',
