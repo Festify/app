@@ -19,7 +19,7 @@
                 data: {
                     type: Object,
                     notify: true,
-                    value: () => ({})
+                    value: () => Object.create(null)
                 },
                 state: {
                     type: Object,
@@ -84,10 +84,11 @@
                         .forEach(chunk => {
                             processor(chunk)
                                 .then(results => {
-                                    const obj = {};
+                                    const obj = Object.create(null);
                                     obj[provider] = results;
-                                    this.data = _.merge({}, this.data, obj);
-                                });
+                                    this.data = _.merge(Object.create(null), this.data, obj)
+                                })
+                                .catch(err => console.log("Faield to process metadata chunk:", err));
                         });
                 });
             }, 50);

@@ -22,7 +22,7 @@
                 return Promise.resolve([]);
             }
 
-            const url = 'https://api.spotify.com/v1/me/playlists';
+            const url = 'https://api.spotify.com/v1/me/playlists?limit=50';
 
             const playlists = [];
             const handleResponse = ({ items, next }) => {
@@ -77,6 +77,7 @@
             return this._fetchAuthed(url, null, token)
                 .then(resp => resp.json())
                 .then(handleResponse)
+                .then(() => tracks.forEach(({ track }) => SpotifyProvider.cache[track.id] = track))
                 .then(() => tracks.map(({ track }) => ({
                     reference: {
                         id: track.id,
@@ -174,6 +175,6 @@
         }
     }
 
-    SpotifyProvider.cache = {};
+    SpotifyProvider.cache = Object.create(null);
     customElements.define(SpotifyProvider.is, SpotifyProvider);
 </script>
