@@ -80,7 +80,7 @@
         ready() {
             super.ready();
 
-            this._tapHandler = () => this._insert();
+            this._tapHandler = ev => this._insert(ev);
             this.addEventListener('tap', this._tapHandler);
         }
 
@@ -88,16 +88,23 @@
             super.detached();
 
             this.removeEventListener('tap', this._tapHandler);
+            this._tapHandler = null;
         }
 
-        _insert() {
+        _insert(ev) {
+            if (ev) {
+                ev.stopPropagation();
+            }
             this.fire('fallbackPlaylist-set', {
                 playlist: this.playlist,
                 shuffle: false
             });
         }
 
-        _insertShuffled() {
+        _insertShuffled(ev) {
+            if (ev) {
+                ev.stopPropagation();
+            }
             this.fire('fallbackPlaylist-set', {
                 playlist: this.playlist,
                 shuffle: true

@@ -80,7 +80,7 @@
             }
 
             .track-list {
-                background-color: #303030;
+                background-color: #2c3035;
                 position: relative;
             }
 
@@ -89,8 +89,12 @@
                 z-index: 1;
             }
 
+            .track-list queue-track:nth-child(even) {
+                background-color: #31353a;
+            }
+
             .track-list queue-track[playing] {
-                background-color: #282828;
+                background-color: #252528;
                 padding: 13px 16px;
 
                 transform: translateX(0px); /* Dirty hack */
@@ -296,7 +300,7 @@
                 },
                 _searchMeta: {
                     type: Object,
-                    value: () => ({})
+                    value: () => Object.create(null)
                 },
                 _skipOffset: {
                     type: Number,
@@ -311,7 +315,7 @@
                 },
                 _trackMeta: {
                     type: Object,
-                    value: () => ({})
+                    value: () => Object.create(null)
                 },
                 _userVotes: {
                     type: Object
