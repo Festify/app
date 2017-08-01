@@ -15,6 +15,7 @@
 <link rel="import" href="../providers/provider-search.html">
 <link rel="import" href="../providers/provider-tracks.html">
 <link rel="import" href="../providers/provider-votes.html">
+<link rel="import" href="components/festify-spinner.html">
 <link rel="import" href="components/playback-progress-bar.html">
 <link rel="import" href="components/queue-drawer.html">
 <link rel="import" href="components/queue-track.html">
@@ -119,6 +120,10 @@
                 margin: 20px;
             }
 
+            .track-list festify-spinner {
+                background: var(--secondary-color);
+            }
+
             #skipBackground {
                 position: absolute;
                 right: 0;
@@ -152,12 +157,13 @@
                            state="[[state]]">
         </provider-metadata>
         <provider-metadata data="{{_searchMeta}}"
-                           tracks="[[searchResults]]"
+                           tracks="[[_searchResults]]"
                            state="[[state]]">
         </provider-metadata>
-        <provider-search search-query="[[searchQuery]]"
+        <provider-search is-busy="{{_searchLoading}}"
+                         search-query="[[searchQuery]]"
                          state="[[state]]"
-                         tracks="{{searchResults}}">
+                         tracks="{{_searchResults}}">
         </provider-search>
         <provider-tracks id="tracksProvider"
                          limit="[[_trackLimit]]"
@@ -169,6 +175,7 @@
                          tracks="[[tracks]]">
         </provider-player>
         <provider-playlists id="playlistProvider"
+                            is-busy="{{_playlistsLoading}}"
                             playlists="{{_playlists}}"
                             state="[[state]]">
         </provider-playlists>
@@ -232,7 +239,10 @@
                     </div>
 
                     <div class="track-list" view="search">
-                        <template is="dom-repeat" items="[[searchResults]]">
+                        <festify-spinner active="[[_searchLoading]]"
+                                         alt="Loading search results...">
+                        </festify-spinner>
+                        <template is="dom-repeat" items="[[_searchResults]]">
                             <queue-track metadata="[[_searchMeta]]"
                                          state="[[state]]"
                                          track="[[item]]"
@@ -242,6 +252,7 @@
                     </div>
 
                     <view-settings view="settings"
+                                   is-loading="[[_playlistsLoading]]"
                                    playlists="[[_playlists]]"
                                    state="{{state}}">
                     </view-settings>
@@ -275,9 +286,6 @@
                     type: String,
                     notify: true
                 },
-                searchResults: {
-                    type: Array
-                },
                 state: {
                     type: Object,
                     notify: true
@@ -303,9 +311,18 @@
                 _playlists: {
                     type: Array
                 },
+                _playlistsLoading: {
+                    type: Boolean
+                },
                 _searchMeta: {
                     type: Object,
                     value: () => Object.create(null)
+                },
+                _searchLoading: {
+                    type: Boolean
+                },
+                _searchResults: {
+                    type: Array
                 },
                 _skipOffset: {
                     type: Number,

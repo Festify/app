@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../behaviors/behavior-busy.html">
 <link rel="import" href="provider-spotify.html">
 
 <dom-module id="provider-playlists">
@@ -8,7 +9,7 @@
 </dom-module>
 
 <script>
-    class PlaylistsProvider extends Polymer.Element {
+    class PlaylistsProvider extends Festify.BusyBehavior(Polymer.Element) {
         static get is() {
             return 'provider-playlists';
         }
@@ -56,9 +57,11 @@
             this.playlists = [];
 
             for (const provider of this.shadowRoot.children) {
-                provider.getPlaylists()
-                    .then(lists => this.push('playlists', ...lists))
-                    .catch(console.error);
+                this.doBusy(() => {
+                    return provider.getPlaylists()
+                        .then(lists => this.push('playlists', ...lists))
+                        .catch(console.error);
+                });
             }
         }
     }
