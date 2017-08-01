@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
+<link rel="import" href="../behaviors/behavior-busy.html">
 <link rel="import" href="provider-spotify.html">
 
 <dom-module id="provider-search">
@@ -9,7 +10,7 @@
 </dom-module>
 
 <script>
-    class SearchProvider extends Polymer.Element {
+    class SearchProvider extends Festify.BusyBehavior(Polymer.Element) {
         static get is() {
             return 'provider-search';
         }
@@ -64,19 +65,18 @@
                     return;
                 }
 
-                this._providers.map(provider => {
-                    provider.search(query, market, limit)
-                        .then(results => results.map(track => {
-                            track.isFromSearch = true;
-                            return track;
-                        }))
-                        .then(results => this.push('tracks', ...results))
+                this._providers.forEach(provider => this.doBusy(() => {
+                    return provider.search(query, market, limit)
+                        .then(results => {
+                            results.forEach(t => t.isFromSearch = true);
+                            this.push('tracks', ...results);
+                        })
                         .catch(function (err) {
                             if (err.message === "Request aborted.") {
                                 return Promise.resolve();
                             }
                         });
-                });
+                }));
             });
         }
     }
