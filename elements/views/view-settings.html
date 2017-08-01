@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../providers/provider-playlists.html">
 <link rel="import" href="components/fallback-playlist.html">
+<link rel="import" href="components/festify-spinner.html">
 
 <dom-module id="view-settings">
     <template>
@@ -57,6 +58,7 @@
                          type="text">
             </paper-input>
 
+            <festify-spinner active="[[isLoading]]" alt="Loading playlists..."></festify-spinner>
             <template is="dom-repeat"
                       items="[[playlists]]"
                       filter="[[_computeFilter(_search)]]">
@@ -76,6 +78,9 @@
 
         static get properties() {
             return {
+                isLoading: {
+                    type: Boolean
+                },
                 playlists: {
                     type: Array
                 },

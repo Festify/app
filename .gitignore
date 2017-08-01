@@ -1,7 +1,8 @@
+# Package Managers
 bower_components/
 node_modules/
-.idea/
 npm-debug.log
+package-lock.json
 
 # Cordova and Electron stuff
 plugins/
@@ -10,6 +11,7 @@ res/
 www/
 !www/.gitkeep
 
+# Build Output
 .tmp/
 build/
 build-mobile/
@@ -23,3 +25,6 @@ database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
 google-services.json
+
+# IDE
+.idea/
