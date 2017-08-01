@@ -26,6 +26,11 @@
     <template>
         <style include="shared-styles"></style>
         <style>
+            :host {
+                --track-bg: #2c3035;
+                --track-bg-even: #31353a;
+            }
+
             app-drawer {
                 z-index: 2;
             }
@@ -80,7 +85,7 @@
             }
 
             .track-list {
-                background-color: #2c3035;
+                background-color: var(--track-bg);
                 position: relative;
             }
 
@@ -90,7 +95,7 @@
             }
 
             .track-list queue-track:nth-child(even) {
-                background-color: #31353a;
+                background-color: var(--track-bg-even);
             }
 
             .track-list queue-track[playing] {
