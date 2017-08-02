@@ -41,7 +41,7 @@ app.on('ready', () => {
 });
 
 autoUpdater.on('update-downloaded', (ev, info) => {
-    win.webContent.send('update-available');
+    win.webContents.send('update-available');
 });
 
 ipcMain.on('install-update', (event, arg) => {

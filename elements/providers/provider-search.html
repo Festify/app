@@ -53,8 +53,9 @@
         ready() {
             super.ready();
 
-            Array.from(this.shadowRoot.children)
-                .forEach(prov => this._providers.push(prov));
+            for (let i = 0; i < this.shadowRoot.children.length; i++) {
+                this._providers.push(this.shadowRoot.children[i]);
+            }
         }
 
         _searchQueryChanged(query, market, limit) {
