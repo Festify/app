@@ -42,6 +42,44 @@
             ];
         }
 
+        removeTrack(track, moveToHistory) {
+            if (!track || !this.state) {
+                return Promise.reject(new Error("Track parameter null or state missing."));
+            }
+            if (!this.state.isOwner) {
+                return Promise.reject(new Error("Not party host."));
+            }
+
+            const partyId = this.state.partyId;
+            const trackId = this._generateFbId(track);
+
+            const updates = [
+                firebase.database()
+                    .ref(this._getFbTracksPath(partyId))
+                    .child(trackId)
+                    .set(null),
+                firebase.database()
+                    .ref(this._getFbVotesPath(partyId))
+                    .child(trackId)
+                    .set(null),
+                firebase.database()
+                    .ref(this._getFbVotesByUserPath(partyId))
+                    .transaction(votes => {
+                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
+                    })
+            ];
+
+            if (moveToHistory) {
+                updates.push(
+                    firebase.database()
+                        .ref(this._getFbHistoryPath(partyId))
+                        .push(track)
+                );
+            }
+
+            return Promise.all(updates);
+        }
+
         setFallbackPlaylist(playlist, tracks, shuffle) {
             if (!tracks || !this.state) {
                 return Promise.reject(new Error("Track parameter null or state missing."));
@@ -100,44 +138,6 @@
                 .set(playlist);
 
             return Promise.all([t, p]);
-        }
-
-        removeTrack(track, moveToHistory) {
-            if (!track || !this.state) {
-                return Promise.reject(new Error("Track parameter null or state missing."));
-            }
-            if (!this.state.isOwner) {
-                return Promise.reject(new Error("Not party host."));
-            }
-
-            const partyId = this.state.partyId;
-            const trackId = this._generateFbId(track);
-
-            const updates = [
-                firebase.database()
-                    .ref(this._getFbTracksPath(partyId))
-                    .child(trackId)
-                    .set(null),
-                firebase.database()
-                    .ref(this._getFbVotesPath(partyId))
-                    .child(trackId)
-                    .set(null),
-                firebase.database()
-                    .ref(this._getFbVotesByUserPath(partyId))
-                    .transaction(votes => {
-                        return _.mapValues(votes, userVotes => _.omit(userVotes, trackId));
-                    })
-            ];
-
-            if (moveToHistory) {
-                updates.push(
-                    firebase.database()
-                        .ref(this._getFbHistoryPath(partyId))
-                        .push(track)
-                );
-            }
-
-            return Promise.all(updates);
         }
 
         _computeQuery(partyId, limit) {
