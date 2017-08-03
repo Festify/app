@@ -4,6 +4,7 @@
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#^2.0.0",
     "app-route": "PolymerElements/app-route#^2.0.0",
+    "dom-flip": "^0.1.0",
     "fetch": "^2.0.3",
     "iron-a11y-keys": "^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
