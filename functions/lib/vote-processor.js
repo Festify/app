@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const firebase = require('firebase-admin');
-const raven = require('raven');
 const utils = require('./utils');
 
 const VOTE_FACTOR = 1e12;
@@ -120,13 +119,5 @@ exports.handler = function (event) {
                 event.params.partyId,
                 partySnap.val()
             );
-        })
-        .then(({commited})  => {
-            if(!commited) {
-                raven.captureMessage('Transaction has been aborted', {
-                    level: 'warning'
-                });
-            }
-        })
-        .catch(raven.captureException);
+        });
 };

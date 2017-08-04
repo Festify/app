@@ -1,9 +1,7 @@
 const firebase = require('firebase-admin');
 const functions = require('firebase-functions');
-const raven = require('raven');
 
 firebase.initializeApp(functions.config().firebase);
-raven.config(functions.config().sentry.url).install();
 
 exports.clientToken = functions.https.onRequest(require('./lib/spotify-auth').clientToken);
 
