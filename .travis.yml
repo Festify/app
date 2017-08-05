@@ -15,7 +15,7 @@ script:
   - gulp build
 
 before_deploy:
-  - (cd ./functions && npm install)
+  - (cd ./functions && yarn)
 
 deploy:
   - provider: firebase
