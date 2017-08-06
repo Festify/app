@@ -354,7 +354,6 @@
 
         static get observers() {
             return [
-                '_tracksChanged(tracks.*)',
                 '_getCurrentView(_pageData.*, searchQuery)'
             ];
         }
@@ -457,11 +456,6 @@
 
         _loadAllTracks() {
             setTimeout(() => this._trackLimit = 0, 100);
-        }
-
-        _tracksChanged() {
-            // dom-repeat doesn't like splicing with objects
-            this.$.trackList.render();
         }
 
         _pageChanged(page) {
