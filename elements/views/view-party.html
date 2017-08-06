@@ -216,7 +216,7 @@
                             <p id="skipIndicator">Skip</p>
                         </div>
 
-                        <dom-flip>
+                        <dom-flip id="trackAnimator">
                             <template is="dom-repeat"
                                       id="trackList"
                                       items="[[tracks]]"
@@ -431,6 +431,7 @@
                 this.page = this.get('base.view', dataChange);
             } else {
                 this.page = 'queue';
+                this.$.trackAnimator.refresh();
             }
         }
 
