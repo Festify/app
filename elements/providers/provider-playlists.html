@@ -57,7 +57,7 @@
         _loadPlaylists() {
             this.playlists = [];
 
-            for (let i = 0; i < this.shadowRoot.children; i++) {
+            for (let i = 0; i < this.shadowRoot.children.length; i++) {
                 const provider = this.shadowRoot.children[i];
                 this.doBusy(() => {
                     return provider.getPlaylists()
