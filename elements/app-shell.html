@@ -56,9 +56,7 @@
             }
         </style>
 
-        <template is="dom-if" if="[[state.isWeb]]">
-            <app-location route="{{route}}"></app-location>
-        </template>
+        <app-location route="{{route}}"></app-location>
         <app-route route="{{route}}"
                    pattern="/:view"
                    data="{{routeData}}"
@@ -78,8 +76,9 @@
         <provider-party id="partyProvider" state="{{state}}"></provider-party>
 
         <template is="dom-if" if="[[state.auth.signedIn]]">
-            <iron-lazy-pages selected="[[currentView]]"
-                             attr-for-selected="view"
+            <iron-lazy-pages attr-for-selected="view"
+                             fallback-selection="[[_getFallbackView(state.isHost)]]"
+                             selected="[[routeData.view]]"
                              selected-attribute="active"
                              role="main">
                 <view-receive-oauth view="auth"
@@ -134,9 +133,6 @@
 
         static get properties() {
             return {
-                currentView: {
-                    type: String
-                },
                 partyRouteData: {
                     type: Object
                 },
@@ -152,12 +148,14 @@
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
                                 redirectUrl: "<%= ENV.SPOTIFY_REDIRECT_URL %>",
+                                protocolRedirectUrl: "<%= ENV.SPOTIFY_PROTOCOL_REDIRECT_URL %>",
                                 scopes: [
                                     'playlist-read-collaborative',
                                     'playlist-read-private',
                                     'streaming'
                                 ],
-                                tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
+                                tokenExchangeUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
+                                tokenExchangeProtocolUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_PROTOCOL_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
                         }
@@ -194,14 +192,14 @@
             this.set('state.isHost', window.isHost);
             this.set('state.isWeb', window.isWeb);
 
-            if (!window.isWeb) { // Hosted environments don't like app-location
-                this.route = { path: '/host', prefix: '', __queryParams: {} };
-            }
-
             if (this.state.cordova) {
                 document.addEventListener('pause', this._appWillSuspend.bind(this));
                 document.addEventListener('resume', this._appWillResume.bind(this));
             }
+        }
+
+        _getFallbackView(isHost) {
+            return isHost ? 'host' : 'join';
         }
 
         _loadParty(partyId) {
@@ -247,14 +245,6 @@
 
             if (this.state.cordova && 'FirebasePlugin' in window) {
                 window.FirebasePlugin.setScreenName(page);
-            }
-
-            if (page && page.length > 0) {
-                this.currentView = page;
-            } else {
-                const view = this.state.isHost ? 'host' : 'join';
-                this.set('route.path', '/' + view);
-                this.currentView = view;
             }
         }
 

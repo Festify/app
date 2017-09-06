@@ -17,6 +17,15 @@
                     type: Object,
                     notify: true
                 },
+                _authPlugin: {
+                    type: Object
+                },
+                _config: {
+                    type: Object
+                },
+                _playbackPlugin: {
+                    type: Object
+                },
                 _session: {
                     type: Object
                 }
@@ -24,44 +33,71 @@
         }
 
         init() {
-            const spotify = this._getPluginUnsafe();
-            if (!spotify) {
+            this._authPlugin = this._getAuthPluginUnsafe();
+            this._playbackPlugin = this._getPlaybackPluginUnsafe();
+            if (!this._authPlugin || !this._playbackPlugin) {
                 return Promise.reject("Tried to initialize Spotify SDK, but not in Cordova context or plugin not loaded.");
             }
 
-            const config = this.get('state.config.spotify');
-            if (!_.isEmpty(config)) {
+            const cfg = this.get('state.config.spotify');
+            if (_.isEmpty(cfg)) {
                 return Promise.reject("Spotify configuration was empty!");
             }
 
-            return spotify.login(config)
-                .then(session => session ? session : spotify.authenticate(config))
-                .then(session => {
-                    session.addListener('playbackevent', this._onPlaybackEvent, this);
-                    session.addListener('playbackerror', this._onPlaybackError, this);
+            this._config = {
+                clientId: cfg.clientId,
+                redirectUrl: cfg.protocolRedirectUrl,
+                scopes: cfg.scopes,
+                tokenExchangeUrl: cfg.tokenExchangeProtocolUrl,
+                tokenRefreshUrl: cfg.tokenRefreshUrl
+            };
 
-                    this._session = session;
+            return this._authPlugin.authorize(this._config)
+                .then(() => this._updateAuthToken())
+                .then(() => this._playbackPlugin.getEventEmitter())
+                .then(em => {
+                    em.on('playbackevent', this._onPlaybackEvent, this);
+                    em.on('playbackerror', this._onPlaybackError, this);
                 });
         }
 
         deinit() {
-            return this._withSession(s => s.logout(), () => Promise.resolve());
+            return this._withSession(
+                () => {
+                    if (this._authPlugin) {
+                        this._authPlugin.forget();
+                    }
+                },
+                () => Promise.resolve()
+            );
         }
 
         play(ref) {
-            return this._withSession(s => s.play(ref ? 'spotify:track:' + ref.id : ref), () => Promise.reject());
+            return this._withSession(
+                (p, auth) => {
+                    if (ref) {
+                        p.play('spotify:track:' + ref.id, {
+                            clientId: this.get('state.config.spotify.clientId'),
+                            token: auth.accessToken
+                        });
+                    } else {
+                        p.resume()
+                    }
+                },
+                () => Promise.reject()
+            );
         }
 
         pause() {
-            return this._withSession(s => s.pause(), () => Promise.reject());
+            return this._withSession(p => p.pause(), () => Promise.reject());
         }
 
         getUsername() {
-            return this.get('_session.canonicalUsername');
+            return '';
         }
 
         getPosition() {
-            return this._withSession(s => s.getPosition(), () => Promise.reject());
+            return this._withSession(p => p.getPosition(), () => Promise.reject());
         }
 
         getProviders() {
@@ -69,10 +105,14 @@
         }
 
         isAvailable() {
-            return !!this._getPluginUnsafe();
+            return this._getAuthPluginUnsafe() && this._getPlaybackPluginUnsafe();
         }
 
-        _getPluginUnsafe() {
+        _getAuthPluginUnsafe() {
+            return this.get('cordova.plugins.spotifyAuth', window);
+        }
+
+        _getPlaybackPluginUnsafe() {
             return this.get('cordova.plugins.spotify', window);
         }
 
@@ -101,8 +141,21 @@
             this.fire('error', { type: err });
         }
 
+        _updateAuthToken() {
+            this._authPlugin.authorize(this._config)
+                .then(cfg => {
+                    this.set('state.auth.spotify', cfg.accessToken);
+                    setTimeout(this._updateAuthToken, (cfg.expiresAt - Date.now()) * .95);
+                });
+        }
+
         _withSession(body, defaultValue) {
-            return this._session ? body(this._session) : defaultValue();
+            if (!this._authPlugin || !this._playbackPlugin) {
+                return Promise.resolve(defaultValue());
+            }
+
+            return this._authPlugin.authorize(this._config)
+                .then(authData => body(this._playbackPlugin, authData));
         }
     }
 

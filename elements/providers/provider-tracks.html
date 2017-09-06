@@ -142,6 +142,8 @@
 
         _computeQuery(partyId, limit) {
             if (!partyId) {
+                this.tracks = [];
+                this.set('state.currentTrack', null);
                 return null;
             }
 

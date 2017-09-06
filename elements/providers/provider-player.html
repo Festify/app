@@ -156,7 +156,10 @@
                         .then(() => window.fixStatusBar())
                         .then(() => this._hasInitialized = true)
                         .then(() => this._onTracks({ base: this.tracks }))
-                        .catch(err => this.fire('player-initFailed', "Could not initialize playback: " + err));
+                        .catch(err => {
+                            console.error("Playback init failed:", err);
+                            this.fire('player-initFailed', "Could not initialize playback: " + err);
+                        });
                 } else {
                     this._playback.deinit()
                         .then(() => this._hasInitialized = false);

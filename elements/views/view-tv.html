@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/legacy/class.html">
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
+<link rel="import" href="../../bower_components/dom-flip/dom-flip.html">
 <link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../behaviors/behavior-fb-paths.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-metadata.html">
 <link rel="import" href="../providers/provider-tracks.html">
@@ -25,7 +27,7 @@
                 font-size: 5.278vh;
             }
 
-            .upper, .lower {
+            .upper, dom-flip {
                 font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
                 display: flex;
                 z-index: 1;
@@ -40,9 +42,10 @@
                 width: 100%;
             }
 
-            .lower {
+            dom-flip {
                 flex-direction: row;
                 height: 29.26vh;
+                padding-left: 8.334vh;
             }
 
             tv-track {
@@ -112,10 +115,6 @@
             .metadata {
                 flex-grow: 1;
             }
-
-            .lower {
-                padding-left: 8.334vh;
-            }
         </style>
 
         <provider-tracks limit="[[_tracksShown]]"
@@ -148,19 +147,22 @@
                 </div>
             </div>
         </div>
-        <div class="lower">
+        <dom-flip>
             <template is="dom-repeat" items="[[_getVisibleTracks(tracks.*)]]">
-                <tv-track metadata="[[meta]]"
+                <tv-track data-flip-id$="[[_generateFbId(item)]]"
+                          metadata="[[meta]]"
                           state="[[state]]"
                           track="[[item]]">
                 </tv-track>
             </template>
-        </div>
+        </dom-flip>
     </template>
 </dom-module>
 
 <script>
-    class TvView extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+    class TvView extends Festify.FbPathsBehavior(
+        Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element)
+    ) {
         static get is() {
             return 'view-tv';
         }

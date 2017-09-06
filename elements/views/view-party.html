@@ -4,9 +4,11 @@
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/dom-flip/dom-flip.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../behaviors/behavior-fb-paths.html">
 <link rel="import" href="../behaviors/behavior-fire-events.html">
 <link rel="import" href="../common/shared-styles.html">
 <link rel="import" href="../providers/provider-casting.html">
@@ -28,8 +30,8 @@
         <style include="shared-styles"></style>
         <style>
             :host {
-                --track-bg: #2c3035;
-                --track-bg-even: #31353a;
+                --track-bg: #22262b;
+                --track-bg-even: #25292e;
             }
 
             app-drawer {
@@ -56,11 +58,10 @@
             }
 
             header app-toolbar paper-icon-button {
-                margin: 12px;
-                padding: 0;
+                padding: 12px;
 
-                width: 24px;
-                height: 24px;
+                width: 48px;
+                height: 48px;
 
                 --paper-icon-button-ink-color: white;
             }
@@ -100,7 +101,7 @@
             }
 
             .track-list queue-track[playing] {
-                background-color: #252528;
+                background-color: #22262b;
                 padding: 13px 16px;
 
                 transform: translateX(0px); /* Dirty hack */
@@ -214,16 +215,19 @@
                             <p id="skipIndicator">Skip</p>
                         </div>
 
-                        <template is="dom-repeat"
-                                  id="trackList"
-                                  items="[[tracks]]"
-                                  on-dom-change="_trackListChange">
-                            <queue-track metadata="[[_trackMeta]]"
-                                         state="[[state]]"
-                                         track="[[item]]"
-                                         user-votes="[[_userVotes]]">
-                            </queue-track>
-                        </template>
+                        <dom-flip id="trackAnimator">
+                            <template is="dom-repeat"
+                                      id="trackList"
+                                      items="[[tracks]]"
+                                      on-dom-change="_trackListChange">
+                                <queue-track data-flip-id$="[[_generateFbId(item)]]"
+                                             metadata="[[_trackMeta]]"
+                                             state="[[state]]"
+                                             track="[[item]]"
+                                             user-votes="[[_userVotes]]">
+                                </queue-track>
+                            </template>
+                        </dom-flip>
 
                         <p>
                             <paper-button hidden$="[[_getDisplayLoadRestButton(tracks.length, _trackLimit)]]"
@@ -266,7 +270,9 @@
 
 <script>
     class PartyView extends Festify.FireBehavior(
-        Polymer.GestureEventListeners(Polymer.Element)
+        Festify.FbPathsBehavior(
+            Polymer.GestureEventListeners(Polymer.Element)
+        )
     ) {
         static get is() {
             return 'view-party';
@@ -347,7 +353,6 @@
 
         static get observers() {
             return [
-                '_tracksChanged(tracks.*)',
                 '_getCurrentView(_pageData.*, searchQuery)'
             ];
         }
@@ -425,6 +430,7 @@
                 this.page = this.get('base.view', dataChange);
             } else {
                 this.page = 'queue';
+                this.$.trackAnimator.refresh();
             }
         }
 
@@ -450,11 +456,6 @@
 
         _loadAllTracks() {
             setTimeout(() => this._trackLimit = 0, 100);
-        }
-
-        _tracksChanged() {
-            // dom-repeat doesn't like splicing with objects
-            this.$.trackList.render();
         }
 
         _pageChanged(page) {

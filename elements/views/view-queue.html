@@ -4,9 +4,10 @@
 
 <dom-module id="view-queue">
     <template>
-        <app-route route="{{route}}"
-                   pattern="/:partyId"
+        <app-route active="{{_partyRouteActive}}"
                    data="{{_partyRouteData}}"
+                   pattern="/:partyId"
+                   route="{{route}}"
                    tail="{{subroute}}"
                    query-params="{{queryParams}}">
         </app-route>
@@ -55,6 +56,9 @@
                 _modeRouteData: {
                     type: Object
                 },
+                _partyRouteActive: {
+                    type: Boolean
+                },
                 _partyRouteData: {
                     type: Object
                 },
@@ -67,12 +71,12 @@
 
         static get observers() {
             return [
-                '_partyIdChanged(_partyRouteData.partyId)'
+                '_partyIdChanged(_partyRouteData.partyId, _partyRouteActive)'
             ];
         }
 
-        _partyIdChanged(partyId) {
-            this.set('state.partyId', partyId);
+        _partyIdChanged(partyId, isRouteActive) {
+            this.set('state.partyId', isRouteActive ? partyId : null);
         }
 
         _computeParams(searchQuery) {
