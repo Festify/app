@@ -4,15 +4,16 @@ language: node_js
 node_js:
 - node
 
-env:
-  global:
-    - secure: TGFRkWTqhmYk93ih7MGUS8BKMAtLYf2LZHXr7lewfCdMLfpeHhcHaGZqz+VckfbYQ5Ad9NWTnRjrHa4SDHUEfJzIfB4RD/5iRk4W82oTwnkxCjLGoEU70Aaz8q6IW9YsbzdT+ZPffhlJbTc3hYAUKBca3eInAnVzjQBsqSItWF1BIb6zw2eh5Uy4sBgThODbuykrB5X6FY2Z23iAIO2wXyH2VpqQMSJUSn3dgsdzNhAgpkS/3gGPb3Dk2BRb7XzOYywCkAJ4M8DkxghvVsUcOwQvN9/NK/xb5kJUYTedhNOkSZ4xJFmHKzfhfjoxH/wHXPCGrYl+iKFnWbRQiz7rFnfOgT7pjNliFu0Oet6iMJ+K9tzrv1NmsH4vNrnGzzzq1/Eym6ImMykMEFBriHW5iGN9axTo7Bycug+CrgjS+ARoVLPvpJi0pq8PKPF1854RNdcHZ/uTVSjFY2tOkmfCAGCbCwJQ597cZgjjfA2/BZgjdxnyEbU/BYynF+GRll+JgXwD5vlMdMtrSvo5yC9uyX9nSX+aN6LZX2AgsLD6WFbSKlN4YfqS/hKmXR1puVq/Ctug8weHFGuQwfz0UVeh2UvIHeKugB4u4hPEegZUnkHMWwhdzgbPNlg047Unw/OZl81IhfCPlAMBx3BUXYJl6q8qDs8/J3UjzA65rWzHkMg=
-
 before_script:
+  - yarn global add greenkeeper-lockfile@1
+  - greenkeeper-lockfile-update
   - bower install
 
 script:
   - gulp build
+
+after_script:
+  - greenkeeper-lockfile-upload
 
 before_deploy:
   - (cd ./functions && yarn)
