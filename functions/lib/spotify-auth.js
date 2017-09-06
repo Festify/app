@@ -7,6 +7,7 @@ const API_URL = "https://accounts.spotify.com/api/token";
 const CLIENT_ID = functions.config().spotify.client_id;
 const CLIENT_SECRET = functions.config().spotify.client_secret;
 const CLIENT_CALLBACK_URL = functions.config().spotify.client_callback_url;
+const CLIENT_CALLBACK_PROTO_URL = functions.config().spotify.client_callback_protocol_url;
 const ENCRYPTION_SECRET = functions.config().spotify.enc_secret;
 
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
@@ -46,7 +47,11 @@ exports.clientToken = (req, res) => {
     });
 };
 
-exports.exchangeCode = (req, res) => {
+exports.exchangeCode = (req, res) => doExchange(req, res, CLIENT_CALLBACK_URL);
+
+exports.exchangeCodeProtocol = (req, res) => doExchange(req, res, CLIENT_CALLBACK_PROTO_URL);
+
+function doExchange(req, res, callbackUrl) {
     return cors(req, res, () => {
         if (!req.body.code) {
             return res.status(400).json({
@@ -57,7 +62,7 @@ exports.exchangeCode = (req, res) => {
 
         return spotifyRequest({
             grant_type: 'authorization_code',
-            redirect_uri: CLIENT_CALLBACK_URL,
+            redirect_uri: callbackUrl,
             code: req.body.code
         })
             .then(body => {
@@ -71,7 +76,7 @@ exports.exchangeCode = (req, res) => {
             })
             .catch(handleSpotifyRejection(res));
     });
-};
+}
 
 exports.refreshToken = (req, res) => {
     return cors(req, res, () => {

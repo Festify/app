@@ -7,6 +7,8 @@ exports.clientToken = functions.https.onRequest(require('./lib/spotify-auth').cl
 
 exports.exchangeCode = functions.https.onRequest(require('./lib/spotify-auth').exchangeCode);
 
+exports.exchangeCodeProtocol = functions.https.onRequest(require('./lib/spotify-auth').exchangeCodeProtocol);
+
 exports.processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
     .onWrite(require('./lib/vote-processor').handler);
 
