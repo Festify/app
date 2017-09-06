@@ -53,9 +53,9 @@
             };
 
             return this._authPlugin.authorize(this._config)
+                .then(() => this._updateAuthToken())
                 .then(() => this._playbackPlugin.getEventEmitter())
                 .then(em => {
-                    console.log("Emitter", em);
                     em.on('playbackevent', this._onPlaybackEvent, this);
                     em.on('playbackerror', this._onPlaybackError, this);
                 });
@@ -139,6 +139,14 @@
 
         _onPlaybackError(err) {
             this.fire('error', { type: err });
+        }
+
+        _updateAuthToken() {
+            this._authPlugin.authorize(this._config)
+                .then(cfg => {
+                    this.set('state.auth.spotify', cfg.accessToken);
+                    setTimeout(this._updateAuthToken, (cfg.expiresAt - Date.now()) * .95);
+                });
         }
 
         _withSession(body, defaultValue) {
