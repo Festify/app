@@ -148,12 +148,14 @@
                                 clientId: "<%= ENV.SPOTIFY_CLIENT_ID %>",
                                 clientTokenUrl: "<%= ENV.SPOTIFY_CLIENT_TOKEN_URL %>",
                                 redirectUrl: "<%= ENV.SPOTIFY_REDIRECT_URL %>",
+                                protocolRedirectUrl: "<%= ENV.SPOTIFY_PROTOCOL_REDIRECT_URL %>",
                                 scopes: [
                                     'playlist-read-collaborative',
                                     'playlist-read-private',
                                     'streaming'
                                 ],
-                                tokenSwapUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
+                                tokenExchangeUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_URL %>",
+                                tokenExchangeProtocolUrl: "<%= ENV.SPOTIFY_TOKEN_SWAP_PROTOCOL_URL %>",
                                 tokenRefreshUrl: "<%= ENV.SPOTIFY_TOKEN_REFRESH_URL %>"
                             }
                         }
