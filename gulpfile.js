@@ -76,26 +76,23 @@ gulp.task('release:cordova:android', ['release:cordova:android-apk'], function()
         .pipe(gulp.dest('build-mobile'));
 });
 
-gulp.task('release:electron:mac', ['build-electron'], function () {
+gulp.task('release:electron', ['build-electron'], function () {
     process.chdir('./electron');
-    return builder.build({
-        targets: builder.Platform.MAC.createTarget(),
-        config: config.electron,
-        publish: 'always'
-    });
-});
 
-gulp.task('release:electron:win', ['build-electron'], function () {
-    process.chdir('./electron');
-    return builder.build({
-        targets: builder.Platform.WINDOWS.createTarget(
-            'nsis',
-            builder.Arch.x64,
-            builder.Arch.ia32
-        ),
-        config: config.electron,
-        publish: 'always'
-    });
+    return Promise.all([
+        builder.build({
+            targets: builder.Platform.WINDOWS.createTarget(
+                'nsis',
+                builder.Arch.x64,
+                builder.Arch.ia32
+            ),
+            config: config.electron,
+            publish: 'always'
+        }),
+        builder.build({
+            targets: builder.Platform.MAC.createTarget(),
+            config: config.electron,
+            publish: 'always'
+        })
+    ]);
 });
-
-gulp.task('release:electron', ['release:electron:mac', 'release:electron:win']);
