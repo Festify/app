@@ -70,6 +70,7 @@
                     return provider.search(query, market, limit)
                         .then(results => {
                             results.forEach(t => t.isFromSearch = true);
+                            this.tracks = [];
                             this.push('tracks', ...results);
                         })
                         .catch(function (err) {
