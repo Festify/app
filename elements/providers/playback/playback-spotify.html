@@ -93,7 +93,15 @@
         }
 
         getUsername() {
-            return '';
+            return this._withAuth((_, { accessToken }) => {
+                return fetch(SpotifyPlayback.SPOTIFY_ME_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+            })
+                .then(resp => resp.json)
+                .then(({ display_name, id }) => display_name || id);
         }
 
         getPosition() {
