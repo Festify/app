@@ -94,11 +94,11 @@ cordova run android
 
 ## Roadmap
 
-- Closed beta (fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSdjYIMfbVAQ1ZwbpXoiedgA0rnu5FpLocO3moZIkSzhI8fNKQ/viewform) to participate)
-- Stable MVP
+- [X] Closed beta (fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSdjYIMfbVAQ1ZwbpXoiedgA0rnu5FpLocO3moZIkSzhI8fNKQ/viewform) to participate)
+- [X] Stable MVP
   - Spotify only
   - basic features
-- More releases, more features
+- [ ] More releases, more features
   - Probably also more playback providers
 
 ## Contributing
