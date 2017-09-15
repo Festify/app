@@ -1,7 +1,7 @@
 {
   "name": "Festify",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
-  "version": "0.2.3",
+  "version": "0.2.9",
   "main": "electron.js",
   "private": true,
   "repository": {
@@ -20,7 +20,7 @@
   "homepage": "https://github.com/Festify/app#readme",
   "dependencies": {
     "electron-updater": "^2.8.0",
-    "spotilocal": "^0.1.0",
+    "spotilocal": "https://github.com/Festify/spotilocal",
     "start-spotify": "^0.2.2"
   }
 }

@@ -46,10 +46,13 @@ gulp.task('prepare-env', function () {
         .then(b => (b === 'master' || b === 'testing') ? b : 'develop')
         .then((branch) => Promise.map(envFiles, file => {
             const url = util.format(fileTemplate, branch, file);
-            return new Promise((res, rej) => {
-                request(url)
+            return new Promise(res => {
+                request(url, { timeout: 5000 })
+                    .on('error', () => {
+                        console.warn(`Network request for env file ${file} failed. Per-branch configuration will not be performed.`);
+                        res();
+                    })
                     .pipe(fs.createWriteStream(file))
-                    .once('error', rej)
                     .once('finish', res);
             });
         }))

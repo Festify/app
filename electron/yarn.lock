@@ -457,6 +457,14 @@ spotilocal@^0.1.0:
     ssl-root-cas "^1.2.2"
     superagent "^2.2.0"
 
+"spotilocal@https://github.com/Festify/spotilocal":
+  version "0.1.0"
+  resolved "https://github.com/Festify/spotilocal#0b3cfaa41753533ee9d02d1cee1935a7b98efb88"
+  dependencies:
+    chai "^3.5.0"
+    ssl-root-cas "^1.2.2"
+    superagent "^2.2.0"
+
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"

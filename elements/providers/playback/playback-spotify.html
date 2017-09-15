@@ -62,7 +62,7 @@
         }
 
         deinit() {
-            return this._withSession(
+            return this._withAuth(
                 () => {
                     if (this._authPlugin) {
                         this._authPlugin.forget();
@@ -73,7 +73,7 @@
         }
 
         play(ref) {
-            return this._withSession(
+            return this._withAuth(
                 (p, auth) => {
                     if (ref) {
                         p.play('spotify:track:' + ref.id, {
@@ -89,15 +89,23 @@
         }
 
         pause() {
-            return this._withSession(p => p.pause(), () => Promise.reject());
+            return this._withAuth(p => p.pause(), () => Promise.reject());
         }
 
         getUsername() {
-            return '';
+            return this._withAuth((_, { accessToken }) => {
+                return fetch(SpotifyPlayback.SPOTIFY_ME_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+            })
+                .then(resp => resp.json)
+                .then(({ display_name, id }) => display_name || id);
         }
 
         getPosition() {
-            return this._withSession(p => p.getPosition(), () => Promise.reject());
+            return this._withAuth(p => p.getPosition(), () => Promise.reject());
         }
 
         getProviders() {
@@ -149,7 +157,7 @@
                 });
         }
 
-        _withSession(body, defaultValue) {
+        _withAuth(body, defaultValue) {
             if (!this._authPlugin || !this._playbackPlugin) {
                 return Promise.resolve(defaultValue());
             }
@@ -159,5 +167,6 @@
         }
     }
 
+    SpotifyPlayback.SPOTIFY_ME_URL = 'https://api.spotify.com/v1/me';
     customElements.define(SpotifyPlayback.is, SpotifyPlayback);
 </script>

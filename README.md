@@ -18,7 +18,7 @@ In order to get the app running on your machine/device please follow these steps
 
 The app relies on the following external services. You need to obtain API credentials for these for the app to function at all.
 
-- [Firebase](https://firebase.google.com/) (for state synchronization / database) - allow anonymous access
+- [Firebase](https://firebase.google.com/) (for state synchronization / database) - [allow anonymous access](https://firebase.google.com/docs/auth/web/anonymous-auth)
 - [Spotify API](https://developer.spotify.com/my-applications/)
 
 #### Spotify OAuth Code Grant Flow
@@ -94,11 +94,11 @@ cordova run android
 
 ## Roadmap
 
-- Closed beta (fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSdjYIMfbVAQ1ZwbpXoiedgA0rnu5FpLocO3moZIkSzhI8fNKQ/viewform) to participate)
-- Stable MVP
+- [X] Closed beta (fill [this form](https://docs.google.com/forms/d/e/1FAIpQLSdjYIMfbVAQ1ZwbpXoiedgA0rnu5FpLocO3moZIkSzhI8fNKQ/viewform) to participate)
+- [X] Stable MVP
   - Spotify only
   - basic features
-- More releases, more features
+- [ ] More releases, more features
   - Probably also more playback providers
 
 ## Contributing
