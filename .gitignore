@@ -20,7 +20,6 @@ dist/
 /images/manifest/*.png
 
 # Firebase
-.firebaserc
 database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
