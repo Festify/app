@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <base href="./">
+
+    <title>Festify</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            background-color: #1c1f24;
+            user-select: none;
+        }
+
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <view-receive-oauth></view-receive-oauth>
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <!-- Warning: Do not remove! Needed because of code splitting for main app -->
+    <link rel="import" href="elements/app-shell.html">
+    <link rel="import" href="elements/views/view-receive-oauth.html">
+</body>
+</html>
