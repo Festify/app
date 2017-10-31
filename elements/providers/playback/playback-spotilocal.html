@@ -6,6 +6,13 @@
 
 <dom-module id="playback-spotilocal">
     <template>
+        <style>
+            iframe {
+                display: none;
+            }
+        </style>
+
+        <iframe src="[[state.config.spotify.redirectUrl]]"></iframe>
         <oauth-authorizator id="auth"
                             access-token="{{state.auth.spotify}}"
                             authorization-url="https://accounts.spotify.com/authorize"

@@ -16,6 +16,7 @@
   "extraDependencies": [
     "manifest.json",
     "bower_components/webcomponentsjs/*.js",
-    "_redirects"
+    "_redirects",
+    "app-auth.html"
   ]
 }
