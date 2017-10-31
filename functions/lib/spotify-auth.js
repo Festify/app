@@ -51,7 +51,7 @@ exports.exchangeCode = (req, res) => doExchange(req, res, CLIENT_CALLBACK_URL);
 
 exports.exchangeCodeProtocol = (req, res) => doExchange(req, res, CLIENT_CALLBACK_PROTO_URL);
 
-function doExchange(req, res, callbackUrl) {
+function doExchange(req, res, defaultCallbackUrl) {
     return cors(req, res, () => {
         if (!req.body.code) {
             return res.status(400).json({
@@ -59,6 +59,8 @@ function doExchange(req, res, callbackUrl) {
                 msg: "Missing 'code' parameter"
             });
         }
+
+        const callbackUrl = req.body.callbackUrl || defaultCallbackUrl;
 
         return spotifyRequest({
             grant_type: 'authorization_code',

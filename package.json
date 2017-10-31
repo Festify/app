@@ -1,7 +1,7 @@
 {
   "name": "festify",
   "description": "The Festify app that allows hosting parties and voting for tracks.",
-  "version": "2.0.0",
+  "version": "0.2.9",
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel": "^6.5.2",
@@ -55,6 +55,9 @@
     "url": "https://github.com/Festify/app/issues"
   },
   "homepage": "https://github.com/Festify/app#readme",
+  "scripts": {
+    "postinstall": "bower install"
+  },
   "cordova": {
     "platforms": [
       "android",

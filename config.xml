@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="rocks.festify.app" version="2.0.0" xmlns="http://www.w3.org/ns/widgets">
+<widget id="rocks.festify.app" version="0.2.9" xmlns="http://www.w3.org/ns/widgets">
     <name>Festify</name>
     <description>
         Get your party started!
