@@ -56,7 +56,7 @@
   },
   "homepage": "https://github.com/Festify/app#readme",
   "scripts": {
-    "postinstall": "bower install"
+    "postinstall": "bower install && cd electron && yarn && cd ../functions && yarn"
   },
   "cordova": {
     "platforms": [
