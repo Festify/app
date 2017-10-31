@@ -449,14 +449,6 @@ source-map@^0.5.6:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
 
-spotilocal@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/spotilocal/-/spotilocal-0.1.0.tgz#783c597894b4c50a41c9d2f64be9a386d362b066"
-  dependencies:
-    chai "^3.5.0"
-    ssl-root-cas "^1.2.2"
-    superagent "^2.2.0"
-
 "spotilocal@https://github.com/Festify/spotilocal":
   version "0.1.0"
   resolved "https://github.com/Festify/spotilocal#0b3cfaa41753533ee9d02d1cee1935a7b98efb88"

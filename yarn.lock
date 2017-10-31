@@ -2034,14 +2034,14 @@ cordova-app-hello-world@^3.11.0:
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/cordova-app-hello-world/-/cordova-app-hello-world-3.12.0.tgz#270e06b67b2ae94bcfee6592ed39eb42303d186f"
 
-cordova-common@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/cordova-common/-/cordova-common-2.0.2.tgz#57467976b8afd5e0bd0a13111b66a420441601cb"
+cordova-common@2.0.3, cordova-common@^2.0.1:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/cordova-common/-/cordova-common-2.0.3.tgz#2214ee04ae1c2ec012a52c7c185313e341a6fb38"
   dependencies:
     ansi "^0.3.1"
     bplist-parser "^0.1.0"
     cordova-registry-mapper "^1.1.8"
-    elementtree "^0.1.6"
+    elementtree "0.1.6"
     glob "^5.0.13"
     minimatch "^3.0.0"
     osenv "^0.1.3"
@@ -2052,9 +2052,9 @@ cordova-common@2.0.2:
     underscore "^1.8.3"
     unorm "^1.3.3"
 
-cordova-common@2.0.3, cordova-common@^2.0.1:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/cordova-common/-/cordova-common-2.0.3.tgz#2214ee04ae1c2ec012a52c7c185313e341a6fb38"
+cordova-common@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/cordova-common/-/cordova-common-2.1.0.tgz#bb357ee1b9825031ed9db3c56b592efe973d1640"
   dependencies:
     ansi "^0.3.1"
     bplist-parser "^0.1.0"
@@ -2091,12 +2091,12 @@ cordova-fetch@1.1.0:
     q "^1.4.1"
     shelljs "^0.7.0"
 
-cordova-ios@^4.3.1:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/cordova-ios/-/cordova-ios-4.4.0.tgz#5cd6ef7224505db558446e4637ad97d0878c74ef"
+cordova-ios@^4.4.0:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/cordova-ios/-/cordova-ios-4.5.2.tgz#46b410fe2d14b449547c1d617e988aa6d80da37c"
   dependencies:
-    cordova-common "2.0.2"
-    ios-sim "^5.0.12"
+    cordova-common "2.1.0"
+    ios-sim "^6.1.2"
     nopt "^3.0.6"
     plist "^1.2.0"
     q "^1.4.1"
@@ -2139,9 +2139,13 @@ cordova-lib@^7.0.0:
     valid-identifier "0.0.1"
     xcode "^0.9.0"
 
-cordova-plugin-firebase@^0.1.21:
-  version "0.1.22"
-  resolved "https://registry.yarnpkg.com/cordova-plugin-firebase/-/cordova-plugin-firebase-0.1.22.tgz#97e81df6c945ed4fb38460ccc5dff72a9ad5cc44"
+cordova-plugin-add-swift-support@^1.6.1:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-add-swift-support/-/cordova-plugin-add-swift-support-1.7.0.tgz#ed7dfb62b8ef6d6c79d634920ccb3f1cd8aff77c"
+
+cordova-plugin-firebase@^0.1.24:
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-firebase/-/cordova-plugin-firebase-0.1.24.tgz#a9993a5c767115024cd882090ee8814fa4efb984"
 
 cordova-plugin-ios-non-exempt-encryption@^1.0.0:
   version "1.0.0"
@@ -2159,9 +2163,9 @@ cordova-plugin-whitelist@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/cordova-plugin-whitelist/-/cordova-plugin-whitelist-1.3.2.tgz#5b6335feb9f5301f3c013b9096cb8885bdbd5076"
 
-cordova-plugin-x-socialsharing@^5.1.8:
-  version "5.1.8"
-  resolved "https://registry.yarnpkg.com/cordova-plugin-x-socialsharing/-/cordova-plugin-x-socialsharing-5.1.8.tgz#439a1d2f4736627628826e5195ae539b54e6248a"
+cordova-plugin-x-socialsharing@^5.2.0:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-x-socialsharing/-/cordova-plugin-x-socialsharing-5.2.1.tgz#dbc354b993f9b7b1600396822d8202b73cc581f3"
 
 cordova-registry-mapper@^1.1.8:
   version "1.1.15"
@@ -2176,13 +2180,13 @@ cordova-serve@^1.0.0:
     express "^4.13.3"
     q "^1.4.1"
 
-cordova-spotify-oauth@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/cordova-spotify-oauth/-/cordova-spotify-oauth-0.1.1.tgz#68412a2d8a1cfaf98d0c3922210907ea30c77671"
+cordova-spotify-oauth@^0.1.4:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/cordova-spotify-oauth/-/cordova-spotify-oauth-0.1.7.tgz#242d32a48deaa1c7284ba8fd8c21dfe34e3bb0c9"
 
-cordova-spotify@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/cordova-spotify/-/cordova-spotify-0.5.1.tgz#305639f148f404275ca777e04e188e2d5990a1b1"
+cordova-spotify@^0.5.2:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/cordova-spotify/-/cordova-spotify-0.5.4.tgz#6a42ecb479a7df87d423940a787587778c44e2e8"
 
 core-js@^2.0.1, core-js@^2.4.0, core-js@^2.4.1:
   version "2.4.1"
@@ -2756,12 +2760,6 @@ elementtree@0.1.6:
   resolved "https://registry.yarnpkg.com/elementtree/-/elementtree-0.1.6.tgz#2ac4c46ea30516c8c4cbdb5e3ac7418e592de20c"
   dependencies:
     sax "0.3.5"
-
-elementtree@^0.1.6:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/elementtree/-/elementtree-0.1.7.tgz#9ac91be6e52fb6e6244c4e54a4ac3ed8ae8e29c0"
-  dependencies:
-    sax "1.1.4"
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -4489,14 +4487,14 @@ invert-kv@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
 
-ios-sim@^5.0.12:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/ios-sim/-/ios-sim-5.1.0.tgz#5d78a29e520ba0973145fb4257eb9b2a41018da6"
+ios-sim@^6.1.2:
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/ios-sim/-/ios-sim-6.1.2.tgz#7b9df7c35abd5b9d4c014248174e8b9e5b97ecc4"
   dependencies:
     bplist-parser "^0.0.6"
     nopt "1.0.9"
     plist "^1.2.0"
-    simctl "^1.0.0"
+    simctl "^1.1.1"
 
 ipaddr.js@1.4.0:
   version "1.4.0"
@@ -7197,10 +7195,6 @@ sax@0.3.5:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/sax/-/sax-0.3.5.tgz#88fcfc1f73c0c8bbd5b7c776b6d3f3501eed073d"
 
-sax@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/sax/-/sax-1.1.4.tgz#74b6d33c9ae1e001510f179a91168588f1aedaa9"
-
 semver-diff@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/semver-diff/-/semver-diff-2.1.0.tgz#4bbb8437c8d37e4b0cf1a68fd726ec6d645d6d36"
@@ -7414,9 +7408,9 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-simctl@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/simctl/-/simctl-1.0.1.tgz#e73ce62891c952b2ae78499acdccbe3cf897a2e8"
+simctl@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/simctl/-/simctl-1.1.1.tgz#e26cc3c04e662250b4457b5b4c48cc12484f3814"
   dependencies:
     shelljs "^0.2.6"
     tail "^0.4.0"
