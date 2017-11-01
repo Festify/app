@@ -94,6 +94,7 @@
     "cordova-plugin-x-socialsharing": "^5.2.0",
     "cordova-spotify": "^0.5.2",
     "cordova-spotify-oauth": "^0.1.4",
-    "es6-promise-plugin": "^4.1.0"
+    "es6-promise-plugin": "^4.1.0",
+    "gulp-bump": "^2.8.0"
   }
 }
