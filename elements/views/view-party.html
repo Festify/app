@@ -150,6 +150,10 @@
                 margin: 0 32px 0 0;
                 text-align: right;
             }
+
+            app-drawer-layout:not([narrow]) [drawer-toggle] {
+                display: none;
+            }
         </style>
 
         <provider-casting url="[[_castUrl]]"></provider-casting>
