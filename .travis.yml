@@ -2,7 +2,7 @@ dist: trusty
 language: node_js
 
 node_js:
-- node
+- "8"
 
 before_script:
   - yarn global add greenkeeper-lockfile@1
