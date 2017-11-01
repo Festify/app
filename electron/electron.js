@@ -15,7 +15,7 @@ function createWindow () {
         show: true,
         title: 'Festify',
         webPreferences: {
-            nativeWindowOpen: true
+            nativeWindowOpen: false
         }
     });
 
