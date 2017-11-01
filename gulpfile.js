@@ -16,9 +16,9 @@ require('./scripts/gulp-polymer');
 require('./scripts/gulp-watch');
 
 // Build bases
-gulp.task('build:web', ['polymer', 'generate-icons']);
+gulp.task('build:web', ['polymer', 'generate-icons', 'prepare-version']);
 gulp.task('build:mobile', ['polymer-cordova', 'generate-splash-screens', 'generate-icons']);
-gulp.task('build:desktop', ['polymer-electron']);
+gulp.task('build:desktop', ['polymer-electron', 'prepare-version']);
 
 // User-facing tasks
 gulp.task('build', ['clean'], function(cb) {

@@ -9,6 +9,23 @@ const Promise = require('bluebird');
 const request = require('request');
 const template = require('gulp-template');
 const util = require('util');
+const jsonEdit = require('gulp-json-editor');
+const formatDate = require('date-fns/format');
+
+async function getBranch() {
+    return new Promise((res, rej) => {
+        if (process.env.TRAVIS_BRANCH) {
+            res(process.env.TRAVIS_BRANCH);
+            return;
+        }
+
+        try {
+            git.branch(res);
+        } catch (e) {
+            rej(e);
+        }
+    });
+}
 
 gulp.task('configure', ['prepare-env'], function() {
     return gulp.src("elements/app-shell.html", { base: '.' })
@@ -32,17 +49,7 @@ gulp.task('prepare-env', function () {
         return Promise.resolve();
     }
 
-    return new Promise((res, rej) => {
-        if (process.env.TRAVIS_BRANCH) {
-            res(process.env.TRAVIS_BRANCH);
-        } else {
-            try {
-                git.branch(res);
-            } catch (e) {
-                rej(e);
-            }
-        }
-    })
+    return getBranch()
         .then(b => (b === 'master' || b === 'testing') ? b : 'develop')
         .then((branch) => Promise.map(envFiles, file => {
             const url = util.format(fileTemplate, branch, file);
@@ -60,4 +67,20 @@ gulp.task('prepare-env', function () {
             const { error } = dotenv.load();
             return !error ? Promise.resolve() : Promise.reject(error);
         });
+});
+
+gulp.task('prepare-version', async () => {
+    if(process.env.CI !== "true") {
+        return;
+    }
+    const majorVersion = parseInt(require('../package.json').version); // stops at dots!
+    const branch = await getBranch();
+    gulp.src(['package.json', 'electron/package.json'], { base: '.' })
+            .pipe(jsonEdit(data =>
+                Object.assign(data, {
+                    version: branch === 'master'
+                        ? `${majorVersion}.${formatDate(new Date(), "YYYYMMDD.HHMM")}`
+                        : `${majorVersion}.0.0-${branch}`
+                })))
+            .pipe(gulp.dest('.'))
 });
