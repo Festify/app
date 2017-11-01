@@ -59,7 +59,7 @@
         }
 
         _searchQueryChanged(query, market, limit) {
-            Polymer.Debouncer.debounce(this._searchDeb, Polymer.Async.timeOut.after(200), () => {
+            Polymer.Debouncer.debounce(this._searchDeb, Polymer.Async.timeOut.after(300), () => {
                 this.tracks = [];
 
                 if (!query || query.length < 1) {
