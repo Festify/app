@@ -13,7 +13,7 @@
     "cordova-lib": "^7.0.0",
     "del": "^3.0.0",
     "dotenv": "^4.0.0",
-    "electron-builder": "^19.4.1",
+    "electron-builder": "^19.43.0",
     "eslint-config": "^0.3.0",
     "firebase-bolt": "^0.8.2",
     "git-rev": "^0.2.1",
@@ -57,7 +57,8 @@
   },
   "homepage": "https://github.com/Festify/app#readme",
   "scripts": {
-    "postinstall": "bower install && cd electron && yarn && cd ../functions && yarn"
+    "postinstall": "bower install && cd electron && yarn && cd ../functions && yarn",
+    "build-electron": "gulp build:desktop && cd electron && electron-builder --mac --win --ia32 --x64 --publish always"
   },
   "cordova": {
     "platforms": [

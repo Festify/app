@@ -1,19 +1,20 @@
-appId: 'rocks.festify.app'
+appId: rocks.festify.app
+productName: Festify
 
 win:
   publish: ['github']
-  icon: 'www/images/icon.ico'
+  icon: www/images/icon.ico
 
 mac:
   publish: ['github']
-  icon: 'www/images/icon.icns'
-  category: 'public.app-category.music'
+  icon: www/images/icon.icns
+  category: public.app-category.music
 
 dmg:
-  title: 'Festify'
-  background: 'www/images/background.png'
+  title: Festify
+  background: www/images/background.png
 
 appx:
   backgroundColor: '#1c1f24'
-  displayName: 'Festify'
-  publisherDisplayName: 'Festify Dev Team'
+  displayName: Festify
+  publisherDisplayName: Festify Dev Team

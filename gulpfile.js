@@ -77,27 +77,6 @@ gulp.task('release:cordova:android', ['release:cordova:android-apk'], function()
         .pipe(gulp.dest('build-mobile'));
 });
 
-gulp.task('release:electron', ['build-electron'], function () {
-    process.chdir('./electron');
-
-    return Promise.all([
-        builder.build({
-            targets: builder.Platform.WINDOWS.createTarget(
-                'nsis',
-                builder.Arch.x64,
-                builder.Arch.ia32
-            ),
-            config: config.electron,
-            publish: 'always'
-        }),
-        builder.build({
-            targets: builder.Platform.MAC.createTarget(),
-            config: config.electron,
-            publish: 'always'
-        })
-    ]);
-});
-
 const bumpVersion = (type) => gulp.src(['./package.json', './electron/package.json', './config.xml'], {base: '.'})
     .pipe(bump({type: type}))
     .pipe(gulp.dest('./'));
