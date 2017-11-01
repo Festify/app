@@ -33,6 +33,10 @@
                     notify: true,
                     value: () => ([])
                 },
+                lastTimestamp: {
+                    type: Number,
+                    value: () => Date.now()
+                },
                 _providers: {
                     type: Array,
                     value: () => []
@@ -66,9 +70,14 @@
                     return;
                 }
 
+                const lastTimestamp = Date.now();
+
                 this._providers.forEach(provider => this.doBusy(() => {
                     return provider.search(query, market, limit)
                         .then(results => {
+                            if(lastTimestamp < this.lastTimestamp) return;
+                            this.lastTimestamp = lastTimestamp;
+
                             results.forEach(t => t.isFromSearch = true);
                             this.tracks = [];
                             this.push('tracks', ...results);
