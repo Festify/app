@@ -1,8 +1,16 @@
-dist: trusty
-language: node_js
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.1
+      language: node_js
+      node_js: "8"
+      env:
+        - ELECTRON_CACHE=$HOME/.cache/electron
+        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
 
-node_js:
-- "8"
+    - os: linux
+      language: nodejs
+      node_js: "8"
 
 before_script:
   - yarn global add greenkeeper-lockfile@1
@@ -10,7 +18,14 @@ before_script:
   - bower install
 
 script:
-  - gulp build
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      gulp build
+    fi
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      yarn build-electron
+    fi
 
 after_script:
   - greenkeeper-lockfile-upload
@@ -23,6 +38,7 @@ deploy:
     project: "festify-dev"
     on:
       branch: develop
+      condition: $TRAVIS_OS_NAME = linux
   - provider: firebase
     skip_cleanup: true
     token:
@@ -30,6 +46,7 @@ deploy:
     project: "festify-beta"
     on:
       branch: testing
+      condition: $TRAVIS_OS_NAME = linux
   - provider: firebase
     skip_cleanup: true
     token:
@@ -37,6 +54,7 @@ deploy:
     project: "festify-79b08"
     on:
       branch: master
+      condition: $TRAVIS_OS_NAME = linux
 
 notifications:
   email: false
