@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const gulp = require('gulp');
 const prompt = require('prompt');
 const runSequence = require('run-sequence');
+const bump = require('gulp-bump');
 
 dotenv.config({ path: '.env-default' });
 
@@ -96,3 +97,12 @@ gulp.task('release:electron', ['build-electron'], function () {
         })
     ]);
 });
+
+const bumpVersion = (type) => gulp.src(['./package.json', './electron/package.json', './config.xml'], {base: '.'})
+    .pipe(bump({type: type}))
+    .pipe(gulp.dest('./'));
+
+gulp.task('bump', () => bumpVersion('patch'));
+gulp.task('bump:patch', () => bumpVersion('patch'));
+gulp.task('bump:minor', () => bumpVersion('minor'));
+gulp.task('bump:major', () => bumpVersion('major'));
