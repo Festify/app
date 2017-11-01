@@ -15,9 +15,6 @@ script:
 after_script:
   - greenkeeper-lockfile-upload
 
-before_deploy:
-  - (cd ./functions && yarn)
-
 deploy:
   - provider: firebase
     skip_cleanup: true
