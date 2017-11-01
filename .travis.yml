@@ -9,7 +9,7 @@ matrix:
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
 
     - os: linux
-      language: nodejs
+      language: node_js
       node_js: "8"
 
 before_script:
