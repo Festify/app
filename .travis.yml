@@ -7,10 +7,17 @@ matrix:
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      cache:
+        directories:
+        - $HOME/.cache/electron
+        - $HOME/.cache/electron-builder
+        yarn: true
 
     - os: linux
       language: node_js
       node_js: "8"
+      cache:
+        yarn: true
 
 before_script:
   - yarn global add greenkeeper-lockfile@1
