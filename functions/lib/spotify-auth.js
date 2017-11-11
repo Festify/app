@@ -1,6 +1,7 @@
 const cors = require('cors')({ origin: true });
 const { crypto } = require('./utils');
 const functions = require('firebase-functions');
+const https = require('https');
 const request = require('request-promise');
 
 const API_URL = "https://accounts.spotify.com/api/token";
@@ -10,10 +11,12 @@ const CLIENT_CALLBACK_URL = functions.config().spotify.client_callback_url;
 const CLIENT_CALLBACK_PROTO_URL = functions.config().spotify.client_callback_protocol_url;
 const ENCRYPTION_SECRET = functions.config().spotify.enc_secret;
 
+const agent = new https.Agent({ keepAlive: true });
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 
 function spotifyRequest(params) {
     return request({
+        agent: agent,
         method: 'POST',
         uri: API_URL,
         form: params,
