@@ -119,5 +119,6 @@ exports.handler = function (event) {
                 event.params.partyId,
                 partySnap.val()
             );
-        });
+        })
+        .then(() => true);
 };
