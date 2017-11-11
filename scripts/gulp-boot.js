@@ -70,17 +70,17 @@ gulp.task('prepare-env', function () {
 });
 
 gulp.task('prepare-version', async () => {
-    if(process.env.CI !== "true") {
+    if (process.env.CI !== "true") {
         return;
     }
     const majorVersion = parseInt(require('../package.json').version); // stops at dots!
     const branch = await getBranch();
+
     gulp.src(['package.json', 'electron/package.json'], { base: '.' })
-            .pipe(jsonEdit(data =>
-                Object.assign(data, {
-                    version: branch === 'master'
-                        ? `${majorVersion}.${formatDate(new Date(), "YYYYMMDD.HHMM")}`
-                        : `${majorVersion}.0.0-${branch}`
-                })))
-            .pipe(gulp.dest('.'))
+        .pipe(jsonEdit(data => Object.assign(data, {
+            version: branch === 'master'
+                ? `${majorVersion}.${formatDate(new Date(), "YYYYMMDD.HHMM")}`
+                : `${majorVersion}.0.0-${branch}`
+        })))
+        .pipe(gulp.dest('.'));
 });
