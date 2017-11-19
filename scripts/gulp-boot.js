@@ -14,6 +14,11 @@ const formatDate = require('date-fns/format');
 
 async function getBranch() {
     return new Promise((res, rej) => {
+        if (process.env.BRANCH) {
+            res(process.env.BRANCH);
+            return;
+        }
+
         if (process.env.TRAVIS_BRANCH) {
             res(process.env.TRAVIS_BRANCH);
             return;
