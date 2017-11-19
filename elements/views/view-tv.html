@@ -27,6 +27,10 @@
                 font-size: 5.278vh;
             }
 
+            :host(.nocursor) {
+                cursor: none;
+            }
+
             .upper, dom-flip {
                 font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
                 display: flex;
@@ -186,6 +190,9 @@
                 _resizeListener: {
                     type: Function
                 },
+                _moveListener: {
+                    type: Function
+                },
                 _tracksShown: {
                     type: Number,
                     value: 15
@@ -198,6 +205,9 @@
 
             this._resizeListener = () => this._resize();
             this.addEventListener('iron-resize', this._resizeListener);
+
+            this._moveListener = () => this._move();
+            this.addEventListener('mousemove', this._moveListener);
         }
 
         disconnectedCallback() {
@@ -205,6 +215,9 @@
 
             this.removeEventListener('iron-resize', this._resizeListener);
             this._resizeListener = null;
+
+            this.removeEventListener('mousemove', this._moveListener);
+            this._moveListener = null;
         }
 
         _getCurrentTrackArtist(stateChange, metaChange) {
@@ -233,6 +246,16 @@
 
         _getVisibleTracks(tracks) {
             return tracks.base.slice(1);
+        }
+
+        _move() {
+            this.classList.remove('nocursor');
+
+            if(this._timeout) {
+                clearTimeout(this._timeout);
+            }
+
+            this._timeout = setTimeout(() => this.classList.add('nocursor'), 2000);
         }
 
         _resize() {
