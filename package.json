@@ -87,7 +87,7 @@
   },
   "dependencies": {
     "com.peerio.cordova.plugin.insomnia": "^4.2.1",
-    "cordova-android": "^6.2.3",
+    "cordova-android": "^7.0.0",
     "cordova-ios": "^4.4.0",
     "cordova-plugin-add-swift-support": "^1.6.1",
     "cordova-plugin-firebase": "^0.1.24",
