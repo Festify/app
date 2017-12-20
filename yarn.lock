@@ -2274,9 +2274,9 @@ cordova-plugin-ios-non-exempt-encryption@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cordova-plugin-ios-non-exempt-encryption/-/cordova-plugin-ios-non-exempt-encryption-1.0.0.tgz#e5994f6366336865fcf57ca2f047c5a73b76e668"
 
-cordova-plugin-splashscreen@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-4.0.3.tgz#773cd1363c1f3bacb9901663e9e3793dd3e0a19d"
+cordova-plugin-splashscreen@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.0.tgz#47394292017b30c6daf960dc5e815013bf3523ea"
 
 cordova-plugin-statusbar@^2.2.3:
   version "2.2.3"
