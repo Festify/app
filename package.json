@@ -24,7 +24,7 @@
     "gulp-clean-css": "^3.2.0",
     "gulp-eslint": "^4.0.0",
     "gulp-html-postcss": "^7.0.1",
-    "gulp-htmlmin": "^3.0.0",
+    "gulp-htmlmin": "^4.0.0",
     "gulp-if": "^2.0.2",
     "gulp-json-editor": "^2.2.1",
     "gulp-load-plugins": "^1.4.0",
