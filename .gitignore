@@ -1,0 +1,23 @@
+# Package Managers
+node_modules/
+npm-debug.log
+package-lock.json # we use yarn
+.rpt2_cache
+
+# Build Output
+.tmp/
+build/
+build-mobile/
+dist/
+.env*
+/images/manifest/*.png
+
+# Firebase
+firebase.config.js
+database.rules.json
+firebase-debug.log
+GoogleService-Info.plist
+google-services.json
+
+# IDE
+.idea/
