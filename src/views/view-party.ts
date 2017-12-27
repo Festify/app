@@ -9,11 +9,18 @@ import { Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartyViewProps {
-    party: Party;
+    party: Party | { name: string };
     view: PartyViews;
 }
+const mapStateToProps = (state: State): PartyViewProps => ({
+    party: state.party || { name: '' },
+    view: (state.router.result || {}).subView || PartyViews.Queue,
+});
+
 interface PartyViewDispatch {
 }
+const mapDispatchToProps: PartyViewDispatch = {
+};
 
 const Body = (view: PartyViews) => {
     switch (view) {
@@ -103,7 +110,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             <header>
                 <app-toolbar>
                     <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                    <div main-title>[[state.party.name]]</div>
+                    <div main-title>${props.party.name}</div>
                 </app-toolbar>
                 <search-bar placeholder="Add Tracks"></search-bar>
                 <playback-progress-bar></playback-progress-bar>
@@ -116,13 +123,6 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
     </app-drawer-layout>
 `;
 /* tslint:enable */
-
-const mapStateToProps = (state: State): PartyViewProps => ({
-
-});
-
-const mapDispatchToProps: PartyViewDispatch = {
-};
 
 customElements.define(
     'view-party',

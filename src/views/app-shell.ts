@@ -4,6 +4,7 @@ import { Views } from '../routing';
 import { State } from '../state';
 
 import './view-home';
+import './view-party';
 
 interface AppShellProps {
     view: Views;
