@@ -8,7 +8,7 @@ interface PartyTrackProps {
     canTogglePlayPause: boolean;
     isMusicPlaying: boolean;
     isPlayingTrack: boolean;
-    metadata: Metadata | null;
+    metadata: Metadata;
     track: Track;
     voteString: string;
 }
@@ -20,7 +20,7 @@ interface PartyTrackDispatch {
 
 interface PartyTrackOwnProps {
     playing: boolean;
-    track: Track;
+    'track-id': string;
 }
 
 const ActionButton = (props: PartyTrackProps & PartyTrackDispatch) => {
@@ -118,12 +118,12 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             padding: 6px;
         }
     </style>
-    
-    ${srcsetImg((props.metadata || { cover: [] }).cover)}
+
+    ${srcsetImg(props.metadata.cover)}
     <div class="metadata-wrapper">
-        <h2>${(props.metadata || { name: '' }).name}</h2>
+        <h2>${props.metadata.name}</h2>
         <aside>
-            <a>${(props.metadata || { artistName: '' }).artistName}</a>
+            <a>${props.metadata.artistName}</a>
             <span>&middot;</span>
             <span>${props.voteString}</span>
         </aside>
@@ -135,12 +135,30 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
 `;
 /* tslint:enable */
 
-const mapStateToProps = (state: State, { playing, track }: PartyTrackOwnProps): PartyTrackProps => ({
+const dummyMetadata: Metadata = {
+    artists: [],
+    artistName: '',
+    cover: [],
+    name: '',
+};
+const dummyTrack: Track = {
+    added_at: 0,
+    id: '',
+    is_fallback: false,
+    order: 0,
+    reference: {
+        id: '',
+        provider: 'spotify',
+    },
+    vote_count: 0,
+};
+
+const mapStateToProps = (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
     canTogglePlayPause: false,
     isMusicPlaying: false,
-    isPlayingTrack: playing,
-    metadata: state.metadata[track.id],
-    track,
+    isPlayingTrack: ownProps.playing,
+    metadata: { ...dummyMetadata, ...state.metadata[ownProps['track-id']] },
+    track: { ...dummyTrack, ...(state.tracks && state.tracks[ownProps['track-id']]) },
     voteString: `${track.vote_count} Votes`,
 });
 
@@ -157,6 +175,6 @@ customElements.define(
         PartyTrack,
     )), {
         playing: Boolean,
-        track: null,
+        'track-id': null,
     }),
 );
