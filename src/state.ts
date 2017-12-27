@@ -15,6 +15,8 @@ export interface Party {
     short_id: string;
 }
 
+export type PartyState = Party | null;
+
 export interface Reference {
     id: string;
     provider: 'spotify';
@@ -39,4 +41,5 @@ export interface State {
     homeView: HomeViewState;
     router?: Location;
     tracks: TracksState;
+    party: PartyState;
 }

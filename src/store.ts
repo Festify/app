@@ -4,6 +4,7 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import thunk from 'redux-thunk';
 
+import middlewares from './middlewares';
 import reducers from './reducers';
 import {
     enhancer as routerEnhancer,
@@ -19,7 +20,7 @@ export const store = createStore<State>(
     }),
     compose(
         routerEnhancer,
-        applyMiddleware(thunk, routerMiddleware),
+        applyMiddleware(thunk, routerMiddleware, ...middlewares),
         devToolsEnhancer({}),
     ),
 );
