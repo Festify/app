@@ -1,6 +1,7 @@
 import { connect, html, withExtended, withProps } from 'fit-html';
 
 import srcsetImg from '../components/srcset-img';
+import sharedStyles from '../util/shared-styles';
 import { Metadata, Reference, State, Track } from '../state';
 
 interface PartyTrackProps {
@@ -42,6 +43,7 @@ const ActionButton = (props: PartyTrackProps & PartyTrackDispatch) => {
 
 /* tslint:disable:max-line-length */
 const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
+    ${sharedStyles}
     <style>
         :host {
             box-sizing: content-box;
