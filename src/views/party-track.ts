@@ -1,16 +1,19 @@
 import { connect, html, withExtended, withProps } from 'fit-html';
 
-import { Reference, State, Track } from '../state';
+import srcsetImg from '../components/srcset-img';
+import { Metadata, Reference, State, Track } from '../state';
 
 interface PartyTrackProps {
-    artistName: string;
-    name: string;
-    isTrackPlaying: boolean;
+    canTogglePlayPause: boolean;
+    isMusicPlaying: boolean;
+    isPlayingTrack: boolean;
+    metadata: Metadata | null;
     track: Track;
     voteString: string;
 }
 
 interface PartyTrackDispatch {
+    togglePlayPause: () => void;
     toggleVote: (ref: Reference) => void;
 }
 
@@ -19,8 +22,8 @@ interface PartyTrackOwnProps {
     track: Track;
 }
 
-const VoteButton = (props: PartyTrackProps & PartyTrackDispatch) => {
-    if (props.isTrackPlaying) {
+const ActionButton = (props: PartyTrackProps & PartyTrackDispatch) => {
+    if (props.isPlayingTrack) {
         return html`
             <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]"
                                on-click="${ev => props.toggleVote(props.track.reference)}">
@@ -29,9 +32,9 @@ const VoteButton = (props: PartyTrackProps & PartyTrackDispatch) => {
     } else {
         html`
             <paper-fab mini
-                       icon="[[_getPlayPauseButtonIcon(state.party.playback.playing)]]"
-                       on-tap="_tapPlayPauseBtn"
-                       disabled$="[[!state.isOwner]]">
+                       icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
+                       on-click="${props.togglePlayPause}"
+                       disabled$="${!props.canTogglePlayPause}">
             </paper-fab>
         `;
     }
@@ -47,18 +50,27 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             align-items: center;
             flex-direction: row;
         }
+
+        :host([playing]) {
+            background-color: #22262b;
+            padding: 13px 16px;
+        }
         
-        .metadata-wrapper {
-            margin-top: 2px;
-            overflow: hidden;
+        :host([playing]) + :host {
+            padding-top: 13px;
         }
         
         :host([playing]) .metadata-wrapper {
             margin-right: 20px;
         }
         
-        :host([playing]) size-aware-image {
+        :host([playing]) img {
             box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
+        }
+        
+        .metadata-wrapper {
+            margin-top: 2px;
+            overflow: hidden;
         }
         
         img {
@@ -105,31 +117,35 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
     </style>
     
-    <size-aware-image sorted-sizes="[[_getCoverImage(metadata.*, track)]]"></size-aware-image>
+    ${srcsetImg((props.metadata || { cover: [] }).cover)}
     <div class="metadata-wrapper">
-        <h2>${props.name}</h2>
+        <h2>${(props.metadata || { name: '' }).name}</h2>
         <aside>
-            <a>${props.artistName}</a>
+            <a>${(props.metadata || { artistName: '' }).artistName}</a>
             <span>&middot;</span>
             <span>${props.voteString}</span>
         </aside>
     </div>
 
     <div class="icon-wrapper">
-        ${VoteButton(props)}
+        ${ActionButton(props)}
     </div>
 `;
 /* tslint:enable */
 
 const mapStateToProps = (state: State, { playing, track }: PartyTrackOwnProps): PartyTrackProps => ({
-    artistName: (state.metadata[track.id] || { artists: [] }).artists[0],
-    name: (state.metadata[track.id] || { name: '' }).name,
-    isTrackPlaying: playing,
+    canTogglePlayPause: false,
+    isMusicPlaying: false,
+    isPlayingTrack: playing,
+    metadata: state.metadata[track.id],
     track,
     voteString: `${track.vote_count} Votes`,
 });
 
-const mapDispatchToProps: PartyTrackDispatch = {};
+const mapDispatchToProps: PartyTrackDispatch = {
+    togglePlayPause: () => {},
+    toggleVote: () => {},
+};
 
 customElements.define(
     'party-track',

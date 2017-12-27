@@ -6,6 +6,8 @@ export default function(
     action: Actions,
 ): TracksState {
     switch (action.type) {
+        case Types.CLEANUP_PARTY:
+            return null;
         case Types.UPDATE_TRACKS:
             return action.payload;
         default:

@@ -1,12 +1,15 @@
 import { Location } from '@mraerino/redux-little-router-reactless';
 
-export interface Cover {
-    [key: string]: string;
+export interface Image {
+    height: number;
+    url: string;
+    width: number;
 }
 
 export interface Metadata {
     artists: string[];
-    cover: Cover;
+    artistName: string;
+    cover: Image[];
     name: string;
 }
 
@@ -42,17 +45,17 @@ export interface Track {
     vote_count: number;
 }
 
+export type TracksState = Record<string, Track> | null;
+
 export interface HomeViewState {
     partyId: string;
     partyIdValid: boolean;
 }
 
-export type TracksState = Track[] | null;
-
 export interface State {
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
+    party: PartyState;
     router?: Location;
     tracks: TracksState;
-    party: PartyState;
 }

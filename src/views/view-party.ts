@@ -9,6 +9,8 @@ import { PartyViews } from '../routing';
 import { Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
+import './party-queue';
+
 interface PartyViewProps {
     party: Party | { name: string };
     view: PartyViews;

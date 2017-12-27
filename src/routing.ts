@@ -36,7 +36,7 @@ const routes =  {
     },
     '/tv/:partyId': {
         title: "TV Mode",
-        subView: Views.Tv,
+        view: Views.Tv,
     },
 };
 

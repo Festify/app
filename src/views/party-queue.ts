@@ -1,8 +1,11 @@
 import { connect, html, withExtended } from 'fit-html';
 import { repeat } from 'lit-html/lib/repeat';
+import values from 'lodash-es/values';
 
 import { State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
+
+import './party-track';
 
 interface PartyQueueProps {
     tracks: Track[];
@@ -20,23 +23,16 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             position: relative;
         }
 
-        :host([view=search]) queue-track:first-of-type {
+        :host([view=search]) party-track:first-of-type {
             padding-top: 16px;
             z-index: 1;
         }
 
-        queue-track:nth-child(even) {
+        party-track:nth-child(even) {
             background-color: var(--track-bg-even);
         }
 
-        queue-track[playing] {
-            background-color: #22262b;
-            padding: 13px 16px;
-
-            transform: translateX(0px); /* Dirty hack */
-        }
-
-        queue-track[playing] + queue-track {
+        party-track[playing] + party-track {
             padding-top: 13px;
         }
 
@@ -87,8 +83,8 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
     </div>
 
     <dom-flip>
-        ${repeat(props.tracks, track => track.reference.id, (track, i) => html`
-            <party-track data-flip-id$="${track.reference.id}"
+        ${repeat(props.tracks, track => `${track.reference.provider}-${track.reference.id}`, (track, i) => html`
+            <party-track data-flip-id$="${track.reference.provider}-${track.reference.id}"
                          playing="${i === 0}"
                          track="${track}">
             </party-track>
@@ -98,7 +94,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartyQueueProps => ({
-
+    tracks: values(state.tracks).sort((a, b) => a.order - b.order),
 });
 
 const mapDispatchToProps: PartyQueueDispatch = {};
