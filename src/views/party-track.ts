@@ -1,8 +1,8 @@
 import { connect, html, withExtended, withProps } from 'fit-html';
 
 import srcsetImg from '../components/srcset-img';
-import sharedStyles from '../util/shared-styles';
 import { Metadata, Reference, State, Track } from '../state';
+import sharedStyles from '../util/shared-styles';
 
 interface PartyTrackProps {
     canTogglePlayPause: boolean;
@@ -56,24 +56,24 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             background-color: #22262b;
             padding: 13px 16px;
         }
-        
+
         :host([playing]) + :host {
             padding-top: 13px;
         }
-        
+
         :host([playing]) .metadata-wrapper {
             margin-right: 20px;
         }
-        
+
         :host([playing]) img {
             box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
         }
-        
+
         .metadata-wrapper {
             margin-top: 2px;
             overflow: hidden;
         }
-        
+
         img {
             background: rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
@@ -81,7 +81,7 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             margin-right: 15px;
             width: 54px;
         }
-        
+
         h2 {
             margin: 0;
             font-weight: lighter;
@@ -91,7 +91,7 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-        
+
         aside {
             margin: 2px 0;
             font-weight: 300;
@@ -101,17 +101,17 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-        
+
         .icon-wrapper {
             margin-left: auto;
             flex-basis: 40px;
         }
-        
+
         paper-fab {
             color: white;
             background-color: var(--primary-color);
         }
-        
+
         paper-icon-button {
             margin-left: 5px;
             padding: 6px;
