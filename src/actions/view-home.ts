@@ -41,7 +41,7 @@ export function joinParty(): ThunkAction<Promise<any>, State, void> {
                 '',
             );
 
-            dispatch(push(`/parties/${resultId}`, {}));
+            dispatch(push(`/party/${resultId}`, {}));
         } catch (e) {
             dispatch({
                 type: Types.JOIN_PARTY_Fail,
