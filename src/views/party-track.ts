@@ -10,7 +10,6 @@ interface PartyTrackProps {
     isPlayingTrack: boolean;
     metadata: Metadata;
     track: Track;
-    voteString: string;
 }
 
 interface PartyTrackDispatch {
@@ -125,7 +124,7 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         <aside>
             <a>${props.metadata.artistName}</a>
             <span>&middot;</span>
-            <span>${props.voteString}</span>
+            <span>${props.track.vote_count} Votes</span>
         </aside>
     </div>
 
@@ -159,7 +158,6 @@ const mapStateToProps = (state: State, ownProps: PartyTrackOwnProps): PartyTrack
     isPlayingTrack: ownProps.playing,
     metadata: { ...dummyMetadata, ...state.metadata[ownProps['track-id']] },
     track: { ...dummyTrack, ...(state.tracks && state.tracks[ownProps['track-id']]) },
-    voteString: `${track.vote_count} Votes`,
 });
 
 const mapDispatchToProps: PartyTrackDispatch = {
