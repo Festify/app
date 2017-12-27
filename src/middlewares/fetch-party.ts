@@ -23,4 +23,5 @@ export default store => next => action => {
     }
 
     store.dispatch(openParty(partyId));
+    next(action);
 };
