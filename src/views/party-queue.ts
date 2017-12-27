@@ -87,10 +87,11 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
     </div>
 
     <dom-flip>
-        ${repeat(props.tracks, track => track.reference.id, track => html`
-            <queue-track data-flip-id$="${track.reference.id}"
+        ${repeat(props.tracks, track => track.reference.id, (track, i) => html`
+            <party-track data-flip-id$="${track.reference.id}"
+                         playing="${i === 0}"
                          track="${track}">
-            </queue-track>
+            </party-track>
         `)}
     </dom-flip>
 `;

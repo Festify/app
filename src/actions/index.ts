@@ -1,6 +1,4 @@
-import { Action } from 'redux';
-
-import { Track, TracksState } from "../state";
+import { TracksState } from "../state";
 
 import { Actions as PartyDataActions } from "./party-data";
 

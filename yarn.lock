@@ -249,6 +249,16 @@
     "@polymer/paper-styles" "^3.0.0-pre.1"
     "@polymer/polymer" "^3.0.0-pre.1"
 
+"@polymer/paper-fab@^3.0.0-pre.1":
+  version "3.0.0-pre.1"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-fab/-/paper-fab-3.0.0-pre.1.tgz#b9aa4956e73185f2905ec12e4a71e4298fbad9bc"
+  dependencies:
+    "@polymer/iron-flex-layout" "^3.0.0-pre.1"
+    "@polymer/iron-icon" "^3.0.0-pre.1"
+    "@polymer/paper-behaviors" "^3.0.0-pre.1"
+    "@polymer/paper-styles" "^3.0.0-pre.1"
+    "@polymer/polymer" "^3.0.0-pre.1"
+
 "@polymer/paper-icon-button@^3.0.0-pre.1":
   version "3.0.0-pre.1"
   resolved "https://registry.yarnpkg.com/@polymer/paper-icon-button/-/paper-icon-button-3.0.0-pre.1.tgz#f0617d177c9478a676eab808cc882978f1031366"
@@ -1567,9 +1577,9 @@ firebase@^4.8.1:
     dom-storage "^2.0.2"
     xmlhttprequest "^1.8.0"
 
-fit-html@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.3.1.tgz#bce02b342196830b5ca5c79ce037a82bcae45f16"
+fit-html@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.3.4.tgz#e58d801b2217630662f7ddb122b30c5007c21809"
   dependencies:
     lit-html "^0.7.1"
     lodash-es "^4.17.4"
