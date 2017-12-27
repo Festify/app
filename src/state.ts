@@ -33,8 +33,10 @@ export interface HomeViewState {
     partyIdValid: boolean;
 }
 
+export type TracksState = Track[] | null;
+
 export interface State {
     homeView: HomeViewState;
     router?: Location;
-    tracks: Track[] | null;
+    tracks: TracksState;
 }

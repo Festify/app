@@ -1,9 +1,11 @@
 import { Action } from 'redux';
-import { Track } from "../state";
+
+import { Track, TracksState } from "../state";
 
 export type Actions =
     | ChangePartyIdAction
-    | JoinPartyStartAction;
+    | JoinPartyStartAction
+    | UpdateTracksAction;
 
 export const enum Types {
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
@@ -26,6 +28,6 @@ export interface JoinPartyFailAction extends PayloadAction<Error> {
 export interface JoinPartyStartAction {
     type: Types.JOIN_PARTY_Start;
 }
-export interface UpdateTracksAction extends PayloadAction<Track[] | null> {
+export interface UpdateTracksAction extends PayloadAction<TracksState> {
     type: Types.UPDATE_TRACKS;
 }

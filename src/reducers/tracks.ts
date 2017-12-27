@@ -1,10 +1,10 @@
 import { Actions, Types } from '../actions';
-import { Track } from '../state';
+import { TracksState } from '../state';
 
 export default function(
-    state: Track[],
+    state: TracksState = null,
     action: Actions,
-): Track[] {
+): TracksState {
     switch (action.type) {
         case Types.UPDATE_TRACKS:
             return action.payload;
