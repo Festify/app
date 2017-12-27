@@ -1,10 +1,10 @@
-import { DataSnapshot, FirebaseDatabase, Reference } from "@firebase/database-types";
-import { ThunkAction } from "redux-thunk";
+import { DataSnapshot, FirebaseDatabase, Reference } from '@firebase/database-types';
+import { ThunkAction } from 'redux-thunk';
 
-import { Party, State } from "../state";
-import firebase from "../util/firebase";
+import { Party, State } from '../state';
+import firebase from '../util/firebase';
 
-import { PayloadAction, Types } from "./index";
+import { PayloadAction, Types } from '.';
 
 export type Actions =
     | OpenPartyStartAction
@@ -59,6 +59,7 @@ export interface OpenPartyFailAction extends PayloadAction<Error> {
     type: Types.OPEN_PARTY_Fail;
     error: true;
 }
+
 export function openPartyFail(err: Error): OpenPartyFailAction {
     return {
         type: Types.OPEN_PARTY_Fail,

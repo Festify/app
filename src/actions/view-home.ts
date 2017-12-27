@@ -1,14 +1,23 @@
-import { DataSnapshot, FirebaseDatabase } from '@firebase/database-types';
+import { FirebaseDatabase } from '@firebase/database-types';
 import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
 import { Party, State } from '../state';
 import firebase from '../util/firebase';
 
-import { ChangePartyIdAction, JoinPartyFailAction, Types } from '.';
+import { PayloadAction, Types } from '.';
+
+export type Actions =
+    | ChangePartyIdAction
+    | JoinPartyFailAction
+    | JoinPartyStartAction;
 
 export function createParty() {
     throw new Error("Unimplemented");
+}
+
+export interface ChangePartyIdAction extends PayloadAction<string> {
+    type: Types.CHANGE_PARTY_ID;
 }
 
 export function changePartyId(partyId: string): ChangePartyIdAction {
@@ -16,6 +25,15 @@ export function changePartyId(partyId: string): ChangePartyIdAction {
         type: Types.CHANGE_PARTY_ID,
         payload: partyId,
     };
+}
+
+export interface JoinPartyFailAction extends PayloadAction<Error> {
+    type: Types.JOIN_PARTY_Fail;
+    error: true;
+}
+
+export interface JoinPartyStartAction {
+    type: Types.JOIN_PARTY_Start;
 }
 
 export function joinParty(): ThunkAction<Promise<any>, State, void> {
