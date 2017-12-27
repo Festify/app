@@ -1,6 +1,7 @@
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout';
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
+import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended } from 'fit-html';
 
