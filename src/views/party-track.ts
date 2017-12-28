@@ -164,6 +164,10 @@ const metadataSelector = (state: State, trackId: string) => state.metadata[track
 const trackSelector = (state: State, trackId: string) => state.tracks && state.tracks[trackId];
 
 const mapStateToPropsFactory = () => {
+    /*
+     * Since the selectors use component props, one for each instance must be created.
+     */
+
     const defaultMetaSelector = createSelector(
         metadataSelector,
         metadata => ({ ...dummyMetadata, ...metadata }),
