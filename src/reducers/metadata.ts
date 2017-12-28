@@ -6,6 +6,11 @@ export default function(
     action: Actions,
 ): Record<string, Metadata> {
     switch (action.type) {
+        case Types.UPDATE_METADATA:
+            return {
+                ...state,
+                ...action.payload,
+            };
         default:
             return state;
     }

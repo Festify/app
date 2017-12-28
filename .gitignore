@@ -12,12 +12,13 @@ dist/
 .env*
 /images/manifest/*.png
 
-# Firebase
+# Config
 firebase.config.js
 database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
 google-services.json
+spotify.config.js
 
 # IDE
 .idea/

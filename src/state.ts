@@ -8,7 +8,6 @@ export interface Image {
 
 export interface Metadata {
     artists: string[];
-    artistName: string;
     cover: Image[];
     name: string;
 }

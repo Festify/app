@@ -2,7 +2,7 @@ import { html } from 'fit-html';
 
 import { Image } from '../state';
 
-export default (images: Image[]) => {
+export default (images: Image[], size: string, alt?: string) => {
     if (images.length === 0) {
         return html`<img>`;
     }
@@ -10,6 +10,9 @@ export default (images: Image[]) => {
     const largest = images.reduce((acc, img) => img.width > acc.width ? img : acc, images[0]);
     const srcset = images.map(img => `${img.url} ${img.width}w`).join(', ');
     return html`
-        <img src="${largest.url}" srcset="${srcset}">
+        <img alt=${alt}
+             src=${largest.url}
+             srcset="${srcset}"
+             sizes="${size}">
     `;
 };

@@ -5,11 +5,13 @@ import { Metadata, Reference, State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartyTrackProps {
+    artistName: string;
     canTogglePlayPause: boolean;
     isMusicPlaying: boolean;
     isPlayingTrack: boolean;
     metadata: Metadata;
     track: Track;
+    voteString: string;
 }
 
 interface PartyTrackDispatch {
@@ -19,7 +21,7 @@ interface PartyTrackDispatch {
 
 interface PartyTrackOwnProps {
     playing: boolean;
-    'track-id': string;
+    trackid: string;
 }
 
 const ActionButton = (props: PartyTrackProps & PartyTrackDispatch) => {
@@ -102,6 +104,10 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             text-overflow: ellipsis;
         }
 
+        .dot {
+            margin: 0 4px;
+        }
+
         .icon-wrapper {
             margin-left: auto;
             flex-basis: 40px;
@@ -118,14 +124,16 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
     </style>
 
-    ${srcsetImg(props.metadata.cover)}
+    ${srcsetImg(props.metadata.cover, '54px')}
     <div class="metadata-wrapper">
         <h2>${props.metadata.name}</h2>
-        <aside>
-            <a>${props.metadata.artistName}</a>
-            <span>&middot;</span>
-            <span>${props.track.vote_count} Votes</span>
-        </aside>
+        ${props.artistName && html`
+            <aside>
+                <a>${props.artistName}</a>
+                <span class="dot">&middot;</span>
+                <span>${props.voteString}</span>
+            </aside>
+        `}
     </div>
 
     <div class="icon-wrapper">
@@ -136,9 +144,8 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
 
 const dummyMetadata: Metadata = {
     artists: [],
-    artistName: '',
     cover: [],
-    name: '',
+    name: 'Loading...',
 };
 const dummyTrack: Track = {
     added_at: 0,
@@ -152,13 +159,29 @@ const dummyTrack: Track = {
     vote_count: 0,
 };
 
-const mapStateToProps = (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
-    canTogglePlayPause: false,
-    isMusicPlaying: false,
-    isPlayingTrack: ownProps.playing,
-    metadata: { ...dummyMetadata, ...state.metadata[ownProps['track-id']] },
-    track: { ...dummyTrack, ...(state.tracks && state.tracks[ownProps['track-id']]) },
-});
+function generateVoteString({ is_fallback, vote_count }: Track): string {
+    if (vote_count > 1) {
+        return `${vote_count} Votes`;
+    } else if (vote_count === 1) {
+        return "One Vote";
+    } else {
+        return is_fallback ? "Fallback Track" : "Not in Queue";
+    }
+}
+
+const mapStateToProps = (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
+    const metadata = { ...dummyMetadata, ...state.metadata[ownProps.trackid] };
+    const track = { ...dummyTrack, ...(state.tracks && state.tracks[ownProps.trackid]) };
+    return {
+        metadata,
+        track,
+        artistName: metadata.artists.join(' & '),
+        canTogglePlayPause: false,
+        isMusicPlaying: false,
+        isPlayingTrack: ownProps.playing,
+        voteString: generateVoteString(track),
+    };
+};
 
 const mapDispatchToProps: PartyTrackDispatch = {
     togglePlayPause: () => {},
@@ -173,6 +196,6 @@ customElements.define(
         PartyTrack,
     )), {
         playing: Boolean,
-        'track-id': null,
+        trackid: String,
     }),
 );
