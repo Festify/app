@@ -12,6 +12,7 @@ import sharedStyles from '../util/shared-styles';
 import './party-queue';
 import './party-search';
 import './playback-progress-bar';
+import './queue-drawer';
 import './search-bar';
 
 interface PartyViewProps {

@@ -1,16 +1,16 @@
 import { routerForBrowser } from '@mraerino/redux-little-router-reactless';
 
 export const enum Views {
-    Home,
-    Party,
-    Tv,
+    Home = "Home",
+    Party = "Party",
+    Tv = "Tv",
 }
 
 export const enum PartyViews {
-    Queue,
-    Search,
-    Settings,
-    Share,
+    Queue = "Queue",
+    Search = "Search",
+    Settings = "Settings",
+    Share = "Share",
 }
 
 const routes =  {
@@ -21,6 +21,7 @@ const routes =  {
     '/party/:partyId': {
         title: "Party",
         view: Views.Party,
+        subView: PartyViews.Queue,
         '/search/:query': {
             title: "Search",
             view: Views.Party,
