@@ -13,7 +13,7 @@ import {
     singleTrackSelector,
     voteStringGeneratorFactory,
 } from '../selectors/track';
-import { Metadata, Reference, State, Track } from '../state';
+import { Metadata, TrackReference, State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
@@ -29,7 +29,7 @@ export interface PartyTrackProps {
 
 interface PartyTrackDispatch {
     togglePlayPause: () => void;
-    toggleVote: (ref: Reference) => void;
+    toggleVote: (ref: TrackReference) => void;
 }
 
 interface PartyTrackOwnProps {

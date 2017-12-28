@@ -44,7 +44,7 @@ export interface PartyState {
     userVotes: Record<string, boolean> | null;
 }
 
-export interface Reference {
+export interface TrackReference {
     id: string;
     provider: 'spotify';
 }
@@ -53,7 +53,7 @@ export interface Track {
     added_at: number;
     is_fallback: boolean;
     order: number;
-    reference: Reference;
+    reference: TrackReference;
     vote_count: number;
 }
 

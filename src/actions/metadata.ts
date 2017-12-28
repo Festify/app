@@ -1,7 +1,7 @@
 import chunk from 'lodash-es/chunk';
 import { ThunkAction } from 'redux-thunk';
 
-import { Metadata, Reference, State } from '../state';
+import { Metadata, TrackReference, State } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
@@ -13,7 +13,7 @@ export interface UpdateMetadataAction extends PayloadAction<Record<string, Metad
     type: Types.UPDATE_METADATA;
 }
 
-export function loadMetadata(references: Reference[]): ThunkAction<Promise<void>, State, void> {
+export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<void>, State, void> {
     return (dispatch, getState) => {
         const { metadata } = getState();
         const remaining = references

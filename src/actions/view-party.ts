@@ -2,7 +2,7 @@ import { push, replace } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
-import { Metadata, Reference, State, Track } from '../state';
+import { Metadata, TrackReference, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
@@ -16,7 +16,7 @@ export type Actions =
     | SearchFinishAction
     | SearchFailAction;
 
-export interface ToggleVoteAction extends PayloadAction<[Reference, boolean]> {
+export interface ToggleVoteAction extends PayloadAction<[TrackReference, boolean]> {
     type: Types.TOGGLE_VOTE;
 }
 
@@ -48,7 +48,7 @@ export function changeSearchInputText(text: string): ThunkAction<void, State, vo
     };
 }
 
-export function toggleVote(ref: Reference): ThunkAction<Promise<void>, State, void> {
+export function toggleVote(ref: TrackReference): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
         const { userVotes } = state.party;
