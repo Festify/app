@@ -178,14 +178,10 @@ const dummyTrack: Track = {
     vote_count: 0,
 };
 
-const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
-const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
-
-const mapStateToPropsFactory = () => {
-    /*
-     * Since the selectors use component props, one for each instance must be created.
-     */
-
+export const createTrackSelectors = (
+    metadataSelector: (state: State, trackId: string) => Metadata | null,
+    trackSelector: (state: State, trackId: string) => Track | null
+) => {
     const defaultMetaSelector = createSelector(
         metadataSelector,
         metadata => ({ ...dummyMetadata, ...metadata }),
@@ -214,6 +210,28 @@ const mapStateToPropsFactory = () => {
             }
         },
     );
+
+    return {
+        defaultMetaSelector,
+        defaultTrackSelector,
+        artistJoiner,
+        voteStringGenerator,
+    };
+};
+
+const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
+const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
+
+const mapStateToPropsFactory = () => {
+    /*
+     * Since the selectors use component props, one for each instance must be created.
+     */
+    const {
+        defaultMetaSelector,
+        defaultTrackSelector,
+        artistJoiner,
+        voteStringGenerator,
+    } = createTrackSelectors(metadataSelector, trackSelector);
 
     return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
         const metadata = defaultMetaSelector(state, ownProps.trackid);
