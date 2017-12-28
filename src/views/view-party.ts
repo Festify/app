@@ -10,6 +10,7 @@ import { Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 import './party-queue';
+import './search-bar';
 
 interface PartyViewProps {
     party: Party | { name: string };
@@ -115,7 +116,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
                     <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                     <div main-title>${props.party.name}</div>
                 </app-toolbar>
-                <search-bar placeholder="Add Tracks"></search-bar>
+                <search-bar></search-bar>
                 <playback-progress-bar></playback-progress-bar>
             </header>
 

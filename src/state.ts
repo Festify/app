@@ -51,10 +51,15 @@ export interface HomeViewState {
     partyIdValid: boolean;
 }
 
+export interface PartyViewState {
+    searchInput: string;
+}
+
 export interface State {
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
     party: PartyState;
+    partyView: PartyViewState;
     router?: Location;
     tracks: TracksState;
 }

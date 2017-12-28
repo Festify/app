@@ -1,13 +1,16 @@
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
 import { Actions as HomeViewActions } from './view-home';
+import { Actions as PartyViewActions } from './view-party';
 
 export type Actions =
     | HomeViewActions
     | MetadataActions
-    | PartyDataActions;
+    | PartyDataActions
+    | PartyViewActions;
 
 export const enum Types {
+    CHANGE_SEARCH_INPUT_TEXT = 'CHANGE_SEARCH_INPUT_TEXT',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
     JOIN_PARTY_Start = 'JOIN_PARTY_START',
     JOIN_PARTY_Fail = 'JOIN_PARTY_FAIL',
