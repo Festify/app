@@ -2,12 +2,13 @@ import { push } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
-import { Reference, State, Track } from '../state';
+import { Metadata, Reference, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
+import { updateMetadata } from './metadata';
 
 export type Actions =
     | ToggleVoteAction
@@ -128,6 +129,7 @@ const searchThunk = debounce(async (dispatch, getState: () => State) => {
         return acc;
     }, {});
 
+    dispatch(updateMetadata(tracks));
     dispatch(searchFinish(result));
 }, 300);
 
