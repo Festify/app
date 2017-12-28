@@ -36,7 +36,7 @@ export function changePartyId(partyId: string): ChangePartyIdAction {
 
 export function createParty(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
-        const { user } = getState().auth.spotify;
+        const { user } = getState().user.spotify;
 
         if (!user) {
             throw new Error("Missing Spotify user.");

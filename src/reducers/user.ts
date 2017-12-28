@@ -1,15 +1,16 @@
 import { Actions, Types } from '../actions';
-import { AuthState } from '../state';
+import { UserState } from '../state';
 
 export default function(
-    state: AuthState = {
+    state: UserState = {
         spotify: {
             statusKnown: false,
             user: null,
         },
+        playlists: [],
     },
     action: Actions,
-): AuthState {
+): UserState {
     switch (action.type) {
         case Types.NOTIFY_AUTH_STATUS_KNOWN:
             const [provider, user] = action.payload;

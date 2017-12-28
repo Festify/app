@@ -103,8 +103,8 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
 const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
-    authorized: Boolean(state.auth.spotify.user),
-    authStatusKnown: state.auth.spotify.statusKnown,
+    authorized: Boolean(state.user.spotify.user),
+    authStatusKnown: state.user.spotify.statusKnown,
 });
 
 const mapDispatchToProps: HomeViewDispatch = {

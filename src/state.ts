@@ -6,7 +6,7 @@ export interface AuthProviderStatus<T> {
     user: T | null;
 }
 
-export interface AuthState {
+export interface UserState {
     spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
 }
 
@@ -69,10 +69,10 @@ export interface PartyViewState {
 }
 
 export interface State {
-    auth: AuthState;
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
     party: PartyState;
     partyView: PartyViewState;
     router?: Location;
+    user: UserState;
 }
