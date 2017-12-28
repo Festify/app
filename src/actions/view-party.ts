@@ -1,4 +1,4 @@
-import { push } from '@mraerino/redux-little-router-reactless/lib';
+import { push, replace } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
@@ -34,7 +34,7 @@ export interface SearchFailAction extends ErrorAction {
 
 export function changeSearchInputText(text: string): ThunkAction<void, State, void> {
     return (dispatch, getState: () => State) => {
-        const { partyId } = getState().router.params || { partyId: '' };
+        const { partyId, query } = getState().router.params || { partyId: '', query: '' };
         if (!partyId) {
             throw new Error("Tried to search without active party!");
         }
@@ -43,7 +43,8 @@ export function changeSearchInputText(text: string): ThunkAction<void, State, vo
             return dispatch(push(`/party/${partyId}`, {}));
         }
 
-        dispatch(push(`/party/${partyId}/search/${encodeURIComponent(text)}`, {}));
+        const routerFn = query ? replace : push;
+        dispatch(routerFn(`/party/${partyId}/search/${encodeURIComponent(text)}`, {}));
     };
 }
 
