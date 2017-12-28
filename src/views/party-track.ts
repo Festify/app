@@ -234,14 +234,40 @@ const mapDispatchToProps: PartyTrackDispatch = {
     togglePlayPause: () => {},
 };
 
+const PartyTrackBase = withProps(withExtended(connect(
+    mapStateToPropsFactory,
+    mapDispatchToProps,
+    PartyTrack,
+)), {
+    playing: Boolean,
+    trackid: String,
+});
+
+class PartyTrackComponent extends PartyTrackBase {
+    constructor() {
+        super();
+
+        const playingProp = Object.getOwnPropertyDescriptor(this, 'playing')!;
+        Object.defineProperty(this, 'playing', {
+            get: () => playingProp.get!.call(this),
+            set: (val: boolean) => {
+                if (val) {
+                    if (!this.hasAttribute('playing')) {
+                        this.setAttribute('playing', '');
+                    }
+                } else {
+                    if (this.hasAttribute('playing')) {
+                        this.removeAttribute('playing');
+                    }
+                }
+
+                playingProp.set!.call(this, val);
+            },
+        });
+    }
+}
+
 customElements.define(
     'party-track',
-    withProps(withExtended(connect(
-        mapStateToPropsFactory,
-        mapDispatchToProps,
-        PartyTrack,
-    )), {
-        playing: Boolean,
-        trackid: String,
-    }),
+    PartyTrackComponent,
 );
