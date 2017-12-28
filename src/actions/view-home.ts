@@ -12,19 +12,8 @@ export type Actions =
     | JoinPartyFailAction
     | JoinPartyStartAction;
 
-export function createParty() {
-    throw new Error("Unimplemented");
-}
-
 export interface ChangePartyIdAction extends PayloadAction<string> {
     type: Types.CHANGE_PARTY_ID;
-}
-
-export function changePartyId(partyId: string): ChangePartyIdAction {
-    return {
-        type: Types.CHANGE_PARTY_ID,
-        payload: partyId,
-    };
 }
 
 export interface JoinPartyFailAction extends PayloadAction<Error> {
@@ -34,6 +23,17 @@ export interface JoinPartyFailAction extends PayloadAction<Error> {
 
 export interface JoinPartyStartAction {
     type: Types.JOIN_PARTY_Start;
+}
+
+export function createParty() {
+    throw new Error("Unimplemented");
+}
+
+export function changePartyId(partyId: string): ChangePartyIdAction {
+    return {
+        type: Types.CHANGE_PARTY_ID,
+        payload: partyId,
+    };
 }
 
 export function joinParty(): ThunkAction<Promise<any>, State, void> {

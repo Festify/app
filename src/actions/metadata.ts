@@ -9,6 +9,10 @@ import { PayloadAction, Types } from '.';
 export type Actions =
     | UpdateMetadataAction;
 
+export interface UpdateMetadataAction extends PayloadAction<Record<string, Metadata>> {
+    type: Types.UPDATE_METADATA;
+}
+
 export function loadMetadata(references: Reference[]): ThunkAction<Promise<void>, State, void> {
     return (dispatch, getState) => {
         const { metadata } = getState();
@@ -34,10 +38,6 @@ export function loadMetadata(references: Reference[]): ThunkAction<Promise<void>
 
         return Promise.all(promises).then(() => {});
     };
-}
-
-export interface UpdateMetadataAction extends PayloadAction<Record<string, Metadata>> {
-    type: Types.UPDATE_METADATA;
 }
 
 export function updateMetadata(metadata: Record<string, Metadata>): UpdateMetadataAction {

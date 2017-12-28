@@ -15,6 +15,31 @@ export type Actions =
     | UpdateTracksAction
     | UpdateUserVotesAction;
 
+export interface CleanupPartyAction {
+    type: Types.CLEANUP_PARTY;
+}
+
+export interface OpenPartyStartAction {
+    type: Types.OPEN_PARTY_Start;
+}
+
+export interface OpenPartyFailAction extends PayloadAction<Error> {
+    type: Types.OPEN_PARTY_Fail;
+    error: true;
+}
+
+export interface UpdatePartyAction extends PayloadAction<Party> {
+    type: Types.UPDATE_PARTY;
+}
+
+export interface UpdateTracksAction extends PayloadAction<Record<string, Track>> {
+    type: Types.UPDATE_TRACKS;
+}
+
+export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean>> {
+    type: Types.UPDATE_USER_VOTES;
+}
+
 let partyRef: Reference | null = null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
@@ -76,29 +101,12 @@ export function closeParty(): ThunkAction<void, State, void> {
     };
 }
 
-export interface OpenPartyStartAction {
-    type: Types.OPEN_PARTY_Start;
-}
-
-export interface OpenPartyFailAction extends PayloadAction<Error> {
-    type: Types.OPEN_PARTY_Fail;
-    error: true;
-}
-
 export function openPartyFail(err: Error): OpenPartyFailAction {
     return {
         type: Types.OPEN_PARTY_Fail,
         error: true,
         payload: err,
     };
-}
-
-export interface CleanupPartyAction {
-    type: Types.CLEANUP_PARTY;
-}
-
-export interface UpdatePartyAction extends PayloadAction<Party> {
-    type: Types.UPDATE_PARTY;
 }
 
 export function updateParty(party: Party): UpdatePartyAction {
@@ -108,19 +116,11 @@ export function updateParty(party: Party): UpdatePartyAction {
     };
 }
 
-export interface UpdateTracksAction extends PayloadAction<Record<string, Track>> {
-    type: Types.UPDATE_TRACKS;
-}
-
 export function updateTracks(tracks: Record<string, Track>): UpdateTracksAction {
     return {
         type: Types.UPDATE_TRACKS,
         payload: tracks,
     };
-}
-
-export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean>> {
-    type: Types.UPDATE_USER_VOTES;
 }
 
 export function updateUserVotes(votes: Record<string, boolean>): UpdateUserVotesAction {
