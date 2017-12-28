@@ -10,6 +10,7 @@ import { Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 import './party-queue';
+import './party-search';
 import './search-bar';
 
 interface PartyViewProps {

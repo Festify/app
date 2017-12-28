@@ -1,0 +1,28 @@
+import { connect, withExtended, withProps } from 'fit-html';
+
+import { State, Track } from '../state';
+
+import { createMapStateToPropsFactory, mapDispatchToProps, PartyTrack } from './party-track';
+import { createSelector } from 'reselect';
+
+const trackSelector = (state: State, trackId: string) => state.partyView.searchResult![trackId];
+const voteCountSelector = (state: State, trackId: string) =>
+    state.party.tracks && state.party.tracks[trackId]
+        ? state.party.tracks[trackId].vote_count
+        : 0;
+const enhancedTrackSelector = createSelector(
+    trackSelector,
+    voteCountSelector,
+    (track: Track, voteCount: number) => ({ ...track, vote_count: voteCount }),
+);
+
+customElements.define(
+    'party-track-search',
+    withProps(withExtended(connect(
+        createMapStateToPropsFactory(enhancedTrackSelector),
+        mapDispatchToProps,
+        PartyTrack,
+    )), {
+        trackid: String,
+    }),
+);

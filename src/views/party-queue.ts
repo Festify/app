@@ -8,38 +8,33 @@ import sharedStyles from '../util/shared-styles';
 
 import './party-track';
 
-interface PartyQueueProps {
+export interface PartyQueueProps {
     tracks: Track[];
 }
 
 interface PartyQueueDispatch {
 }
 
-/* tslint:disable:max-line-length */
-const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
-    ${sharedStyles}
+export const queueStyles = html`
     <style>
         :host {
             background-color: var(--track-bg);
             position: relative;
         }
 
-        :host([view=search]) party-track:first-of-type {
-            padding-top: 16px;
-            z-index: 1;
-        }
-
-        party-track:nth-child(even) {
+        party-track:nth-child(even), party-track-search:nth-child(even) {
             background-color: var(--track-bg-even);
         }
+    </style>
+`;
 
+/* tslint:disable:max-line-length */
+const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
+    ${sharedStyles}
+    ${queueStyles}
+    <style>
         party-track[playing] + party-track {
             padding-top: 13px;
-        }
-
-        p {
-            margin: 0;
-            text-align: center;
         }
 
         paper-button {
@@ -47,8 +42,9 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             margin: 20px;
         }
 
-        festify-spinner {
-            background: var(--secondary-color);
+        p {
+            margin: 0;
+            text-align: center;
         }
 
         #skipBackground {
@@ -92,11 +88,15 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 `;
 /* tslint:enable */
 
-const tracksSelector = (state: State) => state.party.tracks;
-const sortedTracksSelector = createSelector(
+export const sortedTracksFactory = (
+    tracksSelector: (state: State) => Record<string, Track> | null,
+) => createSelector(
     tracksSelector,
     tracks => values(tracks).sort((a, b) => a.order - b.order),
 );
+
+const tracksSelector = (state: State) => state.party.tracks;
+const sortedTracksSelector = sortedTracksFactory(tracksSelector);
 
 const mapStateToProps = (state: State): PartyQueueProps => ({
     tracks: sortedTracksSelector(state),

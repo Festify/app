@@ -10,7 +10,7 @@ import srcsetImg from '../components/srcset-img';
 import { Metadata, Reference, State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
-interface PartyTrackProps {
+export interface PartyTrackProps {
     artistName: string;
     canTogglePlayPause: boolean;
     isMusicPlaying: boolean;
@@ -60,7 +60,7 @@ const ActionButton = (props: PartyTrackProps & PartyTrackDispatch): TemplateResu
 };
 
 /* tslint:disable:max-line-length */
-const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
+export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     ${sharedStyles}
     <style>
         :host {
@@ -178,84 +178,69 @@ const dummyTrack: Track = {
     vote_count: 0,
 };
 
-export const createTrackSelectors = (
-    metadataSelector: (state: State, trackId: string) => Metadata | null,
-    trackSelector: (state: State, trackId: string) => Track | null
-) => {
-    const defaultMetaSelector = createSelector(
-        metadataSelector,
-        metadata => ({ ...dummyMetadata, ...metadata }),
-    );
-
-    const defaultTrackSelector = createSelector(
-        trackSelector,
-        track => ({ ...dummyTrack, ...track }),
-    );
-
-    const artistsSelector = createSelector(defaultMetaSelector, metadata => metadata.artists);
-    const artistJoiner = createSelector(
-        artistsSelector,
-        artists => artists.join(' & '),
-    );
-
-    const voteStringGenerator = createSelector(
-        defaultTrackSelector,
-        ({ is_fallback, vote_count }) => {
-            if (vote_count > 1) {
-                return `${vote_count} Votes`;
-            } else if (vote_count === 1) {
-                return "One Vote";
-            } else {
-                return is_fallback ? "Fallback Track" : "Not in Queue";
-            }
-        },
-    );
-
-    return {
-        defaultMetaSelector,
-        defaultTrackSelector,
-        artistJoiner,
-        voteStringGenerator,
-    };
-};
-
 const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
 const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
 
-const mapStateToPropsFactory = () => {
+export const createMapStateToPropsFactory = (
+    trackSelector: (state: State, trackId: string) => Track | null,
+) => {
     /*
      * Since the selectors use component props, one for each instance must be created.
      */
-    const {
-        defaultMetaSelector,
-        defaultTrackSelector,
-        artistJoiner,
-        voteStringGenerator,
-    } = createTrackSelectors(metadataSelector, trackSelector);
+    return () => {
+        const defaultMetaSelector = createSelector(
+            metadataSelector,
+            metadata => ({ ...dummyMetadata, ...metadata }),
+        );
 
-    return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
-        const metadata = defaultMetaSelector(state, ownProps.trackid);
-        const track = defaultTrackSelector(state, ownProps.trackid);
-        return {
-            metadata,
-            track,
-            artistName: artistJoiner(state, ownProps.trackid),
-            canTogglePlayPause: false,
-            hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
-            isMusicPlaying: false,
-            isPlayingTrack: ownProps.playing,
-            voteString: voteStringGenerator(state, ownProps.trackid),
+        const defaultTrackSelector = createSelector(
+            trackSelector,
+            track => ({ ...dummyTrack, ...track }),
+        );
+
+        const artistsSelector = createSelector(defaultMetaSelector, metadata => metadata.artists);
+        const artistJoiner = createSelector(
+            artistsSelector,
+            artists => artists.join(' & '),
+        );
+
+        const voteStringGenerator = createSelector(
+            defaultTrackSelector,
+            ({ is_fallback, vote_count }) => {
+                if (vote_count > 1) {
+                    return `${vote_count} Votes`;
+                } else if (vote_count === 1) {
+                    return "One Vote";
+                } else {
+                    return is_fallback ? "Fallback Track" : "Not in Queue";
+                }
+            },
+        );
+
+        return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
+            const metadata = defaultMetaSelector(state, ownProps.trackid);
+            const track = defaultTrackSelector(state, ownProps.trackid);
+            return {
+                metadata,
+                track,
+                artistName: artistJoiner(state, ownProps.trackid),
+                canTogglePlayPause: false,
+                hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
+                isMusicPlaying: false,
+                isPlayingTrack: ownProps.playing,
+                voteString: voteStringGenerator(state, ownProps.trackid),
+            };
         };
     };
 };
 
-const mapDispatchToProps: PartyTrackDispatch = {
+export const mapDispatchToProps: PartyTrackDispatch = {
     toggleVote,
     togglePlayPause: () => {},
 };
 
 const PartyTrackBase = withProps(withExtended(connect(
-    mapStateToPropsFactory,
+    createMapStateToPropsFactory(trackSelector),
     mapDispatchToProps,
     PartyTrack,
 )), {
