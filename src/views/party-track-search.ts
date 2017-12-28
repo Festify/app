@@ -1,11 +1,14 @@
 import { connect, withExtended, withProps } from 'fit-html';
+import { createSelector } from 'reselect';
 
 import { State, Track } from '../state';
 
 import { createMapStateToPropsFactory, mapDispatchToProps, PartyTrack } from './party-track';
-import { createSelector } from 'reselect';
 
-const trackSelector = (state: State, trackId: string) => state.partyView.searchResult![trackId];
+const trackSelector = (state: State, trackId: string) =>
+    state.partyView.searchResult
+        ? state.partyView.searchResult![trackId]
+        : {};
 const voteCountSelector = (state: State, trackId: string) =>
     state.party.tracks && state.party.tracks[trackId]
         ? state.party.tracks[trackId].vote_count
