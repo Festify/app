@@ -10,7 +10,7 @@ import {
     artistJoinerFactory,
     defaultMetaSelectorFactory,
     defaultTrackSelectorFactory,
-    trackSelector,
+    singleTrackSelector,
     voteStringGeneratorFactory,
 } from '../selectors/track';
 import { Metadata, Reference, State, Track } from '../state';
@@ -203,7 +203,7 @@ export const mapDispatchToProps: PartyTrackDispatch = {
 };
 
 const PartyTrackBase = withProps(withExtended(connect(
-    createMapStateToPropsFactory(trackSelector),
+    createMapStateToPropsFactory(singleTrackSelector),
     mapDispatchToProps,
     PartyTrack,
 )), {

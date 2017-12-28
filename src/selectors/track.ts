@@ -19,12 +19,17 @@ const dummyTrack: Track = {
     vote_count: 0,
 };
 
-export const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
+export const tracksSelector = (state: State) => state.party.tracks || {};
 
-export const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
+export const singleTrackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
+
+export const metadataSelector = (state: State) => state.metadata || {};
+
+export const singleMetadataSelector = (state: State, trackId: string) => state.metadata[trackId];
+
 
 export const defaultMetaSelectorFactory = () => createSelector(
-    metadataSelector,
+    singleMetadataSelector,
     metadata => ({ ...dummyMetadata, ...metadata }),
 );
 
