@@ -1,4 +1,6 @@
+import '@polymer/iron-icons/av-icons';
 import '@polymer/iron-icons/iron-icons';
+import '@polymer/paper-fab/paper-fab';
 import { connect, html, withExtended, withProps } from 'fit-html';
 import { TemplateResult } from 'lit-html';
 import { createSelector } from 'reselect';
