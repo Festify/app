@@ -24,23 +24,23 @@ export function loadMetadata(references: Reference[]): ThunkAction<Promise<void>
             const resp = await fetchWithAnonymousAuth(url);
             const { tracks } = await resp.json();
 
-            const metadata: Record<string, Metadata> = tracks.reduce((acc, track) => {
-                acc[`spotify-${track.id}`] = {
-                    artists: track.artists.map(art => art.name),
-                    cover: track.album.images,
-                    name: track.name,
-                };
-                return acc;
-            }, {});
-
-            dispatch(updateMetadata(metadata));
+            dispatch(updateMetadata(tracks));
         });
 
         return Promise.all(promises).then(() => {});
     };
 }
 
-export function updateMetadata(metadata: Record<string, Metadata>): UpdateMetadataAction {
+export function updateMetadata(tracks: any[]): UpdateMetadataAction {
+    const metadata = tracks.reduce((acc, track) => {
+        acc[`spotify-${track.id}`] = {
+            artists: track.artists.map(art => art.name),
+            cover: track.album.images,
+            name: track.name,
+        };
+        return acc;
+    }, {});
+
     return {
         type: Types.UPDATE_METADATA,
         payload: metadata,
