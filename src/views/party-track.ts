@@ -64,17 +64,12 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             padding-top: 13px;
         }
 
-        :host([playing]) .metadata-wrapper {
-            margin-right: 20px;
-        }
-
         :host([playing]) img {
             box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
         }
 
-        .metadata-wrapper {
-            margin-top: 2px;
-            overflow: hidden;
+        :host([playing]) .metadata-wrapper {
+            margin-right: 20px;
         }
 
         img {
@@ -83,6 +78,11 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             height: 54px;
             margin-right: 15px;
             width: 54px;
+        }
+
+        .metadata-wrapper {
+            margin-top: 2px;
+            overflow: hidden;
         }
 
         h2 {
