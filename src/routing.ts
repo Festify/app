@@ -23,14 +23,17 @@ const routes =  {
         view: Views.Party,
         '/search/:query': {
             title: "Search",
+            view: Views.Party,
             subView: PartyViews.Search,
         },
         '/settings': {
             title: "Party Settings",
+            view: Views.Party,
             subView: PartyViews.Settings,
         },
         '/share': {
             title: "Share Party",
+            view: Views.Party,
             subView: PartyViews.Share,
         },
     },

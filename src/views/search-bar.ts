@@ -80,7 +80,7 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): SearchBarProps => ({
-    text: state.partyView.searchInput,
+    text: (state.router.params || { query: '' }).query || '',
 });
 
 const mapDispatchToProps: SearchBarDispatch = {

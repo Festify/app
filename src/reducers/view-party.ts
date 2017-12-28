@@ -1,9 +1,10 @@
+import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless/lib';
+
 import { Actions, Types } from '../actions';
 import { PartyViewState } from '../state';
 
 export default function(
     state: PartyViewState = {
-        searchInput: '',
         searchInProgress: false,
         searchError: null,
         searchResult: null,
@@ -11,11 +12,12 @@ export default function(
     action: Actions,
 ): PartyViewState {
     switch (action.type) {
-        case Types.CHANGE_SEARCH_INPUT_TEXT:
+        case LOCATION_CHANGED:
             return {
                 ...state,
-                searchInput: action.payload,
-                searchResult: action.payload === '' ? null : state.searchResult,
+                searchResult: !action.payload.params || !action.payload.params.query
+                    ? null
+                    : state.searchResult,
             };
         case Types.SEARCH_Start:
             return {

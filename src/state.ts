@@ -52,7 +52,6 @@ export interface HomeViewState {
 }
 
 export interface PartyViewState {
-    searchInput: string;
     searchInProgress: boolean;
     searchError: Error | null;
     searchResult: Record<string, Track> | null;

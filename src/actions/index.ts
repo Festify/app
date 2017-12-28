@@ -1,16 +1,35 @@
+import {
+    go,
+    goBack,
+    goForward,
+    initializeCurrentLocation,
+    push,
+    replace,
+    replaceRoutes,
+} from "@mraerino/redux-little-router-reactless";
+
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
 
+export type RouterActions =
+    | typeof push
+    | typeof replace
+    | typeof go
+    | typeof goBack
+    | typeof goForward
+    | typeof replaceRoutes
+    | typeof initializeCurrentLocation;
+
 export type Actions =
     | HomeViewActions
     | MetadataActions
     | PartyDataActions
-    | PartyViewActions;
+    | PartyViewActions
+    | RouterActions;
 
 export const enum Types {
-    CHANGE_SEARCH_INPUT_TEXT = 'CHANGE_SEARCH_INPUT_TEXT',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
     JOIN_PARTY_Start = 'JOIN_PARTY_START',
     JOIN_PARTY_Fail = 'JOIN_PARTY_FAIL',

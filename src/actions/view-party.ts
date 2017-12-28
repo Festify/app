@@ -1,3 +1,4 @@
+import { push } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
@@ -9,15 +10,10 @@ import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
-    | ChangeSearchInputTextAction
     | ToggleVoteAction
     | SearchStartAction
     | SearchFinishAction
     | SearchFailAction;
-
-export interface ChangeSearchInputTextAction extends PayloadAction<string> {
-    type: Types.CHANGE_SEARCH_INPUT_TEXT;
-}
 
 export interface ToggleVoteAction extends PayloadAction<[Reference, boolean]> {
     type: Types.TOGGLE_VOTE;
@@ -35,10 +31,18 @@ export interface SearchFailAction extends ErrorAction {
     type: Types.SEARCH_Fail;
 }
 
-export function changeSearchInputText(text: string): ChangeSearchInputTextAction {
-    return {
-        type: Types.CHANGE_SEARCH_INPUT_TEXT,
-        payload: text,
+export function changeSearchInputText(text: string): ThunkAction<void, State, void> {
+    return (dispatch, getState: () => State) => {
+        const { partyId } = getState().router.params || { partyId: '' };
+        if (!partyId) {
+            throw new Error("Tried to search without active party!");
+        }
+
+        if (!text) {
+            return dispatch(push(`/party/${partyId}`, {}));
+        }
+
+        dispatch(push(`/party/${partyId}/search/${encodeURIComponent(text)}`, {}));
     };
 }
 
@@ -86,7 +90,7 @@ const searchThunk = debounce(async (dispatch, getState: () => State) => {
     dispatch({ type: Types.SEARCH_Start } as SearchStartAction);
 
     const state = getState();
-    const query = state.partyView.searchInput;
+    const { query } = state.router.params || { query: '' };
     const { currentParty } = state.party;
     const url =
         `https://api.spotify.com/v1/search?type=track&limit=${20}&market=${currentParty!.country}` +
