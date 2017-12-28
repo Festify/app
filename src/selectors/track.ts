@@ -27,6 +27,16 @@ export const metadataSelector = (state: State) => state.metadata || {};
 
 export const singleMetadataSelector = (state: State, trackId: string) => state.metadata[trackId];
 
+export const currentTrackIdSelector = createSelector(
+    tracksSelector,
+    (tracks: Record<string, Track>) => Object.keys(tracks)
+        .reduce((acc, key) => !acc || tracks[key].order < tracks[acc!].order ? key : acc, null),
+);
+export const currentTrackSelector = createSelector(
+    tracksSelector,
+    currentTrackIdSelector,
+    (tracks: Record<string, Track>, currentId: string | null) => currentId ? tracks[currentId] : null,
+);
 
 export const defaultMetaSelectorFactory = () => createSelector(
     singleMetadataSelector,

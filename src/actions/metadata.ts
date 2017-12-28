@@ -36,8 +36,9 @@ export function updateMetadata(tracks: any[]): UpdateMetadataAction {
         acc[`spotify-${track.id}`] = {
             artists: track.artists.map(art => art.name),
             cover: track.album.images,
+            durationMs: track.duration_ms,
             name: track.name,
-        };
+        } as Metadata;
         return acc;
     }, {});
 
