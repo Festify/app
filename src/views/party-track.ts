@@ -142,13 +142,16 @@ const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     ${srcsetImg(props.metadata.cover, '54px')}
     <div class="metadata-wrapper">
         <h2>${props.metadata.name}</h2>
-        ${props.artistName && html`
-            <aside>
-                <a>${props.artistName}</a>
-                <span class="dot">&middot;</span>
-                <span>${props.voteString}</span>
-            </aside>
-        `}
+        ${props.artistName
+            ? html`
+                <aside>
+                    <a>${props.artistName}</a>
+                    <span class="dot">&middot;</span>
+                    <span>${props.voteString}</span>
+                </aside>
+            `
+            : html``
+        }
     </div>
 
     <div class="icon-wrapper">
