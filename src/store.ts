@@ -4,6 +4,7 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import thunk from 'redux-thunk';
 
+import { checkSpotifyLoginStatus } from './actions/auth';
 import middlewares from './middlewares';
 import reducers from './reducers';
 import {
@@ -25,6 +26,7 @@ export const store = createStore<State>(
     ),
 );
 
+store.dispatch(checkSpotifyLoginStatus());
 store.dispatch(initializeCurrentLocation(store.getState().router));
 
 export const storeProvider = createProvider(store);

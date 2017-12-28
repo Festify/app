@@ -8,6 +8,7 @@ import {
     replaceRoutes,
 } from "@mraerino/redux-little-router-reactless";
 
+import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
 import { Actions as HomeViewActions } from './view-home';
@@ -23,6 +24,7 @@ export type RouterActions =
     | typeof initializeCurrentLocation;
 
 export type Actions =
+    | AuthActions
     | HomeViewActions
     | MetadataActions
     | PartyDataActions
@@ -30,6 +32,7 @@ export type Actions =
     | RouterActions;
 
 export const enum Types {
+    NOTIFY_AUTH_STATUS_KNOWN = 'NOTIFY_AUTH_STATUS_KNOWN',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
     JOIN_PARTY_Start = 'JOIN_PARTY_START',
     JOIN_PARTY_Fail = 'JOIN_PARTY_FAIL',

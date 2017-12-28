@@ -33,11 +33,11 @@ export interface UpdatePartyAction extends PayloadAction<Party> {
     type: Types.UPDATE_PARTY;
 }
 
-export interface UpdateTracksAction extends PayloadAction<Record<string, Track>> {
+export interface UpdateTracksAction extends PayloadAction<Record<string, Track> | null> {
     type: Types.UPDATE_TRACKS;
 }
 
-export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean>> {
+export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean> | null> {
     type: Types.UPDATE_USER_VOTES;
 }
 
@@ -119,14 +119,14 @@ export function updateParty(party: Party): UpdatePartyAction {
     };
 }
 
-export function updateTracks(tracks: Record<string, Track>): UpdateTracksAction {
+export function updateTracks(tracks: Record<string, Track> | null): UpdateTracksAction {
     return {
         type: Types.UPDATE_TRACKS,
         payload: tracks,
     };
 }
 
-export function updateUserVotes(votes: Record<string, boolean>): UpdateUserVotesAction {
+export function updateUserVotes(votes: Record<string, boolean> | null): UpdateUserVotesAction {
     return {
         type: Types.UPDATE_USER_VOTES,
         payload: votes,

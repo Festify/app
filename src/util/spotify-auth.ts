@@ -1,19 +1,68 @@
-import { CLIENT_ID, CLIENT_TOKEN_URL } from '../../spotify.config';
+import { CLIENT_ID, CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.config';
+
+import { AuthData } from './auth';
+
+export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
+
+export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
+export const fetchWithAccessToken = fetchFactory(requireAccessToken);
+
+let authData: AuthData | null = null;
+let accessTokenPromise: Promise<string> | null = null;
+
+export function requireAccessToken(): Promise<string> {
+    if (accessTokenPromise) {
+        return accessTokenPromise;
+    }
+
+    accessTokenPromise = _requireAccessToken();
+    return accessTokenPromise;
+}
+
+async function _requireAccessToken(): Promise<string> {
+    if (authData && authData.expiresAt > Date.now() + 10000) {
+        return authData.accessToken;
+    }
+
+    const lsString = localStorage[LOCALSTORAGE_KEY];
+
+    if (!lsString) {
+        throw new Error("Missing refresh token!");
+    }
+
+    authData = JSON.parse(lsString);
+
+    if (!authData || !authData.refreshToken) {
+        throw new Error("Missing refresh token!");
+    }
+
+    const body = `refresh_token=${encodeURIComponent(authData.refreshToken)}`;
+    const resp = await fetch(TOKEN_REFRESH_URL, {
+        body,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        method: 'post',
+    });
+    const { access_token, expires_in, msg, success } = await resp.json();
+
+    if (!success) {
+        throw new Error(`Token refresh failed: ${msg}.`);
+    }
+
+    authData = {
+        accessToken: access_token,
+        expiresAt: Date.now() + (expires_in * 1000),
+        refreshToken: authData.refreshToken,
+    };
+    localStorage[LOCALSTORAGE_KEY] = JSON.stringify(authData);
+
+    return authData.accessToken;
+}
 
 let anonymousAccessToken: string = '';
 let anonymousExpireTimeMs: number = 0;
 let anonymousPromise: Promise<string> | null = null;
-
-export async function fetchWithAnonymousAuth(url: string, options: RequestInit = {}): Promise<Response> {
-    const token = await requireAnonymousAuth();
-    return await fetch(url, {
-        ...options,
-        headers: {
-            ...options.headers,
-            'Authorization': `Bearer ${token}`,
-        },
-    });
-}
 
 export function requireAnonymousAuth(): Promise<string> {
     if (anonymousPromise) {
@@ -36,4 +85,23 @@ async function _requireAnonymousAuth(): Promise<string> {
     anonymousExpireTimeMs = Date.now() + (expires_in * 1000) - 10000; // Safety margin
     anonymousPromise = null;
     return access_token;
+}
+
+function fetchFactory(
+    tokenFetcher: () => Promise<string>,
+): (url: string, options?: RequestInit) => Promise<Response> {
+    return async (url: string, options: RequestInit = {}) => {
+        if (url.startsWith('/')) {
+            url = 'https://api.spotify.com/v1' + url;
+        }
+
+        const token = await tokenFetcher();
+        return await fetch(url, {
+            ...options,
+            headers: {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    };
 }

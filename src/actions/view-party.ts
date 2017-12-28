@@ -94,7 +94,7 @@ const searchThunk = debounce(async (dispatch, getState: () => State) => {
     const { query } = state.router.params || { query: '' };
     const { currentParty } = state.party;
     const url =
-        `https://api.spotify.com/v1/search?type=track&limit=${20}&market=${currentParty!.country}` +
+        `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(query.replace('-', ' ') + '*')}`;
 
     const fetchTime = latestSearchFetch = Date.now();

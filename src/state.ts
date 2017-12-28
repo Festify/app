@@ -1,4 +1,14 @@
 import { Location } from '@mraerino/redux-little-router-reactless';
+import * as SpotifyApi from 'spotify-web-api-js';
+
+export interface AuthProviderStatus<T> {
+    statusKnown: boolean;
+    user: T | null;
+}
+
+export interface AuthState {
+    spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
+}
 
 export interface Image {
     height: number;
@@ -59,6 +69,7 @@ export interface PartyViewState {
 }
 
 export interface State {
+    auth: AuthState;
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
     party: PartyState;

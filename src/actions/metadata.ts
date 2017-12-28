@@ -20,7 +20,7 @@ export function loadMetadata(references: Reference[]): ThunkAction<Promise<void>
             .filter(ref => !(`${ref.provider}-${ref.id}` in metadata))
             .map(ref => ref.id);
         const promises = chunk(remaining, 50).map(async ids => {
-            const url = `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(ids.join(','))}`;
+            const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
             const resp = await fetchWithAnonymousAuth(url);
             const { tracks } = await resp.json();
 

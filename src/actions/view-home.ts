@@ -2,8 +2,10 @@ import { FirebaseDatabase } from '@firebase/database-types';
 import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
+import { CLIENT_ID, SCOPES } from '../../spotify.config';
 import { Party, State } from '../state';
-import firebase from '../util/firebase';
+import { requireAuth } from '../util/auth';
+import firebase, { firebaseNS } from '../util/firebase';
 
 import { PayloadAction, Types } from '.';
 
@@ -25,14 +27,42 @@ export interface JoinPartyStartAction {
     type: Types.JOIN_PARTY_Start;
 }
 
-export function createParty() {
-    throw new Error("Unimplemented");
-}
-
 export function changePartyId(partyId: string): ChangePartyIdAction {
     return {
         type: Types.CHANGE_PARTY_ID,
         payload: partyId,
+    };
+}
+
+export function createParty(): ThunkAction<Promise<void>, State, void> {
+    return async (dispatch, getState) => {
+        const { user } = getState().auth.spotify;
+
+        if (!user) {
+            throw new Error("Missing Spotify user.");
+        }
+
+        const { uid } = await requireAuth();
+
+        const now = firebaseNS.database!.ServerValue.TIMESTAMP;
+        const party = {
+            country: user.country,
+            created_at: now,
+            created_by: uid,
+            name: "Today's Party",
+            playback: {
+                last_change: now,
+                last_position_ms: 0,
+                playing: false,
+            },
+            short_id: String(Math.floor(Math.random() * 1000000)),
+        };
+
+        const result = await firebase.database!()
+            .ref('/parties')
+            .push(party);
+
+        dispatch(push(`/party/${result.key}`, {}));
     };
 }
 
@@ -67,5 +97,17 @@ export function joinParty(): ThunkAction<Promise<any>, State, void> {
                 payload: e,
             } as JoinPartyFailAction);
         }
+    };
+}
+
+export function loginWithSpotify(): ThunkAction<void, State, void> {
+    return (dispatch) => {
+        console.log("Good bye.");
+
+        const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
+            + `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`
+            + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH`;
+
+        window.location.href = url;
     };
 }

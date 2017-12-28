@@ -2,7 +2,7 @@ import { Actions, Types } from '../actions';
 import { loadMetadata } from '../actions/metadata';
 
 export default store => next => (action: Actions) => {
-    if (action.type !== Types.UPDATE_TRACKS) {
+    if (action.type !== Types.UPDATE_TRACKS || !action.payload) {
         return next(action);
     }
 

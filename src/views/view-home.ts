@@ -3,12 +3,14 @@ import '@polymer/paper-input/paper-input';
 import '@polymer/polymer/lib/elements/custom-style';
 import { connect, html, withExtended } from 'fit-html';
 
-import { changePartyId, createParty, joinParty } from '../actions/view-home';
+import { changePartyId, createParty, joinParty, loginWithSpotify } from '../actions/view-home';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
 
 interface HomeViewProps {
+    authorized: boolean;
+    authStatusKnown: boolean;
     partyId: string;
     partyIdValid: boolean;
 }
@@ -16,6 +18,7 @@ interface HomeViewDispatch {
     changePartyId: (partyId: string) => void;
     createParty: () => void;
     joinParty: () => void;
+    loginWithSpotify: () => void;
 }
 
 /* tslint:disable:max-line-length */
@@ -79,20 +82,36 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
                       on-click="${props.joinParty}">
             Join Party
         </paper-button>
-        <paper-button raised
-                      on-click="${props.createParty}">
-            Create Party
-        </paper-button>
+        ${props.authorized
+            ? html`
+                <paper-button raised
+                              disabled="${!props.authStatusKnown}"
+                              on-click="${props.createParty}">
+                    Create Party
+                </paper-button>
+            `
+            : html`
+                <paper-button raised
+                              disabled="${!props.authStatusKnown}"
+                              on-click="${props.loginWithSpotify}">
+                    Login to create Party
+                </paper-button>
+            `}
     </main>
 `;
 /* tslint:enable */
 
-const mapStateToProps = (state: State): HomeViewProps => state.homeView;
+const mapStateToProps = (state: State): HomeViewProps => ({
+    ...state.homeView,
+    authorized: Boolean(state.auth.spotify.user),
+    authStatusKnown: state.auth.spotify.statusKnown,
+});
 
 const mapDispatchToProps: HomeViewDispatch = {
     changePartyId,
     createParty,
     joinParty,
+    loginWithSpotify,
 };
 
 customElements.define(
