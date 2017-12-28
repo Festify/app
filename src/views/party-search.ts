@@ -21,7 +21,6 @@ const PartySearchView = (props: PartyQueueProps) => html`
         }
     </style>
 
-
     ${repeat(props.tracks, track => `${track.reference.provider}-${track.reference.id}`, (track, i) => html`
         <party-track-search trackid="${track.reference.provider}-${track.reference.id}">
         </party-track-search>
