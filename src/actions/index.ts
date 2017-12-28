@@ -22,8 +22,15 @@ export const enum Types {
     UPDATE_USER_VOTES = 'UPDATE_USER_VOTES',
     OPEN_PARTY_Start = 'OPEN_PARTY_START',
     OPEN_PARTY_Fail = 'OPEN_PARTY_FAIL',
+    SEARCH_Start = 'SEARCH_START',
+    SEARCH_Finish = 'SEARCH_FINISH',
+    SEARCH_Fail = 'SEARCH_FAIL',
 }
 
 export interface PayloadAction<T> {
     payload: T;
+}
+
+export interface ErrorAction extends PayloadAction<Error> {
+    error: true;
 }
