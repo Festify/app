@@ -3,6 +3,7 @@ import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/data
 import { ThunkAction } from 'redux-thunk';
 
 import { Party, State, Track } from '../state';
+import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 
 import { PayloadAction, Types } from '.';
@@ -63,13 +64,15 @@ export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
             return;
         }
 
+        const { uid } = await requireAuth();
+
         tracksRef = (firebase.database!() as FirebaseDatabase)
             .ref('/tracks')
             .child(id);
         votesRef = (firebase.database!() as FirebaseDatabase)
             .ref('/votes_by_user')
             .child(id)
-            .child(firebase.auth!().currentUser!.uid);
+            .child(uid);
 
         partyRef.on('value', (snap: DataSnapshot) => {
             if (!snap.exists()) {
