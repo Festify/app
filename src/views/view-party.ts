@@ -17,7 +17,7 @@ interface PartyViewProps {
     view: PartyViews;
 }
 const mapStateToProps = (state: State): PartyViewProps => ({
-    party: state.party || { name: '' },
+    party: state.party.currentParty || { name: '' },
     view: (state.router.result || {}).subView || PartyViews.Queue,
 });
 

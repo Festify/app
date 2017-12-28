@@ -1,3 +1,4 @@
+import { FirebaseAuth } from '@firebase/auth-types';
 import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
 import { ThunkAction } from 'redux-thunk';
 
@@ -11,10 +12,12 @@ export type Actions =
     | OpenPartyFailAction
     | CleanupPartyAction
     | UpdatePartyAction
-    | UpdateTracksAction;
+    | UpdateTracksAction
+    | UpdateUserVotesAction;
 
 let partyRef: Reference | null = null;
 let tracksRef: Query | null = null;
+let votesRef: Reference | null = null;
 
 export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch) => {
@@ -38,6 +41,10 @@ export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
         tracksRef = (firebase.database!() as FirebaseDatabase)
             .ref('/tracks')
             .child(id);
+        votesRef = (firebase.database!() as FirebaseDatabase)
+            .ref('/votes_by_user')
+            .child(id)
+            .child(firebase.auth!().currentUser!.uid);
 
         partyRef.on('value', (snap: DataSnapshot) => {
             if (!snap.exists()) {
@@ -47,6 +54,7 @@ export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
             dispatch(updateParty(snap.val()));
         });
         tracksRef.on('value', (snap: DataSnapshot) => dispatch(updateTracks(snap.val())));
+        votesRef.on('value', (snap: DataSnapshot) => dispatch(updateUserVotes(snap.val())));
     };
 }
 
@@ -59,6 +67,10 @@ export function closeParty(): ThunkAction<void, State, void> {
         if (tracksRef != null) {
             tracksRef.off('value');
             tracksRef = null;
+        }
+        if (votesRef != null) {
+            votesRef.off('value');
+            votesRef = null;
         }
         dispatch({ type: Types.CLEANUP_PARTY });
     };
@@ -104,5 +116,16 @@ export function updateTracks(tracks: Record<string, Track>): UpdateTracksAction 
     return {
         type: Types.UPDATE_TRACKS,
         payload: tracks,
+    };
+}
+
+export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean>> {
+    type: Types.UPDATE_USER_VOTES;
+}
+
+export function updateUserVotes(votes: Record<string, boolean>): UpdateUserVotesAction {
+    return {
+        type: Types.UPDATE_USER_VOTES,
+        payload: votes,
     };
 }

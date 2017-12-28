@@ -22,13 +22,16 @@ export interface Party {
     country: string;
     created_at: number;
     created_by: string;
-    id: string;
     name: string;
     playback: Playback;
     short_id: string;
 }
 
-export type PartyState = Party | null;
+export interface PartyState {
+    currentParty: Party | null;
+    tracks: Record<string, Track> | null;
+    userVotes: Record<string, boolean> | null;
+}
 
 export interface Reference {
     id: string;
@@ -37,14 +40,11 @@ export interface Reference {
 
 export interface Track {
     added_at: number;
-    id: string;
     is_fallback: boolean;
     order: number;
     reference: Reference;
     vote_count: number;
 }
-
-export type TracksState = Record<string, Track> | null;
 
 export interface HomeViewState {
     partyId: string;
@@ -61,5 +61,4 @@ export interface State {
     party: PartyState;
     partyView: PartyViewState;
     router?: Location;
-    tracks: TracksState;
 }

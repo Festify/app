@@ -1,6 +1,9 @@
+import '@polymer/iron-icons/iron-icons';
 import { connect, html, withExtended, withProps } from 'fit-html';
+import { TemplateResult } from 'lit-html';
 import { createSelector } from 'reselect';
 
+import { toggleVote } from '../actions/view-party';
 import srcsetImg from '../components/srcset-img';
 import { Metadata, Reference, State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
@@ -10,6 +13,7 @@ interface PartyTrackProps {
     canTogglePlayPause: boolean;
     isMusicPlaying: boolean;
     isPlayingTrack: boolean;
+    hasVoted: boolean;
     metadata: Metadata;
     track: Track;
     voteString: string;
@@ -25,20 +29,30 @@ interface PartyTrackOwnProps {
     trackid: string;
 }
 
-const ActionButton = (props: PartyTrackProps & PartyTrackDispatch) => {
+const LikeButtonIcon = (props: PartyTrackProps): string => {
+    if (props.hasVoted) {
+        return 'favorite';
+    } else if (props.track.vote_count > 0 || props.track.is_fallback) {
+        return 'favorite-border';
+    } else {
+        return 'add';
+    }
+};
+
+const ActionButton = (props: PartyTrackProps & PartyTrackDispatch): TemplateResult => {
     if (props.isPlayingTrack) {
         return html`
-            <paper-icon-button icon="[[_getLikeButtonIcon(track, _hasVoted)]]"
-                               on-click="${ev => props.toggleVote(props.track.reference)}">
-            </paper-icon-button>
-        `;
-    } else {
-        html`
             <paper-fab mini
                        icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
                        on-click="${props.togglePlayPause}"
                        disabled$="${!props.canTogglePlayPause}">
             </paper-fab>
+        `;
+    } else {
+        return html`
+            <paper-icon-button icon="${LikeButtonIcon(props)}"
+                               on-click="${ev => props.toggleVote(props.track.reference)}">
+            </paper-icon-button>
         `;
     }
 };
@@ -150,7 +164,6 @@ const dummyMetadata: Metadata = {
 };
 const dummyTrack: Track = {
     added_at: 0,
-    id: '',
     is_fallback: false,
     order: 0,
     reference: {
@@ -161,7 +174,7 @@ const dummyTrack: Track = {
 };
 
 const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
-const trackSelector = (state: State, trackId: string) => state.tracks && state.tracks[trackId];
+const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
 
 const mapStateToPropsFactory = () => {
     /*
@@ -205,6 +218,7 @@ const mapStateToPropsFactory = () => {
             track,
             artistName: artistJoiner(state, ownProps.trackid),
             canTogglePlayPause: false,
+            hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
             isMusicPlaying: false,
             isPlayingTrack: ownProps.playing,
             voteString: voteStringGenerator(state, ownProps.trackid),
@@ -213,8 +227,8 @@ const mapStateToPropsFactory = () => {
 };
 
 const mapDispatchToProps: PartyTrackDispatch = {
+    toggleVote,
     togglePlayPause: () => {},
-    toggleVote: () => {},
 };
 
 customElements.define(
