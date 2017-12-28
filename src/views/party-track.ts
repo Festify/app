@@ -3,10 +3,16 @@ import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-fab/paper-fab';
 import { connect, html, withExtended, withProps } from 'fit-html';
 import { TemplateResult } from 'lit-html';
-import { createSelector } from 'reselect';
 
 import { toggleVote } from '../actions/view-party';
 import srcsetImg from '../components/srcset-img';
+import {
+    artistJoinerFactory,
+    defaultMetaSelectorFactory,
+    defaultTrackSelectorFactory,
+    trackSelector,
+    voteStringGeneratorFactory,
+} from '../selectors/track';
 import { Metadata, Reference, State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
@@ -162,25 +168,6 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
 `;
 /* tslint:enable */
 
-const dummyMetadata: Metadata = {
-    artists: [],
-    cover: [],
-    name: 'Loading...',
-};
-const dummyTrack: Track = {
-    added_at: 0,
-    is_fallback: false,
-    order: 0,
-    reference: {
-        id: '',
-        provider: 'spotify',
-    },
-    vote_count: 0,
-};
-
-const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
-const trackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
-
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
@@ -188,34 +175,10 @@ export const createMapStateToPropsFactory = (
      * Since the selectors use component props, one for each instance must be created.
      */
     return () => {
-        const defaultMetaSelector = createSelector(
-            metadataSelector,
-            metadata => ({ ...dummyMetadata, ...metadata }),
-        );
-
-        const defaultTrackSelector = createSelector(
-            trackSelector,
-            track => ({ ...dummyTrack, ...track }),
-        );
-
-        const artistsSelector = createSelector(defaultMetaSelector, metadata => metadata.artists);
-        const artistJoiner = createSelector(
-            artistsSelector,
-            artists => artists.join(' & '),
-        );
-
-        const voteStringGenerator = createSelector(
-            defaultTrackSelector,
-            ({ is_fallback, vote_count }) => {
-                if (vote_count > 1) {
-                    return `${vote_count} Votes`;
-                } else if (vote_count === 1) {
-                    return "One Vote";
-                } else {
-                    return is_fallback ? "Fallback Track" : "Not in Queue";
-                }
-            },
-        );
+        const defaultMetaSelector = defaultMetaSelectorFactory();
+        const defaultTrackSelector = defaultTrackSelectorFactory(trackSelector);
+        const artistJoiner = artistJoinerFactory();
+        const voteStringGenerator = voteStringGeneratorFactory(defaultTrackSelector);
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
             const metadata = defaultMetaSelector(state, ownProps.trackid);
