@@ -1,4 +1,5 @@
 import { connect, html, withExtended, withProps } from 'fit-html';
+import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
 import { Metadata, Reference, State, Track } from '../state';
@@ -159,27 +160,51 @@ const dummyTrack: Track = {
     vote_count: 0,
 };
 
-function generateVoteString({ is_fallback, vote_count }: Track): string {
-    if (vote_count > 1) {
-        return `${vote_count} Votes`;
-    } else if (vote_count === 1) {
-        return "One Vote";
-    } else {
-        return is_fallback ? "Fallback Track" : "Not in Queue";
-    }
-}
+const metadataSelector = (state: State, trackId: string) => state.metadata[trackId];
+const trackSelector = (state: State, trackId: string) => state.tracks && state.tracks[trackId];
 
-const mapStateToProps = (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
-    const metadata = { ...dummyMetadata, ...state.metadata[ownProps.trackid] };
-    const track = { ...dummyTrack, ...(state.tracks && state.tracks[ownProps.trackid]) };
-    return {
-        metadata,
-        track,
-        artistName: metadata.artists.join(' & '),
-        canTogglePlayPause: false,
-        isMusicPlaying: false,
-        isPlayingTrack: ownProps.playing,
-        voteString: generateVoteString(track),
+const mapStateToPropsFactory = () => {
+    const defaultMetaSelector = createSelector(
+        metadataSelector,
+        metadata => ({ ...dummyMetadata, ...metadata }),
+    );
+
+    const defaultTrackSelector = createSelector(
+        trackSelector,
+        track => ({ ...dummyTrack, ...track }),
+    );
+
+    const artistsSelector = createSelector(defaultMetaSelector, metadata => metadata.artists);
+    const artistJoiner = createSelector(
+        artistsSelector,
+        artists => artists.join(' & '),
+    );
+
+    const voteStringGenerator = createSelector(
+        defaultTrackSelector,
+        ({ is_fallback, vote_count }) => {
+            if (vote_count > 1) {
+                return `${vote_count} Votes`;
+            } else if (vote_count === 1) {
+                return "One Vote";
+            } else {
+                return is_fallback ? "Fallback Track" : "Not in Queue";
+            }
+        },
+    );
+
+    return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
+        const metadata = defaultMetaSelector(state, ownProps.trackid);
+        const track = defaultTrackSelector(state, ownProps.trackid);
+        return {
+            metadata,
+            track,
+            artistName: artistJoiner(state, ownProps.trackid),
+            canTogglePlayPause: false,
+            isMusicPlaying: false,
+            isPlayingTrack: ownProps.playing,
+            voteString: voteStringGenerator(state, ownProps.trackid),
+        };
     };
 };
 
@@ -191,7 +216,7 @@ const mapDispatchToProps: PartyTrackDispatch = {
 customElements.define(
     'party-track',
     withProps(withExtended(connect(
-        mapStateToProps,
+        mapStateToPropsFactory,
         mapDispatchToProps,
         PartyTrack,
     )), {

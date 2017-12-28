@@ -1592,9 +1592,9 @@ firebase@^4.8.1:
     dom-storage "^2.0.2"
     xmlhttprequest "^1.8.0"
 
-fit-html@^0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.3.5.tgz#9fed1828cfa3a542db85307ace998ba384cdb5b0"
+fit-html@^0.3.8:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.3.8.tgz#c3573656cbbe5880fb23dc97729e7bd5a7230615"
   dependencies:
     lit-html "^0.7.1"
     lodash-es "^4.17.4"
@@ -2984,6 +2984,10 @@ require-main-filename@^1.0.1:
 requires-port@1.x.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
+
+reselect@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-3.0.1.tgz#efdaa98ea7451324d092b2b2163a6a1d7a9a2147"
 
 resolve-pathname@^2.2.0:
   version "2.2.0"
