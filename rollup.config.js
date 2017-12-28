@@ -32,7 +32,7 @@ export default {
     output: {
         file: dist('index.js'),
         format: 'iife',
-        sourcemap: !isProduction
+        sourcemap: !isProduction || !!process.env.ROLLUP_WATCH
     },
     plugins: [
         replace({
