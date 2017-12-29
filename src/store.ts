@@ -26,8 +26,13 @@ export const store = createStore<State>(
     ),
 );
 
+export interface SpotifyAPIWindow extends Window {
+    onSpotifyWebPlaybackSDKReady();
+}
+
 store.dispatch(checkSpotifyLoginStatus());
 store.dispatch(initializeCurrentLocation(store.getState().router));
+(window as SpotifyAPIWindow).onSpotifyWebPlaybackSDKReady = () => {};
 
 export const storeProvider = createProvider(store);
 customElements.define('store-provider', storeProvider);

@@ -1,12 +1,15 @@
-import { connect, html } from 'fit-html';
+import { connect, html, withExtended } from 'fit-html';
 
+import '../components/load-once';
 import { Views } from '../routing';
+import { isPartyOwnerSelector } from '../selectors/party';
 import { State } from '../state';
 
 import './view-home';
 import './view-party';
 
 interface AppShellProps {
+    isOwner: boolean;
     view: Views;
 }
 
@@ -48,17 +51,24 @@ const AppShellView = (props: AppShellProps) => html`
 
     ${Pages(props.view)}
     <paper-toast id="toast"></paper-toast>
+
+    <load-once load="${props.isOwner}">
+        <template>
+            <script src="https://sdk.scdn.co/spotify-player.js"></script>
+        </template>
+    </load-once>
 `;
 
 const mapStateToProps = (state: State): AppShellProps => ({
+    isOwner: isPartyOwnerSelector(state),
     view: (state.router.result || {}).view,
 });
 
-const AppShell = connect(
+const AppShell = withExtended(connect(
     mapStateToProps,
     {},
     AppShellView,
-);
+));
 
 customElements.define('app-shell', AppShell);
 export default AppShell;
