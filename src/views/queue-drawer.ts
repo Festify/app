@@ -7,11 +7,11 @@ import { connect, html, withExtended } from 'fit-html';
 
 import { exitParty, navigateTo } from '../actions/queue-drawer';
 import { PartyViews, Views } from '../routing';
+import { isPartyOwnerSelector } from '../selectors/party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import firebase from '../util/firebase';
 import sharedStyles from '../util/shared-styles';
-import { isPartyOwnerSelector } from '../selectors/party';
 
 interface QueueDrawerProps {
     isOwner: boolean;

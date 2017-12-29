@@ -5,10 +5,10 @@ import { ThunkAction } from 'redux-thunk';
 import { Party, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
+import { requireAccessToken } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
 import { connectPlayer } from './playback-spotify';
-import { requireAccessToken } from '../util/spotify-auth';
 
 export type Actions =
     | OpenPartyStartAction
