@@ -2,7 +2,7 @@ import { push, replace } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
-import { Metadata, TrackReference, State, Track } from '../state';
+import { Metadata, State, Track, TrackReference } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';

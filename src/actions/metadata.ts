@@ -1,7 +1,7 @@
 import chunk from 'lodash-es/chunk';
 import { ThunkAction } from 'redux-thunk';
 
-import { Metadata, TrackReference, State } from '../state';
+import { Metadata, State, TrackReference } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';

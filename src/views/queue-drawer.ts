@@ -1,7 +1,7 @@
 import { FirebaseAuth } from '@firebase/auth-types';
 import '@polymer/iron-icon/iron-icon';
-import '@polymer/iron-icons/iron-icons';
 import '@polymer/iron-icons/hardware-icons';
+import '@polymer/iron-icons/iron-icons';
 import '@polymer/iron-icons/social-icons';
 import { connect, html, withExtended } from 'fit-html';
 
@@ -90,7 +90,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     </header>
 
     <div class="menu" role="menu">
-        <a name="queue" 
+        <a name="queue"
            class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
            on-click="${() => props.navigateTo(PartyViews.Queue)}">
             <iron-icon icon="menu"></iron-icon>
@@ -98,7 +98,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
         </a>
         ${props.isOwner
             ? html`
-                <a name="settings" 
+                <a name="settings"
                    class$="${isActive(props.subView === PartyViews.Settings)}"
                    on-click="${() => props.navigateTo(PartyViews.Settings)}">
                     <iron-icon icon="settings"></iron-icon>
@@ -107,7 +107,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             `
             : html``
         }
-        <a name="share" 
+        <a name="share"
            class$="${isActive(props.subView === PartyViews.Share)}"
            on-click="${() => props.navigateTo(PartyViews.Share)}">
             <iron-icon icon="social:share"></iron-icon>

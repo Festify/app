@@ -1,7 +1,7 @@
 import { push } from '@mraerino/redux-little-router-reactless';
+import { ThunkAction } from 'redux-thunk';
 
 import { PartyViews, Views } from '../routing';
-import { ThunkAction } from 'redux-thunk';
 import { State } from '../state';
 
 export function exitParty(): typeof push {
@@ -24,7 +24,7 @@ export function navigateTo(view: PartyViews | Views.Tv): ThunkAction<void, State
         if (view === PartyViews.Share) {
             route += '/share';
         } else if (view === PartyViews.Settings) {
-            route += '/settings'
+            route += '/settings';
         }
 
         dispatch(push(route, {}));

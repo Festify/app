@@ -13,7 +13,7 @@ import {
     singleTrackSelector,
     voteStringGeneratorFactory,
 } from '../selectors/track';
-import { Metadata, TrackReference, State, Track } from '../state';
+import { Metadata, State, Track, TrackReference } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
