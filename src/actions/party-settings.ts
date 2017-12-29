@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as SpotifyApi from 'spotify-web-api-js';
 
-import { partyIdSelector } from '../selectors/route';
+import { partyIdSelector } from '../selectors/party';
 import { Playlist, PlaylistReference, State, Track } from '../state';
 import firebase from '../util/firebase';
 import { fetchWithAccessToken, fetchWithAnonymousAuth } from '../util/spotify-auth';
