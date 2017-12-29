@@ -11,6 +11,7 @@ import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import firebase from '../util/firebase';
 import sharedStyles from '../util/shared-styles';
+import { isPartyOwnerSelector } from '../selectors/party';
 
 interface QueueDrawerProps {
     isOwner: boolean;
@@ -129,14 +130,10 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 `;
 /* tslint:enable */
 
-const mapStateToProps = (state: State): QueueDrawerProps => {
-    const party = state.party.currentParty;
-    const user = (firebase.auth!() as FirebaseAuth).currentUser;
-    return {
-        isOwner: Boolean(user && party && party.created_by === user.uid),
-        subView: state.router.result.subView,
-    };
-};
+const mapStateToProps = (state: State): QueueDrawerProps => ({
+    isOwner: isPartyOwnerSelector(state),
+    subView: state.router.result.subView,
+});
 
 const mapDispatchToProps: QueueDrawerDispatch = {
     exitParty,
