@@ -1,5 +1,6 @@
 import chunk from 'lodash-es/chunk';
 import { ThunkAction } from 'redux-thunk';
+import * as SpotifyApi from 'spotify-web-api-js';
 
 import { Metadata, State, TrackReference } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
@@ -31,7 +32,7 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
     };
 }
 
-export function updateMetadata(tracks: any[]): UpdateMetadataAction {
+export function updateMetadata(tracks: SpotifyApi.TrackObjectFull[]): UpdateMetadataAction {
     const metadata = tracks.reduce((acc, track) => {
         acc[`spotify-${track.id}`] = {
             artists: track.artists.map(art => art.name),
