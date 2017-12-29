@@ -5,6 +5,7 @@ import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import thunk from 'redux-thunk';
 
 import { checkSpotifyLoginStatus } from './actions/auth';
+import { initializePlayer } from './actions/playback-spotify';
 import middlewares from './middlewares';
 import reducers from './reducers';
 import {
@@ -32,7 +33,9 @@ export interface SpotifyAPIWindow extends Window {
 
 store.dispatch(checkSpotifyLoginStatus());
 store.dispatch(initializeCurrentLocation(store.getState().router));
-(window as SpotifyAPIWindow).onSpotifyWebPlaybackSDKReady = () => {};
+(window as SpotifyAPIWindow).onSpotifyWebPlaybackSDKReady = () => {
+    store.dispatch(initializePlayer());
+};
 
 export const storeProvider = createProvider(store);
 customElements.define('store-provider', storeProvider);

@@ -7,6 +7,8 @@ import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 
 import { PayloadAction, Types } from '.';
+import { connectPlayer } from './playback-spotify';
+import { requireAccessToken } from '../util/spotify-auth';
 
 export type Actions =
     | OpenPartyStartAction
@@ -69,6 +71,8 @@ export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
         const isOwner = (partySnap.val() as Party).created_by === uid;
 
         if (isOwner) {
+            requireAccessToken().then(() => dispatch(connectPlayer())).catch(() => {});
+
             topmostTrackRef = firebase.database!()
                 .ref('/tracks')
                 .child(id)

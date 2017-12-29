@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@festify/spotify-web-playback-sdk-types": "^0.1.1",
     "@mraerino/redux-little-router-reactless": "^14.3.0",
     "@polymer/app-layout": "^3.0.0-pre.1",
     "@polymer/iron-icons": "^3.0.0-pre.1",

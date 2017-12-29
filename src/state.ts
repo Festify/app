@@ -80,6 +80,17 @@ export interface PartyViewState {
     searchResult: Record<string, Track> | null;
 }
 
+export interface ConnectPlaybackState {
+    deviceId: boolean;
+    name: string;
+    playing: boolean;
+}
+
+export interface PlayerState {
+    local: Spotify.PlaybackState | null;
+    connect: ConnectPlaybackState | null;
+}
+
 export interface SettingsViewState {
     playlistLoadInProgress: boolean;
     playlistLoadError: Error | null;
@@ -95,6 +106,7 @@ export interface State {
     metadata: Record<string, Metadata>;
     party: PartyState;
     partyView: PartyViewState;
+    player: PlayerState;
     router?: Location;
     settingsView: SettingsViewState;
     user: UserState;
