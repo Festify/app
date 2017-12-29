@@ -70,7 +70,11 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
     </style>
 
     ${props.text
-        ? html`<paper-icon-button icon="arrow-back" on-click="${() => props.changeText('')}"></paper-icon-button>`
+        ? html`
+            <paper-icon-button icon="arrow-back"
+                               on-click="${() => props.changeText('')}">
+            </paper-icon-button>
+        `
         : festifyLogo}
 
     <input value="${props.text}"
