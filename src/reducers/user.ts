@@ -12,6 +12,11 @@ export default function(
     action: Actions,
 ): UserState {
     switch (action.type) {
+        case Types.UPDATE_USER_PLAYLISTS:
+            return {
+                ...state,
+                playlists: action.payload,
+            };
         case Types.NOTIFY_AUTH_STATUS_KNOWN:
             const [provider, user] = action.payload;
             return {

@@ -11,6 +11,7 @@ import sharedStyles from '../util/shared-styles';
 
 import './party-queue';
 import './party-search';
+import './party-settings';
 import './playback-progress-bar';
 import './queue-drawer';
 import './search-bar';

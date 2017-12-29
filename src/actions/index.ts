@@ -11,6 +11,7 @@ import {
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
+import { Actions as SettingsActions } from './party-settings';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
 
@@ -29,18 +30,27 @@ export type Actions =
     | MetadataActions
     | PartyDataActions
     | PartyViewActions
-    | RouterActions;
+    | RouterActions
+    | SettingsActions;
 
 export const enum Types {
     NOTIFY_AUTH_STATUS_KNOWN = 'NOTIFY_AUTH_STATUS_KNOWN',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
+    CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT',
     JOIN_PARTY_Start = 'JOIN_PARTY_START',
     JOIN_PARTY_Fail = 'JOIN_PARTY_FAIL',
+    INSERT_FALLBACK_PLAYLIST_Start = 'INSERT_FALLBACK_PLAYLIST_START',
+    INSERT_FALLBACK_PLAYLIST_Finish = 'INSERT_FALLBACK_PLAYLIST_FINISH',
+    INSERT_FALLBACK_PLAYLIST_Progress = 'INSERT_FALLBACK_PLAYLIST_PROGRESS',
+    INSERT_FALLBACK_PLAYLIST_Fail = 'INSERT_FALLBACK_PLAYLIST_FAIL',
+    LOAD_PLAYLISTS_Start = 'LOAD_PLAYLISTS_START',
+    LOAD_PLAYLISTS_Fail = 'LOAD_PLAYLISTS_FAIL',
     CLEANUP_PARTY = 'CLEANUP_PARTY',
     TOGGLE_VOTE = 'TOGGLE_VOTE',
     UPDATE_METADATA = 'UPDATE_METADATA',
     UPDATE_TRACKS = 'UPDATE_TRACKS',
     UPDATE_PARTY = 'UPDATE_PARTY',
+    UPDATE_USER_PLAYLISTS = 'UPDATE_USER_PLAYLISTS',
     UPDATE_USER_VOTES = 'UPDATE_USER_VOTES',
     OPEN_PARTY_Start = 'OPEN_PARTY_START',
     OPEN_PARTY_Fail = 'OPEN_PARTY_FAIL',

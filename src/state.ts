@@ -8,6 +8,7 @@ export interface AuthProviderStatus<T> {
 
 export interface UserState {
     spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
+    playlists: Playlist[];
 }
 
 export interface Image {
@@ -27,6 +28,16 @@ export interface Playback {
     last_change: number;
     last_position_ms: number;
     playing: boolean;
+}
+
+export interface Playlist {
+    name: string;
+    reference: PlaylistReference;
+    trackCount: number;
+}
+
+export interface PlaylistReference extends TrackReference {
+    userId: string;
 }
 
 export interface Party {
@@ -54,6 +65,7 @@ export interface Track {
     is_fallback: boolean;
     order: number;
     reference: TrackReference;
+    played_at?: number;
     vote_count: number;
 }
 
@@ -68,11 +80,22 @@ export interface PartyViewState {
     searchResult: Record<string, Track> | null;
 }
 
+export interface SettingsViewState {
+    playlistLoadInProgress: boolean;
+    playlistLoadError: Error | null;
+    playlistSearchQuery: string;
+    tracksLoadInProgress: boolean;
+    tracksLoadError: Error | null;
+    tracksToLoad: number;
+    tracksLoaded: number;
+}
+
 export interface State {
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
     party: PartyState;
     partyView: PartyViewState;
     router?: Location;
+    settingsView: SettingsViewState;
     user: UserState;
 }
