@@ -45,11 +45,13 @@ export function createParty(): ThunkAction<Promise<void>, State, void> {
         const { uid } = await requireAuth();
 
         const now = firebaseNS.database!.ServerValue.TIMESTAMP;
+        const userDisplayName = user.display_name || user.id;
+        const userNamePosessive = userDisplayName.endsWith('s') ? "'" : "'s";
         const party = {
             country: user.country,
             created_at: now,
             created_by: uid,
-            name: "Today's Party",
+            name: `${userDisplayName}${userNamePosessive} Party`,
             playback: {
                 last_change: now,
                 last_position_ms: 0,
