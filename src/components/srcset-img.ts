@@ -2,7 +2,7 @@ import { html } from 'fit-html';
 
 import { Image } from '../state';
 
-export default (images: Image[], size: string, alt?: string) => {
+export default (images: Image[], size: string, alt: string = '') => {
     if (images.length === 0) {
         return html`<img>`;
     }
