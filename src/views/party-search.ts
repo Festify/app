@@ -1,10 +1,11 @@
 import { connect, html, withExtended } from 'fit-html';
 
+import { sortedTracksFactory } from '../selectors/track';
 import { State } from "../state";
 import { repeat } from "../util/repeat";
 import sharedStyles from '../util/shared-styles';
 
-import { queueStyles, sortedTracksFactory, PartyQueueProps } from "./party-queue";
+import { queueStyles, PartyQueueProps } from "./party-queue";
 import './party-track-search';
 
 const PartySearchView = (props: PartyQueueProps) => html`

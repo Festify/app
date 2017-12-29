@@ -1,3 +1,4 @@
+import values from 'lodash-es/values';
 import { createSelector } from 'reselect';
 
 import { Metadata, State, Track } from '../state';
@@ -59,6 +60,15 @@ export const artistJoinerFactory = () => createSelector(
     artistsSelectorFactory(),
     artists => artists.join(' & '),
 );
+
+export const sortedTracksFactory = (
+    tracksSelector: (state: State) => Record<string, Track> | null,
+) => createSelector(
+    tracksSelector,
+    tracks => values(tracks).sort((a, b) => a.order - b.order),
+);
+
+export const queueTracksSelector = sortedTracksFactory(tracksSelector);
 
 export const voteStringGeneratorFactory = (
     defaultTrackSelector: (state: State, trackId: string) => Track,

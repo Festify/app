@@ -1,7 +1,6 @@
 import { connect, html, withExtended } from 'fit-html';
-import values from 'lodash-es/values';
-import { createSelector } from 'reselect';
 
+import { queueTracksSelector } from '../selectors/track';
 import { State, Track } from '../state';
 import { repeat } from '../util/repeat';
 import sharedStyles from '../util/shared-styles';
@@ -88,18 +87,8 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 `;
 /* tslint:enable */
 
-export const sortedTracksFactory = (
-    tracksSelector: (state: State) => Record<string, Track> | null,
-) => createSelector(
-    tracksSelector,
-    tracks => values(tracks).sort((a, b) => a.order - b.order),
-);
-
-const tracksSelector = (state: State) => state.party.tracks;
-const sortedTracksSelector = sortedTracksFactory(tracksSelector);
-
 const mapStateToProps = (state: State): PartyQueueProps => ({
-    tracks: sortedTracksSelector(state),
+    tracks: queueTracksSelector(state),
 });
 
 const mapDispatchToProps: PartyQueueDispatch = {};
