@@ -42,11 +42,12 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
 }
 
 let partyRef: Reference | null = null;
+let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
 
 export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
 
         if (partyRef || tracksRef) {
@@ -65,7 +66,30 @@ export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
         }
 
         const { uid } = await requireAuth();
+        const isOwner = (partySnap.val() as Party).created_by === uid;
 
+        if (isOwner) {
+            topmostTrackRef = firebase.database!()
+                .ref('/tracks')
+                .child(id)
+                .orderByChild('order')
+                .limitToFirst(1);
+
+            topmostTrackRef.on('value', (snap: DataSnapshot) => {
+                if (!snap.exists()) {
+                    return;
+                }
+
+                const [trackKey] = Object.keys(snap.val());
+                firebase.database!()
+                    .ref('/tracks')
+                    .child(id)
+                    .child(trackKey)
+                    .child('order')
+                    .set(Number.MIN_SAFE_INTEGER)
+                    .catch(err => console.warn("Failed to update current track order:", err));
+            });
+        }
         tracksRef = (firebase.database!() as FirebaseDatabase)
             .ref('/tracks')
             .child(id);
@@ -91,6 +115,10 @@ export function closeParty(): ThunkAction<void, State, void> {
         if (partyRef !== null) {
             partyRef.off('value');
             partyRef = null;
+        }
+        if (topmostTrackRef != null) {
+            topmostTrackRef.off('value');
+            topmostTrackRef = null;
         }
         if (tracksRef != null) {
             tracksRef.off('value');
