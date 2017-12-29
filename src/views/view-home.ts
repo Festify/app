@@ -74,7 +74,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
     <main>
         <paper-input label="Party ID"
                      type="tel"
-                     on-value-changed="${ev => props.changePartyId((ev.target as HTMLInputElement).value)}">
+                     on-input="${ev => props.changePartyId((ev.target as HTMLInputElement).value)}">
         </paper-input>
         <paper-button id="middle"
                       raised
