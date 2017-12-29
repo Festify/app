@@ -2,10 +2,11 @@ import { FirebaseDatabase } from '@firebase/database-types';
 import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
-import { CLIENT_ID, SCOPES } from '../../spotify.config';
+import { CLIENT_ID } from '../../spotify.config';
 import { Party, State } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
+import { SCOPES } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
 

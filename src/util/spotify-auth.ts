@@ -3,6 +3,13 @@ import { CLIENT_ID, CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.co
 import { AuthData } from './auth';
 
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
+export const SCOPES = [
+    "streaming",
+    "user-read-birthdate",
+    "user-read-email",
+    "user-read-private",
+    "user-read-playback-state",
+];
 
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
