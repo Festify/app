@@ -4242,12 +4242,13 @@ gulp-tap@^0.1.3:
   dependencies:
     event-stream "~3.1.0"
 
-gulp-template@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-template/-/gulp-template-4.0.0.tgz#05de36808c6fb9966578d5a94ee72cee08cdc53b"
+gulp-template@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-template/-/gulp-template-5.0.0.tgz#9c9598a4fb2cd3ac999104499b65da8c25cc00f3"
   dependencies:
-    gulp-util "^3.0.0"
     lodash "^4.8.2"
+    plugin-error "^0.1.2"
+    safe-buffer "^5.1.1"
     through2 "^2.0.0"
 
 gulp-useref@^3.1.2:
