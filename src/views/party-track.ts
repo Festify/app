@@ -54,7 +54,7 @@ const ActionButton = (props: PartyTrackProps & PartyTrackDispatch): TemplateResu
             <paper-fab mini
                        icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
                        on-click="${props.togglePlayPause}"
-                       disabled$="${!props.canTogglePlayPause}">
+                       disabled="${!props.canTogglePlayPause}">
             </paper-fab>
         `;
     } else {
