@@ -48,24 +48,6 @@ const LikeButtonIcon = (props: PartyTrackProps): string => {
     }
 };
 
-const ActionButton = (props: PartyTrackProps & PartyTrackDispatch): TemplateResult => {
-    if (props.isPlayingTrack) {
-        return html`
-            <paper-fab mini
-                       icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
-                       on-click="${props.togglePlayPause}"
-                       disabled="${!props.canTogglePlayPause}">
-            </paper-fab>
-        `;
-    } else {
-        return html`
-            <paper-icon-button icon="${LikeButtonIcon(props)}"
-                               on-click="${ev => props.toggleVote(props.track.reference)}">
-            </paper-icon-button>
-        `;
-    }
-};
-
 /* tslint:disable:max-line-length */
 export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     ${sharedStyles}
@@ -164,7 +146,20 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
-        ${ActionButton(props)}
+        ${props.isPlayingTrack
+            ? html`
+                <paper-fab mini
+                           icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
+                           on-click="${props.togglePlayPause}"
+                           disabled="${!props.canTogglePlayPause}">
+                </paper-fab>
+            `
+            : html`
+                <paper-icon-button icon="${LikeButtonIcon(props)}"
+                                   on-click="${ev => props.toggleVote(props.track.reference)}">
+                </paper-icon-button>
+            `
+        }
     </div>
 `;
 /* tslint:enable */
