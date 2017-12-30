@@ -7,6 +7,7 @@ import { State } from '../state';
 
 import './view-home';
 import './view-party';
+import './view-tv';
 
 interface AppShellProps {
     isOwner: boolean;
@@ -20,7 +21,7 @@ const Pages = (view: Views) => {
         case Views.Party:
             return html`<view-party></view-party>`;
         case Views.Tv:
-            return null;
+            return html`<view-tv></view-tv>`;
     }
 };
 
