@@ -48,7 +48,7 @@ let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
 
-export function openParty(id: string): ThunkAction<Promise<void>, State, void> {
+export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
 

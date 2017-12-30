@@ -1,6 +1,6 @@
 import { LOCATION_CHANGED } from "@mraerino/redux-little-router-reactless";
 
-import { closeParty, openParty } from "../actions/party-data";
+import { closeParty, loadParty } from "../actions/party-data";
 
 let oldPartyId: string | null = null;
 export default store => next => action => {
@@ -22,6 +22,6 @@ export default store => next => action => {
         return next(action);
     }
 
-    store.dispatch(openParty(partyId));
+    store.dispatch(loadParty(partyId));
     next(action);
 };
