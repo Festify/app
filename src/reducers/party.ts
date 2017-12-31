@@ -34,6 +34,7 @@ export default function(
                 const track = trackList[trackId];
                 const voteQuantifier = vote ? -1 : 1;
 
+                // Precompute order for quicker UI reaction
                 trackList[trackId] = {
                     ...track,
                     order: track.order + (VOTE_FACTOR * voteQuantifier),
