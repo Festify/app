@@ -5,12 +5,26 @@ import { PartyState, Track } from '../state';
 export default function(
     state: PartyState = {
         currentParty: null,
+        partyLoadError: null,
+        partyLoadInProgress: false,
         tracks: null,
         userVotes: null,
     },
     action: Actions,
 ): PartyState {
     switch (action.type) {
+        case Types.OPEN_PARTY_Start:
+            return {
+                ...state,
+                partyLoadError: null,
+                partyLoadInProgress: true,
+            };
+        case Types.OPEN_PARTY_Fail:
+            return {
+                ...state,
+                partyLoadError: action.payload,
+                partyLoadInProgress: false,
+            };
         case Types.TOGGLE_VOTE:
             const [ref, vote] = action.payload;
             const trackId = `${ref.provider}-${ref.id}`;
@@ -38,6 +52,8 @@ export default function(
         case Types.UPDATE_PARTY:
             return {
                 ...state,
+                partyLoadError: null,
+                partyLoadInProgress: false,
                 currentParty: action.payload,
             };
         case Types.UPDATE_TRACKS:
@@ -53,6 +69,8 @@ export default function(
         case Types.CLEANUP_PARTY:
             return {
                 currentParty: null,
+                partyLoadError: null,
+                partyLoadInProgress: false,
                 userVotes: null,
                 tracks: null,
             };

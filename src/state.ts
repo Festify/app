@@ -51,6 +51,8 @@ export interface Party {
 
 export interface PartyState {
     currentParty: Party | null;
+    partyLoadError: Error | null;
+    partyLoadInProgress: boolean;
     tracks: Record<string, Track> | null;
     userVotes: Record<string, boolean> | null;
 }
