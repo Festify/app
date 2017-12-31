@@ -20,10 +20,74 @@ import './tv-track';
 interface ViewTvProps {
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
+    initError: Error | null;
+    isLoading: boolean;
     metadata: Record<string, Metadata>;
     party: Party | null;
     queueTracks: Track[];
 }
+
+const Body = (props: ViewTvProps) => {
+    if (props.isLoading) {
+        return html`
+            <div class="no-tracks">
+                <div class="header">
+                    ${festifyLogo}
+                    <h1>Loading...</h1>
+                </div>
+            </div>
+        `;
+    } else if (props.initError) {
+        return html`
+            <div class="no-tracks">
+                <div class="header">
+                    <span class="flash">⚡️</span>
+                    <h1>Oh, no!</h1>
+                </div>
+                <h2>The party could not be loaded. The following error occured:</h2>
+                <h2>${props.initError.message}</h2>
+            </div>
+        `;
+    } else if (props.currentTrackMetadata) {
+        return html`
+            <div class="background">
+                ${srcsetImg(props.currentTrackMetadata.cover, '100vw', '')}
+            </div>
+
+            <div class="upper">
+                <div class="playing-track">
+                    ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
+
+                    <div class="metadata">
+                        <h2>${props.currentTrackMetadata.name}</h2>
+                        <h3>${props.currentTrackArtistName}</h3>
+
+                        <playback-progress-bar></playback-progress-bar>
+
+                        <h4>Go to festify.us and vote!</h4>
+                        <h5>${props.party && props.party.short_id}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="lower">
+                ${repeat(props.queueTracks, qt => `${qt.reference.provider}-${qt.reference.id}`, t => html`
+                    <tv-track trackid="${`${t.reference.provider}-${t.reference.id}`}"></tv-track>
+                `)}
+            </div>
+        `;
+    } else {
+        return html`
+            <div class="no-tracks">
+                <div class="header">
+                    ${festifyLogo}
+                    <h1>Oh, no!</h1>
+                </div>
+                <h2>There are no tracks in the queue right now.</h2>
+                <h2>Enter ${props.party && props.party.short_id} on festify.us and vote for new ones!</h2>
+            </div>
+        `;
+    }
+};
 
 /* tslint:disable:max-line-length */
 const ViewTv = (props: ViewTvProps) => html`
@@ -149,6 +213,10 @@ const ViewTv = (props: ViewTvProps) => html`
             margin-bottom: 8vh;
         }
 
+        .no-tracks .flash {
+            font-size: 12vh;
+        }
+
         .no-tracks svg {
             height: 16vh;
         }
@@ -168,44 +236,7 @@ const ViewTv = (props: ViewTvProps) => html`
         }
     </style>
 
-    ${props.currentTrackMetadata
-        ? html`
-            <div class="background">
-                ${srcsetImg(props.currentTrackMetadata.cover, '100vw', '')}
-            </div>
-
-            <div class="upper">
-                <div class="playing-track">
-                    ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
-
-                    <div class="metadata">
-                        <h2>${props.currentTrackMetadata.name}</h2>
-                        <h3>${props.currentTrackArtistName}</h3>
-
-                        <playback-progress-bar></playback-progress-bar>
-
-                        <h4>Go to festify.us and vote!</h4>
-                        <h5>${props.party && props.party.short_id}</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="lower">
-                ${repeat(props.queueTracks, qt => `${qt.reference.provider}-${qt.reference.id}`, t => html`
-                    <tv-track trackid="${`${t.reference.provider}-${t.reference.id}`}"></tv-track>
-                `)}
-            </div>
-        `
-        : html`
-            <div class="no-tracks">
-                <div class="header">
-                    ${festifyLogo}
-                    <h1>Oh, no!</h1>
-                </div>
-                <h2>There are no tracks in the queue right now.</h2>
-                <h2>Enter ${props.party && props.party.short_id} on festify.us and vote for new ones!</h2>
-            </div>
-        `
-    }
+    ${Body(props)}
 `;
 /* tslint:enable */
 
@@ -225,6 +256,8 @@ const mapStateToProps = (state: State): ViewTvProps => {
         currentTrackMetadata: currentTrackId
             ? singleMetadataSelector(state, currentTrackId)
             : null,
+        initError: state.party.partyLoadError,
+        isLoading: state.party.partyLoadInProgress,
         metadata: state.metadata,
         party: state.party.currentParty,
         queueTracks: restTracksSelector(state),
