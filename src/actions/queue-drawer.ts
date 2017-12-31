@@ -1,32 +1,19 @@
 import { push } from '@mraerino/redux-little-router-reactless';
 import { ThunkAction } from 'redux-thunk';
 
-import { PartyViews, Views } from '../routing';
 import { State } from '../state';
 
-export function exitParty(): typeof push {
-    return push('/', {});
-}
+const MOUSE_BTN_LEFT = 0;
 
-export function navigateTo(view: PartyViews | Views.Tv): ThunkAction<void, State, void> {
-    return (dispatch, getState) => {
-        const { router } = getState();
-
-        if (!router.params) {
-            throw new Error("Missing router state.");
+export function handleClick(ev: MouseEvent, route: string): ThunkAction<void, State, void> {
+    return (dispatch) => {
+        if ((ev.button && ev.button !== MOUSE_BTN_LEFT) ||
+            ev.shiftKey || ev.altKey || ev.metaKey || ev.ctrlKey ||
+            ev.defaultPrevented) {
+            return;
         }
 
-        const { partyId } = router.params;
-        let route = view === Views.Tv
-            ? `/tv/${partyId}`
-            : `/party/${partyId}`;
-
-        if (view === PartyViews.Share) {
-            route += '/share';
-        } else if (view === PartyViews.Settings) {
-            route += '/settings';
-        }
-
+        ev.preventDefault();
         dispatch(push(route, {}));
     };
 }

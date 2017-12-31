@@ -1,26 +1,28 @@
-import { FirebaseAuth } from '@firebase/auth-types';
 import '@polymer/iron-icon/iron-icon';
 import '@polymer/iron-icons/hardware-icons';
 import '@polymer/iron-icons/iron-icons';
 import '@polymer/iron-icons/social-icons';
 import { connect, html, withExtended } from 'fit-html';
+import { createSelector } from 'reselect';
 
-import { exitParty, navigateTo } from '../actions/queue-drawer';
-import { PartyViews, Views } from '../routing';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { handleClick } from '../actions/queue-drawer';
+import { PartyViews } from '../routing';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
-import firebase from '../util/firebase';
 import sharedStyles from '../util/shared-styles';
 
 interface QueueDrawerProps {
     isOwner: boolean;
+    queueRoute: string;
+    settingsRoute: string;
+    shareRoute: string;
     subView: PartyViews;
+    tvRoute: string;
 }
 
 interface QueueDrawerDispatch {
-    exitParty: () => void;
-    navigateTo: (view: PartyViews | Views.Tv) => void;
+    handleClick: (ev: Event, route: string) => void;
 }
 
 const isActive = (isActive: boolean) => isActive ? 'active' : '';
@@ -91,30 +93,31 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     </header>
 
     <div class="menu" role="menu">
-        <a name="queue"
+        <a href$="${props.queueRoute}"
            class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
-           on-click="${() => props.navigateTo(PartyViews.Queue)}">
+           on-click="${ev => props.handleClick(ev, props.queueRoute)}">
             <iron-icon icon="menu"></iron-icon>
             Queue
         </a>
         ${props.isOwner
             ? html`
-                <a name="settings"
+                <a href$="${props.settingsRoute}"
                    class$="${isActive(props.subView === PartyViews.Settings)}"
-                   on-click="${() => props.navigateTo(PartyViews.Settings)}">
+                   on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
                     <iron-icon icon="settings"></iron-icon>
                     Party Settings
                 </a>
             `
             : html``
         }
-        <a name="share"
+        <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
-           on-click="${() => props.navigateTo(PartyViews.Share)}">
+           on-click="${ev => props.handleClick(ev, props.shareRoute)}">
             <iron-icon icon="social:share"></iron-icon>
             Share Party
         </a>
-        <a on-click="${() => props.navigateTo(Views.Tv)}">
+        <a href="${props.tvRoute}"
+           on-click="${ev => props.handleClick(ev, props.tvRoute)}">
             <iron-icon icon="hardware:tv"></iron-icon>
             TV Mode
         </a>
@@ -122,7 +125,8 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="home"></iron-icon>
             Festify Homepage
         </a>
-        <a role="button" on-click="${props.exitParty}">
+        <a href="/"
+           on-click="${ev => props.handleClick(ev, '/')}">
             <iron-icon icon="cancel"></iron-icon>
             Exit Party
         </a>
@@ -130,14 +134,37 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 `;
 /* tslint:enable */
 
+const queueRouteSelector = createSelector(
+    partyIdSelector,
+    partyId => `/party/${partyId}`,
+);
+
+const settingsRouteSelector = createSelector(
+    queueRouteSelector,
+    queueRoute => `${queueRoute}/settings`,
+);
+
+const shareRouteSelector = createSelector(
+    queueRouteSelector,
+    queueRoute => `${queueRoute}/share`,
+);
+
+const tvRouteSelector = createSelector(
+    partyIdSelector,
+    partyId => `/tv/${partyId}`,
+);
+
 const mapStateToProps = (state: State): QueueDrawerProps => ({
     isOwner: isPartyOwnerSelector(state),
+    queueRoute: queueRouteSelector(state),
+    settingsRoute: settingsRouteSelector(state),
+    shareRoute: shareRouteSelector(state),
     subView: state.router.result.subView,
+    tvRoute: tvRouteSelector(state),
 });
 
 const mapDispatchToProps: QueueDrawerDispatch = {
-    exitParty,
-    navigateTo,
+    handleClick,
 };
 
 customElements.define(
