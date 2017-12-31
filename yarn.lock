@@ -7,8 +7,8 @@
   resolved "https://registry.yarnpkg.com/@comandeer/babel-plugin-banner/-/babel-plugin-banner-1.0.0.tgz#40bcce0bbee084b5b02545a33635d053c248356f"
 
 "@festify/spotify-web-playback-sdk-types@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@festify/spotify-web-playback-sdk-types/-/spotify-web-playback-sdk-types-0.1.1.tgz#5036c97f4f38d4eedd98cd9b286b03ab961ac683"
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@festify/spotify-web-playback-sdk-types/-/spotify-web-playback-sdk-types-0.1.2.tgz#c8560177cf2e1b8fdb10db73813df6e8f7606ac9"
 
 "@firebase/app-types@0.1.0":
   version "0.1.0"
