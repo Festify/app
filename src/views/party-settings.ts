@@ -2,7 +2,7 @@ import '@polymer/iron-icons/av-icons';
 import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
-import '@polymer/paper-spinner/paper-spinner-light';
+import '@polymer/paper-spinner/paper-spinner-lite';
 import { connect, html, withExtended } from 'fit-html';
 
 import { changePartyName, changeSearchInput, insertPlaylist } from '../actions/party-settings';
@@ -43,7 +43,7 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             margin-bottom: 0;
         }
 
-        paper-spinner-light {
+        paper-spinner-lite {
             margin: auto;
 
             --paper-spinner-color: var(--primary-color);
@@ -112,8 +112,8 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
                      on-input="${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}">
         </paper-input>
 
-        <paper-spinner-light active="${props.isPlaylistLoadInProgress}"
-                             alt="Loading playlists...">
+        <paper-spinner-lite active="${props.isPlaylistLoadInProgress}"
+                            alt="Loading playlists...">
         </paper-spinner-light>
 
         ${repeat(props.playlists, pl => pl.reference.id, item => html`
