@@ -131,12 +131,11 @@ const ViewTv = (props: ViewTvProps) => html`
 
         .background img {
             position: absolute;
-            left: -3.704vh;
-            top: -3.704vh;
-            right: -3.704vh;
-            bottom: -3.704vh;
+            left: 50%;
+            top: 50%;
             filter: blur(50px);
             opacity: 0.3;
+            transform: translate(-50%, -50%);
         }
 
         .playing-track {
