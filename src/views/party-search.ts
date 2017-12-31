@@ -12,7 +12,7 @@ const PartySearchView = (props: PartyQueueProps) => html`
     ${sharedStyles}
     ${queueStyles}
     <style>
-        party-track:first-of-type {
+        party-track-search:first-of-type {
             padding-top: 16px;
             z-index: 1;
         }
