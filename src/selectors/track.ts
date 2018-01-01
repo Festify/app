@@ -58,7 +58,12 @@ export const artistsSelectorFactory = () => createSelector(
 
 export const artistJoinerFactory = () => createSelector(
     artistsSelectorFactory(),
-    artists => artists.join(' & '),
+    artists => {
+        const [first, ...rest] = artists;
+        return rest.length > 0
+            ? `${first} feat. ${rest.join(' & ')}`
+            : first;
+    },
 );
 
 export const sortedTracksFactory = (
