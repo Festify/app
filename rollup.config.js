@@ -62,6 +62,7 @@ export default {
         copy({
             'node_modules/@webcomponents/webcomponentsjs': dist('node_modules/@webcomponents/webcomponentsjs'),
             [src('index.html')]: dist('index.html'),
+            [src('manifest.json')]: dist('manifest.json'),
         }),
         cjs(),
         nodeGlobals(),
