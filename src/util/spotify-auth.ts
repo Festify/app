@@ -31,23 +31,14 @@ async function _requireAccessToken(): Promise<string> {
         return authData.accessToken;
     }
 
-    const lsString = localStorage[LOCALSTORAGE_KEY];
-    if (!lsString) {
-        throw new Error("Missing authentication data.");
-    }
-
-    authData = JSON.parse(lsString);
-    if (!authData) {
-        throw new Error("Missing authentication data.");
-    }
-
-    if (authData.expiresAt > Date.now() + 10000) {
+    authData = AuthData.loadFrom(LOCALSTORAGE_KEY);
+    if (authData.isValid) {
         return authData.accessToken;
     }
+
     if (!authData.refreshToken) {
         throw new Error("Missing refresh token.");
     }
-
     const body = `refresh_token=${encodeURIComponent(authData.refreshToken)}`;
     const resp = await fetch(TOKEN_REFRESH_URL, {
         body,
@@ -61,12 +52,12 @@ async function _requireAccessToken(): Promise<string> {
         throw new Error(`Token refresh failed: ${msg}.`);
     }
 
-    authData = {
-        accessToken: access_token,
-        expiresAt: Date.now() + (expires_in * 1000),
-        refreshToken: authData.refreshToken,
-    };
-    localStorage[LOCALSTORAGE_KEY] = JSON.stringify(authData);
+    authData = new AuthData(
+        access_token,
+        Date.now() + (expires_in * 1000),
+        authData.refreshToken,
+    );
+    authData.saveTo(LOCALSTORAGE_KEY);
 
     return authData.accessToken;
 }

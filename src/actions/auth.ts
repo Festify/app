@@ -60,12 +60,12 @@ export function exchangeCode(code: string): ThunkAction<Promise<void>, State, vo
             throw new Error(`Token exchange failed: ${msg}.`);
         }
 
-        const data: AuthData = {
-            accessToken: access_token,
-            expiresAt: Date.now() + (expires_in * 1000),
-            refreshToken: refresh_token,
-        };
-        localStorage[LOCALSTORAGE_KEY] = JSON.stringify(data);
+        const data = new AuthData(
+            access_token,
+            Date.now() + (expires_in * 1000),
+            refresh_token,
+        );
+        data.saveTo(LOCALSTORAGE_KEY);
 
         dispatch(checkSpotifyLoginStatus());
     };
