@@ -1,3 +1,5 @@
+import debounce from 'promise-debounce';
+
 import { CLIENT_ID, CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.config';
 
 import { AuthData } from './auth';
@@ -11,20 +13,13 @@ export const SCOPES = [
     "user-read-playback-state",
 ];
 
+export const requireAccessToken: () => Promise<string> = debounce(_requireAccessToken);
+export const requireAnonymousAuth: () => Promise<string> = debounce(_requireAnonymousAuth);
+
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
 
 let authData: AuthData | null = null;
-let accessTokenPromise: Promise<string> | null = null;
-
-export function requireAccessToken(): Promise<string> {
-    if (accessTokenPromise) {
-        return accessTokenPromise;
-    }
-
-    accessTokenPromise = _requireAccessToken();
-    return accessTokenPromise;
-}
 
 async function _requireAccessToken(): Promise<string> {
     if (authData && authData.expiresAt > Date.now() + 10000) {
@@ -58,23 +53,12 @@ async function _requireAccessToken(): Promise<string> {
         authData.refreshToken,
     );
     authData.saveTo(LOCALSTORAGE_KEY);
-    accessTokenPromise = null;
 
     return authData.accessToken;
 }
 
 let anonymousAccessToken: string = '';
 let anonymousExpireTimeMs: number = 0;
-let anonymousPromise: Promise<string> | null = null;
-
-export function requireAnonymousAuth(): Promise<string> {
-    if (anonymousPromise) {
-        return anonymousPromise;
-    }
-
-    anonymousPromise = _requireAnonymousAuth();
-    return anonymousPromise;
-}
 
 async function _requireAnonymousAuth(): Promise<string> {
     if (Date.now() < anonymousExpireTimeMs) {
@@ -86,7 +70,6 @@ async function _requireAnonymousAuth(): Promise<string> {
 
     anonymousAccessToken = access_token;
     anonymousExpireTimeMs = Date.now() + (expires_in * 1000) - 10000; // Safety margin
-    anonymousPromise = null;
     return access_token;
 }
 

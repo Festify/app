@@ -2747,6 +2747,10 @@ process-nextick-args@~1.0.6:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
 
+promise-debounce@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/promise-debounce/-/promise-debounce-1.0.1.tgz#6ed76f8f79d0144fdbd01cc15589ce57f9d71e78"
+
 promise-polyfill@^6.0.2:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-6.1.0.tgz#dfa96943ea9c121fca4de9b5868cb39d3472e057"
