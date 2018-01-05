@@ -52,7 +52,7 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
 
-        if (partyRef || tracksRef) {
+        if (partyRef || topmostTrackRef || tracksRef || votesRef) {
             dispatch(closeParty());
         }
 
