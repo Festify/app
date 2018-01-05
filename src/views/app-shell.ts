@@ -65,11 +65,11 @@ const mapStateToProps = (state: State): AppShellProps => ({
     view: (state.router.result || {}).view,
 });
 
-const AppShell = withExtended(connect(
-    mapStateToProps,
-    {},
-    AppShellView,
-));
-
-customElements.define('app-shell', AppShell);
-export default AppShell;
+customElements.define(
+    'app-shell',
+    withExtended(connect(
+        mapStateToProps,
+        {},
+        AppShellView,
+    )),
+);
