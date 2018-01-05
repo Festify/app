@@ -58,6 +58,7 @@ async function _requireAccessToken(): Promise<string> {
         authData.refreshToken,
     );
     authData.saveTo(LOCALSTORAGE_KEY);
+    accessTokenPromise = null;
 
     return authData.accessToken;
 }
