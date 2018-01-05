@@ -44,7 +44,8 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
         }
 
         paper-spinner-lite {
-            margin: auto;
+            display: block;
+            margin: 16px auto 16px auto;
 
             --paper-spinner-color: var(--primary-color);
         }
@@ -112,9 +113,12 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
                      on-input="${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}">
         </paper-input>
 
-        <paper-spinner-lite active="${props.isPlaylistLoadInProgress}"
-                            alt="Loading playlists...">
-        </paper-spinner-light>
+        ${props.isPlaylistLoadInProgress
+            ? html`
+                <paper-spinner-lite active alt="Loading playlists...">
+                </paper-spinner-light>
+            `
+            : null}
 
         ${repeat(props.playlists, pl => pl.reference.id, item => html`
             <div class="fallback-playlist">
