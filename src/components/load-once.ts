@@ -3,11 +3,6 @@ class LoadOnce extends HTMLElement {
     _load: boolean;
     _hasBeenLoaded: boolean = false;
 
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
-
     static get observedAttributes() {
         return ['load'];
     }
@@ -34,6 +29,8 @@ class LoadOnce extends HTMLElement {
             throw new Error("LoadOnce needs a template element inside to work");
         }
         const subject = document.importNode(templ.content, true);
+
+        this.attachShadow({ mode: 'open' });
         this.shadowRoot!.appendChild(subject);
     }
 }
