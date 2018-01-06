@@ -5,8 +5,6 @@ import srcsetImg from '../components/srcset-img';
 import {
     artistJoinerFactory,
     currentTrackIdSelector,
-    currentTrackSelector,
-    metadataSelector,
     queueTracksSelector,
     singleMetadataSelector,
 } from '../selectors/track';

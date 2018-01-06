@@ -8,7 +8,6 @@ import {
     singleTrackSelector,
 } from '../selectors/track';
 import { Metadata, State, Track } from '../state';
-import sharedStyles from '../util/shared-styles';
 
 interface TvTrackProps {
     artistName: string;

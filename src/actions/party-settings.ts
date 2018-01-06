@@ -1,4 +1,3 @@
-import { DataSnapshot } from '@firebase/database-types';
 import shuffleArr from 'lodash-es/shuffle';
 import { Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -7,7 +6,7 @@ import * as SpotifyApi from 'spotify-web-api-js';
 import { partyIdSelector } from '../selectors/party';
 import { Playlist, PlaylistReference, State, Track } from '../state';
 import firebase from '../util/firebase';
-import { fetchWithAccessToken, fetchWithAnonymousAuth } from '../util/spotify-auth';
+import { fetchWithAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
 import { updateMetadata } from './metadata';

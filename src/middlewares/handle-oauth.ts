@@ -1,6 +1,6 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
 import { exchangeCode } from '../actions/auth';
 
 export default store => next => (action: Actions) => {

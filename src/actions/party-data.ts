@@ -1,4 +1,3 @@
-import { FirebaseAuth } from '@firebase/auth-types';
 import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
 import { ThunkAction } from 'redux-thunk';
 

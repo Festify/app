@@ -3,7 +3,6 @@ import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended, withProps } from 'fit-html';
-import { TemplateResult } from 'lit-html';
 
 import { togglePlayPause } from '../actions/playback-spotify';
 import { toggleVote } from '../actions/view-party';
