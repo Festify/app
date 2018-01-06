@@ -5,8 +5,10 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended, withProps } from 'fit-html';
 import { TemplateResult } from 'lit-html';
 
+import { togglePlayPause } from '../actions/playback-spotify';
 import { toggleVote } from '../actions/view-party';
 import srcsetImg from '../components/srcset-img';
+import { isPartyOwnerSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
     defaultMetaSelectorFactory,
@@ -19,13 +21,14 @@ import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
     artistName: string;
-    canTogglePlayPause: boolean;
+    isOwner: boolean;
     isMusicPlaying: boolean;
     isPlayingTrack: boolean;
     hasVoted: boolean;
     metadata: Metadata;
     track: Track;
     voteString: string;
+    togglingPlayback: boolean;
 }
 
 interface PartyTrackDispatch {
@@ -128,6 +131,21 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             margin-left: 5px;
             padding: 6px;
         }
+
+        .fab-spinner {
+            position: relative;
+        }
+
+        .fab-spinner paper-spinner-lite {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            --paper-spinner-color: white;
+            --paper-spinner-stroke-width: 2px;
+            pointer-events: none;
+        }
     </style>
 
     ${srcsetImg(props.metadata.cover, '54px')}
@@ -148,11 +166,14 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     <div class="icon-wrapper">
         ${props.isPlayingTrack
             ? html`
-                <paper-fab mini
-                           icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
-                           on-click="${props.togglePlayPause}"
-                           disabled="${!props.canTogglePlayPause}">
-                </paper-fab>
+                <div class="fab-spinner">
+                    <paper-fab mini
+                               icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
+                               on-click="${props.togglePlayPause}"
+                               disabled="${!props.isOwner || props.togglingPlayback}">
+                    </paper-fab>
+                    <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
+                </div>
             `
             : html`
                 <paper-icon-button icon="${LikeButtonIcon(props)}"
@@ -183,11 +204,12 @@ export const createMapStateToPropsFactory = (
                 metadata,
                 track,
                 artistName: artistJoiner(state, ownProps.trackid),
-                canTogglePlayPause: false,
+                isOwner: isPartyOwnerSelector(state),
                 hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
-                isMusicPlaying: false,
+                isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
                 isPlayingTrack: ownProps.playing,
                 voteString: voteStringGenerator(state, ownProps.trackid),
+                togglingPlayback: state.player.togglingPlayback,
             };
         };
     };
@@ -195,7 +217,7 @@ export const createMapStateToPropsFactory = (
 
 export const mapDispatchToProps: PartyTrackDispatch = {
     toggleVote,
-    togglePlayPause: () => {},
+    togglePlayPause,
 };
 
 const PartyTrackBase = withProps(withExtended(connect(

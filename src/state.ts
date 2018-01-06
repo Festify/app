@@ -25,6 +25,7 @@ export interface Metadata {
 }
 
 export interface Playback {
+    device_id: string | null;
     last_change: number;
     last_position_ms: number;
     playing: boolean;
@@ -83,14 +84,19 @@ export interface PartyViewState {
 }
 
 export interface ConnectPlaybackState {
-    deviceId: boolean;
+    deviceId: string;
     name: string;
     playing: boolean;
 }
 
 export interface PlayerState {
     local: Spotify.PlaybackState | null;
+    localDeviceId: string | null;
     connect: ConnectPlaybackState | null;
+    initializing: boolean;
+    initializationError: Error | null;
+    togglingPlayback: boolean;
+    togglePlaybackError: Error | null;
 }
 
 export interface SettingsViewState {
