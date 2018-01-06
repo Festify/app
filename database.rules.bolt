@@ -4,7 +4,7 @@ path /parties {
 }
 
 path /parties/{partyId} is Party {
-    write() { createdByCurrent(root.party[partyId].created_by) }
+    write() { createdByCurrent(this.created_by) }
 }
 
 type Party {
