@@ -2,8 +2,8 @@ import { ThunkAction } from 'redux-thunk';
 import { createSelector } from 'reselect';
 
 import { partyIdSelector } from '../selectors/party';
-import { topTracksSelector } from '../selectors/track';
-import { ConnectPlaybackState, State } from '../state';
+import { currentTrackSelector, topTracksSelector } from '../selectors/track';
+import { ConnectPlaybackState, State, Track } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
@@ -151,6 +151,45 @@ export function fetchConnectPlayerState(): ThunkAction<Promise<void>, State, voi
     };
 }
 
+let currentTrack: Track | null = null;
+export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
+    function tracksEqual(a: Track | null, b: Track | null): boolean {
+        if (a === b) {
+            return true;
+        } else if (!a || !b) {
+            return false;
+        } else {
+            return a.reference.provider === b.reference.provider &&
+                a.reference.id === b.reference.id;
+        }
+    }
+
+    return async (dispatch, getState) => {
+        const state = getState();
+        const newCurrentTrack = currentTrackSelector(state);
+
+        if (tracksEqual(currentTrack, newCurrentTrack)) {
+            return;
+        }
+        currentTrack = newCurrentTrack;
+
+        const { currentParty } = state.party;
+        if (!currentParty) {
+            throw new Error("Missing party");
+        }
+
+        // Spotify yields an error if you try to pause while player is paused
+        if (currentParty.playback.playing) {
+            await dispatch(pause());
+        }
+
+        // Only start playback if we were playing before and if we have a track to play
+        if (currentParty.playback.playing && newCurrentTrack) {
+            await dispatch(play(undefined, 0));
+        }
+    };
+}
+
 const topTracksIdSelector: (state: State) => string[] = createSelector(
     topTracksSelector,
     tracks => tracks.map(t => `spotify:track:${t.reference.id}`),
@@ -166,6 +205,15 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
         await fetchWithAccessToken('/me/player/pause', { method: 'put' });
         const state = getState();
 
+        let newPos = 0;
+        if (state.player.connect) {
+            newPos = state.player.connect.positionMs;
+        } else if (player) {
+            const state = await player.getCurrentState();
+            if (state) {
+                newPos = state.position;
+            }
+        }
         await firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
@@ -173,13 +221,18 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
             .update({
                 playing: false,
                 last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: state.player.connect
-                    ? state.player.connect.positionMs
-                    : (await player!.getCurrentState())!.position,
+                last_position_ms: newPos,
             });
     };
 }
 
+/**
+ * Start / resume playback of the currently playing track
+ *
+ * @param deviceId The device ID to play on, pass undefined to play on currently active device
+ * @param positionMs The position in milliseconds to play the track from. Pass `undefined` to resume
+ * playback instead of starting anew.
+ */
 export function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
@@ -198,6 +251,7 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
             throw new Error("Missing party");
         }
 
+        const resume = positionMs === undefined;
         const uri = `/me/player/play${deviceId ? '?device_id=' + encodeURIComponent(deviceId) : ''}`;
 
         await fetchWithAccessToken(uri, {
@@ -205,8 +259,15 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: deviceId ? JSON.stringify({ uris: tracks }) : undefined,
+            body: !resume ? JSON.stringify({ uris: tracks }) : undefined,
         });
+
+        if (positionMs || positionMs === 0) {
+            await fetchWithAccessToken(
+                `/me/player/seek?position_ms=${Math.floor(positionMs)}`,
+                { method: 'put' },
+            );
+        }
 
         const playbackRef = firebase.database!()
             .ref(`/parties`)
@@ -222,19 +283,10 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
         await playbackRef.update({
             playing: true,
             last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-            last_position_ms: positionMs !== undefined // Resume
-                ? positionMs
-                : currentParty.playback.last_position_ms,
+            last_position_ms: resume
+                ? currentParty.playback.last_position_ms
+                : positionMs,
         });
-
-        if (positionMs === undefined || positionMs < 0) {
-            return;
-        }
-
-        await fetchWithAccessToken(
-            `/me/player/seek?position_ms=${Math.floor(positionMs)}`,
-            { method: 'put' },
-        );
     };
 }
 

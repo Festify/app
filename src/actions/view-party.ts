@@ -2,9 +2,7 @@ import { push, replace } from '@mraerino/redux-little-router-reactless/lib';
 import debounce from 'lodash-es/debounce';
 import { ThunkAction } from 'redux-thunk';
 
-import { Metadata, State, Track, TrackReference } from '../state';
-import { requireAuth } from '../util/auth';
-import firebase from '../util/firebase';
+import { State, Track, TrackReference } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
@@ -45,45 +43,6 @@ export function changeSearchInputText(text: string): ThunkAction<void, State, vo
 
         const routerFn = query ? replace : push;
         dispatch(routerFn(`/party/${partyId}/search/${encodeURIComponent(text)}`, {}));
-    };
-}
-
-export function toggleVote(ref: TrackReference): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const state = getState();
-        const { userVotes } = state.party;
-        const { params } = state.router;
-
-        const partyId = params && params.partyId;
-
-        if (!partyId) {
-            throw new Error("Missing party ID!");
-        }
-
-        const hasVoted = userVotes && userVotes[`${ref.provider}-${ref.id}`] === true;
-        const trackId = `${ref.provider}-${ref.id}`;
-
-        dispatch({
-            type: Types.TOGGLE_VOTE,
-            payload: [ref, !hasVoted],
-        } as ToggleVoteAction);
-
-        const { uid } = await requireAuth();
-
-        const a = firebase.database!()
-            .ref('/votes')
-            .child(partyId)
-            .child(trackId)
-            .child(uid)
-            .set(!hasVoted);
-        const b = firebase.database!()
-            .ref('/votes_by_user')
-            .child(partyId)
-            .child(uid)
-            .child(trackId)
-            .set(!hasVoted);
-
-        await Promise.all([a, b]);
     };
 }
 

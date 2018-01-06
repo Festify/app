@@ -5,7 +5,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended, withProps } from 'fit-html';
 
 import { togglePlayPause } from '../actions/playback-spotify';
-import { toggleVote } from '../actions/view-party';
+import { removeTrack, toggleVote } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector } from '../selectors/party';
 import {
@@ -31,6 +31,7 @@ export interface PartyTrackProps {
 }
 
 interface PartyTrackDispatch {
+    removeTrack: (ref: TrackReference) => void;
     togglePlayPause: () => void;
     toggleVote: (ref: TrackReference) => void;
 }
@@ -117,6 +118,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
 
         .icon-wrapper {
+            display: flex;
             margin-left: auto;
             flex-basis: 40px;
         }
@@ -132,6 +134,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
 
         .fab-spinner {
+            margin-left: 5px;
             position: relative;
         }
 
@@ -166,8 +169,20 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
+        ${props.isOwner && !props.isPlayingTrack
+            ? html`
+                <paper-icon-button icon="clear"
+                                   on-click="${() => props.removeTrack(props.track.reference)}"
+                                   title="Remove ${props.metadata.name} from queue">
+                </paper-icon-button>
+            `
+            : null}
         ${props.isPlayingTrack
             ? html`
+                <paper-icon-button icon="av:skip-next"
+                                   on-click="${() => props.removeTrack(props.track.reference)}"
+                                   title="Skip ${props.metadata.name}">
+                </paper-icon-button>
                 <div class="fab-spinner">
                     <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                     <paper-fab mini
@@ -179,7 +194,8 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             `
             : html`
                 <paper-icon-button icon="${LikeButtonIcon(props)}"
-                                   on-click="${ev => props.toggleVote(props.track.reference)}">
+                                   on-click="${ev => props.toggleVote(props.track.reference)}"
+                                   title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
                 </paper-icon-button>
             `
         }
@@ -218,6 +234,7 @@ export const createMapStateToPropsFactory = (
 };
 
 export const mapDispatchToProps: PartyTrackDispatch = {
+    removeTrack: (ref: TrackReference) => removeTrack(ref, false),
     toggleVote,
     togglePlayPause,
 };
