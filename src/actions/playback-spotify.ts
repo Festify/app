@@ -2,7 +2,6 @@ import { ThunkAction } from 'redux-thunk';
 import { createSelector } from 'reselect';
 
 import { partyIdSelector } from '../selectors/party';
-import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { topTracksSelector } from '../selectors/track';
 import { ConnectPlaybackState, State } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
