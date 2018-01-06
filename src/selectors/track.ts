@@ -68,7 +68,7 @@ export const artistJoinerFactory = () => createSelector(
 
 export const sortedTracksFactory = (
     tracksSelector: (state: State) => Record<string, Track> | null,
-) => createSelector(
+): ((state: State) => Track[]) => createSelector(
     tracksSelector,
     tracks => values(tracks).sort((a, b) => a.order - b.order),
 );
