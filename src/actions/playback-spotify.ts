@@ -171,8 +171,6 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
 
         await fetchWithAccessToken('/me/player/pause', { method: 'put' });
 
-        console.log(firebase.auth!().currentUser!.uid);
-
         await firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
@@ -209,8 +207,6 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
             },
             body: deviceId ? JSON.stringify({ uris: tracks }) : undefined,
         });
-
-        console.log(firebase.auth!().currentUser!.uid);
 
         await firebase.database!()
             .ref(`/parties`)
