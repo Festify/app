@@ -190,7 +190,9 @@ async function fetchTracks(playlist: Playlist, dispatch: Dispatch<State>): Promi
     do {
         const resp = await fetchWithAccessToken(url);
         const json: SpotifyApi.PlaylistTrackResponse = await resp.json();
-        const trackItems = json.items.map(it => it.track);
+        const trackItems = json.items
+            .map(it => it.track)
+            .filter((track: PlaylistTrackObject) => track.id);
 
         dispatch(updateMetadata(trackItems));
         dispatch(insertPlaylistProgress(json.items.length));
