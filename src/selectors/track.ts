@@ -59,7 +59,9 @@ export const sortedTracksFactory = (
     tracksSelector: (state: State) => Record<string, Track> | null,
 ): ((state: State) => Track[]) => createSelector(
     tracksSelector,
-    tracks => values(tracks).sort((a, b) => a.order - b.order),
+    tracks => values(tracks)
+        .filter(t => t.reference.provider && t.reference.id)
+        .sort((a, b) => a.order - b.order),
 );
 
 export const queueTracksSelector = sortedTracksFactory(tracksSelector);
