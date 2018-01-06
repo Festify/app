@@ -229,12 +229,17 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
 /**
  * Start / resume playback of the currently playing track
  *
- * @param deviceId The device ID to play on, pass undefined to play on currently active device
+ * @param deviceId The device ID to play on, pass undefined to play on currently active device. When
+ * passing a device ID here, you must also pass a starting position to play from (can be 0, but not `undefined`).
  * @param positionMs The position in milliseconds to play the track from. Pass `undefined` to resume
  * playback instead of starting anew.
  */
 export function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
+        if (deviceId && positionMs === undefined) {
+            throw new Error("Cannot start playing on given device without starting position");
+        }
+
         const state = getState();
         const tracks = topTracksIdSelector(state);
 
