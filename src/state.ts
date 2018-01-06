@@ -87,6 +87,7 @@ export interface ConnectPlaybackState {
     deviceId: string;
     name: string;
     playing: boolean;
+    positionMs: number;
 }
 
 export interface PlayerState {

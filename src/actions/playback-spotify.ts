@@ -144,7 +144,7 @@ export function fetchConnectPlayerState(): ThunkAction<Promise<void>, State, voi
         }
 
         const resp = await fetchWithAccessToken('/me/player');
-        const { is_playing, device } = await resp.json();
+        const { is_playing, device, progress_ms } = await resp.json();
 
         dispatch({
             type: Types.UPDATE_CONNECT_STATE,
@@ -152,6 +152,7 @@ export function fetchConnectPlayerState(): ThunkAction<Promise<void>, State, voi
                 deviceId: device.id,
                 name: device.name,
                 playing: is_playing,
+                positionMs: progress_ms,
             },
         } as UpdateConnectStateAction);
     };
@@ -170,16 +171,18 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
         }
 
         await fetchWithAccessToken('/me/player/pause', { method: 'put' });
+        const state = getState();
 
         await firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
+            .child('playback')
             .update({
-                playback: {
-                    playing: false,
-                    last_position_ms: 0,
-                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                },
+                playing: false,
+                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                last_position_ms: state.player.connect
+                    ? state.player.connect.positionMs
+                    : (await player!.getCurrentState())!.position,
             });
     };
 }
@@ -197,6 +200,10 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
         if (!currentPartyId) {
             throw new Error('Missing current party ID');
         }
+        const { currentParty } = state.party;
+        if (!currentParty) {
+            throw new Error("Missing party");
+        }
 
         const uri = `/me/player/play${deviceId ? '?device_id=' + encodeURIComponent(deviceId) : ''}`;
 
@@ -211,15 +218,16 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
         await firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
+            .child('playback')
             .update({
-                playback: {
-                    playing: true,
-                    last_position_ms: 0,
-                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                },
+                playing: true,
+                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                last_position_ms: positionMs !== undefined // Resume
+                    ? positionMs
+                    : currentParty.playback.last_position_ms,
             });
 
-        if (!positionMs || positionMs <= 0) {
+        if (positionMs === undefined || positionMs < 0) {
             return;
         }
 
@@ -251,7 +259,7 @@ export function takeoverPlayback(): ThunkAction<Promise<void>, State, void> {
 
         const positionMs = playback.playing
             ? playback.last_position_ms + (Date.now() - playback.last_change)
-            : undefined;
+            : 0;
 
         await dispatch(play(state.player.localDeviceId, positionMs));
         await firebase.database!()
