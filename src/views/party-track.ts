@@ -170,12 +170,12 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         ${props.isPlayingTrack
             ? html`
                 <div class="fab-spinner">
+                    <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                     <paper-fab mini
                                icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
                                on-click="${props.togglePlayPause}"
                                disabled="${!props.isOwner || props.togglingPlayback}">
                     </paper-fab>
-                    <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                 </div>
             `
             : html`
