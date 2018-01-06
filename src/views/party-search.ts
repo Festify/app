@@ -3,7 +3,6 @@ import { connect, html, withExtended } from 'fit-html';
 
 import { sortedTracksFactory } from '../selectors/track';
 import { State } from "../state";
-import { repeat } from "../util/repeat";
 import sharedStyles from '../util/shared-styles';
 
 import { queueStyles, PartyQueueProps } from "./party-queue";
@@ -58,7 +57,7 @@ const PartySearchView = (props: SearchProps) => html`
     </style>
 
     ${Progress(props)}
-    ${repeat(props.tracks, track => `${track.reference.provider}-${track.reference.id}`, (track, i) => html`
+    ${props.tracks.map((track, i) => html`
         <party-track-search trackid="${track.reference.provider}-${track.reference.id}">
         </party-track-search>
     `)}

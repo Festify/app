@@ -8,7 +8,6 @@ import { connect, html, withExtended } from 'fit-html';
 import { changePartyName, changeSearchInput, insertPlaylist } from '../actions/party-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
-import { repeat } from '../util/repeat';
 import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
@@ -120,7 +119,7 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             `
             : null}
 
-        ${repeat(props.playlists, pl => pl.reference.id, item => html`
+        ${props.playlists.map(item => html`
             <div class="fallback-playlist">
                 <h4>${item.name}</h4>
 

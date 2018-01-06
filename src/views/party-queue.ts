@@ -2,7 +2,6 @@ import { connect, html, withExtended } from 'fit-html';
 
 import { queueTracksSelector } from '../selectors/track';
 import { State, Track } from '../state';
-import { repeat } from '../util/repeat';
 import sharedStyles from '../util/shared-styles';
 
 import './party-track';
@@ -78,7 +77,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
         <p id="skipIndicator">Skip</p>
     </div>
 
-    ${repeat(props.tracks, track => track.reference.id, (track, i) => html`
+    ${props.tracks.map((track, i) => html`
         <party-track playing="${i === 0}"
                      trackid="${track.reference.provider}-${track.reference.id}">
         </party-track>

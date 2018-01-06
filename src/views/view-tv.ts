@@ -10,7 +10,6 @@ import {
 } from '../selectors/track';
 import { Metadata, Party, State, Track } from '../state';
 import festifyLogo from '../util/festify-logo';
-import { repeat } from '../util/repeat';
 import sharedStyles from '../util/shared-styles';
 
 import './tv-track';
@@ -68,7 +67,7 @@ const Body = (props: ViewTvProps) => {
                 </div>
             </div>
             <div class="lower">
-                ${repeat(props.queueTracks, qt => `${qt.reference.provider}-${qt.reference.id}`, t => html`
+                ${props.queueTracks.map(t => html`
                     <tv-track trackid="${`${t.reference.provider}-${t.reference.id}`}"></tv-track>
                 `)}
             </div>
