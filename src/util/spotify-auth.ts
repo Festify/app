@@ -82,12 +82,26 @@ function fetchFactory(
         }
 
         const token = await tokenFetcher();
-        return await fetch(url, {
-            ...options,
-            headers: {
-                ...options.headers,
-                'Authorization': `Bearer ${token}`,
-            },
-        });
+        let isInactive = false;
+        let attempts = 0;
+
+        do {
+            const resp = await fetch(url, {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (resp.status === 202) {
+                isInactive = true;
+                await (new Promise(res => setTimeout(res, 5000)));
+            } else {
+                return resp;
+            }
+        } while (isInactive && attempts++ < 5);
+
+        throw new Error('Device is inactive');
     };
 }
