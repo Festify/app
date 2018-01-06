@@ -2,12 +2,13 @@ import { ThunkAction } from 'redux-thunk';
 import { createSelector } from 'reselect';
 
 import { partyIdSelector } from '../selectors/party';
-import { currentTrackSelector, topTracksSelector } from '../selectors/track';
+import { currentTrackMetadataSelector, currentTrackSelector, topTracksSelector } from '../selectors/track';
 import { ConnectPlaybackState, State, Track } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
+import { removeTrack } from './queue';
 
 export type Actions =
     | PlayerInitStartAction
@@ -190,12 +191,50 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
     };
 }
 
+export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
+    return async (dispatch, getState) => {
+        dispatch({ type: Types.TOGGLE_PLAYBACK_Start } as TogglePlaybackStartAction);
+
+        try {
+            await dispatch(fetchConnectPlayerState());
+
+            const state = getState();
+            const { player, party } = state;
+
+            if (!player.localDeviceId) {
+                throw new Error('Local device ID missing');
+            }
+
+            if (!party.currentParty) {
+                throw new Error('Missing party');
+            }
+
+            const { playback } = party.currentParty;
+
+            if (!player.connect || (player.connect.playing !== playback.playing)) {
+                console.warn('Some other device may be playing, taking over playback');
+                await dispatch(takeoverPlayback());
+            } else {
+                await dispatch(playback.playing ? pause() : play());
+            }
+
+            dispatch({ type: Types.TOGGLE_PLAYBACK_Finish } as TogglePlaybackFinishAction);
+        } catch (error) {
+            dispatch({
+                type: Types.TOGGLE_PLAYBACK_Fail,
+                payload: error,
+                error: true,
+            } as TogglePlaybackFailAction);
+        }
+    };
+}
+
 const topTracksIdSelector: (state: State) => string[] = createSelector(
     topTracksSelector,
     tracks => tracks.map(t => `spotify:track:${t.reference.id}`),
 );
 
-export function pause(): ThunkAction<Promise<void>, State, void> {
+function pause(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const currentPartyId = partyIdSelector(getState());
         if (!currentPartyId) {
@@ -234,7 +273,7 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
  * @param positionMs The position in milliseconds to play the track from. Pass `undefined` to resume
  * playback instead of starting anew.
  */
-export function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
+function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         if (deviceId && positionMs === undefined) {
             throw new Error("Cannot start playing on given device without starting position");
@@ -292,10 +331,12 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
                 ? currentParty.playback.last_position_ms
                 : positionMs,
         });
+
+        dispatch(watchConnectEvents());
     };
 }
 
-export function takeoverPlayback(): ThunkAction<Promise<void>, State, void> {
+function takeoverPlayback(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
 
@@ -328,40 +369,43 @@ export function takeoverPlayback(): ThunkAction<Promise<void>, State, void> {
     };
 }
 
-export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        dispatch({ type: Types.TOGGLE_PLAYBACK_Start } as TogglePlaybackStartAction);
-
-        try {
+let connectInterval: number = -1;
+let trackEndTimeout: number = -1;
+function watchConnectEvents(): ThunkAction<void, State, void> {
+    return (dispatch, getState) => {
+        clearInterval(connectInterval);
+        connectInterval = setInterval(async () => {
             await dispatch(fetchConnectPlayerState());
 
             const state = getState();
-            const { player, party } = state;
-
-            if (!player.localDeviceId) {
-                throw new Error('Local device ID missing');
+            if (!state.player.connect) {
+                throw new Error("Missing connect state");
+            }
+            const currentTrack = currentTrackSelector(state);
+            const currentTrackMeta = currentTrackMetadataSelector(state);
+            if (!currentTrack || !currentTrackMeta) {
+                return;
+            }
+            const partyId = partyIdSelector(state);
+            if (!partyId) {
+                throw new Error("Missing party ID");
             }
 
-            if (!party.currentParty) {
-                throw new Error('Missing party');
-            }
+            await firebase.database!()
+                .ref('/parties')
+                .child(partyId)
+                .child('playback')
+                .update({
+                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                    last_position_ms: state.player.connect.positionMs,
+                    playing: state.player.connect.playing,
+                });
 
-            const { playback } = party.currentParty;
-
-            if (!player.connect || (player.connect.playing !== playback.playing)) {
-                console.warn('Some other device may be playing, taking over playback');
-                await dispatch(takeoverPlayback());
-            } else {
-                await dispatch(playback.playing ? pause() : play());
-            }
-
-            dispatch({ type: Types.TOGGLE_PLAYBACK_Finish } as TogglePlaybackFinishAction);
-        } catch (error) {
-            dispatch({
-                type: Types.TOGGLE_PLAYBACK_Fail,
-                payload: error,
-                error: true,
-            } as TogglePlaybackFailAction);
-        }
+            clearTimeout(trackEndTimeout);
+            trackEndTimeout = setTimeout(
+                async () => await dispatch(removeTrack(currentTrack.reference, true)),
+                Math.max(currentTrackMeta.durationMs - state.player.connect.positionMs, 0),
+            );
+        }, 5000);
     };
 }

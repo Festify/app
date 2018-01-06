@@ -81,6 +81,12 @@ export const currentTrackIdSelector = createSelector(
     track => track ? `${track.reference.provider}-${track.reference.id}` : null,
 );
 
+export const currentTrackMetadataSelector = createSelector(
+    currentTrackIdSelector,
+    metadataSelector,
+    (trackId, metadata) => trackId ? metadata[trackId] : null,
+);
+
 export const voteStringGeneratorFactory = (
     defaultTrackSelector: (state: State, trackId: string) => Track,
 ) => createSelector(

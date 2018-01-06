@@ -94,6 +94,7 @@ export interface PlayerState {
     local: Spotify.PlaybackState | null;
     localDeviceId: string | null;
     connect: ConnectPlaybackState | null;
+
     initializing: boolean;
     initializationError: Error | null;
     togglingPlayback: boolean;
