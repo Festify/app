@@ -51,12 +51,6 @@ export interface UpdateConnectStateAction extends PayloadAction<ConnectPlaybackS
     type: Types.UPDATE_CONNECT_STATE;
 }
 
-const retryConfig = {
-    retries: 5,
-    factor: 1,
-    minTimeout: 5000,
-};
-
 let player: Spotify.SpotifyPlayer | null = null;
 let needsConnect = false;
 
