@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 
 import { partyIdSelector } from '../selectors/party';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
-import { queueTracksSelector } from '../selectors/track';
+import { topTracksSelector } from '../selectors/track';
 import { ConnectPlaybackState, State } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
@@ -158,9 +158,9 @@ export function fetchConnectPlayerState(): ThunkAction<Promise<void>, State, voi
     };
 }
 
-const topTrackIdSelector = createSelector(queueTracksSelector, tracks =>
-    tracks.slice(0, 2)
-        .map(t => `spotify:track:${t.reference.id}`),
+const topTracksIdSelector: (state: State) => string[] = createSelector(
+    topTracksSelector,
+    tracks => tracks.map(t => `spotify:track:${t.reference.id}`),
 );
 
 export function pause(): ThunkAction<Promise<void>, State, void> {
@@ -190,7 +190,7 @@ export function pause(): ThunkAction<Promise<void>, State, void> {
 export function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
-        const tracks = topTrackIdSelector(state);
+        const tracks = topTracksIdSelector(state);
 
         if (tracks.length === 0) {
             return;

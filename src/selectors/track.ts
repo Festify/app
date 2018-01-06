@@ -28,17 +28,6 @@ export const metadataSelector = (state: State) => state.metadata || {};
 
 export const singleMetadataSelector = (state: State, trackId: string) => state.metadata[trackId];
 
-export const currentTrackIdSelector = createSelector(
-    tracksSelector,
-    (tracks: Record<string, Track>) => Object.keys(tracks)
-        .reduce((acc, key) => !acc || tracks[key].order < tracks[acc!].order ? key : acc, null),
-);
-export const currentTrackSelector = createSelector(
-    tracksSelector,
-    currentTrackIdSelector,
-    (tracks: Record<string, Track>, currentId: string | null) => currentId ? tracks[currentId] : null,
-);
-
 export const defaultMetaSelectorFactory = () => createSelector(
     singleMetadataSelector,
     metadata => ({ ...dummyMetadata, ...metadata }),
@@ -74,6 +63,21 @@ export const sortedTracksFactory = (
 );
 
 export const queueTracksSelector = sortedTracksFactory(tracksSelector);
+
+export const topTracksSelector = createSelector(
+    queueTracksSelector,
+    tracks => tracks.slice(0, 2),
+);
+
+export const currentTrackSelector = createSelector(
+    queueTracksSelector,
+    tracks => tracks.length > 0 ? tracks[0] : null,
+);
+
+export const currentTrackIdSelector = createSelector(
+    currentTrackSelector,
+    track => track ? `${track.reference.provider}-${track.reference.id}` : null,
+);
 
 export const voteStringGeneratorFactory = (
     defaultTrackSelector: (state: State, trackId: string) => Track,
