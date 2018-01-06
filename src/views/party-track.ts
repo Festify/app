@@ -137,13 +137,16 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
 
         .fab-spinner paper-spinner-lite {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 40px;
-            height: 40px;
-            --paper-spinner-color: white;
             --paper-spinner-stroke-width: 2px;
+            --offset: calc(-1 * var(--paper-spinner-stroke-width));
+            --size: calc(40px + 2 * var(--paper-spinner-stroke-width));
+
+            position: absolute;
+            top: var(--offset);
+            left: var(--offset);
+            width: var(--size);
+            height: var(--size);
+            --paper-spinner-color: white;
             pointer-events: none;
         }
     </style>
