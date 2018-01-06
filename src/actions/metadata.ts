@@ -20,7 +20,11 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
         const remaining = references
             .filter(ref => !(`${ref.provider}-${ref.id}` in metadata))
             .map(ref => ref.id);
-        const promises = chunk(remaining, 50).map(async ids => {
+        const promises = chunk(remaining, 50).map(async (ids: string[]) => {
+            if (ids.length === 0) {
+                return;
+            }
+
             const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
             const resp = await fetchWithAnonymousAuth(url);
             const { tracks } = await resp.json();
