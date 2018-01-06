@@ -215,17 +215,24 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
             body: deviceId ? JSON.stringify({ uris: tracks }) : undefined,
         });
 
-        await firebase.database!()
+        const playbackRef = firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
-            .child('playback')
-            .update({
-                playing: true,
-                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: positionMs !== undefined // Resume
-                    ? positionMs
-                    : currentParty.playback.last_position_ms,
-            });
+            .child('playback');
+
+        // TODO: Cancel onDisconnect when sb else takes over playback
+        await playbackRef.onDisconnect().update({
+            playing: false,
+            last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+            last_position_ms: 0,
+        });
+        await playbackRef.update({
+            playing: true,
+            last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+            last_position_ms: positionMs !== undefined // Resume
+                ? positionMs
+                : currentParty.playback.last_position_ms,
+        });
 
         if (positionMs === undefined || positionMs < 0) {
             return;
