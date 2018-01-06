@@ -26,6 +26,7 @@ type PartyShortId extends NonEmptyString {
 }
 
 type PlaybackState {
+    device_id: String | Null,
     last_change: CurrentTimestamp,
     last_position_ms: Number,
     playing: Boolean
