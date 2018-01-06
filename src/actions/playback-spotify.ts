@@ -267,7 +267,7 @@ export function play(deviceId?: string, positionMs?: number): ThunkAction<Promis
             body: !resume ? JSON.stringify({ uris: tracks }) : undefined,
         });
 
-        if (positionMs || positionMs === 0) {
+        if (positionMs) {
             await fetchWithAccessToken(
                 `/me/player/seek?position_ms=${Math.floor(positionMs)}`,
                 { method: 'put' },
