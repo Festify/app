@@ -7,10 +7,13 @@ import { AuthData } from './auth';
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
 export const SCOPES = [
     "streaming",
+    "user-modify-playback-state",
+    "user-read-playback-state",
     "user-read-birthdate",
     "user-read-email",
     "user-read-private",
-    "user-read-playback-state",
+    "playlist-read-collaborative",
+    "playlist-read-private",
 ];
 
 export const requireAccessToken: () => Promise<string> = debounce(_requireAccessToken);

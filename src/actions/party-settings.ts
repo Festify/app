@@ -85,10 +85,16 @@ export function fetchPlaylists(): ThunkAction<Promise<void>, State, void> {
 
         dispatch({ type: Types.LOAD_PLAYLISTS_Start } as LoadPlaylistsStartAction);
 
-        let items: SpotifyApi.PlaylistObjectSimplified[];
+        const items: SpotifyApi.PlaylistObjectSimplified[] = [];
         try {
-            const resp = await fetchWithAccessToken('/me/playlists');
-            items = (await resp.json()).items;
+            let url = '/me/playlists?limit=50';
+            do {
+                const resp = await fetchWithAccessToken(url);
+                const body: SpotifyApi.ListOfUsersPlaylistsResponse = await resp.json();
+
+                items.push(...body.items);
+                url = body.next;
+            } while (url);
         } catch (err) {
             dispatch({
                 type: Types.LOAD_PLAYLISTS_Fail,
