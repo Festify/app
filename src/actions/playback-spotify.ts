@@ -1,7 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import { createSelector } from 'reselect';
 
-import { partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import {
     currentTrackIdSelector,
     currentTrackMetadataSelector,
@@ -172,9 +172,12 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
     return async (dispatch, getState) => {
         const state = getState();
+        const isOwner = isPartyOwnerSelector(state);
         const newCurrentTrack = currentTrackSelector(state);
 
-        if (tracksEqual(currentTrack, newCurrentTrack)) {
+        // TODO: Extend logic to not only watch party ownership, but also
+        // playback master device status
+        if (!isOwner && tracksEqual(currentTrack, newCurrentTrack)) {
             return;
         }
         currentTrack = newCurrentTrack;
