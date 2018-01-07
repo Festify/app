@@ -2,7 +2,12 @@ import { ThunkAction } from 'redux-thunk';
 import { createSelector } from 'reselect';
 
 import { partyIdSelector } from '../selectors/party';
-import { currentTrackMetadataSelector, currentTrackSelector, topTracksSelector } from '../selectors/track';
+import {
+    currentTrackIdSelector,
+    currentTrackMetadataSelector,
+    currentTrackSelector,
+    topTracksSelector,
+} from '../selectors/track';
 import { ConnectPlaybackState, State, Track } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
@@ -280,9 +285,10 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
         }
 
         const state = getState();
-        const tracks = topTracksIdSelector(state);
+        const currentTrackId = currentTrackIdSelector(state);
+        const spotifyTrackIds = topTracksIdSelector(state);
 
-        if (tracks.length === 0) {
+        if (!currentTrackId || spotifyTrackIds.length === 0) {
             return;
         }
 
@@ -303,7 +309,7 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: !resume ? JSON.stringify({ uris: tracks }) : undefined,
+            body: !resume ? JSON.stringify({ uris: spotifyTrackIds }) : undefined,
         });
 
         if (positionMs) {
@@ -319,18 +325,31 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
             .child('playback');
 
         // TODO: Cancel onDisconnect when sb else takes over playback
-        await playbackRef.onDisconnect().update({
-            playing: false,
-            last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-            last_position_ms: 0,
-        });
-        await playbackRef.update({
-            playing: true,
-            last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-            last_position_ms: resume
-                ? currentParty.playback.last_position_ms
-                : positionMs,
-        });
+        const tasks = [
+            playbackRef.onDisconnect().update({
+                playing: false,
+                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                last_position_ms: 0,
+            }),
+            playbackRef.update({
+                playing: true,
+                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                last_position_ms: resume
+                    ? currentParty.playback.last_position_ms
+                    : positionMs,
+            }),
+        ];
+        if (!resume) {
+            const setPlayedAt = firebase.database!()
+                .ref('/tracks')
+                .child(currentPartyId)
+                .child(currentTrackId)
+                .child('played_at')
+                .set(firebaseNS.database!.ServerValue.TIMESTAMP);
+            tasks.push(setPlayedAt);
+        }
+
+        await Promise.all(tasks);
 
         dispatch(watchConnectEvents());
     };
