@@ -15,6 +15,9 @@ interface PartySettingsProps {
     partyName: string;
     playlists: Playlist[];
     playlistSearch: string;
+    tracksLoadInProgress: boolean;
+    tracksToLoad: number;
+    tracksLoaded: number;
 }
 
 interface PartySettingsDispatch {
@@ -126,11 +129,13 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
                 <paper-icon-button class="shuffle-button"
                                    icon="av:shuffle"
                                    on-click="${() => props.insert(item, true)}"
-                                   title="Insert shuffled">
+                                   title="Insert shuffled"
+                                   disabled="${props.tracksLoadInProgress}">
                 </paper-icon-button>
                 <paper-icon-button icon="add"
                                    on-click="${() => props.insert(item, false)}"
-                                   title="Insert">
+                                   title="Insert"
+                                   disabled="${props.tracksLoadInProgress}">
                 </paper-icon-button>
             </div>
         `)}
@@ -143,6 +148,9 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     partyName: (state.party.currentParty || { name: '' }).name,
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,
+    tracksLoadInProgress: state.settingsView.tracksLoadInProgress,
+    tracksLoaded: state.settingsView.tracksLoaded,
+    tracksToLoad: state.settingsView.tracksToLoad,
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
