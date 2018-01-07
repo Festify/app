@@ -108,7 +108,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                     Party Settings
                 </a>
             `
-            : html``
+            : null
         }
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"

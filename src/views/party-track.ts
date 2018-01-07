@@ -164,7 +164,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
                     <span>${props.voteString}</span>
                 </aside>
             `
-            : html``
+            : null
         }
     </div>
 
