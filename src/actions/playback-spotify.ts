@@ -302,8 +302,13 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
         }
 
         const resume = positionMs === undefined;
+
+        // If we don't have a device ID, the currently active device is controlled
         const uri = `/me/player/play${deviceId ? '?device_id=' + encodeURIComponent(deviceId) : ''}`;
 
+        // If we're resuming, we can just call the endpoint without tracks
+        // to play. It will instruct the device to resume playing the currently
+        // loaded track.
         await fetchWithAccessToken(uri, {
             method: 'put',
             headers: {
@@ -324,8 +329,10 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
             .child(currentPartyId)
             .child('playback');
 
-        // TODO: Cancel onDisconnect when sb else takes over playback
+        // Update playback state in firebase and ensure state stays valid
+        // even if browser is closed / internet disconnects
         const tasks = [
+            // TODO: Cancel onDisconnect when sb else takes over playback
             playbackRef.onDisconnect().update({
                 playing: false,
                 last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
@@ -339,6 +346,9 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
                     : positionMs,
             }),
         ];
+
+        // Save playback date in database to prevent track from being removed
+        // when fallback playlist changes
         if (!resume) {
             const setPlayedAt = firebase.database!()
                 .ref('/tracks')
