@@ -169,7 +169,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
-        ${props.isOwner && !props.isPlayingTrack
+        ${props.isOwner && !props.isPlayingTrack && (props.track.vote_count > 0 || props.track.is_fallback)
             ? html`
                 <paper-icon-button icon="clear"
                                    on-click="${() => props.removeTrack(props.track.reference)}"
