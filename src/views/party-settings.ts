@@ -13,8 +13,8 @@ import sharedStyles from '../util/shared-styles';
 interface PartySettingsProps {
     isPlaylistLoadInProgress: boolean;
     partyName: string;
-    playlistSearch: string;
     playlists: Playlist[];
+    playlistSearch: string;
 }
 
 interface PartySettingsDispatch {
@@ -141,8 +141,8 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 const mapStateToProps = (state: State): PartySettingsProps => ({
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
     partyName: (state.party.currentParty || { name: '' }).name,
-    playlistSearch: state.settingsView.playlistSearchQuery,
     playlists: filteredPlaylistsSelector(state),
+    playlistSearch: state.settingsView.playlistSearchQuery,
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
