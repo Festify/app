@@ -291,6 +291,7 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
         const currentTrackId = currentTrackIdSelector(state);
         const spotifyTrackIds = topTracksIdSelector(state);
 
+        // If the queue is empty we have nothing to play
         if (!currentTrackId || spotifyTrackIds.length === 0) {
             return;
         }
