@@ -1,11 +1,13 @@
 import '@polymer/iron-icons/av-icons';
 import '@polymer/iron-icons/iron-icons';
+import '@polymer/paper-button/paper-button';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-spinner/paper-spinner-lite';
 import { connect, html, withExtended } from 'fit-html';
 
 import { changePartyName, changeSearchInput, insertPlaylist } from '../actions/party-settings';
+import { flushTracks } from '../actions/queue';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
@@ -23,6 +25,7 @@ interface PartySettingsProps {
 interface PartySettingsDispatch {
     changePartyName: (newName: string) => void;
     changeSearchInput: (newContent: string) => void;
+    flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
 }
 
@@ -43,6 +46,10 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
         h3 {
             border-bottom: 1px solid #333;
             margin-bottom: 0;
+        }
+
+        #party-name {
+            margin-bottom: 16px;
         }
 
         paper-spinner-lite {
@@ -99,12 +106,19 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 
     <div class="upper">
         <h3>General Settings</h3>
-        <paper-input label="Party Name"
+        <paper-input id="party-name"
+                     label="Party Name"
                      value="${props.partyName}"
                      title="Change the name of your party"
                      type="text"
                      on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
         </paper-input>
+
+        <paper-button raised
+                      on-click="${props.flushTracks}"
+                      title="Remove all but the playing track from the queue to start over">
+            Flush tracks
+        </paper-button>
     </div>
 
     <div class="lower">
@@ -156,6 +170,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
 const mapDispatchToProps: PartySettingsDispatch = {
     changePartyName,
     changeSearchInput,
+    flushTracks,
     insert: insertPlaylist,
 };
 

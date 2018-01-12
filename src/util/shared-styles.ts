@@ -21,6 +21,7 @@ export default html`
             background: var(--primary-color);
             display: block;
             margin: 0;
+            text-align: center;
         }
 
         paper-input {

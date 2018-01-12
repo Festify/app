@@ -10,6 +10,39 @@ import firebase from '../util/firebase';
 import { Types } from '.';
 import { ToggleVoteAction } from './view-party';
 
+export function flushTracks(): ThunkAction<Promise<void>, State, void> {
+    return async (dispatch, getState) => {
+        const state = getState();
+        if (!isPartyOwnerSelector(state)) {
+            throw new Error("Not party owner, cannot flush tracks.");
+        }
+
+        const partyId = partyIdSelector(state);
+        if (!partyId) {
+            throw new Error("Missing party ID");
+        }
+
+        const trackRemoveObject = {};
+        Object.keys(state.party.tracks!)
+            .filter(k => !state.party.tracks![k].played_at)
+            .forEach(k => trackRemoveObject[k] = null);
+        await Promise.all([
+            firebase.database!()
+                .ref('/tracks')
+                .child(partyId)
+                .update(trackRemoveObject),
+            firebase.database!()
+                .ref('/votes')
+                .child(partyId)
+                .remove(),
+            firebase.database!()
+                .ref('/votes_by_user')
+                .child(partyId)
+                .remove(),
+        ]);
+    };
+}
+
 export function removeTrack(
     ref: TrackReference,
     moveToHistory: boolean,
