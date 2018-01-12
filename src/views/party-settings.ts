@@ -117,7 +117,7 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over">
-            Flush tracks
+            Flush queue
         </paper-button>
     </div>
 
