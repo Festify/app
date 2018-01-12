@@ -1,9 +1,10 @@
 import { Actions, Types } from '../actions';
 import { VOTE_FACTOR } from '../config';
-import { PartyState, Track } from '../state';
+import { ConnectionState, PartyState, Track } from '../state';
 
 export default function(
     state: PartyState = {
+        connectionState: ConnectionState.Unknown,
         currentParty: null,
         partyLoadError: null,
         partyLoadInProgress: false,
@@ -50,6 +51,11 @@ export default function(
                     [trackId]: vote,
                 },
             };
+        case Types.UPDATE_NETWORK_CONNECTION_STATE:
+            return {
+                ...state,
+                connectionState: action.payload,
+            };
         case Types.UPDATE_PARTY:
             return {
                 ...state,
@@ -69,6 +75,7 @@ export default function(
             };
         case Types.CLEANUP_PARTY:
             return {
+                connectionState: ConnectionState.Unknown,
                 currentParty: null,
                 partyLoadError: null,
                 partyLoadInProgress: false,

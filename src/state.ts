@@ -50,7 +50,14 @@ export interface Party {
     short_id: string;
 }
 
+export const enum ConnectionState {
+    Unknown,
+    Connected,
+    Disconnected,
+}
+
 export interface PartyState {
+    connectionState: ConnectionState;
     currentParty: Party | null;
     partyLoadError: Error | null;
     partyLoadInProgress: boolean;

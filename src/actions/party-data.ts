@@ -1,7 +1,7 @@
 import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
 import { ThunkAction } from 'redux-thunk';
 
-import { Party, State, Track } from '../state';
+import { ConnectionState, Party, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
@@ -13,6 +13,7 @@ export type Actions =
     | OpenPartyStartAction
     | OpenPartyFailAction
     | CleanupPartyAction
+    | UpdateNetworkConnectionStateAction
     | UpdatePartyAction
     | UpdateTracksAction
     | UpdateUserVotesAction;
@@ -30,6 +31,10 @@ export interface OpenPartyFailAction extends PayloadAction<Error> {
     error: true;
 }
 
+export interface UpdateNetworkConnectionStateAction extends PayloadAction<ConnectionState> {
+    type: Types.UPDATE_NETWORK_CONNECTION_STATE;
+}
+
 export interface UpdatePartyAction extends PayloadAction<Party> {
     type: Types.UPDATE_PARTY;
 }
@@ -42,6 +47,7 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
     type: Types.UPDATE_USER_VOTES;
 }
 
+let connectionRef: Reference | null = null;
 let partyRef: Reference | null = null;
 let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
@@ -51,9 +57,12 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
 
-        if (partyRef || topmostTrackRef || tracksRef || votesRef) {
+        if (connectionRef || partyRef || topmostTrackRef || tracksRef || votesRef) {
             dispatch(closeParty());
         }
+
+        connectionRef = firebase.database!()
+            .ref('.info/connected');
 
         partyRef = (firebase.database!() as FirebaseDatabase)
             .ref('/parties/')
@@ -101,6 +110,9 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
             .child(id)
             .child(uid);
 
+        connectionRef.on('value', (snap: DataSnapshot) => dispatch(updateConnectionState(
+            snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected,
+        )));
         partyRef.on('value', (snap: DataSnapshot) => {
             if (!snap.exists()) {
                 dispatch(openPartyFail(new Error("Party not found!")));
@@ -115,6 +127,10 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
 
 export function closeParty(): ThunkAction<void, State, void> {
     return (dispatch) => {
+        if (connectionRef !== null) {
+            connectionRef.off('value');
+            connectionRef = null;
+        }
         if (partyRef !== null) {
             partyRef.off('value');
             partyRef = null;
@@ -140,6 +156,13 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
         type: Types.OPEN_PARTY_Fail,
         error: true,
         payload: err,
+    };
+}
+
+export function updateConnectionState(isConnected: ConnectionState): UpdateNetworkConnectionStateAction {
+    return {
+        type: Types.UPDATE_NETWORK_CONNECTION_STATE,
+        payload: isConnected,
     };
 }
 
