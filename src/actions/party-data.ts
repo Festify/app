@@ -47,11 +47,15 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
     type: Types.UPDATE_USER_VOTES;
 }
 
+const PARTY_VOTE_DEBOUNCE_TIME = 10000;
+
 let connectionRef: Reference | null = null;
 let partyRef: Reference | null = null;
 let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
+
+let trackUpdateTimeout: number | null = null;
 
 export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
@@ -120,7 +124,27 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
             }
             dispatch(updateParty(snap.val()));
         });
-        tracksRef.on('value', (snap: DataSnapshot) => dispatch(updateTracks(snap.val())));
+        tracksRef.on('value', (snap: DataSnapshot) => {
+            // Reduce queue flickering after voting multiple tracks by debouncing
+            // firebase updates in case the user has voted shortly before.
+            //
+            // The update will reach the frontend eventually so we do not have to
+            // fear stale data. And because we pre-process the votes locally, it won't
+            // even feel like a 10s debounce to the user. It's just that he won't see
+            // updates from firebase / other votes during that time.
+
+            const { party } = getState();
+            if (trackUpdateTimeout !== null ||
+                (Date.now() - party.lastVoted) < PARTY_VOTE_DEBOUNCE_TIME) {
+                clearTimeout(trackUpdateTimeout || -1);
+                trackUpdateTimeout = setTimeout(() => {
+                    dispatch(updateTracks(snap.val()));
+                    trackUpdateTimeout = null;
+                }, PARTY_VOTE_DEBOUNCE_TIME);
+            } else {
+                dispatch(updateTracks(snap.val()));
+            }
+        });
         votesRef.on('value', (snap: DataSnapshot) => dispatch(updateUserVotes(snap.val())));
     };
 }

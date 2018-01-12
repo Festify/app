@@ -59,6 +59,7 @@ export const enum ConnectionState {
 export interface PartyState {
     connectionState: ConnectionState;
     currentParty: Party | null;
+    lastVoted: number;
     partyLoadError: Error | null;
     partyLoadInProgress: boolean;
     tracks: Record<string, Track> | null;
