@@ -105,7 +105,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                    class$="${isActive(props.subView === PartyViews.Settings)}"
                    on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
                     <iron-icon icon="settings"></iron-icon>
-                    Party Settings
+                    Settings
                 </a>
             `
             : null
@@ -114,7 +114,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
            class$="${isActive(props.subView === PartyViews.Share)}"
            on-click="${ev => props.handleClick(ev, props.shareRoute)}">
             <iron-icon icon="social:share"></iron-icon>
-            Share Party
+            Share
         </a>
         <a href="${props.tvRoute}"
            on-click="${ev => props.handleClick(ev, props.tvRoute)}">
