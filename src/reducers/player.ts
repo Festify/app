@@ -3,8 +3,7 @@ import { PlayerState } from "../state";
 
 export default function (
     state: PlayerState = {
-        connect: null,
-        local: null,
+        playbackState: null,
         localDeviceId: null,
         initializing: false,
         initializationError: null,
@@ -14,15 +13,10 @@ export default function (
     action: Actions,
 ): PlayerState {
     switch (action.type) {
-        case Types.UPDATE_CONNECT_STATE:
-            return {
-                ...state,
-                connect: action.payload,
-            };
         case Types.UPDATE_PLAYER_STATE:
             return {
                 ...state,
-                local: action.payload,
+                playbackState: action.payload,
             };
         case Types.PLAYER_INIT_Start:
             return {

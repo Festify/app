@@ -99,9 +99,8 @@ export interface ConnectPlaybackState {
 }
 
 export interface PlayerState {
-    local: Spotify.PlaybackState | null;
     localDeviceId: string | null;
-    connect: ConnectPlaybackState | null;
+    playbackState: Spotify.PlaybackState | null;
 
     initializing: boolean;
     initializationError: Error | null;

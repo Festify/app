@@ -1603,9 +1603,9 @@ firebase@^4.8.1:
     dom-storage "^2.0.2"
     xmlhttprequest "^1.8.0"
 
-fit-html@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.4.1.tgz#67e74dfddd8a0850721dffd4780ed88c49e28ce2"
+fit-html@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.4.2.tgz#0049e5c7c10d8dd6250ccc07c826b502a2324d0b"
   dependencies:
     lit-html "^0.8.0"
     lodash-es "^4.17.4"

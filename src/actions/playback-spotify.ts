@@ -13,6 +13,7 @@ import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
+import { updateConnectionState } from './party-data';
 import { removeTrack } from './queue';
 
 export type Actions =
@@ -49,7 +50,7 @@ export interface TogglePlaybackFailAction extends ErrorAction {
     type: Types.TOGGLE_PLAYBACK_Fail;
 }
 
-export interface UpdatePlayerStateAction extends PayloadAction<Spotify.PlaybackState> {
+export interface UpdatePlayerStateAction extends PayloadAction<Spotify.PlaybackState | null> {
     type: Types.UPDATE_PLAYER_STATE;
 }
 
@@ -85,10 +86,9 @@ export function initializePlayer(): ThunkAction<Promise<void>, State, void> {
             type: Types.PLAYER_INIT_Finish,
             payload: device_id,
         } as PlayerInitFinishAction));
-        player.on('player_state_changed', playerState => dispatch({
-            type: Types.UPDATE_PLAYER_STATE,
-            payload: playerState,
-        } as UpdatePlayerStateAction));
+        player.on('player_state_changed', playerState => dispatch(
+            updatePlayerState(playerState),
+        ));
 
         if (needsConnect) {
             await dispatch(connectPlayer());
@@ -119,7 +119,7 @@ export function connectPlayer(): ThunkAction<Promise<void>, State, void> {
             return;
         }
 
-        dispatch(fetchConnectPlayerState());
+        dispatch(fetchPlayerState());
     };
 }
 
@@ -133,27 +133,14 @@ export function disconnectPlayer(): ThunkAction<void, State, void> {
     };
 }
 
-export function fetchConnectPlayerState(): ThunkAction<Promise<void>, State, void> {
+export function fetchPlayerState(): ThunkAction<Promise<void>, State, void> {
     return async dispatch => {
-        const deviceResponse = await fetchWithAccessToken('/me/player/devices');
-        const { devices } = await deviceResponse.json();
-
-        if (!devices.some(d => d.is_active)) {
-            return;
+        if (!player) {
+            throw new Error("Missing player");
         }
 
-        const resp = await fetchWithAccessToken('/me/player');
-        const { is_playing, device, progress_ms } = await resp.json();
-
-        dispatch({
-            type: Types.UPDATE_CONNECT_STATE,
-            payload: {
-                deviceId: device.id,
-                name: device.name,
-                playing: is_playing,
-                positionMs: progress_ms,
-            },
-        } as UpdateConnectStateAction);
+        const state = await player.getCurrentState();
+        dispatch(updatePlayerState(state));
     };
 }
 
@@ -177,7 +164,7 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
         // TODO: Extend logic to not only watch party ownership, but also
         // playback master device status
-        if (!isOwner && tracksEqual(currentTrack, newCurrentTrack)) {
+        if (!isOwner || tracksEqual(currentTrack, newCurrentTrack)) {
             return;
         }
         currentTrack = newCurrentTrack;
@@ -194,7 +181,7 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
         // Only start playback if we were playing before and if we have a track to play
         if (currentParty.playback.playing && newCurrentTrack) {
-            await dispatch(play(undefined, 0));
+            await dispatch(play(0));
         }
     };
 }
@@ -204,7 +191,7 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
         dispatch({ type: Types.TOGGLE_PLAYBACK_Start } as TogglePlaybackStartAction);
 
         try {
-            await dispatch(fetchConnectPlayerState());
+            await dispatch(fetchPlayerState());
 
             const state = getState();
             const { player, party } = state;
@@ -218,12 +205,12 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
             }
 
             const { playback } = party.currentParty;
-
-            if (!player.connect || (player.connect.playing !== playback.playing)) {
-                console.warn('Some other device may be playing, taking over playback');
-                await dispatch(takeoverPlayback());
+            if (playback.playing) {
+                await dispatch(pause());
+            } else if (!player.playbackState) {
+                await dispatch(play(0)); // Start playing track
             } else {
-                await dispatch(playback.playing ? pause() : play());
+                await dispatch(play()); // Just resume
             }
 
             dispatch({ type: Types.TOGGLE_PLAYBACK_Finish } as TogglePlaybackFinishAction);
@@ -234,6 +221,13 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
                 error: true,
             } as TogglePlaybackFailAction);
         }
+    };
+}
+
+export function updatePlayerState(state: Spotify.PlaybackState | null): UpdatePlayerStateAction {
+    return {
+        type: Types.UPDATE_PLAYER_STATE,
+        payload: state,
     };
 }
 
@@ -249,18 +243,12 @@ function pause(): ThunkAction<Promise<void>, State, void> {
             throw new Error('Missing current party ID');
         }
 
-        await fetchWithAccessToken('/me/player/pause', { method: 'put' });
-        const state = getState();
-
-        let newPos = 0;
-        if (state.player.connect) {
-            newPos = state.player.connect.positionMs;
-        } else if (player) {
-            const state = await player.getCurrentState();
-            if (state) {
-                newPos = state.position;
-            }
+        if (!player) {
+            throw new Error("Missing player");
         }
+
+        await player.pause();
+        clearInterval(playbackProgressInterval);
         await firebase.database!()
             .ref(`/parties`)
             .child(currentPartyId)
@@ -268,7 +256,7 @@ function pause(): ThunkAction<Promise<void>, State, void> {
             .update({
                 playing: false,
                 last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: newPos,
+                last_position_ms: (await player.getCurrentState())!.position,
             });
     };
 }
@@ -281,12 +269,8 @@ function pause(): ThunkAction<Promise<void>, State, void> {
  * @param positionMs The position in milliseconds to play the track from. Pass `undefined` to resume
  * playback instead of starting anew.
  */
-function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>, State, void> {
+function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
-        if (deviceId && positionMs === undefined) {
-            throw new Error("Cannot start playing on given device without starting position");
-        }
-
         const state = getState();
         const currentTrackId = currentTrackIdSelector(state);
         const spotifyTrackIds = topTracksIdSelector(state);
@@ -304,28 +288,26 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
         if (!currentParty) {
             throw new Error("Missing party");
         }
+        const { localDeviceId } = state.player;
+        if (!localDeviceId) {
+            throw new Error("Missing local device ID");
+        }
+        if (!player) {
+            throw new Error("Missing player");
+        }
 
         const resume = positionMs === undefined;
-
-        // If we don't have a device ID, the currently active device is controlled
-        const uri = `/me/player/play${deviceId ? '?device_id=' + encodeURIComponent(deviceId) : ''}`;
-
-        // If we're resuming, we can just call the endpoint without tracks
-        // to play. It will instruct the device to resume playing the currently
-        // loaded track.
-        await fetchWithAccessToken(uri, {
-            method: 'put',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: !resume ? JSON.stringify({ uris: spotifyTrackIds }) : undefined,
-        });
-
-        if (positionMs) {
-            await fetchWithAccessToken(
-                `/me/player/seek?position_ms=${Math.floor(positionMs)}`,
-                { method: 'put' },
-            );
+        if (resume) {
+            await player.resume();
+        } else {
+            const uri = `/me/player/play?device_id=${encodeURIComponent(localDeviceId)}`;
+            await fetchWithAccessToken(uri, {
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ uris: spotifyTrackIds }),
+            });
         }
 
         const playbackRef = firebase.database!()
@@ -365,54 +347,22 @@ function play(deviceId?: string, positionMs?: number): ThunkAction<Promise<void>
 
         await Promise.all(tasks);
 
-        dispatch(watchConnectEvents());
+        dispatch(watchPlaybackProgress());
     };
 }
 
-function takeoverPlayback(): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const state = getState();
-
-        if (!state.player.localDeviceId) {
-            throw new Error('Local device ID missing');
-        }
-
-        const currentPartyId = partyIdSelector(state);
-        if (!currentPartyId) {
-            throw new Error('Missing current party ID');
-        }
-
-        if (!state.party.currentParty) {
-            throw new Error('Missing current party');
-        }
-
-        const { playback } = state.party.currentParty;
-
-        const positionMs = playback.playing
-            ? playback.last_position_ms + (Date.now() - playback.last_change)
-            : 0;
-
-        await dispatch(play(state.player.localDeviceId, positionMs));
-        await firebase.database!()
-            .ref('/parties')
-            .child(currentPartyId)
-            .child('playback')
-            .child('device_id')
-            .set(state.player.localDeviceId);
-    };
-}
-
-let connectInterval: number = -1;
+let playbackProgressInterval: number = -1;
 let trackEndTimeout: number = -1;
-function watchConnectEvents(): ThunkAction<void, State, void> {
+function watchPlaybackProgress(): ThunkAction<void, State, void> {
     return (dispatch, getState) => {
-        clearInterval(connectInterval);
-        connectInterval = setInterval(async () => {
-            await dispatch(fetchConnectPlayerState());
+        clearInterval(playbackProgressInterval);
+        playbackProgressInterval = setInterval(async () => {
+            await dispatch(fetchPlayerState());
 
             const state = getState();
-            if (!state.player.connect) {
-                throw new Error("Missing connect state");
+            if (!state.player.playbackState) {
+                console.warn("Missing playback state in playback watcher.");
+                return;
             }
             const currentTrack = currentTrackSelector(state);
             const currentTrackMeta = currentTrackMetadataSelector(state);
@@ -424,20 +374,25 @@ function watchConnectEvents(): ThunkAction<void, State, void> {
                 throw new Error("Missing party ID");
             }
 
+            const { paused, position } = state.player.playbackState;
+
             await firebase.database!()
                 .ref('/parties')
                 .child(partyId)
                 .child('playback')
                 .update({
                     last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                    last_position_ms: state.player.connect.positionMs,
-                    playing: state.player.connect.playing,
+                    last_position_ms: position,
+                    playing: !paused,
                 });
 
             clearTimeout(trackEndTimeout);
             trackEndTimeout = setTimeout(
-                async () => await dispatch(removeTrack(currentTrack.reference, true)),
-                Math.max(currentTrackMeta.durationMs - state.player.connect.positionMs, 0),
+                async () => {
+                    clearInterval(playbackProgressInterval);
+                    await dispatch(removeTrack(currentTrack.reference, true));
+                },
+                Math.max(currentTrackMeta.durationMs - position, 0),
             );
         }, 5000);
     };
