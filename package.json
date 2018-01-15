@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Festify Client App",
   "main": "src/index.ts",
-  "repository": "https://github.com/Festify/fit-app.git",
+  "repository": "https://github.com/Festify/app.git",
   "author": "Festify Dev Team <git@festify.rocks>",
   "license": "MIT",
   "private": true,
