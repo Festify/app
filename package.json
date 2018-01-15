@@ -59,6 +59,7 @@
   },
   "homepage": "https://github.com/Festify/app#readme",
   "scripts": {
+    "build": "gulp build"
     "postinstall": "bower install && cd electron && yarn && cd ../functions && yarn",
     "build-electron": "gulp build:desktop && cd electron && electron-builder --mac --win --ia32 --x64 --publish always"
   },
