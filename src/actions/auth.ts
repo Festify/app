@@ -67,6 +67,6 @@ export function exchangeCode(code: string): ThunkAction<Promise<void>, State, vo
         );
         data.saveTo(LOCALSTORAGE_KEY);
 
-        dispatch(checkSpotifyLoginStatus());
+        await dispatch(checkSpotifyLoginStatus());
     };
 }
