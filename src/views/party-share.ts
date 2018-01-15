@@ -1,19 +1,25 @@
+import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
 
 import { connect, html, withExtended } from 'fit-html';
 
+import { shareParty } from '../actions/party-share';
 import { State } from '../state';
+import sharedStyles from '../util/shared-styles';
 
 interface ViewShareProps {
     domain: string;
+    hasShareApi: boolean;
     partyId: string;
 }
 
 interface ViewShareDispatch {
+    shareParty: () => void;
 }
 
 /* tslint:disable:max-line-length */
 const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
+    ${sharedStyles}
     <style>
         :host {
             display: block;
@@ -29,8 +35,11 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
             white-space: nowrap;
         }
 
-        paper-input {
+        .party-id {
+            font-size: 32px;
+            margin-bottom: 16px;
             text-align: center;
+            user-select: text;
         }
     </style>
 
@@ -40,21 +49,30 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
         and enter this code:
     </p>
 
-    <paper-input value="${props.partyId}"
-                 label="Party ID"
-                 readonly>
-    </paper-input>
+    <div class="party-id">${props.partyId}</div>
+
+    ${props.hasShareApi
+        ? html`
+            <paper-button raised
+                          on-click="${props.shareParty}">
+                Share
+            </paper-button>
+        `
+        : null}
 `;
 /* tslint:enable */
 
 const mapStateToProps = (state: State): ViewShareProps => ({
     domain: document.location.origin,
+    hasShareApi: typeof (navigator as any).share === 'function',
     partyId: state.party.currentParty
         ? state.party.currentParty.short_id
         : '',
 });
 
-const mapDispatchToProps: ViewShareDispatch = {};
+const mapDispatchToProps: ViewShareDispatch = {
+    shareParty,
+};
 
 customElements.define(
     'party-share',
