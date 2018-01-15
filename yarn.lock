@@ -1603,11 +1603,11 @@ firebase@^4.8.1:
     dom-storage "^2.0.2"
     xmlhttprequest "^1.8.0"
 
-fit-html@^0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.3.9.tgz#197ca980b320d2f62d1042c5f9a67079e7d489c6"
+fit-html@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.4.1.tgz#67e74dfddd8a0850721dffd4780ed88c49e28ce2"
   dependencies:
-    lit-html "^0.7.1"
+    lit-html "^0.8.0"
     lodash-es "^4.17.4"
     redux "^3.7.2"
 
@@ -2271,9 +2271,9 @@ limiter@^1.0.5:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.2.tgz#229d8055891c8b11af9e0ee5200e8e09bb3dcbeb"
 
-lit-html@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.7.1.tgz#61785045cf84f9ee955fa078c2985b52b765ad16"
+lit-html@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.8.0.tgz#4de0d1899585a3685870ffb919fedd61ebc79f03"
 
 load-json-file@^1.0.0:
   version "1.1.0"
