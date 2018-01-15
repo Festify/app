@@ -1,16 +1,6 @@
 import { Location } from '@mraerino/redux-little-router-reactless';
 import * as SpotifyApi from 'spotify-web-api-js';
 
-export interface AuthProviderStatus<T> {
-    statusKnown: boolean;
-    user: T | null;
-}
-
-export interface UserState {
-    spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
-    playlists: Playlist[];
-}
-
 export interface Image {
     height: number;
     url: string;
@@ -115,6 +105,16 @@ export interface SettingsViewState {
     tracksLoadError: Error | null;
     tracksToLoad: number;
     tracksLoaded: number;
+}
+
+export interface AuthProviderStatus<T> {
+    statusKnown: boolean;
+    user: T | null;
+}
+
+export interface UserState {
+    spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
+    playlists: Playlist[];
 }
 
 export interface State {
