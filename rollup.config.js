@@ -12,7 +12,7 @@ import historyApi from 'connect-history-api-fallback';
 import path from 'path';
 import fs from 'fs';
 
-const distTarget = './dist';
+const distTarget = './build';
 const dist = (dest = "") => path.join(distTarget, dest);
 
 const srcTarget = './src';
