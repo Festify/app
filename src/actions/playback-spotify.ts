@@ -392,7 +392,7 @@ function watchPlaybackProgress(): ThunkAction<void, State, void> {
                     clearInterval(playbackProgressInterval);
                     await dispatch(removeTrack(currentTrack.reference, true));
                 },
-                Math.max(currentTrackMeta.durationMs - position, 0),
+                Math.max(currentTrackMeta.durationMs - position - 50, 0),
             );
         }, 5000);
     };
