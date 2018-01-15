@@ -11,6 +11,7 @@ import sharedStyles from '../util/shared-styles';
 interface HomeViewProps {
     authorized: boolean;
     authStatusKnown: boolean;
+    isAuthorizing: boolean;
     partyId: string;
     partyIdValid: boolean;
 }
@@ -99,7 +100,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
                 <paper-button raised
                               disabled="${!props.authStatusKnown}"
                               on-click="${props.loginWithSpotify}">
-                    Login to create Party
+                    ${props.isAuthorizing ? "Authorizing..." : "Login to create Party"}
                 </paper-button>
             `}
     </main>
@@ -110,6 +111,7 @@ const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
     authorized: Boolean(state.user.spotify.user),
     authStatusKnown: state.user.spotify.statusKnown,
+    isAuthorizing: state.user.spotify.authorizing,
 });
 
 const mapDispatchToProps: HomeViewDispatch = {

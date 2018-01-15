@@ -108,6 +108,8 @@ export interface SettingsViewState {
 }
 
 export interface AuthProviderStatus<T> {
+    authorizing: boolean;
+    authorizationError: Error | null;
     statusKnown: boolean;
     user: T | null;
 }

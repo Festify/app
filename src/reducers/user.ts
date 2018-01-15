@@ -4,6 +4,8 @@ import { UserState } from '../state';
 export default function(
     state: UserState = {
         spotify: {
+            authorizing: false,
+            authorizationError: null,
             statusKnown: false,
             user: null,
         },
@@ -12,6 +14,33 @@ export default function(
     action: Actions,
 ): UserState {
     switch (action.type) {
+        case Types.EXCHANGE_CODE_Fail:
+            return {
+                ...state,
+                spotify: {
+                    ...state.spotify,
+                    authorizing: false,
+                    authorizationError: action.payload,
+                },
+            };
+        case Types.EXCHANGE_CODE_Finish:
+            return {
+                ...state,
+                spotify: {
+                    ...state.spotify,
+                    authorizing: false,
+                    authorizationError: null,
+                },
+            };
+            case Types.EXCHANGE_CODE_Start:
+                return {
+                    ...state,
+                    spotify: {
+                        ...state.spotify,
+                        authorizing: true,
+                        authorizationError: null,
+                    },
+                };
         case Types.UPDATE_USER_PLAYLISTS:
             return {
                 ...state,
