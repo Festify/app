@@ -51,6 +51,10 @@ gulp.task('prepare-env', function () {
 
     return getBranch()
         .then(b => (b === 'master' || b === 'testing') ? b : 'develop')
+        .then(b => {
+            console.log("Currently on branch", b);
+            return b;
+        })
         .then((branch) => Promise.map(envFiles, file => {
             const url = util.format(fileTemplate, branch, file);
             return new Promise(res => {
