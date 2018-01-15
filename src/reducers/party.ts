@@ -6,7 +6,6 @@ export default function(
     state: PartyState = {
         connectionState: ConnectionState.Unknown,
         currentParty: null,
-        lastVoted: 0,
         partyLoadError: null,
         partyLoadInProgress: false,
         tracks: null,
@@ -46,7 +45,6 @@ export default function(
 
             return {
                 ...state,
-                lastVoted: Date.now(),
                 tracks: trackList,
                 userVotes: {
                     ...state.userVotes,
@@ -79,7 +77,6 @@ export default function(
             return {
                 connectionState: ConnectionState.Unknown,
                 currentParty: null,
-                lastVoted: 0,
                 partyLoadError: null,
                 partyLoadInProgress: false,
                 userVotes: null,
