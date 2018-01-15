@@ -20,7 +20,7 @@
     "@polymer/polymer": "^3.0.0-pre.1",
     "@webcomponents/webcomponentsjs": "^1.0.22",
     "firebase": "^4.8.1",
-    "fit-html": "^0.4.2",
+    "fit-html": "^0.4.3",
     "lodash-es": "^4.17.4",
     "normalize-css": "^2.3.1",
     "promise-debounce": "^1.0.1",
