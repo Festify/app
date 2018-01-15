@@ -105,17 +105,10 @@ export function connectPlayer(): ThunkAction<Promise<void>, State, void> {
         needsConnect = false;
 
         await requireAccessToken();
-
-        const party = getState().party.currentParty;
-
         dispatch({ type: Types.PLAYER_INIT_Start } as PlayerInitStartAction);
 
         const success = await player.connect();
         if (!success) {
-            return;
-        }
-
-        if (!party) {
             return;
         }
 
