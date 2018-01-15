@@ -12,7 +12,7 @@ import { PayloadAction, Types } from '.';
 export type Actions =
     | NotifyStatusKnownAction;
 
-export interface NotifyStatusKnownAction extends PayloadAction<[string, any]> {
+export interface NotifyStatusKnownAction extends PayloadAction<['spotify', any]> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
 }
 
