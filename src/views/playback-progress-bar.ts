@@ -1,4 +1,4 @@
-import connect from 'fit-html/dist/connect';
+import { connect } from 'fit-html';
 import { html } from 'lit-html';
 import { createSelector } from 'reselect';
 
