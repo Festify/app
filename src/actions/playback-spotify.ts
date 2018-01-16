@@ -345,6 +345,16 @@ function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
 
 let playbackProgressInterval: number = -1;
 let trackEndTimeout: number = -1;
+
+/**
+ * Monitor playback of the current track and skip to the next when its time.
+ *
+ * This function regularly synchronizes the database with Spotify connect playback
+ * so that we always have exact data (up to 5s deviation) available to us.
+ *
+ * It also configures the timeout for when to skip to the next track on every
+ * iteration. This is also done based on connect playback data.
+ */
 function watchPlaybackProgress(): ThunkAction<void, State, void> {
     return (dispatch, getState) => {
         clearInterval(playbackProgressInterval);
@@ -366,8 +376,8 @@ function watchPlaybackProgress(): ThunkAction<void, State, void> {
                 throw new Error("Missing party ID");
             }
 
+            // Update firebase with fresh playback data
             const { paused, position } = state.player.playbackState;
-
             await firebase.database!()
                 .ref('/parties')
                 .child(partyId)
@@ -378,6 +388,7 @@ function watchPlaybackProgress(): ThunkAction<void, State, void> {
                     playing: !paused,
                 });
 
+            // Set timeout to skip to next track when track ends
             clearTimeout(trackEndTimeout);
             trackEndTimeout = setTimeout(
                 async () => {
