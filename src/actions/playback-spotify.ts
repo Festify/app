@@ -6,7 +6,6 @@ import {
     currentTrackIdSelector,
     currentTrackMetadataSelector,
     currentTrackSelector,
-    topTracksSelector,
 } from '../selectors/track';
 import { ConnectPlaybackState, State, Track } from '../state';
 import { firebase, firebaseNS } from '../util/firebase';
@@ -224,9 +223,9 @@ export function updatePlayerState(state: Spotify.PlaybackState | null): UpdatePl
     };
 }
 
-const topTracksIdSelector: (state: State) => string[] = createSelector(
-    topTracksSelector,
-    tracks => tracks.map(t => `spotify:track:${t.reference.id}`),
+const currentTrackSpotifyIdSelector: (state: State) => string | null = createSelector(
+    currentTrackSelector,
+    track => track ? `spotify:track:${track.reference.id}` : null,
 );
 
 function pause(): ThunkAction<Promise<void>, State, void> {
@@ -266,10 +265,10 @@ function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
         const currentTrackId = currentTrackIdSelector(state);
-        const spotifyTrackIds = topTracksIdSelector(state);
+        const spotifyTrackId = currentTrackSpotifyIdSelector(state);
 
         // If the queue is empty we have nothing to play
-        if (!currentTrackId || spotifyTrackIds.length === 0) {
+        if (!currentTrackId || !spotifyTrackId) {
             return;
         }
 
@@ -299,7 +298,7 @@ function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ uris: spotifyTrackIds }),
+                body: JSON.stringify({ uris: [spotifyTrackId] }),
             });
         }
 

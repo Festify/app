@@ -66,11 +66,6 @@ export const sortedTracksFactory = (
 
 export const queueTracksSelector = sortedTracksFactory(tracksSelector);
 
-export const topTracksSelector = createSelector(
-    queueTracksSelector,
-    tracks => tracks.slice(0, 2),
-);
-
 export const currentTrackSelector = createSelector(
     queueTracksSelector,
     tracks => tracks.length > 0 ? tracks[0] : null,
