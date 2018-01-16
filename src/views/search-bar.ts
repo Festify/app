@@ -1,4 +1,3 @@
-import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended } from 'fit-html';
 
@@ -71,7 +70,7 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
 
     ${props.text
         ? html`
-            <paper-icon-button icon="arrow-back"
+            <paper-icon-button icon="festify:arrow-back"
                                on-click="${() => props.changeText('')}">
             </paper-icon-button>
         `

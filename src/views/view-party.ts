@@ -1,7 +1,6 @@
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout';
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
-import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended } from 'fit-html';
 
@@ -118,7 +117,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
         <div>
             <header>
                 <app-toolbar>
-                    <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                    <paper-icon-button icon="festify:menu" drawer-toggle></paper-icon-button>
                     <div main-title>${props.party.name}</div>
                 </app-toolbar>
                 <search-bar></search-bar>

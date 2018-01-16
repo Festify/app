@@ -1,5 +1,3 @@
-import '@polymer/iron-icons/av-icons';
-import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
@@ -141,12 +139,12 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
                 <h4>${item.name}</h4>
 
                 <paper-icon-button class="shuffle-button"
-                                   icon="av:shuffle"
+                                   icon="festify:shuffle"
                                    on-click="${() => props.insert(item, true)}"
                                    title="Insert shuffled"
                                    disabled="${props.tracksLoadInProgress}">
                 </paper-icon-button>
-                <paper-icon-button icon="add"
+                <paper-icon-button icon="festify:add"
                                    on-click="${() => props.insert(item, false)}"
                                    title="Insert"
                                    disabled="${props.tracksLoadInProgress}">

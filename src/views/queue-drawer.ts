@@ -1,7 +1,4 @@
 import '@polymer/iron-icon/iron-icon';
-import '@polymer/iron-icons/hardware-icons';
-import '@polymer/iron-icons/iron-icons';
-import '@polymer/iron-icons/social-icons';
 import { connect, html, withExtended } from 'fit-html';
 import { createSelector } from 'reselect';
 
@@ -96,7 +93,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
         <a href$="${props.queueRoute}"
            class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
            on-click="${ev => props.handleClick(ev, props.queueRoute)}">
-            <iron-icon icon="menu"></iron-icon>
+            <iron-icon icon="festify:menu"></iron-icon>
             Queue
         </a>
         ${props.isOwner
@@ -104,7 +101,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                 <a href$="${props.settingsRoute}"
                    class$="${isActive(props.subView === PartyViews.Settings)}"
                    on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
-                    <iron-icon icon="settings"></iron-icon>
+                    <iron-icon icon="festify:settings"></iron-icon>
                     Settings
                 </a>
             `
@@ -113,21 +110,21 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
            on-click="${ev => props.handleClick(ev, props.shareRoute)}">
-            <iron-icon icon="social:share"></iron-icon>
+            <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
         <a href="${props.tvRoute}"
            on-click="${ev => props.handleClick(ev, props.tvRoute)}">
-            <iron-icon icon="hardware:tv"></iron-icon>
+            <iron-icon icon="festify:tv"></iron-icon>
             TV Mode
         </a>
         <a href="https://festify.rocks/" target="_blank">
-            <iron-icon icon="home"></iron-icon>
+            <iron-icon icon="festify:home"></iron-icon>
             Festify Homepage
         </a>
         <a href="/"
            on-click="${ev => props.handleClick(ev, '/')}">
-            <iron-icon icon="cancel"></iron-icon>
+            <iron-icon icon="festify:cancel"></iron-icon>
             Exit Party
         </a>
     </div>

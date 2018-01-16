@@ -4,6 +4,7 @@ import '../components/load-once';
 import { Views } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { State } from '../state';
+import iconSet from '../util/icons';
 
 import './view-home';
 import './view-party';
@@ -53,6 +54,7 @@ const AppShellView = (props: AppShellProps) => html`
     ${Pages(props.view)}
     <paper-toast id="toast"></paper-toast>
 
+    ${iconSet}
     <load-once load="${props.isOwner}">
         <template>
             <script src="https://sdk.scdn.co/spotify-player.js"></script>

@@ -1,5 +1,3 @@
-import '@polymer/iron-icons/av-icons';
-import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, html, withExtended, withProps } from 'fit-html';
@@ -43,11 +41,11 @@ interface PartyTrackOwnProps {
 
 const LikeButtonIcon = (props: PartyTrackProps): string => {
     if (props.hasVoted) {
-        return 'favorite';
+        return 'festify:favorite';
     } else if (props.track.vote_count > 0 || props.track.is_fallback) {
-        return 'favorite-border';
+        return 'festify:favorite-border';
     } else {
-        return 'add';
+        return 'festify:add';
     }
 };
 
@@ -171,7 +169,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     <div class="icon-wrapper">
         ${props.isOwner && !props.isPlayingTrack && (props.track.vote_count > 0 || props.track.is_fallback)
             ? html`
-                <paper-icon-button icon="clear"
+                <paper-icon-button icon="festify:clear"
                                    on-click="${() => props.removeTrack(props.track.reference)}"
                                    title="Remove ${props.metadata.name} from queue">
                 </paper-icon-button>
@@ -181,16 +179,16 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             ? html`
                 ${props.isOwner
                     ? html`
-                        <paper-icon-button icon="av:skip-next"
-                                        on-click="${() => props.removeTrack(props.track.reference)}"
-                                        title="Skip ${props.metadata.name}">
+                        <paper-icon-button icon="festify:skip-next"
+                                           on-click="${() => props.removeTrack(props.track.reference)}"
+                                           title="Skip ${props.metadata.name}">
                         </paper-icon-button>
                     `
                     : null}
                 <div class="fab-spinner">
                     <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                     <paper-fab mini
-                               icon="${props.isMusicPlaying ? 'av:pause' : 'av:play-arrow'}"
+                               icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
                                on-click="${props.togglePlayPause}"
                                disabled="${!props.isOwner || props.togglingPlayback}">
                     </paper-fab>
