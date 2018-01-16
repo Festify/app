@@ -3602,6 +3602,10 @@ warning@^3.0.0:
   dependencies:
     loose-envify "^1.0.0"
 
+webcomponents-loader-no-hi@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/webcomponents-loader-no-hi/-/webcomponents-loader-no-hi-0.1.0.tgz#a0092f07a89596420075fffd5643730c7d9451e9"
+
 websocket-driver@>=0.5.1:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/websocket-driver/-/websocket-driver-0.7.0.tgz#0caf9d2d755d93aee049d4bdd0d3fe2cca2a24eb"

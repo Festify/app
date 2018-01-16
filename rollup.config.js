@@ -52,6 +52,7 @@ export default {
         }),
         typescript(),
         copy({
+            'node_modules/webcomponents-loader-no-hi': dist('node_modules/webcomponents-loader-no-hi'),
             'node_modules/@webcomponents/webcomponentsjs': dist('node_modules/@webcomponents/webcomponentsjs'),
             'assets': dist(''),
             [src('index.html')]: dist('index.html'),
