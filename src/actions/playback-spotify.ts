@@ -339,7 +339,7 @@ function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
 
         await Promise.all(tasks);
 
-        dispatch(watchPlaybackProgress());
+        dispatch(monitorPlayback());
     };
 }
 
@@ -355,7 +355,7 @@ let trackEndTimeout: number = -1;
  * It also configures the timeout for when to skip to the next track on every
  * iteration. This is also done based on connect playback data.
  */
-function watchPlaybackProgress(): ThunkAction<void, State, void> {
+function monitorPlayback(): ThunkAction<void, State, void> {
     return (dispatch, getState) => {
         clearInterval(playbackProgressInterval);
         playbackProgressInterval = setInterval(async () => {
