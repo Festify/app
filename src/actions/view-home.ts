@@ -109,7 +109,7 @@ export function loginWithSpotify(): ThunkAction<void, State, void> {
 
         const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
             + `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`
-            + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH`;
+            + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
 
         window.location.href = url;
     };
