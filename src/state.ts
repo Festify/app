@@ -70,6 +70,8 @@ export interface Track {
 }
 
 export interface HomeViewState {
+    partyJoinInProgress: boolean;
+    partyJoinError: Error | null;
     partyId: string;
     partyIdValid: boolean;
 }

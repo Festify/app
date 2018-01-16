@@ -14,6 +14,8 @@ interface HomeViewProps {
     isAuthorizing: boolean;
     partyId: string;
     partyIdValid: boolean;
+    partyJoinError: Error | null;
+    partyJoinInProgress: boolean;
 }
 interface HomeViewDispatch {
     changePartyId: (partyId: string) => void;
@@ -86,7 +88,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
                       raised
                       disabled="${!props.partyIdValid}"
                       on-click="${props.joinParty}">
-            Join Party
+            ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
         ${props.authorized
             ? html`
