@@ -179,10 +179,14 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             : null}
         ${props.isPlayingTrack
             ? html`
-                <paper-icon-button icon="av:skip-next"
-                                   on-click="${() => props.removeTrack(props.track.reference)}"
-                                   title="Skip ${props.metadata.name}">
-                </paper-icon-button>
+                ${props.isOwner
+                    ? html`
+                        <paper-icon-button icon="av:skip-next"
+                                        on-click="${() => props.removeTrack(props.track.reference)}"
+                                        title="Skip ${props.metadata.name}">
+                        </paper-icon-button>
+                    `
+                    : null}
                 <div class="fab-spinner">
                     <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                     <paper-fab mini
