@@ -47,6 +47,8 @@ const mapDispatchToProps = (state: State): ProgressBarProps => ({
 const ProgressBarBase = connect(mapDispatchToProps, {}, ProgressBarView);
 
 class ProgressBar extends ProgressBarBase {
+    private indicator: HTMLElement;
+
     render() {
         super.render();
 
@@ -63,21 +65,30 @@ class ProgressBar extends ProgressBarBase {
             currentPercentage += (timeDiff / durationMs);
         }
         window.requestAnimationFrame(() => {
-            this._transitionTo(currentPercentage * 100, 0, playing);
+            this.transitionTo(currentPercentage * 100, 0, playing);
             if (playing) {
                 // Give the compositor a chance to reset the transitions
                 // before we start the actual animation.
                 window.requestAnimationFrame(() => {
                     const remainingDurationMs = durationMs * (1 - currentPercentage);
-                    this._transitionTo(100, remainingDurationMs, playing);
+                    this.transitionTo(100, remainingDurationMs, playing);
                 });
             }
         });
     }
 
-    _transitionTo(percentage, durationMs, isPlaying) {
+    private getIndicator(): HTMLElement {
+        if (this.indicator) {
+            return this.indicator;
+        }
+
+        this.indicator = this.shadowRoot!.getElementById('indicator')!;
+        return this.indicator;
+    }
+
+    private transitionTo(percentage, durationMs, isPlaying) {
         const value = `opacity 0.25s ease, transform ${durationMs}ms linear`;
-        const style = this.shadowRoot!.getElementById('indicator')!.style;
+        const style = this.getIndicator().style;
         style.transition = value;
         style.opacity = String(isPlaying ? 1 : 0.5);
         style.transform = `scaleX(${percentage / 100})`;
