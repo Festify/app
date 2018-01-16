@@ -24,6 +24,28 @@ interface HomeViewDispatch {
     loginWithSpotify: () => void;
 }
 
+const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
+    if (props.authorized) {
+        return html`
+            <paper-button raised on-click="${props.createParty}">
+                Create Party
+            </paper-button>
+        `;
+    } else if (props.isAuthorizing || !props.authStatusKnown) {
+        return html`
+            <paper-button raised disabled>
+                Authorizing...
+            </paper-button>
+        `;
+    } else {
+        return html`
+            <paper-button raised on-click="${props.loginWithSpotify}">
+                Login to create Party
+            </paper-button>
+        `;
+    }
+};
+
 /* tslint:disable:max-line-length */
 const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
     ${sharedStyles}
@@ -84,27 +106,15 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
                          }
                      }}">
         </paper-input>
+
         <paper-button id="middle"
                       raised
                       disabled="${!props.partyIdValid}"
                       on-click="${props.joinParty}">
             ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
-        ${props.authorized
-            ? html`
-                <paper-button raised
-                              disabled="${!props.authStatusKnown}"
-                              on-click="${props.createParty}">
-                    Create Party
-                </paper-button>
-            `
-            : html`
-                <paper-button raised
-                              disabled="${!props.authStatusKnown}"
-                              on-click="${props.loginWithSpotify}">
-                    ${props.isAuthorizing ? "Authorizing..." : "Login to create Party"}
-                </paper-button>
-            `}
+
+        ${LowerButton(props)}
     </main>
 `;
 /* tslint:enable */
