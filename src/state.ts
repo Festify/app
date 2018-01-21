@@ -69,6 +69,10 @@ export interface Track {
     vote_count: number;
 }
 
+export interface AppShellState {
+    currentToast: string | null;
+}
+
 export interface HomeViewState {
     partyJoinInProgress: boolean;
     partyJoinError: Error | null;
@@ -122,6 +126,7 @@ export interface UserState {
 }
 
 export interface State {
+    appShell: AppShellState;
     homeView: HomeViewState;
     metadata: Record<string, Metadata>;
     party: PartyState;

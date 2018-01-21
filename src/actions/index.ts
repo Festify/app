@@ -7,6 +7,9 @@ import {
     replace,
     replaceRoutes,
 } from "@mraerino/redux-little-router-reactless";
+import { ThunkAction } from 'redux-thunk';
+
+import { State } from '../state';
 
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
@@ -59,6 +62,8 @@ export const enum Types {
     SEARCH_Start = 'SEARCH_START',
     SEARCH_Finish = 'SEARCH_FINISH',
     SEARCH_Fail = 'SEARCH_FAIL',
+    SHOW_TOAST = 'SHOW_TOAST',
+    HIDE_TOAST = 'HIDE_TOAST',
     TOGGLE_VOTE = 'TOGGLE_VOTE',
     TOGGLE_PLAYBACK_Start = 'TOGGLE_PLAYBACK_START',
     TOGGLE_PLAYBACK_Finish = 'TOGGLE_PLAYBACK_FINISH',
@@ -79,4 +84,41 @@ export interface PayloadAction<T> {
 
 export interface ErrorAction extends PayloadAction<Error> {
     error: true;
+}
+
+export interface ToastData {
+    duration: number;
+    text: string;
+}
+
+export interface ShowToastAction extends PayloadAction<string> {
+    type: Types.SHOW_TOAST;
+}
+
+export interface HideToastAction {
+    type: Types.HIDE_TOAST;
+}
+
+let toastTimeout: number = -1;
+export function showToast(text: string, duration: number = 3000): ThunkAction<void, State, void> {
+    return dispatch => {
+        if (duration < 0 || isNaN(duration) || !isFinite(duration)) {
+            throw new Error("Invalid duration.");
+        }
+
+        clearTimeout(toastTimeout);
+        dispatch({
+            type: Types.SHOW_TOAST,
+            payload: text,
+        } as ShowToastAction);
+
+        toastTimeout = setTimeout(() => {
+            clearTimeout(toastTimeout);
+            toastTimeout = -1;
+            dispatch({
+                type: Types.HIDE_TOAST,
+                payload: text,
+            } as HideToastAction);
+        }, duration);
+    };
 }

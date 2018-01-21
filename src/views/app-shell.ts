@@ -1,3 +1,4 @@
+import '@polymer/paper-toast/paper-toast';
 import { connect, html, withExtended } from 'fit-html';
 
 import '../components/load-once';
@@ -12,6 +13,8 @@ import './view-tv';
 
 interface AppShellProps {
     isOwner: boolean;
+    isToastOpen: boolean;
+    toastText: string;
     view: Views;
 }
 
@@ -52,7 +55,10 @@ const AppShellView = (props: AppShellProps) => html`
     </style>
 
     ${Pages(props.view)}
-    <paper-toast id="toast"></paper-toast>
+    <paper-toast duration="0"
+                 opened="${props.isToastOpen}"
+                 text="${props.toastText}">
+    </paper-toast>
 
     ${iconSet}
     <load-once load="${props.isOwner}">
@@ -64,6 +70,8 @@ const AppShellView = (props: AppShellProps) => html`
 
 const mapStateToProps = (state: State): AppShellProps => ({
     isOwner: isPartyOwnerSelector(state),
+    isToastOpen: !!state.appShell.currentToast,
+    toastText: state.appShell.currentToast || '',
     view: (state.router.result || {}).view,
 });
 

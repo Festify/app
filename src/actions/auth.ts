@@ -7,7 +7,7 @@ import { State } from '../state';
 import { AuthData } from '../util/auth';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY } from '../util/spotify-auth';
 
-import { ErrorAction, PayloadAction, Types } from '.';
+import { showToast, ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
     | ExchangeCodeFailAction
@@ -57,7 +57,7 @@ export function notifyAuthStatusKnown(
 }
 
 export function exchangeCode(code: string): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch({ type: Types.EXCHANGE_CODE_Start } as ExchangeCodeStartAction);
         dispatch(replace('/', {}));
 
@@ -90,5 +90,11 @@ export function exchangeCode(code: string): ThunkAction<Promise<void>, State, vo
 
         await dispatch(checkSpotifyLoginStatus());
         dispatch({ type: Types.EXCHANGE_CODE_Finish } as ExchangeCodeFinishAction);
+
+        const { user } = getState();
+        const welcomeText = user.spotify.user
+            ? `Welcome, ${user.spotify.user.display_name || user.spotify.user.id}!`
+            : "Welcome!";
+        dispatch(showToast(welcomeText));
     };
 }
