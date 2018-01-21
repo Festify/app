@@ -55,12 +55,12 @@ const AppShellView = (props: AppShellProps) => html`
     </style>
 
     ${Pages(props.view)}
+
+    ${iconSet}
     <paper-toast duration="0"
                  opened="${props.isToastOpen}"
                  text="${props.toastText}">
     </paper-toast>
-
-    ${iconSet}
     <load-once load="${props.isOwner}">
         <template>
             <script src="https://sdk.scdn.co/spotify-player.js"></script>
