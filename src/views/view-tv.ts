@@ -1,4 +1,5 @@
-import { connect, html } from 'fit-html';
+import 'dom-flip';
+import { connect, html, withExtended } from 'fit-html';
 import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
@@ -66,11 +67,13 @@ const Body = (props: ViewTvProps) => {
                     </div>
                 </div>
             </div>
-            <div class="lower">
+            <dom-flip class="lower">
                 ${props.queueTracks.map(t => html`
-                    <tv-track trackid="${`${t.reference.provider}-${t.reference.id}`}"></tv-track>
+                    <tv-track trackid="${t.reference.provider}-${t.reference.id}"
+                              data-flip-id$="${t.reference.provider}-${t.reference.id}">
+                    </tv-track>
                 `)}
-            </div>
+            </dom-flip>
         `;
     } else {
         return html`
@@ -262,9 +265,9 @@ const mapStateToProps = (state: State): ViewTvProps => {
 
 customElements.define(
     'view-tv',
-    connect(
+    withExtended(connect(
         mapStateToProps,
         {},
         ViewTv,
-    ),
+    )),
 );

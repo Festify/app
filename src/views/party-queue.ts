@@ -1,3 +1,4 @@
+import 'dom-flip';
 import { connect, html, withExtended } from 'fit-html';
 
 import { queueTracksSelector } from '../selectors/track';
@@ -77,11 +78,14 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
         <p id="skipIndicator">Skip</p>
     </div>
 
-    ${props.tracks.map((track, i) => html`
-        <party-track playing="${i === 0}"
-                     trackid="${track.reference.provider}-${track.reference.id}">
-        </party-track>
-    `)}
+    <dom-flip>
+        ${props.tracks.map((track, i) => html`
+            <party-track playing="${i === 0}"
+                         data-flip-id$="${track.reference.provider}-${track.reference.id}"
+                         trackid="${track.reference.provider}-${track.reference.id}">
+            </party-track>
+        `)}
+    </dom-flip>
 `;
 /* tslint:enable */
 
