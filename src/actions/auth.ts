@@ -33,8 +33,7 @@ export interface NotifyStatusKnownAction extends PayloadAction<['spotify', any]>
 
 export function checkSpotifyLoginStatus(): ThunkAction<void, State, void> {
     return async (dispatch) => {
-        const lsEntry = localStorage[LOCALSTORAGE_KEY];
-        if (!lsEntry) {
+        if (!localStorage[LOCALSTORAGE_KEY]) {
             dispatch(notifyAuthStatusKnown('spotify', null));
             return;
         }
