@@ -38,18 +38,19 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
 }
 
 export function updateMetadata(tracks: SpotifyApi.TrackObjectFull[]): UpdateMetadataAction {
-    const metadata = tracks.reduce((acc, track) => {
-        acc[`spotify-${track.id}`] = {
+    const meta: Record<string, Metadata> = {};
+
+    for (const track of tracks) {
+        meta[`spotify-${track.id}`] = {
             artists: track.artists.map(art => art.name),
             cover: track.album.images,
             durationMs: track.duration_ms,
             name: track.name,
         } as Metadata;
-        return acc;
-    }, {});
+    }
 
     return {
         type: Types.UPDATE_METADATA,
-        payload: metadata,
+        payload: meta,
     };
 }
