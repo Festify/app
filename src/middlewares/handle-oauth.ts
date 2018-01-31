@@ -4,13 +4,15 @@ import { Actions } from '../actions';
 import { exchangeCode } from '../actions/auth';
 
 export default store => next => (action: Actions) => {
+    next(action);
+
     if (action.type !== LOCATION_CHANGED) {
-        return next(action);
+        return;
     }
 
     const { code, state } = action.payload.query;
     if (state !== 'SPOTIFY_AUTH') {
-        return next(action);
+        return;
     }
 
     store.dispatch(exchangeCode(code));

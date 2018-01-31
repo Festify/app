@@ -4,24 +4,19 @@ import { closeParty, loadParty } from "../actions/party-data";
 
 let oldPartyId: string | null = null;
 export default store => next => action => {
+    next(action);
+
     if (action.type !== LOCATION_CHANGED) {
-        return next(action);
+        return;
     }
 
     const partyId = (action.payload.params || {}).partyId === undefined
         ? null
         : action.payload.params.partyId;
     if (oldPartyId === partyId) {
-        return next(action);
+        return;
     }
 
     oldPartyId = partyId;
-
-    if (partyId === null) {
-        store.dispatch(closeParty());
-        return next(action);
-    }
-
-    store.dispatch(loadParty(partyId));
-    next(action);
+    store.dispatch(partyId !== null ? loadParty(partyId) : closeParty());
 };
