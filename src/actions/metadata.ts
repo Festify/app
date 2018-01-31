@@ -18,9 +18,8 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
     return (dispatch, getState) => {
         const { metadata } = getState();
         const remaining = references
-            .filter(ref => !(`${ref.provider}-${ref.id}` in metadata))
-            .map(ref => ref.id)
-            .filter(id => id);
+            .filter(ref => ref.id && !(`${ref.provider}-${ref.id}` in metadata))
+            .map(ref => ref.id);
         const promises = chunk(remaining, 50).map(async (ids: string[]) => {
             if (ids.length === 0) {
                 return;
