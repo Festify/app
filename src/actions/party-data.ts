@@ -1,9 +1,10 @@
 import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
+import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
 import { ConnectionState, Party, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
-import firebase from '../util/firebase';
+import firebase, { firebaseNS } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
@@ -13,6 +14,8 @@ export type Actions =
     | OpenPartyStartAction
     | OpenPartyFailAction
     | CleanupPartyAction
+    | JoinPartyFailAction
+    | JoinPartyStartAction
     | UpdateNetworkConnectionStateAction
     | UpdatePartyAction
     | UpdateTracksAction
@@ -20,6 +23,15 @@ export type Actions =
 
 export interface CleanupPartyAction {
     type: Types.CLEANUP_PARTY;
+}
+
+export interface JoinPartyFailAction extends PayloadAction<Error> {
+    type: Types.JOIN_PARTY_Fail;
+    error: true;
+}
+
+export interface JoinPartyStartAction {
+    type: Types.JOIN_PARTY_Start;
 }
 
 export interface OpenPartyStartAction {
@@ -52,6 +64,70 @@ let partyRef: Reference | null = null;
 let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
+
+export function closeParty(): ThunkAction<void, State, void> {
+    return (dispatch) => {
+        if (connectionRef !== null) {
+            connectionRef.off('value');
+            connectionRef = null;
+        }
+        if (partyRef !== null) {
+            partyRef.off('value');
+            partyRef = null;
+        }
+        if (topmostTrackRef != null) {
+            topmostTrackRef.off('value');
+            topmostTrackRef = null;
+        }
+        if (tracksRef != null) {
+            tracksRef.off('value');
+            tracksRef = null;
+        }
+        if (votesRef != null) {
+            votesRef.off('value');
+            votesRef = null;
+        }
+        dispatch({ type: Types.CLEANUP_PARTY });
+    };
+}
+
+export function createParty(): ThunkAction<Promise<string>, State, void> {
+    return async (dispatch, getState) => {
+        const { user } = getState().user.spotify;
+
+        if (!user) {
+            throw new Error("Missing Spotify user.");
+        }
+
+        const { uid } = await requireAuth();
+
+        const now = firebaseNS.database!.ServerValue.TIMESTAMP;
+        const userDisplayName = user.display_name || user.id;
+        const userNamePosessive = userDisplayName.endsWith('s') ? "'" : "'s";
+        const party = {
+            country: user.country,
+            created_at: now,
+            created_by: uid,
+            name: `${userDisplayName}${userNamePosessive} Party`,
+            playback: {
+                last_change: now,
+                last_position_ms: 0,
+                playing: false,
+            },
+            short_id: String(Math.floor(Math.random() * 1000000)),
+        };
+
+        const result = await firebase.database!()
+            .ref('/parties')
+            .push(party);
+
+        if (!result.key) {
+            throw new Error("Missing ID of newly created party!");
+        }
+
+        return result.key;
+    };
+}
 
 export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
@@ -125,29 +201,21 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
     };
 }
 
-export function closeParty(): ThunkAction<void, State, void> {
-    return (dispatch) => {
-        if (connectionRef !== null) {
-            connectionRef.off('value');
-            connectionRef = null;
+export function openParty(shortId: string): ThunkAction<Promise<any>, State, void> {
+    return async (dispatch, getState) => {
+        dispatch({ type: Types.JOIN_PARTY_Start });
+
+        const longId = await resolveShortId(shortId);
+        if (!longId) {
+            dispatch({
+                type: Types.JOIN_PARTY_Fail,
+                error: true,
+                payload: new Error("Party not found!"),
+            } as JoinPartyFailAction);
+            return;
         }
-        if (partyRef !== null) {
-            partyRef.off('value');
-            partyRef = null;
-        }
-        if (topmostTrackRef != null) {
-            topmostTrackRef.off('value');
-            topmostTrackRef = null;
-        }
-        if (tracksRef != null) {
-            tracksRef.off('value');
-            tracksRef = null;
-        }
-        if (votesRef != null) {
-            votesRef.off('value');
-            votesRef = null;
-        }
-        dispatch({ type: Types.CLEANUP_PARTY });
+
+        dispatch(push(`/party/${longId}`, {}));
     };
 }
 
@@ -157,6 +225,26 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
         error: true,
         payload: err,
     };
+}
+
+export async function resolveShortId(shortId: string): Promise<string | null> {
+    const snapshot = await firebase.database!()
+        .ref('/parties')
+        .orderByChild('short_id')
+        .equalTo(shortId)
+        .once('value');
+
+    if (snapshot.numChildren() < 1) {
+        return null;
+    }
+
+    const result: Record<string, Party> = snapshot.val();
+    const possibleLongId = Object.keys(result).reduce(
+        (acc, k) => result[k].created_at > (result[acc] || { created_at: -1 }).created_at ? k : acc,
+        '',
+    );
+
+    return possibleLongId || null; // Filter out empty IDs
 }
 
 export function updateConnectionState(isConnected: ConnectionState): UpdateNetworkConnectionStateAction {

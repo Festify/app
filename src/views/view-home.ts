@@ -3,7 +3,12 @@ import '@polymer/paper-input/paper-input';
 import '@polymer/polymer/lib/elements/custom-style';
 import { connect, html, withExtended } from 'fit-html';
 
-import { changePartyId, createParty, joinParty, loginWithSpotify } from '../actions/view-home';
+import {
+    changePartyId,
+    createNewParty as createParty,
+    joinParty,
+    loginWithSpotify,
+} from '../actions/view-home';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
