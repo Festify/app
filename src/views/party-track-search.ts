@@ -7,7 +7,7 @@ import { createMapStateToPropsFactory, mapDispatchToProps, PartyTrack } from './
 
 const trackSelector = (state: State, trackId: string) =>
     state.partyView.searchResult
-        ? state.partyView.searchResult![trackId]
+        ? state.partyView.searchResult[trackId]
         : {};
 const voteCountSelector = (state: State, trackId: string) =>
     state.party.tracks && state.party.tracks[trackId]
