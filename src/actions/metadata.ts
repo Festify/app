@@ -15,11 +15,12 @@ export interface UpdateMetadataAction extends PayloadAction<Record<string, Metad
 }
 
 export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<void>, State, void> {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         const { metadata } = getState();
         const remaining = references
             .filter(ref => ref.id && !(`${ref.provider}-${ref.id}` in metadata))
             .map(ref => ref.id);
+
         const promises = chunk(remaining, 50).map(async (ids: string[]) => {
             if (ids.length === 0) {
                 return;
@@ -32,7 +33,7 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
             dispatch(updateMetadata(tracks));
         });
 
-        return Promise.all(promises).then(() => {});
+        await Promise.all(promises);
     };
 }
 
