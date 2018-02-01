@@ -37,7 +37,7 @@ export function joinParty(): ThunkAction<Promise<void>, State, void> {
 }
 
 export function loginWithSpotify(): ThunkAction<void, State, void> {
-    return (dispatch) => {
+    return () => {
         console.log("Good bye.");
 
         const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
