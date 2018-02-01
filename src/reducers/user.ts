@@ -51,6 +51,7 @@ export default function(
             return {
                 ...state,
                 [provider]: {
+                    ...(state[provider]),
                     user,
                     statusKnown: true,
                 },

@@ -36,7 +36,9 @@ export type Actions =
     | PartyViewActions
     | PlaybackSpotifyActions
     | RouterActions
-    | SettingsActions;
+    | SettingsActions
+    | ShowToastAction
+    | HideToastAction;
 
 export const enum Types {
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',

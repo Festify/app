@@ -12,7 +12,7 @@ import { showToast, ErrorAction, PayloadAction, Types } from '.';
 export type Actions =
     | ExchangeCodeFailAction
     | ExchangeCodeFinishAction
-    | ExchangeCodeFinishAction
+    | ExchangeCodeStartAction
     | NotifyStatusKnownAction;
 
 export interface ExchangeCodeFailAction extends ErrorAction {

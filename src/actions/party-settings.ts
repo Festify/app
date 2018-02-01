@@ -26,7 +26,7 @@ export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<s
 }
 
 export interface InsertFallbackPlaylistFailAction extends ErrorAction {
-    type: Types.INSERT_FALLBACK_PLAYLIST_Finish;
+    type: Types.INSERT_FALLBACK_PLAYLIST_Fail;
 }
 
 export interface InsertFallbackPlaylistFinishAction {
@@ -144,7 +144,7 @@ export function insertPlaylist(
                 type: Types.INSERT_FALLBACK_PLAYLIST_Fail,
                 error: true,
                 payload: err,
-            });
+            } as InsertFallbackPlaylistFailAction);
             return;
         }
 
@@ -178,7 +178,7 @@ export function insertPlaylist(
                 type: Types.INSERT_FALLBACK_PLAYLIST_Fail,
                 error: true,
                 payload: err,
-            });
+            } as InsertFallbackPlaylistFailAction);
             return;
         }
 

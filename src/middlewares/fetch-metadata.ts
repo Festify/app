@@ -9,6 +9,6 @@ export default store => next => (action: Actions) => {
     }
 
     const refs = Object.keys(action.payload)
-        .map(k => action.payload[k].reference);
+        .map(k => action.payload![k].reference);
     store.dispatch(loadMetadata(refs));
 };
