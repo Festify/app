@@ -30,14 +30,14 @@ export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<
             const resp = await fetchWithAnonymousAuth(url);
             const { tracks } = await resp.json();
 
-            dispatch(updateMetadata(tracks));
+            dispatch(loadSpotifyMetadata(tracks));
         });
 
         await Promise.all(promises);
     };
 }
 
-export function updateMetadata(tracks: SpotifyApi.TrackObjectFull[]): UpdateMetadataAction {
+export function loadSpotifyMetadata(tracks: SpotifyApi.TrackObjectFull[]): UpdateMetadataAction {
     const meta: Record<string, Metadata> = {};
 
     for (const track of tracks) {

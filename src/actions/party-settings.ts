@@ -9,7 +9,7 @@ import firebase from '../util/firebase';
 import { fetchWithAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
-import { updateMetadata } from './metadata';
+import { loadSpotifyMetadata } from './metadata';
 
 export type Actions =
     | ChangeFallbackPlaylistSearchInputAction
@@ -199,7 +199,7 @@ async function fetchTracks(playlist: Playlist, dispatch: Dispatch<State>): Promi
             .map(it => it.track)
             .filter(track => track.id);
 
-        dispatch(updateMetadata(trackItems));
+        dispatch(loadSpotifyMetadata(trackItems));
         dispatch(insertPlaylistProgress(json.items.length));
 
         url = json.next;
