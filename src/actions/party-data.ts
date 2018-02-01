@@ -155,7 +155,9 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
         const isOwner = (partySnap.val() as Party).created_by === uid;
 
         if (isOwner) {
-            requireAccessToken().then(() => dispatch(connectPlayer())).catch(() => {});
+            requireAccessToken()
+                .then(() => dispatch(connectPlayer()))
+                .catch(() => {});
 
             topmostTrackRef = firebase.database!()
                 .ref('/tracks')
