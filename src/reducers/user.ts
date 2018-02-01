@@ -32,15 +32,15 @@ export default function(
                     authorizationError: null,
                 },
             };
-            case Types.EXCHANGE_CODE_Start:
-                return {
-                    ...state,
-                    spotify: {
-                        ...state.spotify,
-                        authorizing: true,
-                        authorizationError: null,
-                    },
-                };
+        case Types.EXCHANGE_CODE_Start:
+            return {
+                ...state,
+                spotify: {
+                    ...state.spotify,
+                    authorizing: true,
+                    authorizationError: null,
+                },
+            };
         case Types.UPDATE_USER_PLAYLISTS:
             return {
                 ...state,
