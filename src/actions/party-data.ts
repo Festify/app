@@ -155,16 +155,18 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
         const isOwner = (partySnap.val() as Party).created_by === uid;
 
         if (isOwner) {
+            // Set up spotify player if we own the party
             requireAccessToken()
                 .then(() => dispatch(connectPlayer()))
                 .catch(() => {});
 
+            // Pin topmost / playing track to top of queue
+            // TODO: Outsource this into cloud function once old app is gone
             topmostTrackRef = firebase.database!()
                 .ref('/tracks')
                 .child(id)
                 .orderByChild('order')
                 .limitToFirst(1);
-
             topmostTrackRef.on('value', (snap: DataSnapshot) => {
                 if (!snap.exists()) {
                     return;
