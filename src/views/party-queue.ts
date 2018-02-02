@@ -46,38 +46,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             margin: 0;
             text-align: center;
         }
-
-        #skipBackground {
-            position: absolute;
-            right: 0;
-            width: 100%;
-
-            display: flex;
-            align-items: flex-end;
-            flex-direction: column;
-            justify-content: center;
-
-            height: 80px;
-            pointer-events: none;
-            transition: background-color 0.25s;
-            z-index: 0;
-        }
-
-        #skipBackground.active {
-            background-color: var(--primary-color);
-        }
-
-        #skipBackground p {
-            line-height: 16px;
-            margin: 0 32px 0 0;
-            text-align: right;
-        }
     </style>
-
-    <div id="skipBackground"
-         style$="display: [[_getDisplaySkipIndicator(tracks.length, state.isOwner)]]">
-        <p id="skipIndicator">Skip</p>
-    </div>
 
     <dom-flip>
         ${props.tracks.map((track, i) => html`
