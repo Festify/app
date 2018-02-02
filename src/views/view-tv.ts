@@ -1,5 +1,6 @@
 import 'dom-flip';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
@@ -265,9 +266,9 @@ const mapStateToProps = (state: State): ViewTvProps => {
 
 customElements.define(
     'view-tv',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         {},
         ViewTv,
-    )),
+    ),
 );

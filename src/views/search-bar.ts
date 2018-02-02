@@ -1,5 +1,6 @@
 import '@polymer/paper-icon-button/paper-icon-button';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import { changeSearchInputText } from '../actions/view-party';
 import { State } from '../state';
@@ -92,9 +93,9 @@ const mapDispatchToProps: SearchBarDispatch = {
 
 customElements.define(
     'search-bar',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         SearchBar,
-    )),
+    ),
 );

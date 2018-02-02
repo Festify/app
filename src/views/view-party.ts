@@ -2,7 +2,8 @@ import '@polymer/app-layout/app-drawer-layout/app-drawer-layout';
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import '@polymer/paper-icon-button/paper-icon-button';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html';
 
 import { PartyViews } from '../routing';
 import { Party, State } from '../state';
@@ -134,9 +135,9 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
 customElements.define(
     'view-party',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         PartyView,
-    )),
+    ),
 );

@@ -1,5 +1,6 @@
 import '@polymer/paper-spinner/paper-spinner-lite';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html';
 
 import { sortedTracksFactory } from '../selectors/track';
 import { State } from "../state";
@@ -74,9 +75,9 @@ const mapStateToProps = (state: State): SearchProps => ({
 
 customElements.define(
     'party-search',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         {},
         PartySearchView,
-    )),
+    ),
 );

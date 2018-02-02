@@ -1,7 +1,8 @@
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
 
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import { shareParty } from '../actions/party-share';
 import { State } from '../state';
@@ -76,9 +77,9 @@ const mapDispatchToProps: ViewShareDispatch = {
 
 customElements.define(
     'party-share',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         ViewShare,
-    )),
+    ),
 );

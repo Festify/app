@@ -21,7 +21,7 @@
     "@webcomponents/webcomponentsjs": "^1.0.22",
     "dom-flip": "^0.2.2",
     "firebase": "^4.8.1",
-    "fit-html": "^0.4.3",
+    "fit-html": "^0.5.0",
     "lodash-es": "^4.17.4",
     "normalize-css": "^2.3.1",
     "promise-debounce": "^1.0.1",

@@ -2,7 +2,8 @@ import '@polymer/paper-button/paper-button';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-spinner/paper-spinner-lite';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import { changePartyName, changeSearchInput, insertPlaylist } from '../actions/party-settings';
 import { flushTracks } from '../actions/queue';
@@ -174,9 +175,9 @@ const mapDispatchToProps: PartySettingsDispatch = {
 
 customElements.define(
     'party-settings',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         PartySettings,
-    )),
+    ),
 );

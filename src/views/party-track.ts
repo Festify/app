@@ -1,6 +1,7 @@
 import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
-import { connect, html, withExtended, withProps } from 'fit-html';
+import { connect, withProps } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import { togglePlayPause } from '../actions/playback-spotify';
 import { removeTrack, toggleVote } from '../actions/queue';
@@ -241,11 +242,11 @@ export const mapDispatchToProps: PartyTrackDispatch = {
     togglePlayPause,
 };
 
-const PartyTrackBase = withProps(withExtended(connect(
+const PartyTrackBase = withProps(connect(
     createMapStateToPropsFactory(singleTrackSelector),
     mapDispatchToProps,
     PartyTrack,
-)), {
+), {
     playing: Boolean,
     trackid: String,
 });

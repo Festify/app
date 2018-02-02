@@ -1,5 +1,6 @@
 import 'dom-flip';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import { queueTracksSelector } from '../selectors/track';
 import { State, Track } from '../state';
@@ -97,9 +98,9 @@ const mapDispatchToProps: PartyQueueDispatch = {};
 
 customElements.define(
     'party-queue',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         PartyQueue,
-    )),
+    ),
 );

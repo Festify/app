@@ -1,7 +1,8 @@
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/polymer/lib/elements/custom-style';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import {
     changePartyId,
@@ -140,9 +141,9 @@ const mapDispatchToProps: HomeViewDispatch = {
 
 customElements.define(
     'view-home',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         HomeView,
-    )),
+    ),
 );

@@ -1,4 +1,4 @@
-import { connect, withExtended, withProps } from 'fit-html';
+import { connect, withProps } from 'fit-html';
 import { createSelector } from 'reselect';
 
 import { State, Track } from '../state';
@@ -21,11 +21,11 @@ const enhancedTrackSelector = createSelector(
 
 customElements.define(
     'party-track-search',
-    withProps(withExtended(connect(
+    withProps(connect(
         createMapStateToPropsFactory(enhancedTrackSelector),
         mapDispatchToProps,
         PartyTrack,
-    )), {
+    ), {
         trackid: String,
     }),
 );

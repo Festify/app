@@ -1,5 +1,6 @@
 import '@polymer/paper-toast/paper-toast';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
 import '../components/load-once';
 import { Views } from '../routing';
@@ -77,9 +78,9 @@ const mapStateToProps = (state: State): AppShellProps => ({
 
 customElements.define(
     'app-shell',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         {},
         AppShellView,
-    )),
+    ),
 );

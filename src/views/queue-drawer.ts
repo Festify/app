@@ -1,5 +1,6 @@
 import '@polymer/iron-icon/iron-icon';
-import { connect, html, withExtended } from 'fit-html';
+import { connect } from 'fit-html';
+import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
 import { handleClick } from '../actions/queue-drawer';
@@ -166,9 +167,9 @@ const mapDispatchToProps: QueueDrawerDispatch = {
 
 customElements.define(
     'queue-drawer',
-    withExtended(connect(
+    connect(
         mapStateToProps,
         mapDispatchToProps,
         QueueDrawer,
-    )),
+    ),
 );

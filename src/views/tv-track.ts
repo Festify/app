@@ -1,4 +1,5 @@
-import { connect, html, withProps } from 'fit-html';
+import { connect, withProps } from 'fit-html';
+import { html } from 'lit-html';
 
 import srcsetImg from '../components/srcset-img';
 import {

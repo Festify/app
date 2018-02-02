@@ -1,4 +1,4 @@
-import { html } from 'fit-html';
+import { html } from 'lit-html';
 
 export default html`
     <style>
