@@ -24,7 +24,7 @@ export function changePartyId(partyId: string): ChangePartyIdAction {
 
 export function createNewParty(): ThunkAction<Promise<void>, State, void> {
     return async dispatch => {
-        const partyId = await createParty();
+        const partyId = await dispatch(createParty());
         dispatch(push(`/party/${partyId}`, {}));
     };
 }
