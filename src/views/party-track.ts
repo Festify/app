@@ -6,7 +6,7 @@ import { html } from 'lit-html/lib/lit-extended';
 import { togglePlayPause } from '../actions/playback-spotify';
 import { removeTrack, toggleVote } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, isPlaybackMasterSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
     defaultMetaSelectorFactory,
@@ -21,6 +21,7 @@ export interface PartyTrackProps {
     artistName: string;
     isOwner: boolean;
     isMusicPlaying: boolean;
+    isPlaybackMaster: boolean;
     isPlayingTrack: boolean;
     hasVoted: boolean;
     metadata: Metadata;
@@ -198,6 +199,13 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
+        ${props.isPlayingTrack && props.isOwner && !props.isPlaybackMaster
+            ? html`
+                <paper-icon-button icon="festify:download"
+                                   title="Transfer playback to current device">
+                </paper-icon-button>
+            `
+            : null}
         ${props.isOwner && !props.isPlayingTrack && (props.track.vote_count > 0 || props.track.is_fallback)
             ? html`
                 <paper-icon-button icon="festify:clear"
@@ -230,9 +238,10 @@ export const createMapStateToPropsFactory = (
                 metadata,
                 track,
                 artistName: artistJoiner(state, ownProps.trackid),
-                isOwner: isPartyOwnerSelector(state),
                 hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
+                isOwner: isPartyOwnerSelector(state),
                 isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
+                isPlaybackMaster: isPlaybackMasterSelector(state),
                 isPlayingTrack: ownProps.playing,
                 voteString: voteStringGenerator(state, ownProps.trackid),
                 togglingPlayback: state.player.togglingPlayback,

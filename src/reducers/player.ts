@@ -3,6 +3,7 @@ import { PlayerState } from "../state";
 
 export default function (
     state: PlayerState = {
+        instanceId: '',
         playbackState: null,
         localDeviceId: null,
         initializing: false,
@@ -13,6 +14,11 @@ export default function (
     action: Actions,
 ): PlayerState {
     switch (action.type) {
+        case Types.ASSIGN_INSTANCE_ID:
+            return {
+                ...state,
+                instanceId: action.payload,
+            };
         case Types.UPDATE_PLAYER_STATE:
             return {
                 ...state,

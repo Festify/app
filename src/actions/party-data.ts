@@ -8,7 +8,7 @@ import firebase, { firebaseNS } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
-import { connectPlayer } from './playback-spotify';
+import { connectPlayer, disconnectPlayer } from './playback-spotify';
 
 export type Actions =
     | OpenPartyStartAction
@@ -61,6 +61,7 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
 
 let connectionRef: Reference | null = null;
 let partyRef: Reference | null = null;
+let playbackMasterRef: Reference | null = null;
 let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
@@ -74,6 +75,11 @@ export function closeParty(): ThunkAction<void, State, void> {
         if (partyRef !== null) {
             partyRef.off('value');
             partyRef = null;
+        }
+        if (playbackMasterRef !== null) {
+            playbackMasterRef.off('value');
+            playbackMasterRef.set(null); // Unset playback master state
+            playbackMasterRef = null;
         }
         if (topmostTrackRef != null) {
             topmostTrackRef.off('value');
@@ -93,25 +99,28 @@ export function closeParty(): ThunkAction<void, State, void> {
 
 export function createParty(): ThunkAction<Promise<string>, State, void> {
     return async (dispatch, getState) => {
-        const { user } = getState().user.spotify;
+        const { player, user } = getState();
+        const spotifyUser = user.spotify.user;
 
-        if (!user) {
+        if (!spotifyUser) {
             throw new Error("Missing Spotify user.");
         }
 
         const { uid } = await requireAuth();
 
         const now = firebaseNS.database!.ServerValue.TIMESTAMP;
-        const userDisplayName = user.display_name || user.id;
+        const userDisplayName = spotifyUser.display_name || spotifyUser.id;
         const userNamePosessive = userDisplayName.endsWith('s') ? "'" : "'s";
-        const party = {
-            country: user.country,
-            created_at: now,
+        const party: Party = {
+            country: spotifyUser.country,
+            created_at: now as any,
             created_by: uid,
             name: `${userDisplayName}${userNamePosessive} Party`,
             playback: {
-                last_change: now,
+                device_id: null,
+                last_change: now as any,
                 last_position_ms: 0,
+                master_id: player.instanceId,
                 playing: false,
             },
             short_id: String(Math.floor(Math.random() * 1000000)),
@@ -155,31 +164,55 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
         const isOwner = (partySnap.val() as Party).created_by === uid;
 
         if (isOwner) {
-            // Set up spotify player if we own the party
-            requireAccessToken()
-                .then(() => dispatch(connectPlayer()))
-                .catch(() => {});
-
-            // Pin topmost / playing track to top of queue
-            // TODO: Outsource this into cloud function once old app is gone
-            topmostTrackRef = firebase.database!()
-                .ref('/tracks')
+            playbackMasterRef = firebase.database!()
+                .ref('/parties')
                 .child(id)
-                .orderByChild('order')
-                .limitToFirst(1);
-            topmostTrackRef.on('value', (snap: DataSnapshot) => {
-                if (!snap.exists()) {
-                    return;
-                }
+                .child('playback')
+                .child('master_id');
+            playbackMasterRef.onDisconnect()
+                .set(null);
 
-                const [trackKey] = Object.keys(snap.val());
-                firebase.database!()
-                    .ref('/tracks')
-                    .child(id)
-                    .child(trackKey)
-                    .child('order')
-                    .set(Number.MIN_SAFE_INTEGER)
-                    .catch(err => console.warn("Failed to update current track order:", err));
+            playbackMasterRef.on('value', (snap: DataSnapshot) => {
+                const instanceId = getState().player.instanceId;
+                const masterId: string | null = snap.val();
+
+                if (masterId === instanceId) {
+                    // Set up spotify player if we own the party
+                    requireAccessToken()
+                        .then(() => dispatch(connectPlayer()))
+                        .catch(() => {});
+
+                    // Pin topmost / playing track to top of queue
+                    // TODO: Outsource this into cloud function once old app is gone
+                    topmostTrackRef = firebase.database!()
+                        .ref('/tracks')
+                        .child(id)
+                        .orderByChild('order')
+                        .limitToFirst(1);
+                    topmostTrackRef.on('value', (snap: DataSnapshot) => {
+                        if (!snap.exists()) {
+                            return;
+                        }
+
+                        const [trackKey] = Object.keys(snap.val());
+                        firebase.database!()
+                            .ref('/tracks')
+                            .child(id)
+                            .child(trackKey)
+                            .child('order')
+                            .set(Number.MIN_SAFE_INTEGER)
+                            .catch(err => console.warn("Failed to update current track order:", err));
+                    });
+                } else {
+                    dispatch(disconnectPlayer());
+
+                    if (!topmostTrackRef) {
+                        return;
+                    }
+
+                    topmostTrackRef.off('value');
+                    topmostTrackRef = null;
+                }
             });
         }
         tracksRef = (firebase.database!() as FirebaseDatabase)

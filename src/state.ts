@@ -18,6 +18,7 @@ export interface Playback {
     device_id: string | null;
     last_change: number;
     last_position_ms: number;
+    master_id: string | null;
     playing: boolean;
 }
 
@@ -94,6 +95,7 @@ export interface ConnectPlaybackState {
 }
 
 export interface PlayerState {
+    instanceId: string;
     localDeviceId: string | null;
     playbackState: Spotify.PlaybackState | null;
 

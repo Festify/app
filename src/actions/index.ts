@@ -41,6 +41,7 @@ export type Actions =
     | HideToastAction;
 
 export const enum Types {
+    ASSIGN_INSTANCE_ID = 'ASSIGN_INSTANCE_ID',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
     CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT',
     CLEANUP_PARTY = 'CLEANUP_PARTY',
@@ -93,12 +94,23 @@ export interface ToastData {
     text: string;
 }
 
-export interface ShowToastAction extends PayloadAction<string> {
-    type: Types.SHOW_TOAST;
+export interface AssignInstanceId extends PayloadAction<string> {
+    type: Types.ASSIGN_INSTANCE_ID;
 }
 
 export interface HideToastAction {
     type: Types.HIDE_TOAST;
+}
+
+export interface ShowToastAction extends PayloadAction<string> {
+    type: Types.SHOW_TOAST;
+}
+
+export function generateInstanceId(): AssignInstanceId {
+    return {
+        type: Types.ASSIGN_INSTANCE_ID,
+        payload: String(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
+    };
 }
 
 let toastTimeout: number = -1;
