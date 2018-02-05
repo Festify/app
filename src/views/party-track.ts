@@ -50,6 +50,36 @@ const LikeButtonIcon = (props: PartyTrackProps): string => {
     }
 };
 
+const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
+    if (props.isPlayingTrack) {
+        return html`
+            ${props.isOwner
+                ? html`
+                    <paper-icon-button icon="festify:skip-next"
+                                       on-click="${() => props.removeTrack(props.track.reference)}"
+                                       title="Skip ${props.metadata.name}">
+                    </paper-icon-button>
+                `
+                : null}
+            <div class="fab-spinner">
+                <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
+                <paper-fab mini
+                           icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
+                           on-click="${props.togglePlayPause}"
+                           disabled="${!props.isOwner || props.togglingPlayback}">
+                </paper-fab>
+            </div>
+        `;
+    } else {
+        return html`
+            <paper-icon-button icon="${LikeButtonIcon(props)}"
+                            on-click="${ev => props.toggleVote(props.track.reference)}"
+                            title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
+            </paper-icon-button>
+        `;
+    }
+};
+
 /* tslint:disable:max-line-length */
 export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     ${sharedStyles}
@@ -176,32 +206,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
                 </paper-icon-button>
             `
             : null}
-        ${props.isPlayingTrack
-            ? html`
-                ${props.isOwner
-                    ? html`
-                        <paper-icon-button icon="festify:skip-next"
-                                           on-click="${() => props.removeTrack(props.track.reference)}"
-                                           title="Skip ${props.metadata.name}">
-                        </paper-icon-button>
-                    `
-                    : null}
-                <div class="fab-spinner">
-                    <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
-                    <paper-fab mini
-                               icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
-                               on-click="${props.togglePlayPause}"
-                               disabled="${!props.isOwner || props.togglingPlayback}">
-                    </paper-fab>
-                </div>
-            `
-            : html`
-                <paper-icon-button icon="${LikeButtonIcon(props)}"
-                                   on-click="${ev => props.toggleVote(props.track.reference)}"
-                                   title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
-                </paper-icon-button>
-            `
-        }
+        ${PlayButton(props)}
     </div>
 `;
 /* tslint:enable */
