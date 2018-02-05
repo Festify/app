@@ -63,7 +63,7 @@ const Body = (props: ViewTvProps) => {
 
                         <playback-progress-bar></playback-progress-bar>
 
-                        <h4>Go to festify.us and vote!</h4>
+                        <h4>Go to festify.us and vote for the music!</h4>
                         <h5>${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
