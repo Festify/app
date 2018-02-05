@@ -20,10 +20,7 @@ export type Actions =
     | PlayerInitFinishAction
     | PlayerErrorAction
     | UpdateConnectStateAction
-    | UpdatePlayerStateAction
-    | TogglePlaybackStartAction
-    | TogglePlaybackFinishAction
-    | TogglePlaybackFailAction;
+    | UpdatePlayerStateAction;
 
 export interface PlayerErrorAction extends ErrorAction {
     type: Types.PLAYER_ERROR;
@@ -35,18 +32,6 @@ export interface PlayerInitStartAction {
 
 export interface PlayerInitFinishAction extends PayloadAction<string> {
     type: Types.PLAYER_INIT_Finish;
-}
-
-export interface TogglePlaybackStartAction {
-    type: Types.TOGGLE_PLAYBACK_Start;
-}
-
-export interface TogglePlaybackFinishAction {
-    type: Types.TOGGLE_PLAYBACK_Finish;
-}
-
-export interface TogglePlaybackFailAction extends ErrorAction {
-    type: Types.TOGGLE_PLAYBACK_Fail;
 }
 
 export interface UpdatePlayerStateAction extends PayloadAction<Spotify.PlaybackState | null> {
@@ -180,38 +165,30 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
 export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
-        dispatch({ type: Types.TOGGLE_PLAYBACK_Start } as TogglePlaybackStartAction);
+        await dispatch(fetchPlayerState());
 
-        try {
-            await dispatch(fetchPlayerState());
+        const state = getState();
+        if (!isPartyOwnerSelector(state)) {
+            throw new Error("Not party owner");
+        }
 
-            const state = getState();
-            const { player, party } = state;
+        const { player, party } = state;
 
-            if (!player.localDeviceId) {
-                throw new Error('Local device ID missing');
-            }
+        if (!player.localDeviceId) {
+            throw new Error('Local device ID missing');
+        }
 
-            if (!party.currentParty) {
-                throw new Error('Missing party');
-            }
+        if (!party.currentParty) {
+            throw new Error('Missing party');
+        }
 
-            const { playback } = party.currentParty;
-            if (playback.playing) {
-                await dispatch(pause());
-            } else if (!player.playbackState) {
-                await dispatch(play(0)); // Start playing track
-            } else {
-                await dispatch(play()); // Just resume
-            }
-
-            dispatch({ type: Types.TOGGLE_PLAYBACK_Finish } as TogglePlaybackFinishAction);
-        } catch (error) {
-            dispatch({
-                type: Types.TOGGLE_PLAYBACK_Fail,
-                payload: error,
-                error: true,
-            } as TogglePlaybackFailAction);
+        const { playback } = party.currentParty;
+        if (playback.playing) {
+            await dispatch(pause());
+        } else if (!player.playbackState) {
+            await dispatch(play(0)); // Start playing track
+        } else {
+            await dispatch(play()); // Just resume
         }
     };
 }

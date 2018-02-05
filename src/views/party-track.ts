@@ -3,10 +3,10 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, withProps } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { togglePlayPause } from '../actions/playback-spotify';
+import { takeOverPlayback, togglePlayPause } from '../actions/party-track';
 import { removeTrack, toggleVote } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
-import { isPartyOwnerSelector, isPlaybackMasterSelector } from '../selectors/party';
+import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
     defaultMetaSelectorFactory,
@@ -19,11 +19,12 @@ import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
     artistName: string;
+    hasPlaybackMaster: boolean;
+    hasVoted: boolean;
     isOwner: boolean;
     isMusicPlaying: boolean;
     isPlaybackMaster: boolean;
     isPlayingTrack: boolean;
-    hasVoted: boolean;
     metadata: Metadata;
     track: Track;
     voteString: string;
@@ -32,6 +33,7 @@ export interface PartyTrackProps {
 
 interface PartyTrackDispatch {
     removeTrack: (ref: TrackReference) => void;
+    takeOverPlayback: () => void;
     togglePlayPause: () => void;
     toggleVote: (ref: TrackReference) => void;
 }
@@ -199,9 +201,10 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
-        ${props.isPlayingTrack && props.isOwner && !props.isPlaybackMaster
+        ${props.isPlayingTrack && props.isOwner && !props.isPlaybackMaster && props.hasPlaybackMaster
             ? html`
                 <paper-icon-button icon="festify:download"
+                                   on-click="${props.takeOverPlayback}"
                                    title="Transfer playback to current device">
                 </paper-icon-button>
             `
@@ -231,27 +234,25 @@ export const createMapStateToPropsFactory = (
         const artistJoiner = artistJoinerFactory();
         const voteStringGenerator = voteStringGeneratorFactory(defaultTrackSelector);
 
-        return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => {
-            const metadata = defaultMetaSelector(state, ownProps.trackid);
-            const track = defaultTrackSelector(state, ownProps.trackid);
-            return {
-                metadata,
-                track,
-                artistName: artistJoiner(state, ownProps.trackid),
-                hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
-                isOwner: isPartyOwnerSelector(state),
-                isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
-                isPlaybackMaster: isPlaybackMasterSelector(state),
-                isPlayingTrack: ownProps.playing,
-                voteString: voteStringGenerator(state, ownProps.trackid),
-                togglingPlayback: state.player.togglingPlayback,
-            };
-        };
+        return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
+            track: defaultTrackSelector(state, ownProps.trackid),
+            artistName: artistJoiner(state, ownProps.trackid),
+            hasPlaybackMaster: Boolean(playbackMasterSelector(state)),
+            hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
+            isOwner: isPartyOwnerSelector(state),
+            isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
+            isPlaybackMaster: isPlaybackMasterSelector(state),
+            isPlayingTrack: ownProps.playing,
+            metadata: defaultMetaSelector(state, ownProps.trackid),
+            voteString: voteStringGenerator(state, ownProps.trackid),
+            togglingPlayback: state.player.togglingPlayback,
+        });
     };
 };
 
 export const mapDispatchToProps: PartyTrackDispatch = {
     removeTrack: (ref: TrackReference) => removeTrack(ref, false),
+    takeOverPlayback,
     toggleVote,
     togglePlayPause,
 };

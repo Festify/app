@@ -15,6 +15,7 @@ import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
 import { Actions as SettingsActions } from './party-settings';
+import { Actions as PartyTrackActions } from './party-track';
 import { Actions as PlaybackSpotifyActions } from './playback-spotify';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
@@ -33,6 +34,7 @@ export type Actions =
     | HomeViewActions
     | MetadataActions
     | PartyDataActions
+    | PartyTrackActions
     | PartyViewActions
     | PlaybackSpotifyActions
     | RouterActions

@@ -1,7 +1,8 @@
-import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
+import { DataSnapshot, FirebaseDatabase, OnDisconnect, Query, Reference } from '@firebase/database-types';
 import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
+import { isPlaybackMasterSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
@@ -61,10 +62,56 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
 
 let connectionRef: Reference | null = null;
 let partyRef: Reference | null = null;
+let playbackMasterDisconnect: OnDisconnect | null = null;
 let playbackMasterRef: Reference | null = null;
 let topmostTrackRef: Query | null;
 let tracksRef: Query | null = null;
 let votesRef: Reference | null = null;
+
+export function becomePlaybackMaster(): ThunkAction<Promise<void>, State, void> {
+    return async (dispatch, getState) => {
+        const partyId = partyIdSelector(getState());
+        if (!partyId) {
+            throw new Error("Missing party ID");
+        }
+
+        // Set up spotify player if we own the party
+        requireAccessToken()
+            .then(() => dispatch(connectPlayer()))
+            .catch(() => {});
+
+        // Enter info about us in DB
+        playbackMasterRef = firebase.database!()
+            .ref('/parties')
+            .child(partyId)
+            .child('playback')
+            .child('master_id');
+        playbackMasterDisconnect = playbackMasterRef.onDisconnect();
+        playbackMasterDisconnect!.set(null);
+
+        // Pin topmost / playing track to top of queue
+        // TODO: Outsource this into cloud function once old app is gone
+        topmostTrackRef = firebase.database!()
+            .ref('/tracks')
+            .child(partyId)
+            .orderByChild('order')
+            .limitToFirst(1);
+        topmostTrackRef.on('value', (snap: DataSnapshot) => {
+            if (!snap.exists()) {
+                return;
+            }
+
+            const [trackKey] = Object.keys(snap.val());
+            firebase.database!()
+                .ref('/tracks')
+                .child(partyId)
+                .child(trackKey)
+                .child('order')
+                .set(Number.MIN_SAFE_INTEGER)
+                .catch(err => console.warn("Failed to update current track order:", err));
+        });
+    };
+}
 
 export function closeParty(): ThunkAction<void, State, void> {
     return (dispatch) => {
@@ -164,54 +211,11 @@ export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
         const isOwner = (partySnap.val() as Party).created_by === uid;
 
         if (isOwner) {
-            playbackMasterRef = firebase.database!()
-                .ref('/parties')
-                .child(id)
-                .child('playback')
-                .child('master_id');
-            playbackMasterRef.onDisconnect()
-                .set(null);
-
-            playbackMasterRef.on('value', (snap: DataSnapshot) => {
-                const instanceId = getState().player.instanceId;
-                const masterId: string | null = snap.val();
-
-                if (masterId === instanceId) {
-                    // Set up spotify player if we own the party
-                    requireAccessToken()
-                        .then(() => dispatch(connectPlayer()))
-                        .catch(() => {});
-
-                    // Pin topmost / playing track to top of queue
-                    // TODO: Outsource this into cloud function once old app is gone
-                    topmostTrackRef = firebase.database!()
-                        .ref('/tracks')
-                        .child(id)
-                        .orderByChild('order')
-                        .limitToFirst(1);
-                    topmostTrackRef.on('value', (snap: DataSnapshot) => {
-                        if (!snap.exists()) {
-                            return;
-                        }
-
-                        const [trackKey] = Object.keys(snap.val());
-                        firebase.database!()
-                            .ref('/tracks')
-                            .child(id)
-                            .child(trackKey)
-                            .child('order')
-                            .set(Number.MIN_SAFE_INTEGER)
-                            .catch(err => console.warn("Failed to update current track order:", err));
-                    });
+            partyRef.on('value', async (snap: DataSnapshot) => {
+                if (isPlaybackMasterSelector(getState())) {
+                    await dispatch(becomePlaybackMaster());
                 } else {
-                    dispatch(disconnectPlayer());
-
-                    if (!topmostTrackRef) {
-                        return;
-                    }
-
-                    topmostTrackRef.off('value');
-                    topmostTrackRef = null;
+                    dispatch(resignPlaybackMaster());
                 }
             });
         }
@@ -261,6 +265,21 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
         type: Types.OPEN_PARTY_Fail,
         error: true,
         payload: err,
+    };
+}
+
+export function resignPlaybackMaster(): ThunkAction<void, State, void> {
+    return dispatch => {
+        dispatch(disconnectPlayer());
+
+        if (playbackMasterDisconnect) {
+            playbackMasterDisconnect.cancel();
+            playbackMasterDisconnect = null;
+        }
+        if (topmostTrackRef) {
+            topmostTrackRef.off('value');
+            topmostTrackRef = null;
+        }
     };
 }
 
