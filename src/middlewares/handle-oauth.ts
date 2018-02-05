@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 
 import { showToast, Actions } from '../actions';
 import { exchangeCode } from '../actions/auth';
@@ -18,6 +18,7 @@ export default store => next => (action: Actions) => {
     switch (error) {
         case 'access_denied':
             store.dispatch(showToast("Oops, Spotify denied access. Please try again."));
+            store.dispatch(replace('/'));
             return;
     }
 
