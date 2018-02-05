@@ -1,0 +1,102 @@
+path /parties {
+    read() { true }
+    index() { "short_id" }
+}
+
+path /parties/{partyId} is Party {
+    write() { createdByCurrent(this.created_by) }
+}
+
+type Party {
+    country: SpotifyCountry,
+    created_at: CreatedTimestamp,
+    created_by: CreatedUser,
+    fallback_playlist: Object | Null,
+    name: String,
+    playback: PlaybackState,
+    short_id: PartyShortId
+}
+
+type NonEmptyString extends String {
+    validate() { this.length > 0 }
+}
+
+type PartyShortId extends NonEmptyString {
+    validate() { this.length <= 50 }
+}
+
+type PlaybackState {
+    last_change: CurrentTimestamp,
+    last_position_ms: Number,
+    playing: Boolean,
+    master_id: String | Null
+}
+
+type SpotifyCountry extends String {
+    validate() { this.length == 2 }
+}
+
+path /tracks/{partyId} {
+    read() { true }
+    index() { ["order", "vote_count"] }
+}
+
+path /tracks/{partyId}/{trackId} is TracksPermissions {
+}
+
+path /tracks_played/{partyId}/{historyId} is TracksPermissions {
+}
+
+type TracksPermissions {
+    validate() { partyExists(partyId) }
+    write() { isPartyOwner(partyId) }
+}
+
+path /votes/{partyId} {
+    read() { true }
+    write() { canSkip(partyId) }
+}
+
+path /votes/{partyId}/{trackId}/{userId} is VotesPermissions {
+}
+
+path /votes_by_user/{partyId} {
+    read() { canSkip(partyId) }
+    write() { canSkip(partyId) }
+}
+
+path /votes_by_user/{partyId}/{userId} {
+    read() { isCurrentUser(userId) }
+}
+
+path /votes_by_user/{partyId}/{userId}/{trackId} is VotesPermissions {
+}
+
+type VotesPermissions {
+    write() { isCurrentUser(userId) }
+    validate() { partyExists(partyId) }
+}
+
+type CurrentTimestamp extends Number {
+    validate() { this == now }
+}
+
+type CreatedTimestamp extends Number {
+    validate() { initial(this, now) }
+}
+
+type CreatedUser extends String {
+    validate() { initial(this, auth.uid) }
+}
+
+// Returns true if the value is intialized to init, or if it retains it's prior
+// value, otherwise.
+initial(value, init) { value == (prior(value) == null ? init : prior(value)) }
+
+createdByCurrent(uid) { prior(uid) == null || isCurrentUser(prior(uid)) }
+isCurrentUser(uid) { auth != null && auth.uid == uid }
+
+isPartyOwner(id) { isCurrentUser(root.parties[id].created_by) }
+partyExists(id) { root.parties[id] != null }
+
+canSkip(partyId) { isPartyOwner(partyId) }
