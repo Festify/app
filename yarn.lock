@@ -3424,6 +3424,18 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typescript-lit-html-plugin@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/typescript-lit-html-plugin/-/typescript-lit-html-plugin-0.2.0.tgz#94a96082cca7cb24188a170ca1f65d006ce671a3"
+  dependencies:
+    typescript-template-language-service-decorator "^1.1.0"
+    vscode-html-languageservice "^2.0.10"
+    vscode-languageserver-types "^3.4.0"
+
+typescript-template-language-service-decorator@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/typescript-template-language-service-decorator/-/typescript-template-language-service-decorator-1.1.0.tgz#0b3dacebc1442fea1e8288b0952ec01ba6bfa595"
+
 typescript@^2.6.2:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.1.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
@@ -3505,6 +3517,26 @@ verror@1.10.0:
 vlq@^0.2.1:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
+
+vscode-html-languageservice@^2.0.10:
+  version "2.0.15"
+  resolved "https://registry.yarnpkg.com/vscode-html-languageservice/-/vscode-html-languageservice-2.0.15.tgz#e3ec34c4d62bc636f8a16c9b474e5851ca13aab0"
+  dependencies:
+    vscode-languageserver-types "3.5.0"
+    vscode-nls "^2.0.2"
+    vscode-uri "^1.0.1"
+
+vscode-languageserver-types@3.5.0, vscode-languageserver-types@^3.4.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
+
+vscode-nls@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-2.0.2.tgz#808522380844b8ad153499af5c3b03921aea02da"
+
+vscode-uri@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-1.0.1.tgz#11a86befeac3c4aa3ec08623651a3c81a6d0bbc8"
 
 warning@^3.0.0:
   version "3.0.0"

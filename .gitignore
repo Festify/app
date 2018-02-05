@@ -22,5 +22,6 @@ spotify.config.js
 
 # IDE
 .idea/
+.vscode/
 
 .DS_Store
