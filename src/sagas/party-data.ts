@@ -180,12 +180,13 @@ function* watchRoute() {
             continue;
         }
 
-        oldPartyId = partyId;
         if (partyId) {
             yield put(openPartyStart(partyId));
-        } else {
+        } else if (oldPartyId) {
             yield put(cleanupParty());
         }
+
+        oldPartyId = partyId;
     }
 }
 
