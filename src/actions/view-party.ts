@@ -6,7 +6,7 @@ import { State, Track, TrackReference } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
-import { loadSpotifyMetadata } from './metadata';
+import { updateMetadata } from './metadata';
 
 export type Actions =
     | ToggleVoteAction
@@ -89,7 +89,7 @@ const searchThunk = debounce(async (dispatch, getState: () => State) => {
         return acc;
     }, {});
 
-    dispatch(loadSpotifyMetadata(tracks));
+    dispatch(updateMetadata(tracks));
     dispatch(searchFinish(result));
 }, 300);
 

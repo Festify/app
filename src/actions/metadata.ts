@@ -1,9 +1,6 @@
-import chunk from 'lodash-es/chunk';
-import { ThunkAction } from 'redux-thunk';
 import * as SpotifyApi from 'spotify-web-api-js';
 
-import { Metadata, State, TrackReference } from '../state';
-import { fetchWithAnonymousAuth } from '../util/spotify-auth';
+import { Metadata } from '../state';
 
 import { PayloadAction, Types } from '.';
 
@@ -14,43 +11,28 @@ export interface UpdateMetadataAction extends PayloadAction<Record<string, Metad
     type: Types.UPDATE_METADATA;
 }
 
-export function loadMetadata(references: TrackReference[]): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const { metadata } = getState();
-        const remaining = references
-            .filter(ref => ref.id && !(`${ref.provider}-${ref.id}` in metadata))
-            .map(ref => ref.id);
+export function updateMetadata(
+    meta: Record<string, Metadata> | SpotifyApi.TrackObjectFull[],
+): UpdateMetadataAction {
+    if (Array.isArray(meta)) {
+        const payload = {};
+        for (const track of meta) {
+            payload[`spotify-${track.id}`] = {
+                artists: track.artists.map(art => art.name),
+                cover: track.album.images,
+                durationMs: track.duration_ms,
+                name: track.name,
+            } as Metadata;
+        }
 
-        const promises = chunk(remaining, 50).map(async (ids: string[]) => {
-            if (ids.length === 0) {
-                return;
-            }
-
-            const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
-            const resp = await fetchWithAnonymousAuth(url);
-            const { tracks } = await resp.json();
-
-            dispatch(loadSpotifyMetadata(tracks));
-        });
-
-        await Promise.all(promises);
-    };
-}
-
-export function loadSpotifyMetadata(tracks: SpotifyApi.TrackObjectFull[]): UpdateMetadataAction {
-    const meta: Record<string, Metadata> = {};
-
-    for (const track of tracks) {
-        meta[`spotify-${track.id}`] = {
-            artists: track.artists.map(art => art.name),
-            cover: track.album.images,
-            durationMs: track.duration_ms,
-            name: track.name,
-        } as Metadata;
+        return {
+            type: Types.UPDATE_METADATA,
+            payload,
+        };
+    } else {
+        return {
+            type: Types.UPDATE_METADATA,
+            payload: meta,
+        };
     }
-
-    return {
-        type: Types.UPDATE_METADATA,
-        payload: meta,
-    };
 }
