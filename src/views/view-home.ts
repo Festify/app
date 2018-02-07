@@ -110,7 +110,8 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
                          if (props.partyIdValid && ev.key === 'Enter') {
                              props.joinParty();
                          }
-                     }}">
+                     }}"
+                     value="${props.partyId}">
         </paper-input>
 
         <paper-button id="middle"
