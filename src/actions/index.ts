@@ -7,9 +7,6 @@ import {
     replace,
     replaceRoutes,
 } from "@mraerino/redux-little-router-reactless";
-import { ThunkAction } from 'redux-thunk';
-
-import { State } from '../state';
 
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
@@ -94,11 +91,6 @@ export interface ErrorAction extends PayloadAction<Error> {
     error: true;
 }
 
-export interface ToastData {
-    duration: number;
-    text: string;
-}
-
 export interface AssignInstanceId extends PayloadAction<string> {
     type: Types.ASSIGN_INSTANCE_ID;
 }
@@ -107,8 +99,13 @@ export interface HideToastAction {
     type: Types.HIDE_TOAST;
 }
 
-export interface ShowToastAction extends PayloadAction<string> {
+export interface ShowToastAction extends PayloadAction<ToastData> {
     type: Types.SHOW_TOAST;
+}
+
+export interface ToastData {
+    duration: number;
+    text: string;
 }
 
 export function generateInstanceId(): AssignInstanceId {
@@ -118,26 +115,17 @@ export function generateInstanceId(): AssignInstanceId {
     };
 }
 
-let toastTimeout: number = -1;
-export function showToast(text: string, duration: number = 3000): ThunkAction<void, State, void> {
-    return dispatch => {
-        if (duration < 0 || isNaN(duration) || !isFinite(duration)) {
-            throw new Error("Invalid duration.");
-        }
+export function hideToast(): HideToastAction {
+    return { type: Types.HIDE_TOAST };
+}
 
-        clearTimeout(toastTimeout);
-        dispatch({
-            type: Types.SHOW_TOAST,
-            payload: text,
-        } as ShowToastAction);
+export function showToast(text: string, duration: number = 3000): ShowToastAction {
+    if (duration < 0) {
+        throw new Error("Toast duration < 0");
+    }
 
-        toastTimeout = setTimeout(() => {
-            clearTimeout(toastTimeout);
-            toastTimeout = -1;
-            dispatch({
-                type: Types.HIDE_TOAST,
-                payload: text,
-            } as HideToastAction);
-        }, duration);
+    return {
+        type: Types.SHOW_TOAST,
+        payload: { duration, text },
     };
 }

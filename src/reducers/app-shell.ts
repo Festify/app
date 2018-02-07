@@ -14,7 +14,7 @@ export default function(
         case Types.SHOW_TOAST:
             return {
                 ...state,
-                currentToast: action.payload,
+                currentToast: action.payload.text,
             };
         default:
             return state;
