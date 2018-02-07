@@ -69,7 +69,7 @@ function* updatePlaybackMasterState(snap: DataSnapshot) {
     }
 }
 
-export function* loadParty() {
+function* loadParty() {
     while (true) {
         const { payload: id }: OpenPartyStartAction = yield take(Types.OPEN_PARTY_Start);
 
