@@ -1,15 +1,11 @@
-import { DataSnapshot, FirebaseDatabase, OnDisconnect, Query, Reference } from '@firebase/database-types';
 import { push } from '@mraerino/redux-little-router-reactless/lib';
 import { ThunkAction } from 'redux-thunk';
 
-import { isPlaybackMasterSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
-import { requireAccessToken } from '../util/spotify-auth';
 
 import { PayloadAction, Types } from '.';
-import { connectPlayer, disconnectPlayer } from './playback-spotify';
 
 export type Actions =
     | BecomePlaybackMasterAction
