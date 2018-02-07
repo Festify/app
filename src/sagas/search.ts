@@ -4,7 +4,7 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
-import { searchFail, searchFinish, searchStart, ChangeSearchInputTextAction } from '../actions/view-party';
+import { searchFail, searchFinish, searchStart, ChangeTrackSearchInputAction } from '../actions/view-party';
 import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
@@ -50,7 +50,7 @@ function* doSearch(action) {
     yield put(searchFinish(result));
 }
 
-function* updateUrl(action: ChangeSearchInputTextAction) {
+function* updateUrl(action: ChangeTrackSearchInputAction) {
     const { router }: State = yield select();
     const { partyId, query } = router.params || { partyId: '', query: '' };
 
@@ -75,7 +75,7 @@ export default function*() {
         yield take(Types.UPDATE_PARTY);
 
         const search = yield takeLatest(LOCATION_CHANGED, doSearch);
-        const url = yield takeEvery(Types.CHANGE_SEARCH_INPUT_TEXT, updateUrl);
+        const url = yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
 
         yield take(Types.CLEANUP_PARTY);
 

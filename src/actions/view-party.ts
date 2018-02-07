@@ -8,8 +8,8 @@ export type Actions =
     | SearchFinishAction
     | SearchFailAction;
 
-export interface ChangeSearchInputTextAction extends PayloadAction<string> {
-    type: Types.CHANGE_SEARCH_INPUT_TEXT;
+export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
+    type: Types.CHANGE_TRACK_SEARCH_INPUT;
 }
 
 export interface ToggleVoteAction extends PayloadAction<[TrackReference, boolean]> {
@@ -28,9 +28,9 @@ export interface SearchFailAction extends ErrorAction {
     type: Types.SEARCH_Fail;
 }
 
-export function changeSearchInputText(text: string): ChangeSearchInputTextAction {
+export function changeTrackSearchInput(text: string): ChangeTrackSearchInputAction {
     return {
-        type: Types.CHANGE_SEARCH_INPUT_TEXT,
+        type: Types.CHANGE_TRACK_SEARCH_INPUT,
         payload: text,
     };
 }
