@@ -12,15 +12,22 @@ import { PayloadAction, Types } from '.';
 import { connectPlayer, disconnectPlayer } from './playback-spotify';
 
 export type Actions =
-    | OpenPartyStartAction
-    | OpenPartyFailAction
+    | BecomePlaybackMasterAction
     | CleanupPartyAction
     | JoinPartyFailAction
     | JoinPartyStartAction
+    | ResignPlaybackMasterAction
+    | OpenPartyFailAction
+    | OpenPartyFinishAction
+    | OpenPartyStartAction
     | UpdateNetworkConnectionStateAction
     | UpdatePartyAction
     | UpdateTracksAction
     | UpdateUserVotesAction;
+
+export interface BecomePlaybackMasterAction {
+    type: Types.BECOME_PLAYBACK_MASTER;
+}
 
 export interface CleanupPartyAction {
     type: Types.CLEANUP_PARTY;
@@ -35,13 +42,21 @@ export interface JoinPartyStartAction {
     type: Types.JOIN_PARTY_Start;
 }
 
-export interface OpenPartyStartAction {
-    type: Types.OPEN_PARTY_Start;
-}
-
 export interface OpenPartyFailAction extends PayloadAction<Error> {
     type: Types.OPEN_PARTY_Fail;
     error: true;
+}
+
+export interface OpenPartyFinishAction {
+    type: Types.OPEN_PARTY_Finish;
+}
+
+export interface OpenPartyStartAction extends PayloadAction<string> {
+    type: Types.OPEN_PARTY_Start;
+}
+
+export interface ResignPlaybackMasterAction {
+    type: Types.RESIGN_PLAYBACK_MASTER;
 }
 
 export interface UpdateNetworkConnectionStateAction extends PayloadAction<ConnectionState> {
@@ -60,88 +75,12 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
     type: Types.UPDATE_USER_VOTES;
 }
 
-let connectionRef: Reference | null = null;
-let partyRef: Reference | null = null;
-let playbackMasterDisconnect: OnDisconnect | null = null;
-let playbackMasterRef: Reference | null = null;
-let topmostTrackRef: Query | null;
-let tracksRef: Query | null = null;
-let votesRef: Reference | null = null;
-
-export function becomePlaybackMaster(): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const partyId = partyIdSelector(getState());
-        if (!partyId) {
-            throw new Error("Missing party ID");
-        }
-
-        // Set up spotify player if we own the party
-        requireAccessToken()
-            .then(() => dispatch(connectPlayer()))
-            .catch(() => {});
-
-        // Enter info about us in DB
-        playbackMasterRef = firebase.database!()
-            .ref('/parties')
-            .child(partyId)
-            .child('playback')
-            .child('master_id');
-        playbackMasterDisconnect = playbackMasterRef.onDisconnect();
-        playbackMasterDisconnect!.set(null);
-
-        // Pin topmost / playing track to top of queue
-        // TODO: Outsource this into cloud function once old app is gone
-        topmostTrackRef = firebase.database!()
-            .ref('/tracks')
-            .child(partyId)
-            .orderByChild('order')
-            .limitToFirst(1);
-        topmostTrackRef.on('value', (snap: DataSnapshot) => {
-            if (!snap.exists()) {
-                return;
-            }
-
-            const [trackKey] = Object.keys(snap.val());
-            firebase.database!()
-                .ref('/tracks')
-                .child(partyId)
-                .child(trackKey)
-                .child('order')
-                .set(Number.MIN_SAFE_INTEGER)
-                .catch(err => console.warn("Failed to update current track order:", err));
-        });
-    };
+export function becomePlaybackMaster(): BecomePlaybackMasterAction {
+    return { type: Types.BECOME_PLAYBACK_MASTER };
 }
 
-export function closeParty(): ThunkAction<void, State, void> {
-    return (dispatch) => {
-        if (connectionRef !== null) {
-            connectionRef.off('value');
-            connectionRef = null;
-        }
-        if (partyRef !== null) {
-            partyRef.off('value');
-            partyRef = null;
-        }
-        if (playbackMasterRef !== null) {
-            playbackMasterRef.off('value');
-            playbackMasterRef.set(null); // Unset playback master state
-            playbackMasterRef = null;
-        }
-        if (topmostTrackRef != null) {
-            topmostTrackRef.off('value');
-            topmostTrackRef = null;
-        }
-        if (tracksRef != null) {
-            tracksRef.off('value');
-            tracksRef = null;
-        }
-        if (votesRef != null) {
-            votesRef.off('value');
-            votesRef = null;
-        }
-        dispatch({ type: Types.CLEANUP_PARTY });
-    };
+export function cleanupParty(): CleanupPartyAction {
+    return { type: Types.CLEANUP_PARTY };
 }
 
 export function createParty(): ThunkAction<Promise<string>, State, void> {
@@ -185,63 +124,6 @@ export function createParty(): ThunkAction<Promise<string>, State, void> {
     };
 }
 
-export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
-
-        if (connectionRef || partyRef || topmostTrackRef || tracksRef || votesRef) {
-            dispatch(closeParty());
-        }
-
-        connectionRef = firebase.database!()
-            .ref('.info/connected');
-
-        partyRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/parties/')
-            .child(id);
-
-        const partySnap = await partyRef.once('value');
-
-        if (!partySnap.exists()) {
-            dispatch(openPartyFail(new Error("Party not found!")));
-            return;
-        }
-
-        const { uid } = await requireAuth();
-        const isOwner = (partySnap.val() as Party).created_by === uid;
-
-        if (isOwner) {
-            partyRef.on('value', async (snap: DataSnapshot) => {
-                if (isPlaybackMasterSelector(getState())) {
-                    await dispatch(becomePlaybackMaster());
-                } else {
-                    dispatch(resignPlaybackMaster());
-                }
-            });
-        }
-        tracksRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/tracks')
-            .child(id);
-        votesRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/votes_by_user')
-            .child(id)
-            .child(uid);
-
-        connectionRef.on('value', (snap: DataSnapshot) => dispatch(updateConnectionState(
-            snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected,
-        )));
-        partyRef.on('value', (snap: DataSnapshot) => {
-            if (!snap.exists()) {
-                dispatch(openPartyFail(new Error("Party not found!")));
-                return;
-            }
-            dispatch(updateParty(snap.val()));
-        });
-        tracksRef.on('value', (snap: DataSnapshot) => dispatch(updateTracks(snap.val())));
-        votesRef.on('value', (snap: DataSnapshot) => dispatch(updateUserVotes(snap.val())));
-    };
-}
-
 export function openParty(shortId: string): ThunkAction<Promise<any>, State, void> {
     return async (dispatch, getState) => {
         dispatch({ type: Types.JOIN_PARTY_Start });
@@ -260,6 +142,17 @@ export function openParty(shortId: string): ThunkAction<Promise<any>, State, voi
     };
 }
 
+export function openPartyFinish(): OpenPartyFinishAction {
+    return { type: Types.OPEN_PARTY_Finish };
+}
+
+export function openPartyStart(id: string): OpenPartyStartAction {
+    return {
+        type: Types.OPEN_PARTY_Start,
+        payload: id,
+    };
+}
+
 export function openPartyFail(err: Error): OpenPartyFailAction {
     return {
         type: Types.OPEN_PARTY_Fail,
@@ -268,19 +161,8 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
     };
 }
 
-export function resignPlaybackMaster(): ThunkAction<void, State, void> {
-    return dispatch => {
-        dispatch(disconnectPlayer());
-
-        if (playbackMasterDisconnect) {
-            playbackMasterDisconnect.cancel();
-            playbackMasterDisconnect = null;
-        }
-        if (topmostTrackRef) {
-            topmostTrackRef.off('value');
-            topmostTrackRef = null;
-        }
-    };
+export function resignPlaybackMaster(): ResignPlaybackMasterAction {
+    return { type: Types.RESIGN_PLAYBACK_MASTER };
 }
 
 export async function resolveShortId(shortId: string): Promise<string | null> {
