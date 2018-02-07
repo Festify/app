@@ -1,11 +1,11 @@
 import chunk from 'lodash-es/chunk';
-import { all, apply, call, put, select, takeEvery } from 'redux-saga/effects';
+import { call, put, select, takeEvery } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
 import { UpdateTracksAction } from '../actions/party-data';
-import { Metadata, State, TrackReference } from '../state';
+import { State } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 function* loadMetadataForNewTracks(action: UpdateTracksAction) {
@@ -20,8 +20,6 @@ function* loadMetadataForNewTracks(action: UpdateTracksAction) {
         .map(k => action.payload![k].reference)
         .filter(ref => ref.id && !(`${ref.provider}-${ref.id}` in metadata))
         .map(ref => ref.id);
-
-    const newMeta = {};
 
     for (const ids of chunk(remaining, 50)) {
         if (ids.length === 0) {

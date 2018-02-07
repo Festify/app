@@ -1,10 +1,9 @@
-import { DataSnapshot, FirebaseDatabase, OnDisconnect, Query, Reference } from '@firebase/database-types';
+import { DataSnapshot, OnDisconnect } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
-import { Action } from 'redux';
 import { Channel } from 'redux-saga';
-import { all, apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import { all, apply, call, put, select, take, takeEvery } from 'redux-saga/effects';
 
-import { Actions, Types } from '../actions';
+import { Types } from '../actions';
 import {
     becomePlaybackMaster,
     cleanupParty,
@@ -16,14 +15,13 @@ import {
     updateParty,
     updateTracks,
     updateUserVotes,
-    OpenPartyFailAction,
     OpenPartyStartAction,
 } from '../actions/party-data';
 import { connectPlayer, disconnectPlayer } from '../actions/playback-spotify';
-import { isPlaybackMasterSelector, partyIdSelector } from '../selectors/party';
+import { partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { requireAuth } from '../util/auth';
-import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
+import firebase, { valuesChannel } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
 function* pinTopmostTrack(partyId: string, snap: DataSnapshot) {
