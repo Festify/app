@@ -1,15 +1,16 @@
-const _ = require('lodash');
-const firebase = require('firebase-admin');
-const utils = require('./utils');
+import firebase from 'firebase-admin';
+import { isEmpty, isEqual, values } from 'lodash-es';
+
+import { unsafeGetProviderAndId } from './utils';
 
 const VOTE_FACTOR = 1e12;
 
 function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
     if (!partyId) {
-        throw "Invalid party ID!";
+        throw new Error("Invalid party ID!");
     }
     if (!currentParty || !currentParty.created_at) {
-        throw "Invalid party!";
+        throw new Error("Invalid party!");
     }
 
     /**
@@ -36,9 +37,9 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
         .child(partyId)
         .child(trackId)
         .transaction(track => {
-            const currentlyPlaying = _.isEqual(
+            const currentlyPlaying = isEqual(
                 (currentTrack || {}).reference,
-                (track || {}).reference
+                (track || {}).reference,
             );
 
             const voteCount = (!track ? 0 : track.vote_count) + voteDelta;
@@ -48,20 +49,17 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
                 // Add it to the queue.
 
                 // If there is no current track, we are going to be the new first one.
-                const order = _.isEmpty(currentTrack) ?
+                const order = isEmpty(currentTrack) ?
                     Number.MIN_SAFE_INTEGER + 1 :
                     (Date.now() - currentParty.created_at) - (voteCount * VOTE_FACTOR);
-                const [provider, id] = utils.unsafeGetProviderAndId(trackId);
+                const [provider, id] = unsafeGetProviderAndId(trackId);
 
                 return {
                     added_at: firebase.database.ServerValue.TIMESTAMP,
                     is_fallback: false,
-                    order: order,
-                    reference: {
-                        id: id,
-                        provider: provider
-                    },
-                    vote_count: voteCount
+                    order,
+                    reference: { id, provider },
+                    vote_count: voteCount,
                 };
             } else if (voteCount > 0 || currentlyPlaying || (!!track && track.is_fallback)) {
                 // Track exists and has votes, is playing or is a fallback track.
@@ -73,6 +71,7 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
 
                 // Order hasn't changed. Undefined tells Firebase SDK that
                 // we have nothing to change.
+                // tslint:disable-next-line:triple-equals
                 if (track.order == order) {
                     return undefined;
                 }
@@ -91,8 +90,8 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
         });
 }
 
-exports.handler = function (event) {
-    if(!event.data.changed()) {
+export default (event) => {
+    if (!event.data.changed()) {
         return;
     }
 
@@ -111,13 +110,13 @@ exports.handler = function (event) {
 
     return Promise.all([party, topmostTrack])
         .then(([partySnap, trackSnap]) => {
-            const track = _.values(trackSnap.val())[0];
+            const track = values(trackSnap.val())[0];
             return updateOrder(
                 voteDelta,
                 event.params.trackId,
                 track,
                 event.params.partyId,
-                partySnap.val()
+                partySnap.val(),
             );
         })
         .then(() => true);

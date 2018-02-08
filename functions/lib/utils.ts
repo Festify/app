@@ -1,24 +1,23 @@
-'use strict';
+import { createCipher, createDecipher } from 'crypto';
 
 const algo = 'aes-256-cbc';
-const crypto = require('crypto');
 
-exports.crypto = {
+export const crypto = {
     encrypt(text, key) {
-        const cipher = crypto.createCipher(algo, key);
+        const cipher = createCipher(algo, key);
         return cipher.update(text, 'utf8', 'hex') + cipher.final('hex');
     },
 
     decrypt(text, key) {
-        const decipher = crypto.createDecipher(algo, key);
+        const decipher = createDecipher(algo, key);
         return decipher.update(text, 'hex', 'utf8') + decipher.final('utf8');
-    }
+    },
 };
 
-exports.unsafeGetProviderAndId = function (trackId) {
+export const unsafeGetProviderAndId = (trackId: string): [string, string] => {
     const separatorIndex = trackId.indexOf('-');
     return [
         trackId.substring(0, separatorIndex),
-        trackId.substring(separatorIndex + 1)
+        trackId.substring(separatorIndex + 1),
     ];
 };
