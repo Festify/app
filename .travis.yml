@@ -8,6 +8,7 @@ before_script:
 
 script:
   - yarn build
+  - cd functions && yarn build
 
 after_script:
   - greenkeeper-lockfile-upload

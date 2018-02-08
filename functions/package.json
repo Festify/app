@@ -2,9 +2,6 @@
   "name": "politics",
   "description": "Festify voting worker",
   "dependencies": {
-    "@types/node": "^8.9.1",
-    "@types/request": "^2.47.0",
-    "@types/request-promise": "^4.1.41",
     "cors": "^2.8.3",
     "firebase-admin": "^5.8.2",
     "firebase-functions": "^0.8.1",
@@ -12,5 +9,14 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^8.9.1",
+    "@types/request": "^2.47.0",
+    "@types/request-promise": "^4.1.41",
+    "typescript": "^2.7.1"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
 }
