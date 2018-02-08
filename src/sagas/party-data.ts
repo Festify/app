@@ -1,6 +1,5 @@
 import { DataSnapshot, OnDisconnect } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
-import { Channel } from 'redux-saga';
 import { all, apply, call, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
@@ -24,22 +23,6 @@ import { requireAuth } from '../util/auth';
 import firebase, { valuesChannel } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
-function* pinTopmostTrack(partyId: string, snap: DataSnapshot) {
-    if (!snap.exists()) {
-        return;
-    }
-
-    const [trackKey] = Object.keys(snap.val());
-    yield call(() => {
-        return firebase.database!()
-            .ref('/tracks')
-            .child(partyId)
-            .child(trackKey)
-            .child('order')
-            .set(Number.MIN_SAFE_INTEGER)
-            .catch(err => console.warn("Failed to update current track order:", err));
-    });
-}
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
 
@@ -152,19 +135,8 @@ function* managePlaybackMasterState() {
         );
         yield apply(dc, dc.set, [null]);
 
-        const topmostTrackRef: Channel<DataSnapshot> = yield call(
-            valuesChannel,
-            firebase.database!()
-                .ref('/tracks')
-                .child(partyId)
-                .orderByChild('order')
-                .limitToFirst(1),
-        );
-        yield takeEvery(topmostTrackRef, pinTopmostTrack, partyId);
-
         yield take(Types.RESIGN_PLAYBACK_MASTER);
 
-        yield call(topmostTrackRef.close);
         yield apply(dc, dc.cancel);
         yield put(disconnectPlayer() as any);
     }
