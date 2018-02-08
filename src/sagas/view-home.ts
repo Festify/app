@@ -52,7 +52,7 @@ const oauthUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
 
 function* triggerOAuthLogin() {
     yield call(console.log, "Only the swaggiest of developers hacking on Festify will see this 🙌.");
-    yield put(push(oauthUrl));
+    window.location.href = oauthUrl;
 }
 
 export default function*() {
