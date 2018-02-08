@@ -1,4 +1,5 @@
 import firebase from 'firebase-admin';
+import { database, Event } from 'firebase-functions';
 import { isEmpty, isEqual, values } from 'lodash-es';
 
 import { unsafeGetProviderAndId } from './utils';
@@ -90,7 +91,7 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
         });
 }
 
-export default (event) => {
+export default (event: Event<database.DeltaSnapshot>) => {
     if (!event.data.changed()) {
         return;
     }
@@ -99,11 +100,11 @@ export default (event) => {
 
     const party = firebase.database()
         .ref('/parties')
-        .child(event.params.partyId)
+        .child(event.params!.partyId)
         .once('value');
     const topmostTrack = firebase.database()
         .ref('/tracks')
-        .child(event.params.partyId)
+        .child(event.params!.partyId)
         .limitToFirst(1)
         .orderByChild('order')
         .once('value');
@@ -113,9 +114,9 @@ export default (event) => {
             const track = values(trackSnap.val())[0];
             return updateOrder(
                 voteDelta,
-                event.params.trackId,
+                event.params!.trackId,
                 track,
-                event.params.partyId,
+                event.params!.partyId,
                 partySnap.val(),
             );
         })
