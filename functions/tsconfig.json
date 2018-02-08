@@ -13,12 +13,7 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false,
-    "plugins": [
-      {
-        "name": "typescript-lit-html-plugin"
-      }
-    ]
+    "noUnusedLocals": false
   },
   "files": [
     "index.ts"
