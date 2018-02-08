@@ -26,6 +26,12 @@ export default function(
                 partyLoadError: action.payload,
                 partyLoadInProgress: false,
             };
+        case Types.OPEN_PARTY_Finish:
+            return {
+                ...state,
+                partyLoadError: null,
+                partyLoadInProgress: false,
+            };
         case Types.TOGGLE_VOTE:
             const [ref, vote] = action.payload;
             const trackId = `${ref.provider}-${ref.id}`;
@@ -59,8 +65,6 @@ export default function(
         case Types.UPDATE_PARTY:
             return {
                 ...state,
-                partyLoadError: null,
-                partyLoadInProgress: false,
                 currentParty: action.payload,
             };
         case Types.UPDATE_TRACKS:

@@ -2,7 +2,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { changeSearchInputText } from '../actions/view-party';
+import { changeTrackSearchInput } from '../actions/view-party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
@@ -88,7 +88,7 @@ const mapStateToProps = (state: State): SearchBarProps => ({
 });
 
 const mapDispatchToProps: SearchBarDispatch = {
-    changeText: changeSearchInputText,
+    changeText: changeTrackSearchInput,
 };
 
 customElements.define(
