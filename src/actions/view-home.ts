@@ -1,7 +1,3 @@
-import { ThunkAction } from 'redux-thunk';
-
-import { State } from '../state';
-
 import { PayloadAction, Types } from '.';
 
 export type Actions =

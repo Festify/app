@@ -1,7 +1,4 @@
-import { push } from '@mraerino/redux-little-router-reactless/lib';
-import { ThunkAction } from 'redux-thunk';
-
-import { ConnectionState, Party, State, Track } from '../state';
+import { ConnectionState, Party, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 

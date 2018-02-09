@@ -12,7 +12,6 @@ import { firebase, firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
-import { updateConnectionState } from './party-data';
 import { removeTrack } from './queue';
 
 export type Actions =

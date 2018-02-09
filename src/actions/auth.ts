@@ -1,9 +1,5 @@
 import { replace } from '@mraerino/redux-little-router-reactless';
-import { ThunkAction } from 'redux-thunk';
 import * as SpotifyApi from 'spotify-web-api-js';
-
-import { State } from '../state';
-import { fetchWithAccessToken, LOCALSTORAGE_KEY } from '../util/spotify-auth';
 
 import { showToast, ErrorAction, PayloadAction, Types } from '.';
 
