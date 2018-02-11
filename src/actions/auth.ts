@@ -8,7 +8,7 @@ export type Actions =
     | ExchangeCodeFailAction
     | ExchangeCodeFinishAction
     | ExchangeCodeStartAction
-    | NotifyStatusKnownAction;
+    | NotifyAuthStatusKnownAction;
 
 export interface CheckSpotifyLoginStatusAction {
     type: Types.CHECK_SPOTIFY_LOGIN_STATUS;
@@ -26,7 +26,7 @@ export interface ExchangeCodeStartAction {
     type: Types.EXCHANGE_CODE_Start;
 }
 
-export interface NotifyStatusKnownAction extends PayloadAction<['spotify', any]> {
+export interface NotifyAuthStatusKnownAction extends PayloadAction<['spotify', any]> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
 }
 
@@ -53,7 +53,7 @@ export function exchangeCodeStart(): ExchangeCodeStartAction {
 export function notifyAuthStatusKnown(
     provider: 'spotify',
     user: SpotifyApi.UserObjectPrivate | null,
-): NotifyStatusKnownAction {
+): NotifyAuthStatusKnownAction {
     return {
         type: Types.NOTIFY_AUTH_STATUS_KNOWN,
         payload: [provider, user],
