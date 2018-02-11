@@ -58,6 +58,7 @@ function* exchangeCode() {
     if (!success) {
         const e = new Error(`Token exchange failed: ${msg}.`);
         yield put(exchangeCodeFail(e));
+        return;
     }
 
     const data = new AuthData(
