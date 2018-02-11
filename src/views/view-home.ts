@@ -29,7 +29,7 @@ interface HomeViewDispatch {
 const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
     if (props.authorized) {
         return html`
-            <paper-button raised on-click="${() => props.createParty()}">
+            <paper-button raised on-click="${props.createParty}">
                 Create Party
             </paper-button>
         `;
@@ -41,7 +41,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
         `;
     } else {
         return html`
-            <paper-button raised on-click="${() => props.loginWithSpotify()}">
+            <paper-button raised on-click="${props.loginWithSpotify}">
                 Login to create Party
             </paper-button>
         `;
