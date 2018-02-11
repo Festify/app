@@ -19,7 +19,7 @@ export function updateMetadata(
         for (const track of meta) {
             payload[`spotify-${track.id}`] = {
                 artists: track.artists.map(art => art.name),
-                cover: track.album.images,
+                cover: track.album.images.filter(img => img.width && img.height),
                 durationMs: track.duration_ms,
                 name: track.name,
             } as Metadata;
