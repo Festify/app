@@ -6,7 +6,7 @@ import {
     push,
     replace,
     replaceRoutes,
-} from "@mraerino/redux-little-router-reactless";
+} from '@mraerino/redux-little-router-reactless';
 
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';

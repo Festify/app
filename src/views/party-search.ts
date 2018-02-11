@@ -3,10 +3,10 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html';
 
 import { sortedTracksFactory } from '../selectors/track';
-import { State } from "../state";
+import { State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
-import { queueStyles, PartyQueueProps } from "./party-queue";
+import { queueStyles, PartyQueueProps } from './party-queue';
 import './party-track-search';
 
 interface SearchProps extends PartyQueueProps {

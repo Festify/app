@@ -1,5 +1,5 @@
-import { Actions, Types } from "../actions";
-import { PlayerState } from "../state";
+import { Actions, Types } from '../actions';
+import { PlayerState } from '../state';
 
 export default function (
     state: PlayerState = {
