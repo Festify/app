@@ -12,6 +12,7 @@ import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
 import { Actions as SettingsActions } from './party-settings';
+import { Actions as ShareActions } from './party-share';
 import { Actions as PartyTrackActions } from './party-track';
 import { Actions as PlaybackSpotifyActions } from './playback-spotify';
 import { Actions as HomeViewActions } from './view-home';
@@ -36,6 +37,7 @@ export type Actions =
     | PlaybackSpotifyActions
     | RouterActions
     | SettingsActions
+    | ShareActions
     | ShowToastAction
     | HideToastAction;
 
@@ -70,6 +72,7 @@ export const enum Types {
     SEARCH_Start = 'SEARCH_START',
     SEARCH_Finish = 'SEARCH_FINISH',
     SEARCH_Fail = 'SEARCH_FAIL',
+    SHARE_PARTY = 'SHARE_PARTY',
     SHOW_TOAST = 'SHOW_TOAST',
     HIDE_TOAST = 'HIDE_TOAST',
     TOGGLE_VOTE = 'TOGGLE_VOTE',
