@@ -5,7 +5,7 @@ import { partyIdSelector } from '../selectors/party';
 import { State } from '../state';
 
 function* share() {
-    const state = yield select();
+    const state: State = yield select();
 
     const currentParty = state.party.currentParty;
     if (!currentParty) {
