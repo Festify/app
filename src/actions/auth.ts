@@ -26,7 +26,10 @@ export interface ExchangeCodeStartAction {
     type: Types.EXCHANGE_CODE_Start;
 }
 
-export interface NotifyAuthStatusKnownAction extends PayloadAction<['spotify', any]> {
+export interface NotifyAuthStatusKnownAction extends PayloadAction<[
+    'spotify',
+    SpotifyApi.UserObjectPrivate | null
+]> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
 }
 
