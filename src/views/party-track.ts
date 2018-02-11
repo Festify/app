@@ -76,8 +76,8 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
     } else {
         return html`
             <paper-icon-button icon="${LikeButtonIcon(props)}"
-                            on-click="${ev => props.toggleVote(props.track.reference)}"
-                            title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
+                               on-click="${ev => props.toggleVote(props.track.reference)}"
+                               title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
             </paper-icon-button>
         `;
     }
