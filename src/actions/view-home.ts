@@ -1,7 +1,8 @@
 import { PayloadAction, Types } from '.';
 
 export type Actions =
-    | ChangePartyIdAction;
+    | ChangePartyIdAction
+    | TriggerSpotifyOAuthLoginAction;
 
 export interface ChangePartyIdAction extends PayloadAction<string> {
     type: Types.CHANGE_PARTY_ID;

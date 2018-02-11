@@ -3,10 +3,11 @@ import { Track, TrackReference } from '../state';
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
-    | ToggleVoteAction
+    | ChangeTrackSearchInputAction
     | SearchStartAction
     | SearchFinishAction
-    | SearchFailAction;
+    | SearchFailAction
+    | ToggleVoteAction;
 
 export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_TRACK_SEARCH_INPUT;
