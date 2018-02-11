@@ -29,7 +29,6 @@ const Progress = (props: SearchProps) => {
             </div>
         `;
     } else {
-        // Repeat doesn't work if included conditionally
         return null;
     }
 };
