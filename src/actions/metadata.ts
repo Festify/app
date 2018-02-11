@@ -15,7 +15,7 @@ export function updateMetadata(
     meta: Record<string, Metadata> | SpotifyApi.TrackObjectFull[],
 ): UpdateMetadataAction {
     if (Array.isArray(meta)) {
-        const payload = {};
+        const payload: Record<string, Metadata> = {};
         for (const track of meta) {
             payload[`spotify-${track.id}`] = {
                 artists: track.artists.map(art => art.name),
