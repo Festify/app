@@ -73,7 +73,7 @@ function* loadParty() {
     while (true) {
         const { payload: id }: OpenPartyStartAction = yield take(Types.OPEN_PARTY_Start);
 
-        const partyRef = yield call(
+        const partyRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
             firebase.database!()
                 .ref('/parties/')
@@ -96,20 +96,20 @@ function* loadParty() {
             yield takeEvery(partyRef, updatePlaybackMasterState);
         }
 
-        const tracksRef = yield call(
+        const tracksRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
             firebase.database!()
                 .ref('/tracks')
                 .child(id),
         );
-        const votesRef = yield call(
+        const votesRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
             firebase.database!()
                 .ref('/votes_by_user')
                 .child(id)
                 .child(uid),
         );
-        const connection = yield call(
+        const connection: Channel<DataSnapshot> = yield call(
             valuesChannel,
             firebase.database!().ref('.info/connected'),
         );
