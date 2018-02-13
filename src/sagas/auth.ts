@@ -1,6 +1,5 @@
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
-import { takeEvery } from 'redux-saga';
-import { all, apply, call, put, select, take } from 'redux-saga/effects';
+import { all, apply, call, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { TOKEN_EXCHANGE_URL } from '../../spotify.config';
 import { showToast, Types } from '../actions';
