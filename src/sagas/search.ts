@@ -22,7 +22,7 @@ function* doSearch(action) {
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(query.replace('-', ' ') + '*')}`;
 
-    let tracks;
+    let tracks: SpotifyApi.TrackObjectFull[];
     try {
         const trackResponse = yield call(fetchWithAnonymousAuth, url);
         tracks = (yield trackResponse.json()).tracks.items;
@@ -32,8 +32,7 @@ function* doSearch(action) {
     }
 
     const result = tracks.reduce((acc, track, i) => {
-        const trackId = `spotify-${track.id}`;
-        acc[trackId] = {
+        acc[`spotify-${track.id}`] = {
             added_at: Date.now(),
             is_fallback: false,
             order: i,
