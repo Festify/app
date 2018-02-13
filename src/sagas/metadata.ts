@@ -5,8 +5,17 @@ import * as SpotifyApi from 'spotify-web-api-js';
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
 import { UpdateTracksAction } from '../actions/party-data';
-import { State } from '../state';
+import { Metadata, State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
+
+function shouldLoadMetadata(t: Track | null, metadata: Record<string, Metadata>): boolean {
+    return Boolean(
+        t &&
+        t.reference.provider &&
+        t.reference.id &&
+        !(`${t.reference.provider}-${t.reference.id}` in metadata),
+    );
+}
 
 function* loadMetadataForNewTracks(action: UpdateTracksAction) {
     if (!action.payload) {
@@ -14,12 +23,9 @@ function* loadMetadataForNewTracks(action: UpdateTracksAction) {
     }
 
     const { metadata }: State = yield select();
-
     const remaining = Object.keys(action.payload)
-        .filter(k => action.payload![k])
-        .map(k => action.payload![k].reference)
-        .filter(ref => ref.id && !(`${ref.provider}-${ref.id}` in metadata))
-        .map(ref => ref.id);
+        .filter(k => shouldLoadMetadata(action.payload![k], metadata))
+        .map(k => action.payload![k].reference.id);
 
     for (const ids of chunk(remaining, 50)) {
         if (ids.length === 0) {
