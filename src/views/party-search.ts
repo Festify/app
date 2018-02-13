@@ -51,7 +51,7 @@ const PartySearchView = (props: SearchProps) => html`
             text-align: center;
         }
 
-        festify-spinner {
+        paper-spinner-lite {
             background: var(--secondary-color);
         }
     </style>
