@@ -16,9 +16,7 @@ export {
 
 export function valuesChannel(ref: Query) {
     return eventChannel<DataSnapshot>(put => {
-        const listener = (snap: DataSnapshot) => put(snap);
-        ref.on('value', listener);
-
-        return () => ref.off('value', listener);
+        ref.on('value', put as (snap: DataSnapshot) => void);
+        return () => ref.off('value', put);
     });
 }
