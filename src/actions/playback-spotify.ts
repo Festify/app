@@ -19,7 +19,13 @@ export type Actions =
     | PlayerInitFinishAction
     | PlayerErrorAction
     | UpdateConnectStateAction
-    | UpdatePlayerStateAction;
+    | UpdatePlayerStateAction
+    | SpotifySdkInitFinishAction
+    | PlayAction
+    | PauseAction
+    | TogglePlaybackStartAction
+    | TogglePlaybackFinishAction
+    | TogglePlaybackFailAction;
 
 export interface PlayerErrorAction extends ErrorAction {
     type: Types.PLAYER_ERROR;
@@ -33,6 +39,18 @@ export interface PlayerInitFinishAction extends PayloadAction<string> {
     type: Types.PLAYER_INIT_Finish;
 }
 
+export interface TogglePlaybackStartAction {
+    type: Types.TOGGLE_PLAYBACK_Start;
+}
+
+export interface TogglePlaybackFinishAction {
+    type: Types.TOGGLE_PLAYBACK_Finish;
+}
+
+export interface TogglePlaybackFailAction extends ErrorAction {
+    type: Types.TOGGLE_PLAYBACK_Fail;
+}
+
 export interface UpdatePlayerStateAction extends PayloadAction<Spotify.PlaybackState | null> {
     type: Types.UPDATE_PLAYER_STATE;
 }
@@ -41,13 +59,68 @@ export interface UpdateConnectStateAction extends PayloadAction<ConnectPlaybackS
     type: Types.UPDATE_CONNECT_STATE;
 }
 
+export interface SpotifySdkInitFinishAction {
+    type: Types.SPOTIFY_SDK_INIT_Finish;
+}
+
+export interface PlayAction extends PayloadAction<number | undefined> {
+    type: Types.PLAY;
+}
+
+export interface PauseAction {
+    type: Types.PAUSE;
+}
+
 let player: Spotify.SpotifyPlayer | null = null;
 let needsConnect = false;
+
+export function spotifySdkInitFinish(): SpotifySdkInitFinishAction {
+    return { type: Types.SPOTIFY_SDK_INIT_Finish };
+}
+
+export function playerInitFinish(deviceId: string): PlayerInitFinishAction {
+    return {
+        type: Types.PLAYER_INIT_Finish,
+        payload: deviceId,
+    };
+}
+
+export function playerError(error: Error): PlayerErrorAction {
+    return {
+        type: Types.PLAYER_ERROR,
+        error: true,
+        payload: error,
+    };
+}
+
+export function play(position: number | undefined): PlayAction {
+    return { type: Types.PLAY, payload: position };
+}
+
+export function pause(): PauseAction {
+    return { type: Types.PAUSE };
+}
+
+export function togglePlaybackStart(): TogglePlaybackStartAction {
+    return { type: Types.TOGGLE_PLAYBACK_Start };
+}
+
+export function togglePlaybackFinish(): TogglePlaybackFinishAction {
+    return { type: Types.TOGGLE_PLAYBACK_Finish };
+}
+
+export function togglePlaybackFail(err: Error): TogglePlaybackFailAction {
+    return {
+        type: Types.TOGGLE_PLAYBACK_Fail,
+        error: true,
+        payload: err,
+    };
+}
 
 export function initializePlayer(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch) => {
         player = new Spotify.Player({
-            name: "Festify",
+            name: 'Festify',
             getOAuthToken: (cb) => requireAccessToken().then(cb),
             volume: 1,
         });
@@ -112,7 +185,7 @@ export function disconnectPlayer(): ThunkAction<void, State, void> {
 export function fetchPlayerState(): ThunkAction<Promise<void>, State, void> {
     return async dispatch => {
         if (!player) {
-            throw new Error("Missing player");
+            throw new Error('Missing player');
         }
 
         const state = await player.getCurrentState();
@@ -121,6 +194,7 @@ export function fetchPlayerState(): ThunkAction<Promise<void>, State, void> {
 }
 
 let currentTrack: Track | null = null;
+
 export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
     function tracksEqual(a: Track | null, b: Track | null): boolean {
         if (a === b) {
@@ -147,17 +221,17 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
         const { currentParty } = state.party;
         if (!currentParty) {
-            throw new Error("Missing party");
+            throw new Error('Missing party');
         }
 
-        // Spotify yields an error if you try to pause while player is paused
+        // Spotify yields an error if you try to _pause while player is paused
         if (currentParty.playback.playing) {
-            await dispatch(pause());
+            await dispatch(_pause());
         }
 
-        // Only start playback if we were playing before and if we have a track to play
+        // Only start playback if we were playing before and if we have a track to _play
         if (currentParty.playback.playing && newCurrentTrack) {
-            await dispatch(play(0));
+            await dispatch(_play(0));
         }
     };
 }
@@ -168,7 +242,7 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
 
         const state = getState();
         if (!isPartyOwnerSelector(state)) {
-            throw new Error("Not party owner");
+            throw new Error('Not party owner');
         }
 
         const { player, party } = state;
@@ -183,11 +257,11 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
 
         const { playback } = party.currentParty;
         if (playback.playing) {
-            await dispatch(pause());
+            await dispatch(_pause());
         } else if (!player.playbackState) {
-            await dispatch(play(0)); // Start playing track
+            await dispatch(_play(0)); // Start playing track
         } else {
-            await dispatch(play()); // Just resume
+            await dispatch(_play()); // Just resume
         }
     };
 }
@@ -199,12 +273,7 @@ export function updatePlayerState(state: Spotify.PlaybackState | null): UpdatePl
     };
 }
 
-const currentTrackSpotifyIdSelector: (state: State) => string | null = createSelector(
-    currentTrackSelector,
-    track => track ? `spotify:track:${track.reference.id}` : null,
-);
-
-function pause(): ThunkAction<Promise<void>, State, void> {
+function _pause(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const currentPartyId = partyIdSelector(getState());
         if (!currentPartyId) {
@@ -212,7 +281,7 @@ function pause(): ThunkAction<Promise<void>, State, void> {
         }
 
         if (!player) {
-            throw new Error("Missing player");
+            throw new Error('Missing player');
         }
 
         await player.pause();
@@ -232,18 +301,18 @@ function pause(): ThunkAction<Promise<void>, State, void> {
 /**
  * Start / resume playback of the currently playing track
  *
- * @param deviceId The device ID to play on, pass undefined to play on currently active device. When
- * passing a device ID here, you must also pass a starting position to play from (can be 0, but not `undefined`).
- * @param positionMs The position in milliseconds to play the track from. Pass `undefined` to resume
+ * @param deviceId The device ID to _play on, pass undefined to _play on currently active device. When
+ * passing a device ID here, you must also pass a starting position to _play from (can be 0, but not `undefined`).
+ * @param positionMs The position in milliseconds to _play the track from. Pass `undefined` to resume
  * playback instead of starting anew.
  */
-function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
+function _play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
         const currentTrackId = currentTrackIdSelector(state);
         const spotifyTrackId = currentTrackSpotifyIdSelector(state);
 
-        // If the queue is empty we have nothing to play
+        // If the queue is empty we have nothing to _play
         if (!currentTrackId || !spotifyTrackId) {
             return;
         }
@@ -254,14 +323,14 @@ function play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
         }
         const { currentParty } = state.party;
         if (!currentParty) {
-            throw new Error("Missing party");
+            throw new Error('Missing party');
         }
         const { localDeviceId } = state.player;
         if (!localDeviceId) {
-            throw new Error("Missing local device ID");
+            throw new Error('Missing local device ID');
         }
         if (!player) {
-            throw new Error("Missing player");
+            throw new Error('Missing player');
         }
 
         const resume = positionMs === undefined;
@@ -339,7 +408,7 @@ function monitorPlayback(): ThunkAction<void, State, void> {
 
             const state = getState();
             if (!state.player.playbackState) {
-                console.warn("Missing playback state in playback watcher.");
+                console.warn('Missing playback state in playback watcher.');
                 return;
             }
             const currentTrack = currentTrackSelector(state);
@@ -349,7 +418,7 @@ function monitorPlayback(): ThunkAction<void, State, void> {
             }
             const partyId = partyIdSelector(state);
             if (!partyId) {
-                throw new Error("Missing party ID");
+                throw new Error('Missing party ID');
             }
 
             // Update firebase with fresh playback data

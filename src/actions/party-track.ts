@@ -13,21 +13,6 @@ import { ErrorAction, Types } from '.';
 import { togglePlayPause as togglePlayback } from './playback-spotify';
 
 export type Actions =
-    | TogglePlaybackStartAction
-    | TogglePlaybackFinishAction
-    | TogglePlaybackFailAction;
-
-export interface TogglePlaybackStartAction {
-    type: Types.TOGGLE_PLAYBACK_Start;
-}
-
-export interface TogglePlaybackFinishAction {
-    type: Types.TOGGLE_PLAYBACK_Finish;
-}
-
-export interface TogglePlaybackFailAction extends ErrorAction {
-    type: Types.TOGGLE_PLAYBACK_Fail;
-}
 
 export function togglePlayPause(): ThunkAction<void, State, void> {
     return async (dispatch, getState) => {

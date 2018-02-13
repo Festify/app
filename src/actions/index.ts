@@ -89,6 +89,9 @@ export const enum Types {
     UPDATE_TRACKS = 'UPDATE_TRACKS',
     UPDATE_USER_PLAYLISTS = 'UPDATE_USER_PLAYLISTS',
     UPDATE_USER_VOTES = 'UPDATE_USER_VOTES',
+    SPOTIFY_SDK_INIT_Finish = 'SPOTIFY_SDK_INIT_Finish',
+    PLAY = 'PLAY',
+    PAUSE = 'PAUSE',
 }
 
 export interface PayloadAction<T> {
