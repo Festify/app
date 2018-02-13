@@ -4,7 +4,7 @@ import '@polymer/polymer/lib/elements/custom-style';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { createParty, joinPartyStart as joinParty } from '../actions/party-data';
+import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
 import { changePartyId, loginWithSpotify } from '../actions/view-home';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
@@ -14,6 +14,8 @@ interface HomeViewProps {
     authorized: boolean;
     authStatusKnown: boolean;
     isAuthorizing: boolean;
+    partyCreationInProgress: boolean;
+    partyCreationError: Error | null;
     partyId: string;
     partyIdValid: boolean;
     partyJoinError: Error | null;
@@ -27,7 +29,13 @@ interface HomeViewDispatch {
 }
 
 const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
-    if (props.authorized) {
+    if (props.partyCreationInProgress) {
+        return html`
+            <paper-button raised disabled>
+                Creating...
+            </paper-button>
+        `;
+    } else if (props.authorized) {
         return html`
             <paper-button raised on-click="${props.createParty}">
                 Create Party
@@ -130,7 +138,7 @@ const mapStateToProps = (state: State): HomeViewProps => ({
 
 const mapDispatchToProps: HomeViewDispatch = {
     changePartyId,
-    createParty,
+    createParty: createPartyStart,
     joinParty,
     loginWithSpotify,
 };

@@ -6,6 +6,7 @@ import { CLIENT_ID } from '../../spotify.config';
 import { Types } from '../actions';
 import {
     createNewParty,
+    createPartyFail,
     joinPartyFail,
     openPartyStart,
     resolveShortId,
@@ -19,16 +20,24 @@ function* createParty() {
     const spotifyUser = user.spotify.user;
 
     if (!spotifyUser) {
-        throw new Error("Missing Spotify user");
+        const e = new Error("Missing Spotify user");
+        yield put(createPartyFail(e));
+        return;
     }
 
     const userDisplayName = spotifyUser.display_name || spotifyUser.id;
-    const partyId: string = yield call(
-        createNewParty,
-        userDisplayName,
-        player.instanceId,
-        spotifyUser.country,
-    );
+    let partyId: string;
+    try {
+        partyId = yield call(
+            createNewParty,
+            userDisplayName,
+            player.instanceId,
+            spotifyUser.country,
+        );
+    } catch (err) {
+        yield put(createPartyFail(err));
+        return;
+    }
 
     yield put(push(`/party/${partyId}`));
 }
@@ -57,7 +66,7 @@ function* triggerOAuthLogin() {
 
 export default function*() {
     yield all([
-        takeLatest(Types.CREATE_PARTY, createParty),
+        takeLatest(Types.CREATE_PARTY_Start, createParty),
         takeLatest(Types.JOIN_PARTY_Start, joinParty),
         takeLatest(Types.TRIGGER_SPOTIFY_OAUTH_LOGIN, triggerOAuthLogin),
     ]);

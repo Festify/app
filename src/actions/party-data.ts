@@ -2,12 +2,13 @@ import { ConnectionState, Party, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 
-import { PayloadAction, Types } from '.';
+import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
     | BecomePlaybackMasterAction
     | CleanupPartyAction
-    | CreatePartyAction
+    | CreatePartyFailAction
+    | CreatePartyStartAction
     | JoinPartyFailAction
     | JoinPartyStartAction
     | ResignPlaybackMasterAction
@@ -27,8 +28,12 @@ export interface CleanupPartyAction {
     type: Types.CLEANUP_PARTY;
 }
 
-export interface CreatePartyAction {
-    type: Types.CREATE_PARTY;
+export interface CreatePartyStartAction {
+    type: Types.CREATE_PARTY_Start;
+}
+
+export interface CreatePartyFailAction extends ErrorAction {
+    type: Types.CREATE_PARTY_Fail;
 }
 
 export interface JoinPartyFailAction extends PayloadAction<Error> {
@@ -81,8 +86,16 @@ export function cleanupParty(): CleanupPartyAction {
     return { type: Types.CLEANUP_PARTY };
 }
 
-export function createParty(): CreatePartyAction {
-    return { type: Types.CREATE_PARTY };
+export function createPartyFail(err: Error): CreatePartyFailAction {
+    return {
+        type: Types.CREATE_PARTY_Fail,
+        error: true,
+        payload: err,
+    };
+}
+
+export function createPartyStart(): CreatePartyStartAction {
+    return { type: Types.CREATE_PARTY_Start };
 }
 
 export async function createNewParty(

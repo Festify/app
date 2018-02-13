@@ -3,12 +3,13 @@ import { all, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { hideToast, showToast, ShowToastAction, Types } from '../actions';
 import { ExchangeCodeFailAction } from '../actions/auth';
-import { JoinPartyFailAction, OpenPartyFailAction } from '../actions/party-data';
+import { CreatePartyFailAction, JoinPartyFailAction, OpenPartyFailAction } from '../actions/party-data';
 import { InsertFallbackPlaylistFailAction, LoadPlaylistsFailAction } from '../actions/party-settings';
 import { TogglePlaybackFailAction } from '../actions/party-track';
 import { PlayerErrorAction } from '../actions/playback-spotify';
 
 type ErrorActions =
+    | CreatePartyFailAction
     | ExchangeCodeFailAction
     | InsertFallbackPlaylistFailAction
     | JoinPartyFailAction
@@ -34,6 +35,7 @@ export default function*() {
     yield all([
         takeLatest(Types.SHOW_TOAST, displayToast),
         takeEvery([
+            Types.CREATE_PARTY_Fail,
             Types.EXCHANGE_CODE_Fail,
             Types.INSERT_FALLBACK_PLAYLIST_Fail,
             Types.JOIN_PARTY_Fail,

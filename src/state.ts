@@ -75,6 +75,8 @@ export interface AppShellState {
 }
 
 export interface HomeViewState {
+    partyCreationInProgress: boolean;
+    partyCreationError: Error | null;
     partyJoinInProgress: boolean;
     partyJoinError: Error | null;
     partyId: string;
