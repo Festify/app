@@ -36,6 +36,10 @@ export function changeTrackSearchInput(text: string): ChangeTrackSearchInputActi
     };
 }
 
+export function eraseTrackSearchInput(): ChangeTrackSearchInputAction {
+    return changeTrackSearchInput('');
+}
+
 export function searchFail(error: Error): SearchFailAction {
     return {
         type: Types.SEARCH_Fail,

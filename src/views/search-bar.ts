@@ -2,7 +2,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { changeTrackSearchInput } from '../actions/view-party';
+import { changeTrackSearchInput, eraseTrackSearchInput } from '../actions/view-party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
@@ -13,6 +13,7 @@ interface SearchBarProps {
 
 interface SearchBarDispatch {
     changeText: (newValue: string) => void;
+    eraseText: () => void;
 }
 
 /* tslint:disable:max-line-length */
@@ -72,7 +73,7 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
     ${props.text
         ? html`
             <paper-icon-button icon="festify:arrow-back"
-                               on-click="${() => props.changeText('')}">
+                               on-click="${props.eraseText}">
             </paper-icon-button>
         `
         : festifyLogo}
@@ -89,6 +90,7 @@ const mapStateToProps = (state: State): SearchBarProps => ({
 
 const mapDispatchToProps: SearchBarDispatch = {
     changeText: changeTrackSearchInput,
+    eraseText: eraseTrackSearchInput,
 };
 
 customElements.define(
