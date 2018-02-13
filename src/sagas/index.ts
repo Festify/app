@@ -1,5 +1,3 @@
-import { all } from 'redux-saga/effects';
-
 import authSaga from './auth';
 import metadataSaga from './metadata';
 import partyDataSaga from './party-data';
