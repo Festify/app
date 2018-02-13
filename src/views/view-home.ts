@@ -11,9 +11,9 @@ import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
 
 interface HomeViewProps {
+    authorizationInProgress: boolean;
     authorized: boolean;
     authStatusKnown: boolean;
-    isAuthorizing: boolean;
     partyCreationInProgress: boolean;
     partyCreationError: Error | null;
     partyId: string;
@@ -41,7 +41,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
                 Create Party
             </paper-button>
         `;
-    } else if (props.isAuthorizing || !props.authStatusKnown) {
+    } else if (props.authorizationInProgress || !props.authStatusKnown) {
         return html`
             <paper-button raised disabled>
                 Authorizing...
@@ -131,9 +131,9 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
 const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
+    authorizationInProgress: state.user.spotify.authorizing,
     authorized: Boolean(state.user.spotify.user),
     authStatusKnown: state.user.spotify.statusKnown,
-    isAuthorizing: state.user.spotify.authorizing,
 });
 
 const mapDispatchToProps: HomeViewDispatch = {
