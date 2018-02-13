@@ -1,6 +1,6 @@
 import { push, replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
-import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, cancel, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
@@ -79,7 +79,7 @@ export default function*() {
         yield take(Types.CLEANUP_PARTY);
 
         // Stop listening for URL updates when party is left
-        yield call(search.cancel);
-        yield call(url.cancel);
+        yield cancel(search);
+        yield cancel(url);
     }
 }
