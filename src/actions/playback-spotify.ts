@@ -226,12 +226,12 @@ export function handleTracksChange(): ThunkAction<Promise<void>, State, void> {
 
         // Spotify yields an error if you try to _pause while player is paused
         if (currentParty.playback.playing) {
-            await dispatch(_pause());
+            // await dispatch(_pause());
         }
 
         // Only start playback if we were playing before and if we have a track to _play
         if (currentParty.playback.playing && newCurrentTrack) {
-            await dispatch(_play(0));
+            // await dispatch(_play(0));
         }
     };
 }
@@ -257,11 +257,11 @@ export function togglePlayPause(): ThunkAction<Promise<void>, State, void> {
 
         const { playback } = party.currentParty;
         if (playback.playing) {
-            await dispatch(_pause());
+            // await dispatch(_pause());
         } else if (!player.playbackState) {
-            await dispatch(_play(0)); // Start playing track
+            // await dispatch(_play(0)); // Start playing track
         } else {
-            await dispatch(_play()); // Just resume
+            // await dispatch(_play()); // Just resume
         }
     };
 }
@@ -270,178 +270,5 @@ export function updatePlayerState(state: Spotify.PlaybackState | null): UpdatePl
     return {
         type: Types.UPDATE_PLAYER_STATE,
         payload: state,
-    };
-}
-
-function _pause(): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const currentPartyId = partyIdSelector(getState());
-        if (!currentPartyId) {
-            throw new Error('Missing current party ID');
-        }
-
-        if (!player) {
-            throw new Error('Missing player');
-        }
-
-        await player.pause();
-        clearInterval(playbackProgressInterval);
-        await firebase.database!()
-            .ref(`/parties`)
-            .child(currentPartyId)
-            .child('playback')
-            .update({
-                playing: false,
-                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: (await player.getCurrentState())!.position,
-            });
-    };
-}
-
-/**
- * Start / resume playback of the currently playing track
- *
- * @param deviceId The device ID to _play on, pass undefined to _play on currently active device. When
- * passing a device ID here, you must also pass a starting position to _play from (can be 0, but not `undefined`).
- * @param positionMs The position in milliseconds to _play the track from. Pass `undefined` to resume
- * playback instead of starting anew.
- */
-function _play(positionMs?: number): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        const state = getState();
-        const currentTrackId = currentTrackIdSelector(state);
-        const spotifyTrackId = currentTrackSpotifyIdSelector(state);
-
-        // If the queue is empty we have nothing to _play
-        if (!currentTrackId || !spotifyTrackId) {
-            return;
-        }
-
-        const currentPartyId = partyIdSelector(state);
-        if (!currentPartyId) {
-            throw new Error('Missing current party ID');
-        }
-        const { currentParty } = state.party;
-        if (!currentParty) {
-            throw new Error('Missing party');
-        }
-        const { localDeviceId } = state.player;
-        if (!localDeviceId) {
-            throw new Error('Missing local device ID');
-        }
-        if (!player) {
-            throw new Error('Missing player');
-        }
-
-        const resume = positionMs === undefined;
-        if (resume) {
-            await player.resume();
-        } else {
-            const uri = `/me/player/play?device_id=${encodeURIComponent(localDeviceId)}`;
-            await fetchWithAccessToken(uri, {
-                method: 'put',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ uris: [spotifyTrackId] }),
-            });
-        }
-
-        const playbackRef = firebase.database!()
-            .ref(`/parties`)
-            .child(currentPartyId)
-            .child('playback');
-
-        // Update playback state in firebase and ensure state stays valid
-        // even if browser is closed / internet disconnects
-        const tasks = [
-            // TODO: Cancel onDisconnect when sb else takes over playback
-            playbackRef.onDisconnect().update({
-                playing: false,
-                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: 0,
-            }),
-            playbackRef.update({
-                playing: true,
-                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                last_position_ms: resume
-                    ? currentParty.playback.last_position_ms
-                    : positionMs,
-            }),
-        ];
-
-        // Save playback date in database to prevent track from being removed
-        // when fallback playlist changes
-        if (!resume) {
-            const setPlayedAt = firebase.database!()
-                .ref('/tracks')
-                .child(currentPartyId)
-                .child(currentTrackId)
-                .child('played_at')
-                .set(firebaseNS.database!.ServerValue.TIMESTAMP);
-            tasks.push(setPlayedAt);
-        }
-
-        await Promise.all(tasks);
-
-        dispatch(monitorPlayback());
-    };
-}
-
-let playbackProgressInterval: number = -1;
-let trackEndTimeout: number = -1;
-
-/**
- * Monitor playback of the current track and skip to the next when its time.
- *
- * This function regularly synchronizes the database with Spotify connect playback
- * so that we always have exact data (up to 5s deviation) available to us.
- *
- * It also configures the timeout for when to skip to the next track on every
- * iteration. This is also done based on connect playback data.
- */
-function monitorPlayback(): ThunkAction<void, State, void> {
-    return (dispatch, getState) => {
-        clearInterval(playbackProgressInterval);
-        playbackProgressInterval = setInterval(async () => {
-            await dispatch(fetchPlayerState());
-
-            const state = getState();
-            if (!state.player.playbackState) {
-                console.warn('Missing playback state in playback watcher.');
-                return;
-            }
-            const currentTrack = currentTrackSelector(state);
-            const currentTrackMeta = currentTrackMetadataSelector(state);
-            if (!currentTrack || !currentTrackMeta) {
-                return;
-            }
-            const partyId = partyIdSelector(state);
-            if (!partyId) {
-                throw new Error('Missing party ID');
-            }
-
-            // Update firebase with fresh playback data
-            const { paused, position } = state.player.playbackState;
-            await firebase.database!()
-                .ref('/parties')
-                .child(partyId)
-                .child('playback')
-                .update({
-                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                    last_position_ms: position,
-                    playing: !paused,
-                });
-
-            // Set timeout to skip to next track when track ends
-            clearTimeout(trackEndTimeout);
-            trackEndTimeout = setTimeout(
-                async () => {
-                    clearInterval(playbackProgressInterval);
-                    await dispatch(removeTrack(currentTrack.reference, true));
-                },
-                Math.max(currentTrackMeta.durationMs - position - 50, 0),
-            );
-        }, 5000);
     };
 }

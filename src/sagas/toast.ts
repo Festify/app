@@ -5,8 +5,7 @@ import { hideToast, showToast, ShowToastAction, Types } from '../actions';
 import { ExchangeCodeFailAction } from '../actions/auth';
 import { CreatePartyFailAction, JoinPartyFailAction, OpenPartyFailAction } from '../actions/party-data';
 import { InsertFallbackPlaylistFailAction, LoadPlaylistsFailAction } from '../actions/party-settings';
-import { TogglePlaybackFailAction } from '../actions/party-track';
-import { PlayerErrorAction } from '../actions/playback-spotify';
+import { PlayerErrorAction, TogglePlaybackFailAction } from '../actions/playback-spotify';
 
 type ErrorActions =
     | CreatePartyFailAction

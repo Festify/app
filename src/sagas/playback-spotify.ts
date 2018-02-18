@@ -35,7 +35,7 @@ function attachToEvent(player: Spotify.SpotifyPlayer, name: 'player_state_change
 function attachToEvent(player: Spotify.SpotifyPlayer, name: Spotify.ErrorTypes): Channel<Spotify.Error>;
 
 function attachToEvent<T>(player: Spotify.SpotifyPlayer, name: string) {
-    return eventChannel<T>(put => {
+    return eventChannel<T>((put: any) => {
         /*
          * Web Playback SDK doesn't allow removing event handlers yet, so we
          * simply remove the put function as a kind of flag, so that future events
@@ -197,7 +197,7 @@ function* handlePlayPause(player: Spotify.SpotifyPlayer) {
 
         yield all(tasks);
 
-        let currentTrackMeta: Metadata = currentTrackMetadataSelector(state);
+        let currentTrackMeta: Metadata | null = currentTrackMetadataSelector(state);
         while (!currentTrackMeta) {
             yield call(delay, 50);
             const s = yield select();

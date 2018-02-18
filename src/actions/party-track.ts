@@ -12,11 +12,9 @@ import firebase from '../util/firebase';
 import { ErrorAction, Types } from '.';
 import { togglePlayPause as togglePlayback } from './playback-spotify';
 
-export type Actions =
-
 export function togglePlayPause(): ThunkAction<void, State, void> {
     return async (dispatch, getState) => {
-        dispatch({ type: Types.TOGGLE_PLAYBACK_Start } as TogglePlaybackStartAction);
+        dispatch({ type: Types.TOGGLE_PLAYBACK_Start });
 
         try {
             const state = getState();
@@ -30,13 +28,13 @@ export function togglePlayPause(): ThunkAction<void, State, void> {
 
             await dispatch(togglePlayback());
 
-            dispatch({ type: Types.TOGGLE_PLAYBACK_Finish } as TogglePlaybackFinishAction);
+            dispatch({ type: Types.TOGGLE_PLAYBACK_Finish });
         } catch (error) {
             dispatch({
                 type: Types.TOGGLE_PLAYBACK_Fail,
                 payload: error,
                 error: true,
-            } as TogglePlaybackFailAction);
+            });
         }
     };
 }
