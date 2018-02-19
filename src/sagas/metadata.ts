@@ -27,11 +27,7 @@ function* loadMetadataForNewTracks(action: UpdateTracksAction) {
         .filter(k => shouldLoadMetadata(action.payload![k], metadata))
         .map(k => action.payload![k].reference.id);
 
-    for (const ids of chunk(remaining, 50)) {
-        if (ids.length === 0) {
-            continue;
-        }
-
+    for (const ids of chunk(remaining, 50).filter(ch => ch.length > 0)) {
         const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
         const resp = yield call(fetchWithAnonymousAuth, url);
         const { tracks }: SpotifyApi.MultipleTracksResponse = yield resp.json();
