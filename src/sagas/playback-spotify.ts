@@ -15,6 +15,7 @@ import {
 import { createSelector } from 'reselect';
 
 import { Types } from '../actions';
+import { OpenPartyStartAction } from '../actions/party-data';
 import {
     pause,
     playerError,
@@ -275,8 +276,8 @@ function* handlePlayPausePressed(partyId: string) {
 
 function* handleToggle() {
     while (true) {
-        const partyId = yield take(Types.OPEN_PARTY_Start);
-        const task = yield fork(handlePlayPausePressed, partyId);
+        const ac: OpenPartyStartAction = yield take(Types.OPEN_PARTY_Start);
+        const task = yield fork(handlePlayPausePressed, ac.payload);
         yield take([Types.CLEANUP_PARTY, Types.OPEN_PARTY_Fail]);
         yield cancel(task);
     }
