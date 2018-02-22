@@ -1,6 +1,6 @@
 import firebase from 'firebase-admin';
 import { database, Event } from 'firebase-functions';
-import { isEmpty, isEqual, values } from 'lodash-es';
+import { isEmpty, isEqual, values } from 'lodash';
 
 import { unsafeGetProviderAndId } from './utils';
 
