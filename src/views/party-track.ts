@@ -9,8 +9,9 @@ import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
-    defaultMetaSelectorFactory,
     defaultTrackSelectorFactory,
+    metadataSelector,
+    singleMetadataSelector,
     singleTrackSelector,
     voteStringGeneratorFactory,
 } from '../selectors/track';
@@ -18,14 +19,14 @@ import { Metadata, State, Track, TrackReference } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
-    artistName: string;
+    artistName: string | null;
     hasPlaybackMaster: boolean;
     hasVoted: boolean;
     isOwner: boolean;
     isMusicPlaying: boolean;
     isPlaybackMaster: boolean;
     isPlayingTrack: boolean;
-    metadata: Metadata;
+    metadata: Metadata | null;
     track: Track;
     voteString: string;
     togglingPlayback: boolean;
@@ -43,6 +44,7 @@ interface PartyTrackOwnProps {
     trackid: string;
 }
 
+/* tslint:disable:max-line-length */
 const LikeButtonIcon = (props: PartyTrackProps): string => {
     if (props.hasVoted) {
         return 'festify:favorite';
@@ -60,7 +62,7 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
                 ? html`
                     <paper-icon-button icon="festify:skip-next"
                                        on-click="${() => props.removeTrack(props.track.reference)}"
-                                       title="Skip ${props.metadata.name}">
+                                       title="Skip ${props.metadata ? props.metadata.name : 'Loading...'}">
                     </paper-icon-button>
                 `
                 : null}
@@ -77,13 +79,12 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
         return html`
             <paper-icon-button icon="${LikeButtonIcon(props)}"
                                on-click="${ev => props.toggleVote(props.track.reference)}"
-                               title="${(props.hasVoted ? "Unvote " : "Vote for ") + props.metadata.name}">
+                               title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
             </paper-icon-button>
         `;
     }
 };
 
-/* tslint:disable:max-line-length */
 export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     ${sharedStyles}
     <style>
@@ -112,7 +113,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             margin-right: 20px;
         }
 
-        img {
+        img, .empty {
             background: rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
             height: 54px;
@@ -185,9 +186,11 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
         }
     </style>
 
-    ${srcsetImg(props.metadata.cover, '54px')}
+    ${props.metadata
+        ? srcsetImg(props.metadata.cover, '54px')
+        : html`<div class="empty"></div>`}
     <div class="metadata-wrapper">
-        <h2>${props.metadata.name}</h2>
+        <h2>${props.metadata ? props.metadata.name : 'Loading...'}</h2>
         ${props.artistName
             ? html`
                 <aside>
@@ -213,7 +216,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
             ? html`
                 <paper-icon-button icon="festify:clear"
                                    on-click="${() => props.removeTrack(props.track.reference)}"
-                                   title="Remove ${props.metadata.name} from queue">
+                                   title="Remove ${props.metadata ? props.metadata.name : 'Loading...'} from queue">
                 </paper-icon-button>
             `
             : null}
@@ -229,7 +232,6 @@ export const createMapStateToPropsFactory = (
      * Since the selectors use component props, one for each instance must be created.
      */
     return () => {
-        const defaultMetaSelector = defaultMetaSelectorFactory();
         const defaultTrackSelector = defaultTrackSelectorFactory(trackSelector);
         const artistJoiner = artistJoinerFactory();
         const voteStringGenerator = voteStringGeneratorFactory(defaultTrackSelector);
@@ -243,7 +245,7 @@ export const createMapStateToPropsFactory = (
             isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
             isPlaybackMaster: isPlaybackMasterSelector(state),
             isPlayingTrack: ownProps.playing,
-            metadata: defaultMetaSelector(state, ownProps.trackid),
+            metadata: singleMetadataSelector(state, ownProps.trackid),
             voteString: voteStringGenerator(state, ownProps.trackid),
             togglingPlayback: state.player.togglingPlayback,
         });
