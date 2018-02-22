@@ -18,7 +18,6 @@ import { createSelector } from 'reselect';
 
 import { Types } from '../actions';
 import {
-    becomePlaybackMaster,
     OpenPartyFailAction,
     OpenPartyFinishAction,
     OpenPartyStartAction,
@@ -32,13 +31,12 @@ import {
     togglePlaybackFinish,
     updatePlayerState,
     PauseAction,
-    PlayerErrorAction,
     PlayAction,
 } from '../actions/playback-spotify';
 import { removeTrack } from '../actions/queue';
-import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector } from '../selectors/party';
 import { currentTrackIdSelector, currentTrackMetadataSelector, currentTrackSelector } from '../selectors/track';
-import { Metadata, State, Track, TrackReference } from '../state';
+import { State, Track, TrackReference } from '../state';
 import firebase, { firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
