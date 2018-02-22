@@ -1,5 +1,5 @@
 import firebase from 'firebase-admin';
-import functions from 'firebase-functions';
+import * as functions from 'firebase-functions';
 
 import pinTop from './lib/pin-top-track';
 import * as spotifyAuth from './lib/spotify-auth';
