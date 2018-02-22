@@ -7,9 +7,10 @@ class LoadOnce extends HTMLElement {
         return ['load'];
     }
 
-    attributesChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
+    attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
         if (name === 'load') {
-            this.load = Boolean(newVal);
+            // tslint:disable-next-line:triple-equals
+            this.load = newVal != null;
         }
     }
 
