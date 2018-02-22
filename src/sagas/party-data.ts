@@ -23,22 +23,6 @@ import { requireAuth } from '../util/auth';
 import firebase, { valuesChannel } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
-function* pinTopmostTrack(partyId: string, snap: DataSnapshot) {
-    if (!snap.exists()) {
-        return;
-    }
-
-    const [trackKey] = Object.keys(snap.val());
-    yield call(
-        () => firebase.database!()
-            .ref('/tracks')
-            .child(partyId)
-            .child(trackKey)
-            .child('order')
-            .set(Number.MIN_SAFE_INTEGER)
-            .catch(err => console.warn("Failed to update current track order:", err)),
-    );
-}
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
 
@@ -160,19 +144,8 @@ function* pinTopmostTrackIfPlaybackMaster() {
         );
         yield apply(dc, dc.remove);
 
-        const topmostTrackRef: Channel<DataSnapshot> = yield call(
-            valuesChannel,
-            firebase.database!()
-                .ref('/tracks')
-                .child(partyId)
-                .orderByChild('order')
-                .limitToFirst(1),
-        );
-        yield takeEvery(topmostTrackRef, pinTopmostTrack, partyId);
-
         yield take(Types.RESIGN_PLAYBACK_MASTER);
 
-        yield call(topmostTrackRef.close);
         yield apply(dc, dc.cancel);
     }
 }
