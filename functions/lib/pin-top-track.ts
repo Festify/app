@@ -18,14 +18,15 @@ export default async (event: Event<database.DeltaSnapshot>) => {
         .limitToFirst(1)
         .once('value');
 
-    if (!topTrack.exists()) {
+    const keys = Object.keys(topTrack.val());
+    if (keys.length === 0) {
         return;
     }
 
     await firebase.database!()
         .ref('/tracks')
         .child(partyId)
-        .child(topTrack.key!)
+        .child(keys[0])
         .child('order')
         .set(Number.MIN_SAFE_INTEGER);
 };
