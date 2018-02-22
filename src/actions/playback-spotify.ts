@@ -1,18 +1,6 @@
-import { ThunkAction } from 'redux-thunk';
-import { createSelector } from 'reselect';
-
-import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
-import {
-    currentTrackIdSelector,
-    currentTrackMetadataSelector,
-    currentTrackSelector,
-} from '../selectors/track';
-import { ConnectPlaybackState, State, Track } from '../state';
-import { firebase, firebaseNS } from '../util/firebase';
-import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
+import { ConnectPlaybackState } from '../state';
 
 import { ErrorAction, PayloadAction, Types } from '.';
-import { removeTrack } from './queue';
 
 export type Actions =
     | PlayerInitStartAction
@@ -71,10 +59,6 @@ export interface PauseAction {
     type: Types.PAUSE;
 }
 
-export function spotifySdkInitFinish(): SpotifySdkInitFinishAction {
-    return { type: Types.SPOTIFY_SDK_INIT_Finish };
-}
-
 export function playerInitFinish(deviceId: string): PlayerInitFinishAction {
     return {
         type: Types.PLAYER_INIT_Finish,
@@ -96,6 +80,10 @@ export function play(position?: number): PlayAction {
 
 export function pause(): PauseAction {
     return { type: Types.PAUSE };
+}
+
+export function spotifySdkInitFinish(): SpotifySdkInitFinishAction {
+    return { type: Types.SPOTIFY_SDK_INIT_Finish };
 }
 
 export function togglePlaybackStart(): TogglePlaybackStartAction {
