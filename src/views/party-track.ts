@@ -67,7 +67,7 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
             <div class="fab-spinner">
                 <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
                 <paper-fab mini
-                           icon="${props.isMusicPlaying ? 'festify:_pause' : 'festify:_play-arrow'}"
+                           icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
                            on-click="${props.togglePlayPause}"
                            disabled="${!props.isOwner || props.togglingPlayback}">
                 </paper-fab>
