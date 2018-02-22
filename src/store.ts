@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 
 import { generateInstanceId } from './actions';
 import { checkSpotifyLoginStatus } from './actions/auth';
-import { initializePlayer } from './actions/playback-spotify';
+import { spotifySdkInitFinish } from './actions/playback-spotify';
 import middlewares from './middlewares';
 import reducers from './reducers';
 import {
@@ -45,7 +45,7 @@ store.dispatch(checkSpotifyLoginStatus());
 store.dispatch(generateInstanceId());
 store.dispatch(initializeCurrentLocation(store.getState().router));
 window.onSpotifyWebPlaybackSDKReady = () => {
-    store.dispatch(initializePlayer());
+    store.dispatch(spotifySdkInitFinish());
 };
 
 export const storeProvider = createProvider(store);

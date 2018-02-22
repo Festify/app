@@ -7,6 +7,7 @@ export default function(
 ): Record<string, Metadata> {
     switch (action.type) {
         case Types.UPDATE_METADATA:
+            console.log(state, action.payload);
             return {
                 ...state,
                 ...action.payload,

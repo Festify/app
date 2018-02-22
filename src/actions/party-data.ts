@@ -50,7 +50,7 @@ export interface OpenPartyFailAction extends PayloadAction<Error> {
     error: true;
 }
 
-export interface OpenPartyFinishAction {
+export interface OpenPartyFinishAction extends PayloadAction<Party> {
     type: Types.OPEN_PARTY_Finish;
 }
 
@@ -153,8 +153,11 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
     };
 }
 
-export function openPartyFinish(): OpenPartyFinishAction {
-    return { type: Types.OPEN_PARTY_Finish };
+export function openPartyFinish(party: Party): OpenPartyFinishAction {
+    return {
+        type: Types.OPEN_PARTY_Finish,
+        payload: party,
+    };
 }
 
 export function openPartyStart(id: string): OpenPartyStartAction {

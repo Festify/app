@@ -17,7 +17,6 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { connectPlayer, disconnectPlayer } from '../actions/playback-spotify';
 import { partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { requireAuth } from '../util/auth';
@@ -30,15 +29,15 @@ function* pinTopmostTrack(partyId: string, snap: DataSnapshot) {
     }
 
     const [trackKey] = Object.keys(snap.val());
-    yield call(() => {
-        return firebase.database!()
+    yield call(
+        () => firebase.database!()
             .ref('/tracks')
             .child(partyId)
             .child(trackKey)
             .child('order')
             .set(Number.MIN_SAFE_INTEGER)
-            .catch(err => console.warn("Failed to update current track order:", err));
-    });
+            .catch(err => console.warn("Failed to update current track order:", err)),
+    );
 }
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
@@ -89,7 +88,8 @@ function* loadParty() {
         yield* publishPartyUpdates(partySnap);
 
         const { uid }: { uid: string } = yield call(requireAuth);
-        const isOwner = (partySnap.val() as Party).created_by === uid;
+        const party: Party = partySnap.val();
+        const isOwner = party.created_by === uid;
 
         if (isOwner) {
             yield* updatePlaybackMasterState(partySnap);
@@ -119,28 +119,27 @@ function* loadParty() {
         yield takeEvery(tracksRef, publishTrackUpdates);
         yield takeEvery(votesRef, publishUserVoteUpdates);
 
-        yield put(openPartyFinish());
+        yield put(openPartyFinish(party));
 
         yield take(Types.CLEANUP_PARTY);
 
-        yield call(connection.close);
-        yield call(partyRef.close);
-        yield call(tracksRef.close);
-        yield call(votesRef.close);
+        connection.close();
+        partyRef.close();
+        tracksRef.close();
+        votesRef.close();
 
         yield call(
-            firebase.database!()
+            () => firebase.database!()
                 .ref('/parties')
                 .child(id)
                 .child('playback')
                 .child('master_id')
-                .set,
-            null,
+                .set(null),
         );
     }
 }
 
-function* managePlaybackMasterState() {
+function* pinTopmostTrackIfPlaybackMaster() {
     while (true) {
         yield take(Types.BECOME_PLAYBACK_MASTER);
 
@@ -150,7 +149,6 @@ function* managePlaybackMasterState() {
         }
 
         yield call(requireAccessToken);
-        yield put.resolve(connectPlayer() as any);
 
         const dc: OnDisconnect = yield call(
             () => firebase.database!()
@@ -160,7 +158,7 @@ function* managePlaybackMasterState() {
                 .child('master_id')
                 .onDisconnect(),
         );
-        yield apply(dc, dc.set, [null]);
+        yield apply(dc, dc.remove);
 
         const topmostTrackRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
@@ -176,7 +174,6 @@ function* managePlaybackMasterState() {
 
         yield call(topmostTrackRef.close);
         yield apply(dc, dc.cancel);
-        yield put(disconnectPlayer() as any);
     }
 }
 
@@ -203,7 +200,7 @@ function* watchRoute() {
 export default function*() {
     yield all([
         loadParty(),
-        managePlaybackMasterState(),
+        pinTopmostTrackIfPlaybackMaster(),
         watchRoute(),
     ]);
 }

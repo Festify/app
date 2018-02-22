@@ -62,7 +62,7 @@ const AppShellView = (props: AppShellProps) => html`
                  opened="${props.isToastOpen}"
                  text="${props.toastText}">
     </paper-toast>
-    <load-once load="${props.isOwner}">
+    <load-once load?="${props.isOwner}">
         <template>
             <script src="https://sdk.scdn.co/spotify-player.js"></script>
         </template>

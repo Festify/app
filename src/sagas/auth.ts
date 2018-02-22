@@ -19,10 +19,15 @@ function* checkSpotifyLoginStatus() {
         return;
     }
 
-    const resp = yield call(fetchWithAccessToken, '/me');
-    const user = yield resp.json();
+    try {
+        const resp = yield call(fetchWithAccessToken, '/me');
+        const user = yield resp.json();
 
-    yield put(notifyAuthStatusKnown('spotify', user));
+        yield put(notifyAuthStatusKnown('spotify', user));
+    } catch (err) {
+        console.error("Failed to fetch Spotify Login Status.");
+        return;
+    }
 }
 
 function* exchangeCode() {
