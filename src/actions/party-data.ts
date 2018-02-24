@@ -118,11 +118,11 @@ export async function createNewParty(
         created_by: uid,
         name: `${displayName}${userNamePosessive} Party`,
         playback: {
-            device_id: null,
             last_change: now as any,
             last_position_ms: 0,
             master_id: masterId,
             playing: false,
+            target_playing: null,
         },
         short_id: String(Math.floor(Math.random() * 1000000)),
     };
