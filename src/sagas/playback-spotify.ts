@@ -424,7 +424,7 @@ function* handlePlayPausePressed(partyId: string) {
     }
 }
 
-function* handleTrackChanges() {
+function* handleTrackChanges(partyId: string) {
     function tracksEqual(a: Track | null, b: Track | null): boolean {
         if (a === b) {
             return true;
@@ -466,11 +466,6 @@ function* handleTrackChanges() {
         if (currentParty.playback.playing) {
             yield put(play(0));
         } else {
-            const partyId = partyIdSelector(state);
-            if (!partyId) {
-                throw new Error("Missing party ID");
-            }
-
             yield* updateFirebasePosition(partyId, 0);
         }
     }
