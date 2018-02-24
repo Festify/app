@@ -32,6 +32,10 @@ export class AuthData {
         return !!this.accessToken && this.expiresAt > (Date.now() + 10000);
     }
 
+    remove(localStorageKey: string) {
+        localStorage[localStorageKey] = undefined;
+    }
+
     saveTo(localStorageKey: string): void {
         localStorage[localStorageKey] = JSON.stringify({
             accessToken: this.accessToken,
