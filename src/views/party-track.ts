@@ -3,6 +3,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, withProps } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
+import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
 import { removeTrack, toggleVote } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
@@ -10,7 +11,6 @@ import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector 
 import {
     artistJoinerFactory,
     defaultTrackSelectorFactory,
-    metadataSelector,
     singleMetadataSelector,
     singleTrackSelector,
     voteStringGeneratorFactory,
@@ -254,7 +254,7 @@ export const createMapStateToPropsFactory = (
 
 export const mapDispatchToProps: PartyTrackDispatch = {
     removeTrack: (ref: TrackReference) => removeTrack(ref, false),
-    takeOverPlayback: () => {},
+    takeOverPlayback: installPlaybackMaster,
     toggleVote,
     togglePlayPause: togglePlaybackStart,
 };

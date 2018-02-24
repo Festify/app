@@ -1,4 +1,4 @@
-import { ConnectPlaybackState } from '../state';
+import { ConnectPlaybackState, TrackReference } from '../state';
 
 import { ErrorAction, PayloadAction, Types } from '.';
 
@@ -51,7 +51,7 @@ export interface SpotifySdkInitFinishAction {
     type: Types.SPOTIFY_SDK_INIT_Finish;
 }
 
-export interface PlayAction extends PayloadAction<number | undefined> {
+export interface PlayAction extends PayloadAction<number> {
     type: Types.PLAY;
 }
 
@@ -74,7 +74,7 @@ export function playerError(error: Error): PlayerErrorAction {
     };
 }
 
-export function play(position?: number): PlayAction {
+export function play(position: number): PlayAction {
     return { type: Types.PLAY, payload: position };
 }
 

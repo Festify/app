@@ -9,6 +9,7 @@ export type Actions =
     | CleanupPartyAction
     | CreatePartyFailAction
     | CreatePartyStartAction
+    | InstallPlaybackMasterAction
     | JoinPartyFailAction
     | JoinPartyStartAction
     | ResignPlaybackMasterAction
@@ -34,6 +35,10 @@ export interface CreatePartyStartAction {
 
 export interface CreatePartyFailAction extends ErrorAction {
     type: Types.CREATE_PARTY_Fail;
+}
+
+export interface InstallPlaybackMasterAction {
+    type: Types.INSTALL_PLAYBACK_MASTER;
 }
 
 export interface JoinPartyFailAction extends PayloadAction<Error> {
@@ -143,6 +148,10 @@ export function joinPartyFail(err: Error): JoinPartyFailAction {
 
 export function joinPartyStart(): JoinPartyStartAction {
     return { type: Types.JOIN_PARTY_Start };
+}
+
+export function installPlaybackMaster(): InstallPlaybackMasterAction {
+    return { type: Types.INSTALL_PLAYBACK_MASTER };
 }
 
 export function openPartyFail(err: Error): OpenPartyFailAction {

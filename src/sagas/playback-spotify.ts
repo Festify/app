@@ -34,11 +34,13 @@ import {
     PlayAction,
 } from '../actions/playback-spotify';
 import { removeTrack } from '../actions/queue';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { currentTrackIdSelector, currentTrackMetadataSelector, currentTrackSelector } from '../selectors/track';
 import { State, Track, TrackReference } from '../state';
 import firebase, { firebaseNS } from '../util/firebase';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
+
+const WATCHER_INTERVAL = 5000;
 
 function attachToEvent(player: Spotify.SpotifyPlayer, name: 'ready'): Channel<Spotify.WebPlaybackInstance>;
 function attachToEvent(player: Spotify.SpotifyPlayer, name: 'player_state_changed'): Channel<Spotify.PlaybackState>;
@@ -46,9 +48,33 @@ function attachToEvent(player: Spotify.SpotifyPlayer, name: Spotify.ErrorTypes):
 
 function attachToEvent<T>(player: Spotify.SpotifyPlayer, name: string) {
     return eventChannel<T>(put => {
-        player.on(name as any, put as any);
-        return () => (player as any).removeListener(name, put);
+        const listener = (ev) => {
+            if (ev) {
+                put(ev);
+            }
+        };
+
+        player.on(name as any, listener);
+        return () => (player as any).removeListener(name, listener);
     });
+}
+
+function* updateSpotifyPlayerState(partyId: string, state: Spotify.PlaybackState) {
+    yield put(updatePlayerState(state));
+    yield* updateFirebasePosition(partyId, state.position);
+}
+
+function* updateFirebasePosition(partyId: string, pos: number) {
+    yield call(
+        () => firebase.database!()
+            .ref('/parties')
+            .child(partyId)
+            .child('playback')
+            .update({
+                last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                last_position_ms: pos,
+            }),
+    );
 }
 
 function* manageSpotifyPlayer() {
@@ -65,7 +91,7 @@ function* manageSpotifyPlayer() {
         const openPartyAction: OpenPartyStartAction = yield take(partyOpenStarts);
         const partyId = openPartyAction.payload;
 
-        const { fail, finish } = yield race({
+        const { fail } = yield race({
             fail: take(partyOpenFails),
             finish: take(partyOpenFinishes),
         });
@@ -139,9 +165,8 @@ function* controlPlayerLifecycle(partyId: string) {
             );
             const publishPlaybackStateChangesTask = yield takeEvery(
                 playbackStateChanges,
-                function* (state: Spotify.PlaybackState) {
-                    yield put(updatePlayerState(state));
-                },
+                updateSpotifyPlayerState,
+                partyId,
             );
             const tracksTask = yield fork(
                 handleTrackChanges,
@@ -153,7 +178,7 @@ function* controlPlayerLifecycle(partyId: string) {
             yield take(Types.RESIGN_PLAYBACK_MASTER);
 
             yield all([
-                cancel(playPauseTask, publishPlaybackStateChangesTask),
+                cancel(playPauseTask, publishPlaybackStateChangesTask, tracksTask),
                 apply(player, player.disconnect),
             ]);
             initErrors.close();
@@ -212,18 +237,20 @@ function* handlePlayPause(
                 continue;
             }
 
-            const resume = action.payload === undefined;
+            const playUri = `/me/player/play?device_id=${playerId}`;
+            yield call(fetchWithAccessToken, playUri, {
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ uris: [spotifyTrackId] }),
+            });
 
-            if (resume) {
-                yield apply(player, player.resume);
-            } else {
-                const uri = `/me/player/play?device_id=${encodeURIComponent(playerId)}`;
-                yield call(fetchWithAccessToken, uri, {
+            const position = Math.floor(action.payload!);
+            if (position > 0) {
+                const seekUri = `/me/player/seek?device_id=${playerId}&position_ms=${position}`;
+                yield call(fetchWithAccessToken, seekUri, {
                     method: 'put',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ uris: [spotifyTrackId] }),
                 });
             }
 
@@ -236,34 +263,23 @@ function* handlePlayPause(
 
             // Update playback state in Firebase and ensure state stays valid
             // even if browser is closed / internet disconnects
-            const tasks = [
-                playbackDisconnect.update({
-                    playing: false,
-                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                    last_position_ms: 0,
-                }),
-                playbackRef.update({
-                    playing: true,
-                    last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                    last_position_ms: resume
-                        ? currentParty.playback.last_position_ms
-                        : action.payload,
-                }),
-            ];
-
-            // Save playback date in database to prevent track from being removed
-            // when fallback playlist changes
-            if (!resume) {
-                const setPlayedAt = firebase.database!()
-                    .ref('/tracks')
-                    .child(partyId)
-                    .child(currentTrackId)
-                    .child('played_at')
-                    .set(firebaseNS.database!.ServerValue.TIMESTAMP);
-                tasks.push(setPlayedAt);
-            }
-
-            yield all(tasks);
+            yield all([
+                call(
+                    () => playbackDisconnect.update({
+                        playing: false,
+                        last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                        last_position_ms: 0,
+                    }),
+                ),
+                call(
+                    () => firebase.database!()
+                        .ref('/tracks')
+                        .child(partyId)
+                        .child(currentTrackId)
+                        .child('played_at')
+                        .set(firebaseNS.database!.ServerValue.TIMESTAMP),
+                ),
+            ]);
 
             playbackWatcherTask = yield fork(
                 watchPlayback,
@@ -280,15 +296,17 @@ function* handlePlayPause(
                 cancel(playbackWatcherTask),
                 apply(player, player.pause),
                 apply(playbackDisconnect, playbackDisconnect.cancel),
-                firebase.database!()
-                    .ref(`/parties`)
-                    .child(partyId)
-                    .child('playback')
-                    .update({
-                        playing: false,
-                        last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
-                        last_position_ms: playbackState ? playbackState.position : 0,
-                    }),
+                call(
+                    () => firebase.database!()
+                        .ref(`/parties`)
+                        .child(partyId)
+                        .child('playback')
+                        .update({
+                            playing: false,
+                            last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
+                            last_position_ms: playbackState ? playbackState.position : 0,
+                        }),
+                ),
             ]);
         }
     } finally {
@@ -331,6 +349,7 @@ function* watchPlayback(
         const playbackState: Spotify.PlaybackState | null = yield apply(player, player.getCurrentState);
         if (!playbackState) {
             console.warn('Missing playback state in playback watcher.');
+            yield call(delay, WATCHER_INTERVAL);
             continue;
         }
 
@@ -347,10 +366,10 @@ function* watchPlayback(
                 playing: !paused,
             });
 
-        const delayDuration = Math.min(durationMs - position - 50, 5000);
+        const delayDuration = Math.max(Math.min(durationMs - position - 50, WATCHER_INTERVAL), 0);
         yield call(delay, delayDuration);
 
-        if (delayDuration < 5000) {
+        if (delayDuration < WATCHER_INTERVAL) {
             yield put(removeTrack(currentTrackRef, true) as any);
         }
     }
@@ -369,26 +388,24 @@ function* handlePlayPausePressed(partyId: string) {
         );
         const currentMaster: string | null = currentMasterSnap.val();
 
-        const isPlaying = state.party.currentParty!.playback.playing;
+        const { last_position_ms, playing } = state.party.currentParty!.playback;
         if (!currentMaster || currentMaster === state.player.instanceId) {
             const masterIdRef = firebase.database!()
                 .ref('/parties')
                 .child(partyId)
                 .child('playback')
                 .child('master_id');
-            const masterDc = masterIdRef.onDisconnect();
+            yield call(() => masterIdRef.set(state.player.instanceId));
 
-            yield all([
-                call(() => masterIdRef.set(state.player.instanceId)),
-                call(() => masterDc.remove()),
-            ]);
+            const topTrack = currentTrackSelector(state);
+            if (!topTrack) {
+                throw new Error("Missing current track in toggle play pause handler");
+            }
 
-            if (isPlaying) {
+            if (playing) {
                 yield put(pause());
-            } else if (!state.player.playbackState) {
-                yield put(play(0));
             } else {
-                yield put(play());
+                yield put(play(last_position_ms || 0));
             }
         } else {
             yield call(
@@ -397,7 +414,7 @@ function* handlePlayPausePressed(partyId: string) {
                     .child(partyId)
                     .child('playback')
                     .child('playing')
-                    .set(!isPlaying),
+                    .set(!playing),
             );
         }
 
@@ -440,12 +457,46 @@ function* handleTrackChanges() {
         if (currentParty.playback.playing) {
             yield put(pause());
         }
-        if (currentParty.playback.playing && newCurrentTrack) {
+
+        if (!newCurrentTrack) {
+            continue;
+        }
+
+        // Start playback after skip or reset database if we weren't playing
+        if (currentParty.playback.playing) {
             yield put(play(0));
+        } else {
+            const partyId = partyIdSelector(state);
+            if (!partyId) {
+                throw new Error("Missing party ID");
+            }
+
+            yield* updateFirebasePosition(partyId, 0);
         }
     }
 }
 
+function* installAsPlaybackMaster() {
+    const state: State = yield select();
+
+    const partyId = partyIdSelector(state);
+    if (!partyId) {
+        throw new Error("Missing party ID!");
+    }
+
+    yield call(
+        () => firebase.database!()
+            .ref('/parties')
+            .child(partyId)
+            .child('playback')
+            .child('master_id')
+            .set(state.player.instanceId),
+    );
+}
+
 export default function*() {
-    yield manageSpotifyPlayer();
+    yield all([
+        manageSpotifyPlayer(),
+        takeEvery(Types.INSTALL_PLAYBACK_MASTER, installAsPlaybackMaster),
+    ]);
 }

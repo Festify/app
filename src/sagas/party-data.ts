@@ -1,4 +1,4 @@
-import { DataSnapshot, OnDisconnect } from '@firebase/database-types';
+import { DataSnapshot } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
 import { all, apply, call, put, select, take, takeEvery } from 'redux-saga/effects';
@@ -17,7 +17,7 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { valuesChannel } from '../util/firebase';
@@ -28,26 +28,41 @@ function* publishConnectionStateUpdates(snap: DataSnapshot) {
 
     yield put(updateConnectionState(state));
 }
-function* publishPartyUpdates(snap: DataSnapshot) {
-    yield put(updateParty(snap.val()));
-}
 function* publishTrackUpdates(snap: DataSnapshot) {
     yield put(updateTracks(snap.val()));
 }
 function* publishUserVoteUpdates(snap: DataSnapshot) {
     yield put(updateUserVotes(snap.val()));
 }
-function* updatePlaybackMasterState(snap: DataSnapshot) {
+function* publishPartyUpdates(snap: DataSnapshot) {
     const party: Party | null = snap.val();
 
     if (!party) {
         return;
     }
 
-    const { player }: State = yield select();
-    if (party.playback.master_id === player.instanceId) {
+    const state1: State = yield select();
+    yield put(updateParty(party));
+
+    const state2: State = yield select();
+    if (!isPartyOwnerSelector(state2)) {
+        return;
+    }
+
+    if (!state1.party.currentParty) {
+        return;
+    }
+
+    // Become playback master if: there hasn't been a party before, or the old party's master ID
+    // wasn't equal to the instance it, and now it is.
+    // Resign if we don't have a party anymore, or we were master and now we aren't anymore.
+
+    if (state1.party.currentParty.playback.master_id !== state1.player.instanceId &&
+        party.playback.master_id === state1.player.instanceId) {
         yield put(becomePlaybackMaster());
-    } else {
+    } else if ((!state2.party.currentParty ||
+        state1.party.currentParty.playback.master_id === state1.player.instanceId) &&
+        party.playback.master_id !== state1.player.instanceId) {
         yield put(resignPlaybackMaster());
     }
 }
@@ -73,12 +88,6 @@ function* loadParty() {
 
         const { uid }: { uid: string } = yield call(requireAuth);
         const party: Party = partySnap.val();
-        const isOwner = party.created_by === uid;
-
-        if (isOwner) {
-            yield* updatePlaybackMasterState(partySnap);
-            yield takeEvery(partyRef, updatePlaybackMasterState);
-        }
 
         const tracksRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
@@ -123,7 +132,7 @@ function* loadParty() {
     }
 }
 
-function* pinTopmostTrackIfPlaybackMaster() {
+function* managePlaybackMasterReset() {
     while (true) {
         yield take(Types.BECOME_PLAYBACK_MASTER);
 
@@ -134,14 +143,12 @@ function* pinTopmostTrackIfPlaybackMaster() {
 
         yield call(requireAccessToken);
 
-        const dc: OnDisconnect = yield call(
-            () => firebase.database!()
-                .ref('/parties')
-                .child(partyId)
-                .child('playback')
-                .child('master_id')
-                .onDisconnect(),
-        );
+        const dc = firebase.database!()
+            .ref('/parties')
+            .child(partyId)
+            .child('playback')
+            .child('master_id')
+            .onDisconnect();
         yield apply(dc, dc.remove);
 
         yield take(Types.RESIGN_PLAYBACK_MASTER);
@@ -173,7 +180,7 @@ function* watchRoute() {
 export default function*() {
     yield all([
         loadParty(),
-        pinTopmostTrackIfPlaybackMaster(),
+        managePlaybackMasterReset(),
         watchRoute(),
     ]);
 }
