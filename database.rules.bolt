@@ -1,6 +1,6 @@
 path /parties {
     read() { true }
-    index() { "short_id" }
+    index() { ["created_by", "short_id"] }
 }
 
 path /parties/{partyId} is Party {
