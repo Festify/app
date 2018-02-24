@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "build",
-    "module": "es2015",
+    "outDir": ".",
+    "module": "commonjs",
     "target": "es2015",
-    "lib": ["es2015", "dom"],
+    "lib": ["es6"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -13,14 +13,9 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false,
-    "plugins": [
-      {
-        "name": "typescript-lit-html-plugin"
-      }
-    ]
+    "noUnusedLocals": false
   },
   "files": [
-    "src/index.ts"
+    "index.ts"
   ]
 }

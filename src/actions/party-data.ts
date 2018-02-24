@@ -1,28 +1,44 @@
-import { DataSnapshot, FirebaseDatabase, Query, Reference } from '@firebase/database-types';
-import { push } from '@mraerino/redux-little-router-reactless/lib';
-import { ThunkAction } from 'redux-thunk';
-
-import { ConnectionState, Party, State, Track } from '../state';
+import { ConnectionState, Party, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
-import { requireAccessToken } from '../util/spotify-auth';
 
-import { PayloadAction, Types } from '.';
-import { connectPlayer } from './playback-spotify';
+import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
-    | OpenPartyStartAction
-    | OpenPartyFailAction
+    | BecomePlaybackMasterAction
     | CleanupPartyAction
+    | CreatePartyFailAction
+    | CreatePartyStartAction
+    | InstallPlaybackMasterAction
     | JoinPartyFailAction
     | JoinPartyStartAction
+    | ResignPlaybackMasterAction
+    | OpenPartyFailAction
+    | OpenPartyFinishAction
+    | OpenPartyStartAction
     | UpdateNetworkConnectionStateAction
     | UpdatePartyAction
     | UpdateTracksAction
     | UpdateUserVotesAction;
 
+export interface BecomePlaybackMasterAction {
+    type: Types.BECOME_PLAYBACK_MASTER;
+}
+
 export interface CleanupPartyAction {
     type: Types.CLEANUP_PARTY;
+}
+
+export interface CreatePartyStartAction {
+    type: Types.CREATE_PARTY_Start;
+}
+
+export interface CreatePartyFailAction extends ErrorAction {
+    type: Types.CREATE_PARTY_Fail;
+}
+
+export interface InstallPlaybackMasterAction {
+    type: Types.INSTALL_PLAYBACK_MASTER;
 }
 
 export interface JoinPartyFailAction extends PayloadAction<Error> {
@@ -34,13 +50,21 @@ export interface JoinPartyStartAction {
     type: Types.JOIN_PARTY_Start;
 }
 
-export interface OpenPartyStartAction {
-    type: Types.OPEN_PARTY_Start;
-}
-
 export interface OpenPartyFailAction extends PayloadAction<Error> {
     type: Types.OPEN_PARTY_Fail;
     error: true;
+}
+
+export interface OpenPartyFinishAction extends PayloadAction<Party> {
+    type: Types.OPEN_PARTY_Finish;
+}
+
+export interface OpenPartyStartAction extends PayloadAction<string> {
+    type: Types.OPEN_PARTY_Start;
+}
+
+export interface ResignPlaybackMasterAction {
+    type: Types.RESIGN_PLAYBACK_MASTER;
 }
 
 export interface UpdateNetworkConnectionStateAction extends PayloadAction<ConnectionState> {
@@ -59,168 +83,75 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
     type: Types.UPDATE_USER_VOTES;
 }
 
-let connectionRef: Reference | null = null;
-let partyRef: Reference | null = null;
-let topmostTrackRef: Query | null;
-let tracksRef: Query | null = null;
-let votesRef: Reference | null = null;
+export function becomePlaybackMaster(): BecomePlaybackMasterAction {
+    return { type: Types.BECOME_PLAYBACK_MASTER };
+}
 
-export function closeParty(): ThunkAction<void, State, void> {
-    return (dispatch) => {
-        if (connectionRef !== null) {
-            connectionRef.off('value');
-            connectionRef = null;
-        }
-        if (partyRef !== null) {
-            partyRef.off('value');
-            partyRef = null;
-        }
-        if (topmostTrackRef != null) {
-            topmostTrackRef.off('value');
-            topmostTrackRef = null;
-        }
-        if (tracksRef != null) {
-            tracksRef.off('value');
-            tracksRef = null;
-        }
-        if (votesRef != null) {
-            votesRef.off('value');
-            votesRef = null;
-        }
-        dispatch({ type: Types.CLEANUP_PARTY });
+export function cleanupParty(): CleanupPartyAction {
+    return { type: Types.CLEANUP_PARTY };
+}
+
+export function createPartyFail(err: Error): CreatePartyFailAction {
+    return {
+        type: Types.CREATE_PARTY_Fail,
+        error: true,
+        payload: err,
     };
 }
 
-export function createParty(): ThunkAction<Promise<string>, State, void> {
-    return async (dispatch, getState) => {
-        const { user } = getState().user.spotify;
+export function createPartyStart(): CreatePartyStartAction {
+    return { type: Types.CREATE_PARTY_Start };
+}
 
-        if (!user) {
-            throw new Error("Missing Spotify user.");
-        }
+export async function createNewParty(
+    displayName: string,
+    masterId: string,
+    country: string,
+): Promise<string> {
+    const { uid } = await requireAuth();
+    const now = firebaseNS.database!.ServerValue.TIMESTAMP;
+    const userNamePosessive = displayName.endsWith('s') ? "'" : "'s";
 
-        const { uid } = await requireAuth();
+    const party: Party = {
+        country,
+        created_at: now as any,
+        created_by: uid,
+        name: `${displayName}${userNamePosessive} Party`,
+        playback: {
+            device_id: null,
+            last_change: now as any,
+            last_position_ms: 0,
+            master_id: masterId,
+            playing: false,
+        },
+        short_id: String(Math.floor(Math.random() * 1000000)),
+    };
 
-        const now = firebaseNS.database!.ServerValue.TIMESTAMP;
-        const userDisplayName = user.display_name || user.id;
-        const userNamePosessive = userDisplayName.endsWith('s') ? "'" : "'s";
-        const party = {
-            country: user.country,
-            created_at: now,
-            created_by: uid,
-            name: `${userDisplayName}${userNamePosessive} Party`,
-            playback: {
-                last_change: now,
-                last_position_ms: 0,
-                playing: false,
-            },
-            short_id: String(Math.floor(Math.random() * 1000000)),
-        };
+    const result = await firebase.database!()
+        .ref('/parties')
+        .push(party);
 
-        const result = await firebase.database!()
-            .ref('/parties')
-            .push(party);
+    if (!result.key) {
+        throw new Error("Missing ID of newly created party!");
+    }
 
-        if (!result.key) {
-            throw new Error("Missing ID of newly created party!");
-        }
+    return result.key;
+}
 
-        return result.key;
+export function joinPartyFail(err: Error): JoinPartyFailAction {
+    return {
+        type: Types.JOIN_PARTY_Fail,
+        error: true,
+        payload: err,
     };
 }
 
-export function loadParty(id: string): ThunkAction<Promise<void>, State, void> {
-    return async (dispatch, getState) => {
-        dispatch({ type: Types.OPEN_PARTY_Start } as OpenPartyStartAction);
-
-        if (connectionRef || partyRef || topmostTrackRef || tracksRef || votesRef) {
-            dispatch(closeParty());
-        }
-
-        connectionRef = firebase.database!()
-            .ref('.info/connected');
-
-        partyRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/parties/')
-            .child(id);
-
-        const partySnap = await partyRef.once('value');
-
-        if (!partySnap.exists()) {
-            dispatch(openPartyFail(new Error("Party not found!")));
-            return;
-        }
-
-        const { uid } = await requireAuth();
-        const isOwner = (partySnap.val() as Party).created_by === uid;
-
-        if (isOwner) {
-            // Set up spotify player if we own the party
-            requireAccessToken()
-                .then(() => dispatch(connectPlayer()))
-                .catch(() => {});
-
-            // Pin topmost / playing track to top of queue
-            // TODO: Outsource this into cloud function once old app is gone
-            topmostTrackRef = firebase.database!()
-                .ref('/tracks')
-                .child(id)
-                .orderByChild('order')
-                .limitToFirst(1);
-            topmostTrackRef.on('value', (snap: DataSnapshot) => {
-                if (!snap.exists()) {
-                    return;
-                }
-
-                const [trackKey] = Object.keys(snap.val());
-                firebase.database!()
-                    .ref('/tracks')
-                    .child(id)
-                    .child(trackKey)
-                    .child('order')
-                    .set(Number.MIN_SAFE_INTEGER)
-                    .catch(err => console.warn("Failed to update current track order:", err));
-            });
-        }
-        tracksRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/tracks')
-            .child(id);
-        votesRef = (firebase.database!() as FirebaseDatabase)
-            .ref('/votes_by_user')
-            .child(id)
-            .child(uid);
-
-        connectionRef.on('value', (snap: DataSnapshot) => dispatch(updateConnectionState(
-            snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected,
-        )));
-        partyRef.on('value', (snap: DataSnapshot) => {
-            if (!snap.exists()) {
-                dispatch(openPartyFail(new Error("Party not found!")));
-                return;
-            }
-            dispatch(updateParty(snap.val()));
-        });
-        tracksRef.on('value', (snap: DataSnapshot) => dispatch(updateTracks(snap.val())));
-        votesRef.on('value', (snap: DataSnapshot) => dispatch(updateUserVotes(snap.val())));
-    };
+export function joinPartyStart(): JoinPartyStartAction {
+    return { type: Types.JOIN_PARTY_Start };
 }
 
-export function openParty(shortId: string): ThunkAction<Promise<any>, State, void> {
-    return async (dispatch, getState) => {
-        dispatch({ type: Types.JOIN_PARTY_Start });
-
-        const longId = await resolveShortId(shortId);
-        if (!longId) {
-            dispatch({
-                type: Types.JOIN_PARTY_Fail,
-                error: true,
-                payload: new Error("Party not found!"),
-            } as JoinPartyFailAction);
-            return;
-        }
-
-        dispatch(push(`/party/${longId}`, {}));
-    };
+export function installPlaybackMaster(): InstallPlaybackMasterAction {
+    return { type: Types.INSTALL_PLAYBACK_MASTER };
 }
 
 export function openPartyFail(err: Error): OpenPartyFailAction {
@@ -229,6 +160,24 @@ export function openPartyFail(err: Error): OpenPartyFailAction {
         error: true,
         payload: err,
     };
+}
+
+export function openPartyFinish(party: Party): OpenPartyFinishAction {
+    return {
+        type: Types.OPEN_PARTY_Finish,
+        payload: party,
+    };
+}
+
+export function openPartyStart(id: string): OpenPartyStartAction {
+    return {
+        type: Types.OPEN_PARTY_Start,
+        payload: id,
+    };
+}
+
+export function resignPlaybackMaster(): ResignPlaybackMasterAction {
+    return { type: Types.RESIGN_PLAYBACK_MASTER };
 }
 
 export async function resolveShortId(shortId: string): Promise<string | null> {

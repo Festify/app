@@ -54,8 +54,7 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 
     ${props.hasShareApi
         ? html`
-            <paper-button raised
-                          on-click="${props.shareParty}">
+            <paper-button raised on-click="${props.shareParty}">
                 Share
             </paper-button>
         `

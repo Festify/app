@@ -1,18 +1,17 @@
-import { push, replace } from '@mraerino/redux-little-router-reactless/lib';
-import debounce from 'lodash-es/debounce';
-import { ThunkAction } from 'redux-thunk';
-
-import { State, Track, TrackReference } from '../state';
-import { fetchWithAnonymousAuth } from '../util/spotify-auth';
+import { Track, TrackReference } from '../state';
 
 import { ErrorAction, PayloadAction, Types } from '.';
-import { loadSpotifyMetadata } from './metadata';
 
 export type Actions =
-    | ToggleVoteAction
+    | ChangeTrackSearchInputAction
     | SearchStartAction
     | SearchFinishAction
-    | SearchFailAction;
+    | SearchFailAction
+    | ToggleVoteAction;
+
+export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
+    type: Types.CHANGE_TRACK_SEARCH_INPUT;
+}
 
 export interface ToggleVoteAction extends PayloadAction<[TrackReference, boolean]> {
     type: Types.TOGGLE_VOTE;
@@ -30,71 +29,23 @@ export interface SearchFailAction extends ErrorAction {
     type: Types.SEARCH_Fail;
 }
 
-export function changeSearchInputText(text: string): ThunkAction<void, State, void> {
-    return (dispatch, getState: () => State) => {
-        const { partyId, query } = getState().router.params || { partyId: '', query: '' };
-        if (!partyId) {
-            throw new Error("Tried to search without active party!");
-        }
-
-        if (!text) {
-            return dispatch(push(`/party/${partyId}`, {}));
-        }
-
-        const routerFn = query ? replace : push;
-        dispatch(routerFn(`/party/${partyId}/search/${encodeURIComponent(text)}`, {}));
+export function changeTrackSearchInput(text: string): ChangeTrackSearchInputAction {
+    return {
+        type: Types.CHANGE_TRACK_SEARCH_INPUT,
+        payload: text,
     };
 }
 
-let latestSearchFetch = 0;
-const searchThunk = debounce(async (dispatch, getState: () => State) => {
-    dispatch({ type: Types.SEARCH_Start } as SearchStartAction);
+export function eraseTrackSearchInput(): ChangeTrackSearchInputAction {
+    return changeTrackSearchInput('');
+}
 
-    const state = getState();
-    const { query } = state.router.params || { query: '' };
-    const { currentParty } = state.party;
-    const url =
-        `/search?type=track&limit=${20}&market=${currentParty!.country}` +
-        `&q=${encodeURIComponent(query.replace('-', ' ') + '*')}`;
-
-    const fetchTime = latestSearchFetch = Date.now();
-    let tracks;
-    try {
-        const trackResponse = await fetchWithAnonymousAuth(url);
-        if (fetchTime < latestSearchFetch) {
-            return;
-        }
-
-        tracks = (await trackResponse.json()).tracks.items;
-    } catch (e) {
-        return dispatch({
-            type: Types.SEARCH_Fail,
-            error: true,
-            payload: e,
-        });
-    }
-
-    const result = tracks.reduce((acc, track, i) => {
-        const trackId = `spotify-${track.id}`;
-        acc[trackId] = {
-            added_at: Date.now(),
-            is_fallback: false,
-            order: i,
-            reference: {
-                provider: 'spotify',
-                id: track.id,
-            },
-            vote_count: 0,
-        } as Track;
-        return acc;
-    }, {});
-
-    dispatch(loadSpotifyMetadata(tracks));
-    dispatch(searchFinish(result));
-}, 300);
-
-export function searchTracks(): ThunkAction<Promise<void>, State, void> {
-    return searchThunk;
+export function searchFail(error: Error): SearchFailAction {
+    return {
+        type: Types.SEARCH_Fail,
+        error: true,
+        payload: error,
+    };
 }
 
 export function searchFinish(tracks: Record<string, Track>): SearchFinishAction {
@@ -102,4 +53,8 @@ export function searchFinish(tracks: Record<string, Track>): SearchFinishAction 
         type: Types.SEARCH_Finish,
         payload: tracks,
     };
+}
+
+export function searchStart(): SearchStartAction {
+    return { type: Types.SEARCH_Start };
 }

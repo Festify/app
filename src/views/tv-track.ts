@@ -4,15 +4,16 @@ import { html } from 'lit-html';
 import srcsetImg from '../components/srcset-img';
 import {
     artistJoinerFactory,
-    defaultMetaSelectorFactory,
     defaultTrackSelectorFactory,
+    singleMetadataSelector,
     singleTrackSelector,
 } from '../selectors/track';
 import { Metadata, State, Track } from '../state';
+import festifyLogo from '../util/festify-logo';
 
 interface TvTrackProps {
     artistName: string;
-    metadata: Metadata;
+    metadata: Metadata | null;
     track: Track;
 }
 
@@ -39,7 +40,7 @@ const TvTrack = (props: TvTrackProps) => html`
             box-shadow: 0 0 60px 0 rgba(0, 0, 0, 0.5);
         }
 
-        img {
+        img, .empty {
             width: 100%;
             height: 100%;
             position: absolute;
@@ -85,22 +86,23 @@ const TvTrack = (props: TvTrackProps) => html`
     </style>
 
     <div class="cover">
-        ${srcsetImg(props.metadata.cover, '128px', props.metadata.name)}
+        ${props.metadata
+            ? srcsetImg(props.metadata.cover, '128px', props.metadata.name)
+            : html`<div class="empty"></div>`}
         <div class="overlay"></div>
         <h2>${props.track.vote_count}</h2>
     </div>
-    <h3>${props.metadata.name}</h3>
+    <h3>${props.metadata ? props.metadata.name : 'Loading...'}</h3>
     <h4>${props.artistName}</h4>
 `;
 
 const mapStateToPropsFactory = () => {
     const artistJoiner = artistJoinerFactory();
-    const defaultMetaSelector = defaultMetaSelectorFactory();
     const defaultTrackSelector = defaultTrackSelectorFactory(singleTrackSelector);
 
     return (state: State, ownProps: TvTrackOwnProps) => ({
         artistName: artistJoiner(state, ownProps.trackid),
-        metadata: defaultMetaSelector(state, ownProps.trackid),
+        metadata: singleMetadataSelector(state, ownProps.trackid),
         track: defaultTrackSelector(state, ownProps.trackid),
     });
 };

@@ -4,20 +4,18 @@ import '@polymer/polymer/lib/elements/custom-style';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import {
-    changePartyId,
-    createNewParty as createParty,
-    joinParty,
-    loginWithSpotify,
-} from '../actions/view-home';
+import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
+import { changePartyId, loginWithSpotify } from '../actions/view-home';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
 
 interface HomeViewProps {
+    authorizationInProgress: boolean;
     authorized: boolean;
     authStatusKnown: boolean;
-    isAuthorizing: boolean;
+    partyCreationInProgress: boolean;
+    partyCreationError: Error | null;
     partyId: string;
     partyIdValid: boolean;
     partyJoinError: Error | null;
@@ -31,13 +29,19 @@ interface HomeViewDispatch {
 }
 
 const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
-    if (props.authorized) {
+    if (props.partyCreationInProgress) {
         return html`
-            <paper-button raised on-click="${() => props.createParty()}">
+            <paper-button raised disabled>
+                Creating...
+            </paper-button>
+        `;
+    } else if (props.authorized) {
+        return html`
+            <paper-button raised on-click="${props.createParty}">
                 Create Party
             </paper-button>
         `;
-    } else if (props.isAuthorizing || !props.authStatusKnown) {
+    } else if (props.authorizationInProgress || !props.authStatusKnown) {
         return html`
             <paper-button raised disabled>
                 Authorizing...
@@ -45,7 +49,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
         `;
     } else {
         return html`
-            <paper-button raised on-click="${() => props.loginWithSpotify()}">
+            <paper-button raised on-click="${props.loginWithSpotify}">
                 Login to create Party
             </paper-button>
         `;
@@ -128,14 +132,14 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
 const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
+    authorizationInProgress: state.user.spotify.authorizing,
     authorized: Boolean(state.user.spotify.user),
     authStatusKnown: state.user.spotify.statusKnown,
-    isAuthorizing: state.user.spotify.authorizing,
 });
 
 const mapDispatchToProps: HomeViewDispatch = {
     changePartyId,
-    createParty,
+    createParty: createPartyStart,
     joinParty,
     loginWithSpotify,
 };

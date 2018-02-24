@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect';
+
 import { State } from '../state';
 import firebase from '../util/firebase';
 
@@ -10,3 +12,14 @@ export const partyIdSelector = (state: State): string | null => {
     const params = state.router.params;
     return params ? params.partyId : null;
 };
+
+export const playbackMasterSelector = (state: State): string | null => {
+    const party = state.party.currentParty;
+    return party ? party.playback.master_id : null;
+};
+
+export const isPlaybackMasterSelector = createSelector(
+    playbackMasterSelector,
+    state => state.player.instanceId,
+    (masterId, instanceId) => masterId === instanceId,
+);

@@ -26,12 +26,7 @@ export const singleTrackSelector = (state: State, trackId: string) => state.part
 
 export const metadataSelector = (state: State) => state.metadata || {};
 
-export const singleMetadataSelector = (state: State, trackId: string) => state.metadata[trackId];
-
-export const defaultMetaSelectorFactory = () => createSelector(
-    singleMetadataSelector,
-    metadata => ({ ...dummyMetadata, ...metadata }),
-);
+export const singleMetadataSelector = (state: State, trackId: string): Metadata | null => state.metadata[trackId];
 
 export const defaultTrackSelectorFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
@@ -41,13 +36,17 @@ export const defaultTrackSelectorFactory = (
 );
 
 export const artistsSelectorFactory = () => createSelector(
-    defaultMetaSelectorFactory(),
-    metadata => metadata.artists,
+    singleMetadataSelector,
+    metadata => metadata ? metadata.artists : null,
 );
 
 export const artistJoinerFactory = () => createSelector(
     artistsSelectorFactory(),
     artists => {
+        if (!artists) {
+            return null;
+        }
+
         const [first, ...rest] = artists;
         return rest.length > 0
             ? `${first} feat. ${rest.join(' & ')}`

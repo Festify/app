@@ -2,10 +2,12 @@ import { initializeCurrentLocation, routerForBrowser } from '@mraerino/redux-lit
 import { createProvider } from 'fit-html';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
+import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
 
+import { generateInstanceId } from './actions';
 import { checkSpotifyLoginStatus } from './actions/auth';
-import { initializePlayer } from './actions/playback-spotify';
+import { spotifySdkInitFinish } from './actions/playback-spotify';
 import middlewares from './middlewares';
 import reducers from './reducers';
 import {
@@ -13,7 +15,10 @@ import {
     middleware as routerMiddleware,
     reducer as routerReducer,
 } from './routing';
+import sagas from './sagas';
 import { State } from './state';
+
+const saga = createSagaMiddleware();
 
 export const store = createStore<State>(
     combineReducers({
@@ -22,15 +27,25 @@ export const store = createStore<State>(
     }),
     compose(
         routerEnhancer,
-        applyMiddleware(thunk, routerMiddleware, ...middlewares),
+        applyMiddleware(
+            thunk,
+            routerMiddleware,
+            saga,
+             ...middlewares,
+        ),
         devToolsEnhancer({}),
     ),
 );
 
+for (const s of sagas) {
+    saga.run(s);
+}
+
 store.dispatch(checkSpotifyLoginStatus());
+store.dispatch(generateInstanceId());
 store.dispatch(initializeCurrentLocation(store.getState().router));
 window.onSpotifyWebPlaybackSDKReady = () => {
-    store.dispatch(initializePlayer());
+    store.dispatch(spotifySdkInitFinish());
 };
 
 export const storeProvider = createProvider(store);

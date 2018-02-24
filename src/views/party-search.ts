@@ -3,10 +3,10 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html';
 
 import { sortedTracksFactory } from '../selectors/track';
-import { State } from "../state";
+import { State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
-import { queueStyles, PartyQueueProps } from "./party-queue";
+import { queueStyles, PartyQueueProps } from './party-queue';
 import './party-track-search';
 
 interface SearchProps extends PartyQueueProps {
@@ -29,7 +29,6 @@ const Progress = (props: SearchProps) => {
             </div>
         `;
     } else {
-        // Repeat doesn't work if included conditionally
         return null;
     }
 };
@@ -52,7 +51,7 @@ const PartySearchView = (props: SearchProps) => html`
             text-align: center;
         }
 
-        festify-spinner {
+        paper-spinner-lite {
             background: var(--secondary-color);
         }
     </style>
