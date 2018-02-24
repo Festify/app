@@ -1,4 +1,4 @@
-import { ConnectPlaybackState, TrackReference } from '../state';
+import { ConnectPlaybackState } from '../state';
 
 import { ErrorAction, PayloadAction, Types } from '.';
 
@@ -7,7 +7,6 @@ export type Actions =
     | PlayerInitFinishAction
     | PlayerErrorAction
     | UpdateConnectStateAction
-    | UpdatePlayerStateAction
     | SpotifySdkInitFinishAction
     | PlayAction
     | PauseAction
@@ -37,10 +36,6 @@ export interface TogglePlaybackFinishAction {
 
 export interface TogglePlaybackFailAction extends ErrorAction {
     type: Types.TOGGLE_PLAYBACK_Fail;
-}
-
-export interface UpdatePlayerStateAction extends PayloadAction<Spotify.PlaybackState | null> {
-    type: Types.UPDATE_PLAYER_STATE;
 }
 
 export interface UpdateConnectStateAction extends PayloadAction<ConnectPlaybackState> {
@@ -99,12 +94,5 @@ export function togglePlaybackFail(err: Error): TogglePlaybackFailAction {
         type: Types.TOGGLE_PLAYBACK_Fail,
         error: true,
         payload: err,
-    };
-}
-
-export function updatePlayerState(state: Spotify.PlaybackState | null): UpdatePlayerStateAction {
-    return {
-        type: Types.UPDATE_PLAYER_STATE,
-        payload: state,
     };
 }

@@ -29,6 +29,7 @@ type PlaybackState {
     last_change: CurrentTimestamp,
     last_position_ms: Number,
     playing: Boolean,
+    target_playing: Boolean | Null,
     master_id: String | Null
 }
 

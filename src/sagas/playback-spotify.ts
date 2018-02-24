@@ -21,6 +21,7 @@ import {
     OpenPartyFailAction,
     OpenPartyFinishAction,
     OpenPartyStartAction,
+    UpdatePartyAction,
 } from '../actions/party-data';
 import {
     pause,
@@ -29,7 +30,7 @@ import {
     playerInitFinish,
     togglePlaybackFail,
     togglePlaybackFinish,
-    updatePlayerState,
+    togglePlaybackStart,
     PauseAction,
     PlayAction,
 } from '../actions/playback-spotify';
@@ -57,11 +58,6 @@ function attachToEvent<T>(player: Spotify.SpotifyPlayer, name: string) {
         player.on(name as any, listener);
         return () => (player as any).removeListener(name, listener);
     });
-}
-
-function* updateSpotifyPlayerState(partyId: string, state: Spotify.PlaybackState) {
-    yield put(updatePlayerState(state));
-    yield* updateFirebasePosition(partyId, state.position);
 }
 
 function* updateFirebasePosition(partyId: string, pos: number) {
@@ -165,7 +161,13 @@ function* controlPlayerLifecycle(partyId: string) {
             );
             const publishPlaybackStateChangesTask = yield takeEvery(
                 playbackStateChanges,
-                updateSpotifyPlayerState,
+                function* (partyId: string, state: Spotify.PlaybackState) {
+                    yield* updateFirebasePosition(partyId, state.position);
+                },
+                partyId,
+            );
+            const remoteTask = yield fork(
+                handleRemotePlayPause,
                 partyId,
             );
             const tracksTask = yield fork(
@@ -178,7 +180,7 @@ function* controlPlayerLifecycle(partyId: string) {
             yield take(Types.RESIGN_PLAYBACK_MASTER);
 
             yield all([
-                cancel(playPauseTask, publishPlaybackStateChangesTask, tracksTask),
+                cancel(playPauseTask, publishPlaybackStateChangesTask, remoteTask, tracksTask),
                 apply(player, player.disconnect),
             ]);
             initErrors.close();
@@ -353,8 +355,6 @@ function* watchPlayback(
             continue;
         }
 
-        yield put(updatePlayerState(playbackState));
-
         const { paused, position } = playbackState;
         yield firebase.database!()
             .ref('/parties')
@@ -378,49 +378,82 @@ function* watchPlayback(
 function* handlePlayPausePressed(partyId: string) {
     try {
         const state: State = yield select();
-        const currentMasterSnap: DataSnapshot = yield call(
-            () => firebase.database!()
-                .ref('/parties')
-                .child(partyId)
-                .child('playback')
-                .child('master_id')
-                .once('value'),
-        );
-        const currentMaster: string | null = currentMasterSnap.val();
-
+        const { master_id } = state.party.currentParty!.playback;
         const { last_position_ms, playing } = state.party.currentParty!.playback;
-        if (!currentMaster || currentMaster === state.player.instanceId) {
-            const masterIdRef = firebase.database!()
-                .ref('/parties')
-                .child(partyId)
-                .child('playback')
-                .child('master_id');
-            yield call(() => masterIdRef.set(state.player.instanceId));
 
-            const topTrack = currentTrackSelector(state);
-            if (!topTrack) {
-                throw new Error("Missing current track in toggle play pause handler");
-            }
-
-            if (playing) {
-                yield put(pause());
-            } else {
-                yield put(play(last_position_ms || 0));
-            }
-        } else {
+        if (master_id && master_id !== state.player.instanceId) {
             yield call(
                 () => firebase.database!()
                     .ref('/parties')
                     .child(partyId)
                     .child('playback')
-                    .child('playing')
+                    .child('target_playing')
                     .set(!playing),
             );
+            yield put(togglePlaybackFinish());
+            return;
+        }
+
+        if (!master_id) {
+            yield call(
+                () => firebase.database!()
+                    .ref('/parties')
+                    .child(partyId)
+                    .child('playback')
+                    .child('master_id')
+                    .set(state.player.instanceId),
+            );
+        }
+
+        const topTrack = currentTrackSelector(state);
+        if (!topTrack) {
+            throw new Error("Missing current track in toggle play pause handler");
+        }
+
+        if (playing) {
+            yield put(pause());
+        } else {
+            yield put(play(last_position_ms || 0));
         }
 
         yield put(togglePlaybackFinish());
     } catch (err) {
         yield put(togglePlaybackFail(err));
+    }
+}
+
+function* handleRemotePlayPause(partyId: string) {
+    while (true) {
+        const state: State = yield select();
+        const updatePartyAction: UpdatePartyAction = yield take(Types.UPDATE_PARTY);
+
+        if (!state.party.currentParty) {
+            continue;
+        }
+
+        // tslint:disable-next-line:triple-equals
+        if (updatePartyAction.payload.playback.target_playing == null) {
+            continue;
+        }
+
+        const oldPlayback = state.party.currentParty.playback;
+        const newPlayback = updatePartyAction.payload.playback;
+
+        if (oldPlayback.playing === newPlayback.target_playing) {
+            continue;
+        }
+
+        yield all([
+            call(
+                () => firebase.database!()
+                    .ref('/parties')
+                    .child(partyId)
+                    .child('playback')
+                    .child('target_playing')
+                    .remove(),
+            ),
+            put(togglePlaybackStart()),
+        ]);
     }
 }
 

@@ -15,11 +15,11 @@ export interface Metadata {
 }
 
 export interface Playback {
-    device_id: string | null;
     last_change: number;
     last_position_ms: number;
     master_id: string | null;
     playing: boolean;
+    target_playing: boolean | null;
 }
 
 export interface Playlist {
@@ -99,7 +99,6 @@ export interface ConnectPlaybackState {
 export interface PlayerState {
     instanceId: string;
     localDeviceId: string | null;
-    playbackState: Spotify.PlaybackState | null;
 
     initializing: boolean;
     initializationError: Error | null;

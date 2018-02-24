@@ -4,7 +4,6 @@ import { PlayerState } from '../state';
 export default function (
     state: PlayerState = {
         instanceId: '',
-        playbackState: null,
         localDeviceId: null,
         initializing: false,
         initializationError: null,
@@ -18,11 +17,6 @@ export default function (
             return {
                 ...state,
                 instanceId: action.payload,
-            };
-        case Types.UPDATE_PLAYER_STATE:
-            return {
-                ...state,
-                playbackState: action.payload,
             };
         case Types.PLAYER_INIT_Start:
             return {
