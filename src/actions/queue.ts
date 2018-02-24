@@ -13,6 +13,10 @@ import { ToggleVoteAction } from './view-party';
 export function flushTracks(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {
         const state = getState();
+        if (!state.party.tracks) {
+            return;
+        }
+
         if (!isPartyOwnerSelector(state)) {
             throw new Error("Not party owner, cannot flush tracks.");
         }
@@ -23,7 +27,7 @@ export function flushTracks(): ThunkAction<Promise<void>, State, void> {
         }
 
         const trackRemoveObject = {};
-        Object.keys(state.party.tracks!)
+        Object.keys(state.party.tracks)
             .filter(k => !state.party.tracks![k].played_at)
             .forEach(k => trackRemoveObject[k] = null);
         await Promise.all([
