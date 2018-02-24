@@ -3,12 +3,6 @@ import { createSelector } from 'reselect';
 
 import { Metadata, State, Track } from '../state';
 
-const dummyMetadata: Metadata = {
-    artists: [],
-    cover: [],
-    durationMs: 0,
-    name: 'Loading...',
-};
 const dummyTrack: Track = {
     added_at: 0,
     is_fallback: false,
