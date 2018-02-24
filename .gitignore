@@ -25,6 +25,7 @@ firebase-debug.log
 GoogleService-Info.plist
 google-services.json
 spotify.config.js
+service-account.json
 
 # IDE
 .idea/
