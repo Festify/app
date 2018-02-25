@@ -8,6 +8,7 @@ import typescript from 'rollup-plugin-typescript2';
 import minifyLit from '@mraerino/rollup-plugin-minifyliterals';
 import browsersync from 'rollup-plugin-browsersync';
 import replace from 'rollup-plugin-replace';
+import visualizer from 'rollup-plugin-visualizer';
 import historyApi from 'connect-history-api-fallback';
 import path from 'path';
 
@@ -76,7 +77,10 @@ export default {
             },
             open: false,
             ui: false
-        }) : null
+        }) : null,
+        visualizer({
+            filename: 'build/stats.html',
+        }),
     ].filter(plugin => plugin !== null),
     onwarn: err => console.error(err.toString()),
     watch: {
