@@ -1,4 +1,5 @@
-import { mapValues, omit } from 'lodash-es';
+import mapValues from 'lodash-es/mapValues';
+import omit from 'lodash-es/omit';
 import { ThunkAction } from 'redux-thunk';
 
 import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
