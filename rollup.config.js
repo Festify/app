@@ -21,7 +21,9 @@ const src = (dest = "") => path.join(srcTarget, dest);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-fs.mkdirSync('build');
+if (!fs.existsSync('build')) {
+    fs.mkdirSync('build');
+}
 
 export default {
     input: src('index.ts'),
