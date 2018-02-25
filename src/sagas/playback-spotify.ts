@@ -18,9 +18,11 @@ import { createSelector } from 'reselect';
 
 import { Types } from '../actions';
 import {
+    BecomePlaybackMasterAction,
     OpenPartyFailAction,
     OpenPartyFinishAction,
     OpenPartyStartAction,
+    ResignPlaybackMasterAction,
     UpdatePartyAction,
 } from '../actions/party-data';
 import {
@@ -80,8 +82,10 @@ function* manageSpotifyPlayer() {
         yield actionChannel(Types.OPEN_PARTY_Fail);
     const partyOpenFinishes: Channel<OpenPartyFinishAction> =
         yield actionChannel(Types.OPEN_PARTY_Finish);
-
-    yield take(Types.SPOTIFY_SDK_INIT_Finish);
+    const becomePlaybackMaster: Channel<BecomePlaybackMasterAction> =
+        yield actionChannel(Types.BECOME_PLAYBACK_MASTER);
+    const resignPlaybackMaster: Channel<ResignPlaybackMasterAction> =
+        yield actionChannel(Types.RESIGN_PLAYBACK_MASTER);
 
     while (true) {
         const openPartyAction: OpenPartyStartAction = yield take(partyOpenStarts);
@@ -96,7 +100,12 @@ function* manageSpotifyPlayer() {
             continue;
         }
 
-        const playerTask = yield fork(controlPlayerLifecycle, partyId);
+        const playerTask = yield fork(
+            controlPlayerLifecycle,
+            partyId,
+            becomePlaybackMaster,
+            resignPlaybackMaster,
+        );
         const uiTask = yield takeEvery(
             Types.TOGGLE_PLAYBACK_Start,
             handlePlayPausePressed,
@@ -109,14 +118,20 @@ function* manageSpotifyPlayer() {
     }
 }
 
-function* controlPlayerLifecycle(partyId: string) {
+function* controlPlayerLifecycle(
+    partyId: string,
+    becomePlaybackMaster: Channel<BecomePlaybackMasterAction>,
+    resignPlaybackMaster: Channel<ResignPlaybackMasterAction>,
+) {
     let player: Spotify.SpotifyPlayer = null!;
     try {
         const playActions: Channel<PlayAction> = yield actionChannel(Types.PLAY);
         const pauseActions: Channel<PauseAction> = yield actionChannel(Types.PAUSE);
 
+        yield take(Types.SPOTIFY_SDK_INIT_Finish);
+
         while (true) {
-            yield take(Types.BECOME_PLAYBACK_MASTER);
+            yield take(becomePlaybackMaster);
 
             player = new Spotify.Player({
                 name: 'Festify',
@@ -177,7 +192,7 @@ function* controlPlayerLifecycle(partyId: string) {
 
             yield put(playerInitFinish(device_id));
 
-            yield take(Types.RESIGN_PLAYBACK_MASTER);
+            yield take(resignPlaybackMaster);
 
             yield all([
                 cancel(playPauseTask, publishPlaybackStateChangesTask, remoteTask, tracksTask),

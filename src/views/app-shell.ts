@@ -4,7 +4,7 @@ import { html } from 'lit-html/lib/lit-extended';
 
 import '../components/load-once';
 import { Views } from '../routing';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPlaybackMasterSelector } from '../selectors/party';
 import { State } from '../state';
 import iconSet from '../util/icons';
 
@@ -13,7 +13,7 @@ import './view-party';
 import './view-tv';
 
 interface AppShellProps {
-    isOwner: boolean;
+    isPlaybackMaster: boolean;
     isToastOpen: boolean;
     toastText: string;
     view: Views;
@@ -63,7 +63,7 @@ const AppShellView = (props: AppShellProps) => html`
                  opened="${props.isToastOpen}"
                  text="${props.toastText}">
     </paper-toast>
-    <load-once load?="${props.isOwner}">
+    <load-once load?="${props.isPlaybackMaster}">
         <template>
             <script src="https://sdk.scdn.co/spotify-player.js"></script>
         </template>
@@ -71,7 +71,7 @@ const AppShellView = (props: AppShellProps) => html`
 `;
 
 const mapStateToProps = (state: State): AppShellProps => ({
-    isOwner: isPartyOwnerSelector(state),
+    isPlaybackMaster: isPlaybackMasterSelector(state),
     isToastOpen: !!state.appShell.currentToast,
     toastText: state.appShell.currentToast || '',
     view: (state.router.result || {}).view,
