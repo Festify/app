@@ -3,13 +3,13 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
+import { loginWithSpotify } from '../actions/auth';
 import { handleClick } from '../actions/queue-drawer';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
-import { loginWithSpotify } from '../actions/auth';
 
 interface QueueDrawerProps {
     isOwner: boolean;
