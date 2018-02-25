@@ -395,14 +395,7 @@ function* handlePlayPausePressed(partyId: string) {
         }
 
         if (!master_id) {
-            yield call(
-                () => firebase.database!()
-                    .ref('/parties')
-                    .child(partyId)
-                    .child('playback')
-                    .child('master_id')
-                    .set(state.player.instanceId),
-            );
+            yield* installAsPlaybackMaster();
         }
 
         const topTrack = currentTrackSelector(state);
