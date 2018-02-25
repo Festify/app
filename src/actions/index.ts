@@ -14,6 +14,7 @@ import { Actions as PartyDataActions } from './party-data';
 import { Actions as SettingsActions } from './party-settings';
 import { Actions as ShareActions } from './party-share';
 import { Actions as PlaybackSpotifyActions } from './playback-spotify';
+import { Actions as QueueActions } from './queue';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
 
@@ -33,6 +34,7 @@ export type Actions =
     | PartyDataActions
     | PartyViewActions
     | PlaybackSpotifyActions
+    | QueueActions
     | RouterActions
     | SettingsActions
     | ShareActions

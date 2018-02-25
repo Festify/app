@@ -8,8 +8,14 @@ import { State, TrackReference } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
 
-import { Types } from '.';
-import { ToggleVoteAction } from './view-party';
+import { PayloadAction, Types } from '.';
+
+export type Actions =
+    | ToggleVoteAction;
+
+export interface ToggleVoteAction extends PayloadAction<[TrackReference, boolean]> {
+    type: Types.TOGGLE_VOTE;
+}
 
 export function flushTracks(): ThunkAction<Promise<void>, State, void> {
     return async (dispatch, getState) => {

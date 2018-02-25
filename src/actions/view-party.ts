@@ -6,15 +6,10 @@ export type Actions =
     | ChangeTrackSearchInputAction
     | SearchStartAction
     | SearchFinishAction
-    | SearchFailAction
-    | ToggleVoteAction;
+    | SearchFailAction;
 
 export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_TRACK_SEARCH_INPUT;
-}
-
-export interface ToggleVoteAction extends PayloadAction<[TrackReference, boolean]> {
-    type: Types.TOGGLE_VOTE;
 }
 
 export interface SearchStartAction {
