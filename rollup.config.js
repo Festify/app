@@ -1,3 +1,5 @@
+import historyApi from 'connect-history-api-fallback';
+import * as fs from 'fs';
 import minify from 'rollup-plugin-babel-minify';
 import cjs from 'rollup-plugin-commonjs';
 import copy from 'rollup-plugin-copy';
@@ -9,7 +11,6 @@ import minifyLit from '@mraerino/rollup-plugin-minifyliterals';
 import browsersync from 'rollup-plugin-browsersync';
 import replace from 'rollup-plugin-replace';
 import visualizer from 'rollup-plugin-visualizer';
-import historyApi from 'connect-history-api-fallback';
 import path from 'path';
 
 const distTarget = './build';
@@ -19,6 +20,8 @@ const srcTarget = './src';
 const src = (dest = "") => path.join(srcTarget, dest);
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+fs.mkdirSync('build');
 
 export default {
     input: src('index.ts'),
