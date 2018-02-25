@@ -88,15 +88,28 @@ function* manageSpotifyPlayer() {
         yield actionChannel(Types.RESIGN_PLAYBACK_MASTER);
 
     while (true) {
-        const openPartyAction: OpenPartyStartAction = yield take(partyOpenStarts);
-        const partyId = openPartyAction.payload;
-
-        const { fail } = yield race({
-            fail: take(partyOpenFails),
-            finish: take(partyOpenFinishes),
+        const { open }: { open: OpenPartyStartAction } = yield race({
+            exchange: take(Types.EXCHANGE_CODE_Finish),
+            open: take(partyOpenStarts),
         });
 
-        if (fail || !isPartyOwnerSelector(yield select())) {
+        let partyId: string | null;
+        if (open) {
+            partyId = open.payload;
+
+            const { fail } = yield race({
+                fail: take(partyOpenFails),
+                finish: take(partyOpenFinishes),
+            });
+
+            if (fail) {
+                continue;
+            }
+        } else {
+            partyId = partyIdSelector(yield select());
+        }
+
+        if (!partyId || !isPartyOwnerSelector(yield select())) {
             continue;
         }
 
