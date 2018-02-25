@@ -1,14 +1,15 @@
 import { replace } from '@mraerino/redux-little-router-reactless';
 import * as SpotifyApi from 'spotify-web-api-js';
 
-import { showToast, ErrorAction, PayloadAction, Types } from '.';
+import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
     | CheckSpotifyLoginStatusAction
     | ExchangeCodeFailAction
     | ExchangeCodeFinishAction
     | ExchangeCodeStartAction
-    | NotifyAuthStatusKnownAction;
+    | NotifyAuthStatusKnownAction
+    | TriggerSpotifyOAuthLoginAction;
 
 export interface CheckSpotifyLoginStatusAction {
     type: Types.CHECK_SPOTIFY_LOGIN_STATUS;
@@ -31,6 +32,10 @@ export interface NotifyAuthStatusKnownAction extends PayloadAction<[
     SpotifyApi.UserObjectPrivate | null
 ]> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
+}
+
+export interface TriggerSpotifyOAuthLoginAction {
+    type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN;
 }
 
 export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
@@ -61,4 +66,8 @@ export function notifyAuthStatusKnown(
         type: Types.NOTIFY_AUTH_STATUS_KNOWN,
         payload: [provider, user],
     };
+}
+
+export function loginWithSpotify(): TriggerSpotifyOAuthLoginAction {
+    return { type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN };
 }

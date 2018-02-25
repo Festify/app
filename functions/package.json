@@ -17,6 +17,7 @@
     "typescript": "^2.7.1"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "deploy": "tsc && firebase deploy --only functions"
   }
 }

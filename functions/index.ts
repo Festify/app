@@ -1,11 +1,17 @@
-import firebase from 'firebase-admin';
+import firebase, { AppOptions } from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 import pinTop from './lib/pin-top-track';
 import * as spotifyAuth from './lib/spotify-auth';
 import voteProcessor from './lib/vote-processor';
 
-firebase.initializeApp(functions.config().firebase);
+// tslint:disable-next-line:no-var-requires
+const serviceAccount = require('./service-account.json');
+
+firebase.initializeApp({
+    ...functions.config().firebase,
+    credential: firebase.credential.cert(serviceAccount),
+});
 
 export const clientToken = functions.https.onRequest(spotifyAuth.clientToken);
 export const exchangeCode = functions.https.onRequest(spotifyAuth.exchangeCode);

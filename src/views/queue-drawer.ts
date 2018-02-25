@@ -9,6 +9,7 @@ import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
+import { loginWithSpotify } from '../actions/auth';
 
 interface QueueDrawerProps {
     isOwner: boolean;
@@ -21,6 +22,7 @@ interface QueueDrawerProps {
 
 interface QueueDrawerDispatch {
     handleClick: (ev: Event, route: string) => void;
+    enterAdmin: () => void;
 }
 
 const isActive = (isActive: boolean) => isActive ? 'active' : '';
@@ -114,6 +116,15 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
+        ${!props.isOwner
+            ? html`
+                <a href="#"
+                   on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
+                    <iron-icon icon="festify:settings-remote"></iron-icon>
+                    Login for Admin Mode
+                </a>
+            `
+            : null}
         <a href="${props.tvRoute}"
            on-click="${ev => props.handleClick(ev, props.tvRoute)}">
             <iron-icon icon="festify:tv"></iron-icon>
@@ -163,6 +174,7 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
 
 const mapDispatchToProps: QueueDrawerDispatch = {
     handleClick,
+    enterAdmin: loginWithSpotify,
 };
 
 customElements.define(

@@ -1,4 +1,5 @@
 import createCors from 'cors';
+import * as admin from 'firebase-admin';
 import { config } from 'firebase-functions';
 import { Agent } from 'https';
 import request from 'request-promise';
@@ -7,7 +8,7 @@ import { crypto } from './utils';
 
 const cors = createCors({ origin: true });
 
-const API_URL = "https://accounts.spotify.com/api/token";
+const API_URL = 'https://accounts.spotify.com/api/token';
 
 const CLIENT_ID = config().spotify.client_id;
 const CLIENT_SECRET = config().spotify.client_secret;
@@ -18,11 +19,15 @@ const ENCRYPTION_SECRET = config().spotify.enc_secret;
 const agent = new Agent({ keepAlive: true });
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 
-function spotifyRequest(params: string | { [key: string]: any }) {
+function spotifyRequest(
+    params: string | { [key: string]: any },
+    url: string = API_URL,
+    method: string = 'POST',
+) {
     return request({
         agent,
-        method: 'POST',
-        uri: API_URL,
+        method,
+        uri: url,
         form: params,
         headers: {
             'Authorization': `Basic ${authKey}`,
@@ -63,7 +68,7 @@ function doExchange(req, res, defaultCallbackUrl) {
         if (!req.body.code) {
             return res.status(400).json({
                 success: false,
-                msg: "Missing 'code' parameter",
+                msg: 'Missing \'code\' parameter',
             });
         }
 
@@ -75,9 +80,44 @@ function doExchange(req, res, defaultCallbackUrl) {
             code: req.body.code,
         })
             .then(body => {
+                return request({
+                    agent,
+                    method: 'GET',
+                    uri: 'https://api.spotify.com/v1/me',
+                    headers: {
+                        'Authorization': `Bearer ${body.access_token}`,
+                    },
+                    json: true,
+                }).then(resp => [resp, body]);
+            })
+            .then(([user, body]) => {
+                const userMeta = {
+                    displayName: user.display_name || user.id,
+                    photoURL: user.images[0].url,
+                    email: user.email,
+                };
+
+                return admin.auth()
+                    .updateUser(user.uri, userMeta)
+                    .catch((error) => {
+                        // If user does not exists we create it.
+                        if (error.code === 'auth/user-not-found') {
+                            return admin.auth().createUser({
+                                uid: user.uri,
+                                ...userMeta,
+                            });
+                        }
+                        throw error;
+                    }).then(() => Promise.all([
+                        Promise.resolve(body),
+                        admin.auth().createCustomToken(user.uri),
+                    ]));
+            })
+            .then(([body, firebaseToken]) => {
                 res.json({
                     access_token: body.access_token,
                     expires_in: body.expires_in,
+                    firebase_token: firebaseToken,
                     refresh_token: crypto.encrypt(body.refresh_token, ENCRYPTION_SECRET),
                     token_type: body.token_type,
                     success: true,
@@ -92,7 +132,7 @@ export const refreshToken = (req, res) => {
         if (!req.body.refresh_token) {
             return res.status(400).json({
                 success: false,
-                msg: "Missing 'refresh_token' parameter",
+                msg: 'Missing \'refresh_token\' parameter',
             });
         }
 

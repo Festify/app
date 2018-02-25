@@ -5,10 +5,11 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
-import { changePartyId, loginWithSpotify } from '../actions/view-home';
+import { changePartyId} from '../actions/view-home';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
+import { loginWithSpotify } from '../actions/auth';
 
 interface HomeViewProps {
     authorizationInProgress: boolean;
