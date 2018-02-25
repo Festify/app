@@ -113,8 +113,8 @@ export function toggleVote(ref: TrackReference): ThunkAction<Promise<void>, Stat
             throw new Error("Missing party ID!");
         }
 
-        const hasVoted = userVotes && userVotes[`${ref.provider}-${ref.id}`] === true;
         const trackId = `${ref.provider}-${ref.id}`;
+        const hasVoted = userVotes && userVotes[trackId] === true;
 
         dispatch({
             type: Types.TOGGLE_VOTE,
