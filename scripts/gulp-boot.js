@@ -19,6 +19,11 @@ async function getBranch() {
             return;
         }
 
+        if (process.env.BRANCH) {
+            res(process.env.BRANCH);
+            return;
+        }
+
         try {
             git.branch(res);
         } catch (e) {
@@ -45,7 +50,7 @@ gulp.task('prepare-env', function () {
     const fileTemplate = process.env.FILE_URL_TEMPLATE;
 
     if (!fileTemplate) {
-        console.warn("Cannot find .env file URL template. Per-branch env configuration will not be performed.")
+        console.warn("Cannot find .env file URL template. Per-branch env configuration will not be performed.");
         return Promise.resolve();
     }
 
