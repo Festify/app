@@ -209,7 +209,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
-        ${props.isPlayingTrack && !props.isPlaybackMaster && props.hasPlaybackMaster
+        ${props.isPlayingTrack && props.isOwner && !props.isPlaybackMaster && props.hasPlaybackMaster
             ? html`
                 <paper-icon-button icon="festify:download"
                                    on-click="${props.takeOverPlayback}"
