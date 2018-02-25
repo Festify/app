@@ -10,7 +10,6 @@ import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
-    defaultTrackSelectorFactory,
     singleMetadataSelector,
     singleTrackSelector,
     voteStringGeneratorFactory,
@@ -27,7 +26,7 @@ export interface PartyTrackProps {
     isPlaybackMaster: boolean;
     isPlayingTrack: boolean;
     metadata: Metadata | null;
-    track: Track;
+    track: Track | null;
     voteString: string;
     togglingPlayback: boolean;
 }
@@ -46,6 +45,10 @@ interface PartyTrackOwnProps {
 
 /* tslint:disable:max-line-length */
 const LikeButtonIcon = (props: PartyTrackProps): string => {
+    if (!props.track) {
+        return '';
+    }
+
     if (props.hasVoted) {
         return 'festify:favorite';
     } else if (props.track.vote_count > 0 || props.track.is_fallback) {
@@ -58,10 +61,10 @@ const LikeButtonIcon = (props: PartyTrackProps): string => {
 const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
     if (props.isPlayingTrack) {
         return html`
-            ${props.isOwner
+            ${props.isOwner && props.track
                 ? html`
                     <paper-icon-button icon="festify:skip-next"
-                                       on-click="${() => props.removeTrack(props.track.reference)}"
+                                       on-click="${() => props.removeTrack(props.track!.reference)}"
                                        title="Skip ${props.metadata ? props.metadata.name : 'Loading...'}">
                     </paper-icon-button>
                 `
@@ -76,12 +79,14 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
             </div>
         `;
     } else {
-        return html`
-            <paper-icon-button icon="${LikeButtonIcon(props)}"
-                               on-click="${ev => props.toggleVote(props.track.reference)}"
-                               title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
-            </paper-icon-button>
-        `;
+        return props.track
+            ? html`
+                <paper-icon-button icon="${LikeButtonIcon(props)}"
+                                on-click="${ev => props.toggleVote(props.track!.reference)}"
+                                title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
+                </paper-icon-button>
+            `
+            : null;
     }
 };
 
@@ -212,10 +217,10 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
                 </paper-icon-button>
             `
             : null}
-        ${props.isOwner && !props.isPlayingTrack && (props.track.vote_count > 0 || props.track.is_fallback)
+        ${props.isOwner && !props.isPlayingTrack && props.track && (props.track.vote_count > 0 || props.track.is_fallback)
             ? html`
                 <paper-icon-button icon="festify:clear"
-                                   on-click="${() => props.removeTrack(props.track.reference)}"
+                                   on-click="${() => props.removeTrack(props.track!.reference)}"
                                    title="Remove ${props.metadata ? props.metadata.name : 'Loading...'} from queue">
                 </paper-icon-button>
             `
@@ -232,12 +237,11 @@ export const createMapStateToPropsFactory = (
      * Since the selectors use component props, one for each instance must be created.
      */
     return () => {
-        const defaultTrackSelector = defaultTrackSelectorFactory(trackSelector);
         const artistJoiner = artistJoinerFactory();
-        const voteStringGenerator = voteStringGeneratorFactory(defaultTrackSelector);
+        const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
-            track: defaultTrackSelector(state, ownProps.trackid),
+            track: trackSelector(state, ownProps.trackid),
             artistName: artistJoiner(state, ownProps.trackid),
             hasPlaybackMaster: Boolean(playbackMasterSelector(state)),
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
