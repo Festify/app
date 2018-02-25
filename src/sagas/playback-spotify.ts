@@ -75,6 +75,17 @@ function* updateFirebasePosition(partyId: string, pos: number) {
     );
 }
 
+function* writeInstanceIdToFirebase(partyId: string, instanceId: string) {
+    yield call(
+        () => firebase.database!()
+            .ref('/parties')
+            .child(partyId)
+            .child('playback')
+            .child('master_id')
+            .set(instanceId),
+    );
+}
+
 function* manageSpotifyPlayer() {
     const partyOpenStarts: Channel<OpenPartyStartAction> =
         yield actionChannel(Types.OPEN_PARTY_Start);
@@ -423,7 +434,7 @@ function* handlePlayPausePressed(partyId: string) {
         }
 
         if (!master_id) {
-            yield* installAsPlaybackMaster();
+            yield* writeInstanceIdToFirebase(partyId, state.player.instanceId);
         }
 
         const topTrack = currentTrackSelector(state);
@@ -532,15 +543,15 @@ function* installAsPlaybackMaster() {
     if (!partyId) {
         throw new Error("Missing party ID!");
     }
+    const party = state.party.currentParty;
+    if (!party) {
+        throw new Error("Missing party!");
+    }
 
-    yield call(
-        () => firebase.database!()
-            .ref('/parties')
-            .child(partyId)
-            .child('playback')
-            .child('master_id')
-            .set(state.player.instanceId),
-    );
+    yield* writeInstanceIdToFirebase(partyId, state.player.instanceId);
+    if (party.playback.playing) { // Continue playback if we were playing before
+        yield put(play(party.playback.last_position_ms || 0));
+    }
 }
 
 export default function*() {
