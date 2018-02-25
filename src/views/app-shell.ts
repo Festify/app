@@ -21,6 +21,7 @@ interface AppShellProps {
 
 const Pages = (view: Views) => {
     switch (view) {
+        default:
         case Views.Home:
             return html`<view-home></view-home>`;
         case Views.Party:
