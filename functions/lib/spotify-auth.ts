@@ -93,7 +93,9 @@ function doExchange(req, res, defaultCallbackUrl) {
             .then(([user, body]) => {
                 const userMeta = {
                     displayName: user.display_name || user.id,
-                    photoURL: user.images[0].url,
+                    photoURL: (user.images && user.images.length > 0)
+                        ? user.images[0].url
+                        : undefined,
                     email: user.email,
                 };
 
