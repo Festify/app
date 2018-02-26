@@ -1,11 +1,12 @@
 import '@polymer/paper-toast/paper-toast';
-import { connect } from 'fit-html';
+import { connect, withStore } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import '../components/load-once';
 import { Views } from '../routing';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { State } from '../state';
+import { store } from '../store';
 import iconSet from '../util/icons';
 
 import './view-home';
@@ -77,11 +78,10 @@ const mapStateToProps = (state: State): AppShellProps => ({
     view: (state.router.result || {}).view,
 });
 
-customElements.define(
-    'app-shell',
-    connect(
-        mapStateToProps,
-        {},
-        AppShellView,
-    ),
+const Shell = connect(
+    mapStateToProps,
+    {},
+    AppShellView,
 );
+
+customElements.define('app-shell', withStore(Shell, store));

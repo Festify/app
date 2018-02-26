@@ -1,5 +1,4 @@
 import { initializeCurrentLocation, routerForBrowser } from '@mraerino/redux-little-router-reactless';
-import { createProvider } from 'fit-html';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import createSagaMiddleware from 'redux-saga';
@@ -47,6 +46,3 @@ store.dispatch(initializeCurrentLocation(store.getState().router));
 window.onSpotifyWebPlaybackSDKReady = () => {
     store.dispatch(spotifySdkInitFinish());
 };
-
-export const storeProvider = createProvider(store);
-customElements.define('store-provider', storeProvider);
