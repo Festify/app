@@ -22,7 +22,7 @@ const routes =  {
         title: "Party",
         view: Views.Party,
         subView: PartyViews.Queue,
-        '/search/:query': {
+        '/search': {
             title: "Search",
             view: Views.Party,
             subView: PartyViews.Search,

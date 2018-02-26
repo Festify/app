@@ -9,8 +9,8 @@ import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 function* doSearch(action) {
-    const { partyId, query } = action.payload.params || { partyId: '', query: '' };
-    if (!partyId || !query) {
+    const { params: {partyId}, query: {s} } = action.payload || { params: {partyId: ''}, query: {s: ''} };
+    if (!partyId || !s) {
         return;
     }
 
@@ -20,7 +20,7 @@ function* doSearch(action) {
     const { party: { currentParty } }: State = yield select();
     const url =
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
-        `&q=${encodeURIComponent(query.replace('-', ' ') + '*')}`;
+        `&q=${encodeURIComponent(s.replace('-', ' ') + '*')}`;
 
     let tracks: SpotifyApi.TrackObjectFull[];
     try {
@@ -51,7 +51,7 @@ function* doSearch(action) {
 
 function* updateUrl(action: ChangeTrackSearchInputAction) {
     const { router }: State = yield select();
-    const { partyId, query } = router.params || { partyId: '', query: '' };
+    const { params: {partyId}, query: {s} } = router || { params: {partyId: ''}, query: {s: ''} };
 
     if (!partyId) {
         throw new Error("Searching without party!");
@@ -64,8 +64,8 @@ function* updateUrl(action: ChangeTrackSearchInputAction) {
 
     // Replace URL if we already have an incomplete query to avoid clobbing
     // up the users browser history.
-    const routerFn = query ? replace : push;
-    yield put(routerFn(`/party/${partyId}/search/${encodeURIComponent(action.payload)}`, {}));
+    const routerFn = s ? replace : push;
+    yield put(routerFn(`/party/${partyId}/search?s=${encodeURIComponent(action.payload)}`, {}));
 }
 
 export default function*() {
