@@ -344,9 +344,9 @@
   version "4.14.104"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.104.tgz#53ee2357fa2e6e68379341d92eb2ecea4b11bb80"
 
-"@types/spotify-web-playback-sdk@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.0.tgz#904469d9833b5f63b0d52fa0a0787ba53733a886"
+"@types/spotify-web-playback-sdk@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.1.tgz#ed1d9f1c544e979fae0261e4630f4b1cb87c87b0"
 
 "@webcomponents/shadycss@^1.0.0":
   version "1.1.1"

@@ -58,7 +58,7 @@ function attachToEvent<T>(player: Spotify.SpotifyPlayer, name: string) {
         };
 
         player.on(name as any, listener);
-        return () => (player as any).removeListener(name, listener);
+        return () => player.removeListener(name as any, listener);
     });
 }
 
