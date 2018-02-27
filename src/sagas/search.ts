@@ -9,7 +9,7 @@ import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 function* doSearch(action) {
-    const { params: {partyId}, query: {s} } = action.payload || { params: {partyId: ''}, query: {s: ''} };
+    const { params: { partyId }, query: { s } } = action.payload || { params: { partyId: '' }, query: { s: '' } };
     if (!partyId || !s) {
         return;
     }
@@ -51,7 +51,7 @@ function* doSearch(action) {
 
 function* updateUrl(action: ChangeTrackSearchInputAction) {
     const { router }: State = yield select();
-    const { params: {partyId}, query: {s} } = router || { params: {partyId: ''}, query: {s: ''} };
+    const { params: { partyId }, query: {s} } = router || { params: { partyId: '' }, query: { s: '' } };
 
     if (!partyId) {
         throw new Error("Searching without party!");
