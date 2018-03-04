@@ -1382,9 +1382,9 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-dom-flip@^0.2.2:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.2.3.tgz#d7e42064ec92c0e35abb6af89480491a3c9af824"
+dom-flip@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.2.7.tgz#f70770af62b24374689ecd6da34c4145b39241ff"
 
 dom-storage@^2.0.2:
   version "2.0.2"
