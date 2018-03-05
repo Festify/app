@@ -14,7 +14,7 @@
     "date-fns": "^1.29.0",
     "del": "^3.0.0",
     "dotenv": "^4.0.0",
-    "electron-builder": "^19.43.0",
+    "electron-builder": "^20.2.1",
     "eslint-config": "^0.3.0",
     "firebase-bolt": "^0.8.2",
     "git-rev": "^0.2.1",
