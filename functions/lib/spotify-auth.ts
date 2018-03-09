@@ -1,4 +1,5 @@
 import createCors from 'cors';
+import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import { config } from 'firebase-functions';
 import { Agent } from 'https';
@@ -36,7 +37,7 @@ function spotifyRequest(
     });
 }
 
-function handleSpotifyRejection(res) {
+function handleSpotifyRejection(res: Response) {
     return err => {
         console.error(err);
         res.status(500).json({
@@ -46,7 +47,7 @@ function handleSpotifyRejection(res) {
     };
 }
 
-export const clientToken = (req, res) => {
+export const clientToken = (req: Request, res: Response) => {
     return cors(req, res, () => {
         return spotifyRequest({ grant_type: 'client_credentials' })
             .then(body => {
@@ -59,11 +60,11 @@ export const clientToken = (req, res) => {
     });
 };
 
-export const exchangeCode = (req, res) => doExchange(req, res, CLIENT_CALLBACK_URL);
+export const exchangeCode = (req: Request, res: Response) => doExchange(req, res, CLIENT_CALLBACK_URL);
 
-export const exchangeCodeProtocol = (req, res) => doExchange(req, res, CLIENT_CALLBACK_PROTO_URL);
+export const exchangeCodeProtocol = (req: Request, res: Response) => doExchange(req, res, CLIENT_CALLBACK_PROTO_URL);
 
-function doExchange(req, res, defaultCallbackUrl) {
+function doExchange(req: Request, res: Response, defaultCallbackUrl: string) {
     return cors(req, res, () => {
         if (!req.body.code) {
             return res.status(400).json({
@@ -129,7 +130,7 @@ function doExchange(req, res, defaultCallbackUrl) {
     });
 }
 
-export const refreshToken = (req, res) => {
+export const refreshToken = (req: Request, res: Response) => {
     return cors(req, res, () => {
         if (!req.body.refresh_token) {
             return res.status(400).json({

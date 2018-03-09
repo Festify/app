@@ -11,6 +11,8 @@
   },
   "private": true,
   "devDependencies": {
+    "@types/cors": "^2.8.3",
+    "@types/express": "^4.11.1",
     "@types/node": "^8.9.1",
     "@types/request": "^2.47.0",
     "@types/request-promise": "^4.1.41",
