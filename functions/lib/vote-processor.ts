@@ -6,7 +6,7 @@ import { unsafeGetProviderAndId } from './utils';
 
 const VOTE_FACTOR = 1e12;
 
-function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
+async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
     if (!partyId) {
         throw new Error("Invalid party ID!");
     }
@@ -33,7 +33,7 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
      * we multiply it by a very large factor (10^12 in this case) and subtract it.
      */
 
-    return firebase.database()
+    await firebase.database()
         .ref('/tracks')
         .child(partyId)
         .child(trackId)
@@ -91,7 +91,7 @@ function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
         });
 }
 
-export default (event: Event<database.DeltaSnapshot>) => {
+export default async (event: Event<database.DeltaSnapshot>) => {
     if (!event.data.changed()) {
         return;
     }
@@ -109,16 +109,13 @@ export default (event: Event<database.DeltaSnapshot>) => {
         .orderByChild('order')
         .once('value');
 
-    return Promise.all([party, topmostTrack])
-        .then(([partySnap, trackSnap]) => {
-            const track = values(trackSnap.val())[0];
-            return updateOrder(
-                voteDelta,
-                event.params!.trackId,
-                track,
-                event.params!.partyId,
-                partySnap.val(),
-            );
-        })
-        .then(() => true);
+    const [partySnap, trackSnap] = await Promise.all([party, topmostTrack]);
+    const track = values(trackSnap.val())[0];
+    await updateOrder(
+        voteDelta,
+        event.params!.trackId,
+        track,
+        event.params!.partyId,
+        partySnap.val(),
+    );
 };
