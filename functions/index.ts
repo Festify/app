@@ -1,4 +1,4 @@
-import firebase, { AppOptions } from 'firebase-admin';
+import firebase from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 import pinTop from './lib/pin-top-track';
