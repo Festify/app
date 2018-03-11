@@ -63,7 +63,7 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): ViewShareProps => ({
-    domain: document.location.origin,
+    domain: document.location.host,
     hasShareApi: typeof (navigator as any).share === 'function',
     partyId: state.party.currentParty
         ? state.party.currentParty.short_id
