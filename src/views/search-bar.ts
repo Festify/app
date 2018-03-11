@@ -85,7 +85,7 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): SearchBarProps => ({
-    text: (state.router.params || { query: '' }).query || '',
+    text: (state.router.query || { s: '' }).s || '',
 });
 
 const mapDispatchToProps: SearchBarDispatch = {
