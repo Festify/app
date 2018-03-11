@@ -3,10 +3,10 @@ import omit from 'lodash-es/omit';
 import { ThunkAction } from 'redux-thunk';
 
 import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
-import { singleTrackSelector } from '../selectors/track';
+import { firebaseTrackIdSelector, singleTrackSelector } from '../selectors/track';
 import { State, TrackReference } from '../state';
 import { requireAuth } from '../util/auth';
-import firebase from '../util/firebase';
+import firebase, { firebaseNS } from '../util/firebase';
 
 import { PayloadAction, Types } from '.';
 
@@ -52,6 +52,15 @@ export function flushTracks(): ThunkAction<Promise<void>, State, void> {
                 .remove(),
         ]);
     };
+}
+
+export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise<void> {
+    return firebase.database!()
+        .ref('/tracks')
+        .child(partyId)
+        .child(firebaseTrackIdSelector(ref))
+        .child('played_at')
+        .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 }
 
 export function removeTrack(

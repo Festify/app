@@ -1,6 +1,7 @@
 import { buffers, delay, eventChannel, Channel, Task } from 'redux-saga';
 import {
     actionChannel,
+    all,
     apply,
     call,
     cancel,
@@ -18,7 +19,7 @@ import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { updatePlaybackState, UpdatePlaybackStateAction } from '../actions/party-data';
 import { play, playerError, playerInitFinish, togglePlaybackFinish } from '../actions/playback-spotify';
-import { removeTrack } from '../actions/queue';
+import { markTrackAsPlayed, removeTrack } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, currentTrackSpotifyIdSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
@@ -50,14 +51,14 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
     });
 }
 
-async function playTrack(uri: string, deviceId: string, positionMs?: number) {
+async function playTrack(id: string, deviceId: string, positionMs?: number) {
     const playUri = `/me/player/play?device_id=${deviceId}`;
     await fetchWithAccessToken(playUri, {
         method: 'put',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [uri] }),
+        body: JSON.stringify({ uris: [`spotify:track:${id}`] }),
     });
 
     if (!positionMs) {
@@ -78,6 +79,7 @@ function* handlePlaybackStateChange(
     newPlayback: Playback | null,
     player: Spotify.SpotifyPlayer,
     deviceId: string,
+    partyId: string,
 ) {
     if (!oldPlayback || !newPlayback) {
         throw new Error('Wat');
@@ -97,7 +99,6 @@ function* handlePlaybackStateChange(
     }
 
     const currentTrack: Track | null = yield select(currentTrackSelector);
-    const currentTrackUri: string | null = yield select(currentTrackSpotifyIdSelector);
     const spotifyState: Spotify.PlaybackState | null = yield player.getCurrentState();
 
     if (!currentTrack) {
@@ -112,12 +113,15 @@ function* handlePlaybackStateChange(
             ? newPlayback.last_position_ms + (playing !== false ? Date.now() - newPlayback.last_change : 0)
             : 0;
 
-        yield call(
-            playTrack,
-            currentTrackUri,
-            deviceId,
-            position,
-        );
+        yield all([
+            call(
+                playTrack,
+                currentTrack.reference.id,
+                deviceId,
+                position,
+            ),
+            call(markTrackAsPlayed, partyId, currentTrack.reference),
+        ]);
     }
 
     yield put(togglePlaybackFinish());
@@ -182,26 +186,34 @@ function* handleSpotifyPlaybackChange(spotifyPlayback: Spotify.PlaybackState) {
     yield put(updatePlaybackState(newStatus));
 }
 
-function* handleQueueChange(action, oldTrack: Track | null, newTrack: Track | null, deviceId: string) {
+function* handleQueueChange(
+    action,
+    oldTrack: Track | null,
+    newTrack: Track | null,
+    deviceId: string,
+    partyId: string,
+) {
     if (tracksEqual(oldTrack, newTrack)) {
         return;
     }
 
-    const spotifyTrackId: string | null = yield select(currentTrackSpotifyIdSelector);
     const playbackState: Playback | null = yield select(playbackSelector);
 
-    if (!spotifyTrackId || !playbackState!.playing) {
+    if (!newTrack || !playbackState!.playing) {
         return;
     }
 
-    yield call(playTrack, spotifyTrackId, deviceId);
+    yield all([
+        call(playTrack, newTrack.reference.id, deviceId),
+        call(markTrackAsPlayed, partyId, newTrack.reference),
+    ]);
 }
 
 function* handlePlaybackError(error: Spotify.Error) {
     yield put(showToast(error.message));
 }
 
-export function* manageLocalPlayer() {
+export function* manageLocalPlayer(partyId: string) {
     let player: Spotify.SpotifyPlayer = null!;
 
     try {
@@ -245,13 +257,14 @@ export function* manageLocalPlayer() {
             const { device_id }: Spotify.WebPlaybackInstance = yield take(playerReady);
             yield put(playerInitFinish(device_id));
 
-            yield* handlePlaybackStateChange(null, {}, yield select(playbackSelector), player, device_id);
+            yield* handlePlaybackStateChange(null, {}, yield select(playbackSelector), player, device_id, partyId);
 
             yield takeEveryWithState(
                 Types.UPDATE_TRACKS,
                 currentTrackSelector,
                 handleQueueChange,
                 device_id,
+                partyId,
             );
 
             yield takeEveryWithState(
@@ -260,6 +273,7 @@ export function* manageLocalPlayer() {
                 handlePlaybackStateChange,
                 player,
                 device_id,
+                partyId,
             );
 
             yield takeEvery(

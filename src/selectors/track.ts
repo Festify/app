@@ -1,7 +1,12 @@
 import values from 'lodash-es/values';
 import { createSelector } from 'reselect';
 
-import { Metadata, State, Track } from '../state';
+import { Metadata, State, Track, TrackReference } from '../state';
+
+export const firebaseTrackIdSelector = (t: Track | TrackReference) =>
+    (t as Track).reference
+        ? firebaseTrackIdSelector((t as Track).reference)
+        : `${(t as TrackReference).provider}-${(t as TrackReference).id}`;
 
 export const tracksSelector = (state: State) => state.party.tracks || {};
 

@@ -137,7 +137,7 @@ export function* managePlaybackState(partyId: string) {
         yield takeEvery(Types.INSTALL_PLAYBACK_MASTER, handleTakeOver);
         yield takeEvery(Types.TOGGLE_PLAYBACK_Start, handlePlayPause);
         yield fork(handleFirebase, partyId);
-        yield fork(manageLocalPlayer);
+        yield fork(manageLocalPlayer, partyId);
 
         yield takeEveryWithState(
             Types.UPDATE_TRACKS,
