@@ -142,26 +142,20 @@ function* watchPlayback(player: Spotify.SpotifyPlayer) {
         playerState = yield take(playbackStateChanges);
     }
 
-    try {
-        while (true) {
-            playerState = yield player.getCurrentState();
-            delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
+    while (true) {
+        playerState = yield player.getCurrentState();
+        delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
 
-            if (delayDuration <= 0 || (playerState.duration === 0 && playerState.position === 0)) {
-                break;
-            }
-
-            yield race({
-                delay: call(delay, delayDuration),
-                event: take(playbackStateChanges),
-            });
-        }
-    } finally {
-        if (delayDuration < WATCHER_INTERVAL) {
-            const {reference} = yield select(currentTrackSelector);
+        if (delayDuration <= 0 || (playerState.duration === 0 && playerState.position === 0)) {
+            const { reference }: Track = yield select(currentTrackSelector);
             yield put(removeTrack(reference, true) as any);
-            return;
+            break;
         }
+
+        yield race({
+            delay: call(delay, delayDuration),
+            event: take(playbackStateChanges),
+        });
     }
 }
 
