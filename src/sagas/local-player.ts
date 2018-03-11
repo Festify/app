@@ -67,7 +67,6 @@ async function playTrack(uri: string, deviceId: string, positionMs?: number) {
     }
 
     const seekUri = `/me/player/seek?device_id=${deviceId}&position_ms=${positionMs}`;
-    console.log(seekUri);
     await fetchWithAccessToken(seekUri, {
         method: 'put',
     });
