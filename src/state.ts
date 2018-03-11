@@ -102,6 +102,7 @@ export interface PlayerState {
 
     initializing: boolean;
     initializationError: Error | null;
+    sdkReady: boolean;
     togglingPlayback: boolean;
     togglePlaybackError: Error | null;
 }

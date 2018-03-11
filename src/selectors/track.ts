@@ -52,6 +52,22 @@ export const currentTrackMetadataSelector = createSelector(
     (trackId, metadata) => trackId ? metadata[trackId] : null,
 );
 
+export const currentTrackSpotifyIdSelector: (state: State) => string | null = createSelector(
+    currentTrackSelector,
+    track => track ? `spotify:track:${track.reference.id}` : null,
+);
+
+export function tracksEqual(a: Track | null, b: Track | null): boolean {
+    if (a === b) {
+        return true;
+    } else if (!a || !b) {
+        return false;
+    } else {
+        return a.reference.provider === b.reference.provider &&
+            a.reference.id === b.reference.id;
+    }
+}
+
 export const voteStringGeneratorFactory = (
     defaultTrackSelector: (state: State, trackId: string) => Track | null,
 ) => createSelector(

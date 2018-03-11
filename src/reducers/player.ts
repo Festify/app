@@ -9,6 +9,7 @@ export default function (
         initializationError: null,
         togglingPlayback: false,
         togglePlaybackError: null,
+        sdkReady: false,
     },
     action: Actions,
 ): PlayerState {
@@ -54,6 +55,11 @@ export default function (
                 ...state,
                 togglingPlayback: false,
                 togglePlaybackError: action.payload,
+            };
+        case Types.SPOTIFY_SDK_INIT_Finish:
+            return {
+                ...state,
+                sdkReady: true,
             };
         default:
             return state;

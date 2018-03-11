@@ -2,17 +2,15 @@ import { Actions, Types } from '../actions';
 import { VOTE_FACTOR } from '../config';
 import { ConnectionState, PartyState, Track } from '../state';
 
-export default function(
-    state: PartyState = {
-        connectionState: ConnectionState.Unknown,
-        currentParty: null,
-        partyLoadError: null,
-        partyLoadInProgress: false,
-        tracks: null,
-        userVotes: null,
-    },
-    action: Actions,
-): PartyState {
+export default function (state: PartyState = {
+                             connectionState: ConnectionState.Unknown,
+                             currentParty: null,
+                             partyLoadError: null,
+                             partyLoadInProgress: false,
+                             tracks: null,
+                             userVotes: null,
+                         },
+                         action: Actions): PartyState {
     switch (action.type) {
         case Types.OPEN_PARTY_Start:
             return {
@@ -85,6 +83,21 @@ export default function(
                 partyLoadInProgress: false,
                 userVotes: null,
                 tracks: null,
+            };
+        case Types.UPDATE_PLAYBACK_STATE:
+            if (!state.currentParty) {
+                return state;
+            }
+
+            return {
+                ...state,
+                currentParty: {
+                    ...state.currentParty,
+                    playback: {
+                        ...state.currentParty.playback,
+                        ...action.payload,
+                    },
+                },
             };
         default:
             return state;
