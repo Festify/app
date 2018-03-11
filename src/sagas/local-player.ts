@@ -151,12 +151,12 @@ function* watchPlayback(player: Spotify.SpotifyPlayer) {
 
         delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
 
-        yield race({
-            delay: call(delay, delayDuration),
+        const { event } = yield race({
+            wait: call(delay, delayDuration),
             event: take(playbackStateChanges),
         });
 
-        if (delayDuration < WATCHER_INTERVAL || (playerState.duration === 0 && playerState.position === 0)) {
+        if (!event && delayDuration < WATCHER_INTERVAL) {
             const { reference }: Track = yield select(currentTrackSelector);
             yield put(removeTrack(reference, true) as any);
             break;
