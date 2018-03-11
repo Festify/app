@@ -135,27 +135,32 @@ function* watchPlayback(player: Spotify.SpotifyPlayer) {
     const playbackStateChanges: Channel<Spotify.PlaybackState> =
         yield call(attachToEvents, player, 'player_state_changed');
 
-    let playerState: Spotify.PlaybackState = yield player.getCurrentState();
+    let playerState: Spotify.PlaybackState | null = yield player.getCurrentState();
     let delayDuration = WATCHER_INTERVAL;
 
-    while (playerState.duration === 0) {
+    while (!playerState || playerState.duration === 0) {
         playerState = yield take(playbackStateChanges);
     }
 
     while (true) {
         playerState = yield player.getCurrentState();
-        delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
 
-        if (delayDuration <= 0 || (playerState.duration === 0 && playerState.position === 0)) {
-            const { reference }: Track = yield select(currentTrackSelector);
-            yield put(removeTrack(reference, true) as any);
-            break;
+        if (!playerState) {
+            throw new Error("Wat! (playback state null)");
         }
+
+        delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
 
         yield race({
             delay: call(delay, delayDuration),
             event: take(playbackStateChanges),
         });
+
+        if (delayDuration < WATCHER_INTERVAL || (playerState.duration === 0 && playerState.position === 0)) {
+            const { reference }: Track = yield select(currentTrackSelector);
+            yield put(removeTrack(reference, true) as any);
+            break;
+        }
     }
 }
 
