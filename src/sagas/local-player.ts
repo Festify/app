@@ -153,14 +153,25 @@ function* watchPlayback(player: Spotify.SpotifyPlayer) {
             throw new Error("Wat! (playback state null)");
         }
 
-        delayDuration = Math.max(Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL), 0);
+        delayDuration = Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL);
 
-        const { event } = yield race({
+        /*
+         * Delay durations of <= 0 happen when the user has triggered a skip. Performing business as
+         * usual would result in a double-skip (previously the delay duration was clamped between 0ms and
+         * the watcher interval as upper bound). Thus, in case we are supposed to wait <= 0ms, we wait the
+         * full watcher interval time instead to "ignore" this playback state change and wait for
+         * subsequent ones.
+         */
+        if (delayDuration <= 0) {
+            delayDuration = WATCHER_INTERVAL;
+        }
+
+        const { state }: { state: Spotify.PlaybackState } = yield race({
             wait: call(delay, delayDuration),
-            event: take(playbackStateChanges),
+            state: take(playbackStateChanges),
         });
 
-        if (!event && delayDuration < WATCHER_INTERVAL) {
+        if (!state && delayDuration < WATCHER_INTERVAL) {
             const { reference }: Track = yield select(currentTrackSelector);
             yield put(removeTrack(reference, true) as any);
             break;
