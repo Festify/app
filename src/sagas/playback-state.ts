@@ -11,12 +11,12 @@ import {
 } from '../actions/party-data';
 import { togglePlaybackFinish } from '../actions/playback-spotify';
 import { playbackSelector } from '../selectors/party';
+import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
 import firebase, { firebaseNS } from '../util/firebase';
 import { takeEveryWithState } from '../util/saga';
 
 import manageLocalPlayer from './local-player';
-import { currentTrackSelector, tracksEqual } from '../selectors/track';
 
 function* handleTakeOver() {
     const { party, player }: State = yield select();

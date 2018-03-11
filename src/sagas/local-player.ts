@@ -1,5 +1,16 @@
-import { buffers, eventChannel, Channel, delay, Task } from 'redux-saga';
-import { actionChannel, apply, call, cancel, cancelled, fork, put, select, take, takeEvery, race } from 'redux-saga/effects';
+import { buffers, delay, eventChannel, Channel, Task } from 'redux-saga';
+import {
+    actionChannel,
+    apply,
+    call,
+    cancel,
+    cancelled,
+    fork, put,
+    race,
+    select,
+    take,
+    takeEvery,
+} from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';
 import { Playback, State, Track } from '../state';
@@ -7,10 +18,10 @@ import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { updatePlaybackState, UpdatePlaybackStateAction } from '../actions/party-data';
 import { play, playerError, playerInitFinish, togglePlaybackFinish } from '../actions/playback-spotify';
+import { removeTrack } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, currentTrackSpotifyIdSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
-import { removeTrack } from '../actions/queue';
 
 let currentTrackWatcher: Task | null = null;
 
