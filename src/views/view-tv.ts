@@ -19,6 +19,7 @@ import './tv-track';
 interface ViewTvProps {
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
+    domain: string;
     initError: Error | null;
     isLoading: boolean;
     metadata: Record<string, Metadata>;
@@ -63,7 +64,7 @@ const Body = (props: ViewTvProps) => {
 
                         <playback-progress-bar></playback-progress-bar>
 
-                        <h4>Go to festify.us and vote for the music!</h4>
+                        <h4>Go to ${props.domain} and vote for the music!</h4>
                         <h5>${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
@@ -84,7 +85,7 @@ const Body = (props: ViewTvProps) => {
                     <h1>Oh, no!</h1>
                 </div>
                 <h2>There are no tracks in the queue right now.</h2>
-                <h2>Enter ${props.party && props.party.short_id} on festify.us and vote for new ones!</h2>
+                <h2>Enter ${props.party && props.party.short_id} on ${props.domain} and vote for new ones!</h2>
             </div>
         `;
     }
@@ -256,6 +257,7 @@ const mapStateToProps = (state: State): ViewTvProps => {
         currentTrackMetadata: currentTrackId
             ? singleMetadataSelector(state, currentTrackId)
             : null,
+        domain: document.location.host,
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress,
         metadata: state.metadata,
