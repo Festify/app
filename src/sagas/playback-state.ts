@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-es';
-import { call, cancelled, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { call, cancelled, fork, put, race, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -72,23 +72,24 @@ function* handleFirebase(partyId: string) {
         );
 
         // Persist playback state changes in Firebase
-        yield takeEveryWithState(
-            Types.UPDATE_PLAYBACK_STATE,
-            playbackSelector,
-            function* ({ payload }: UpdatePlaybackStateAction, oldState: Playback, newState: Playback) {
+        yield fork(function*() {
+            while (true) {
+                const oldState: Playback = yield select(playbackSelector);
+                const { payload }: UpdatePlaybackStateAction = yield take(Types.UPDATE_PLAYBACK_STATE);
+
                 // Exclude last_change for non-playback-state-changing updates to prevent
                 // infinite update loop
                 const { last_change, ...rest } = payload;
-                const isChangingState = oldState.playing !== newState.playing ||
-                    oldState.last_position_ms !== newState.last_position_ms;
+                const isChangingState = oldState.playing !== payload.playing ||
+                    oldState.last_position_ms !== payload.last_position_ms;
                 const update = isChangingState ? {
                     ...payload,
                     last_change: firebaseNS.database!.ServerValue.TIMESTAMP,
                 } : rest;
 
                 playbackRef.update(update);
-            },
-        );
+            }
+        });
 
         yield takeEveryWithState(
             [Types.UPDATE_PARTY, Types.UPDATE_PLAYBACK_STATE],
