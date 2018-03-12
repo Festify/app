@@ -9,7 +9,7 @@ export default function(
         partyJoinInProgress: false,
         partyId: '',
         partyIdValid: false,
-     },
+    },
     action: Actions,
 ): HomeViewState {
     switch (action.type) {
