@@ -11,7 +11,7 @@ export const metadataSelector = (state: State) => state.metadata || {};
 
 export const singleMetadataSelector = (state: State, trackId: string): Metadata | null => state.metadata[trackId];
 
-export const artistJoinerFactory = () => createSelector(
+export const artistJoinerFactory: () => (s: State, id: string) => string | null = () => createSelector(
     singleMetadataSelector,
     metadata => {
         if (!metadata || !metadata.artists) {
