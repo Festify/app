@@ -3,7 +3,7 @@ import { createSelector } from 'reselect';
 
 import { Metadata, State, Track, TrackReference } from '../state';
 
-export const firebaseTrackIdSelector = (t: Track | TrackReference) =>
+export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
     (t as Track).reference
         ? firebaseTrackIdSelector((t as Track).reference)
         : `${(t as TrackReference).provider}-${(t as TrackReference).id}`;

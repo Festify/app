@@ -17,6 +17,7 @@ import sharedStyles from '../util/shared-styles';
 import './tv-track';
 
 interface ViewTvProps {
+    backgroundImgIndex: number;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
     initError: Error | null;
@@ -26,6 +27,7 @@ interface ViewTvProps {
     queueTracks: Track[];
 }
 
+/* tslint:disable:max-line-length */
 const Body = (props: ViewTvProps) => {
     if (props.isLoading) {
         return html`
@@ -50,7 +52,10 @@ const Body = (props: ViewTvProps) => {
     } else if (props.currentTrackMetadata) {
         return html`
             <div class="background">
-                ${srcsetImg(props.currentTrackMetadata.cover, '100vw', '')}
+                ${props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0
+                    ? html`<img src="${props.currentTrackMetadata.background[props.backgroundImgIndex]}"
+                                alt="${props.currentTrackMetadata.artists[0]}">`
+                    : srcsetImg(props.currentTrackMetadata.cover, '49vh')}
             </div>
 
             <div class="upper">
@@ -90,7 +95,6 @@ const Body = (props: ViewTvProps) => {
     }
 };
 
-/* tslint:disable:max-line-length */
 const ViewTv = (props: ViewTvProps) => html`
     ${sharedStyles}
     <style>
@@ -134,7 +138,7 @@ const ViewTv = (props: ViewTvProps) => html`
             position: absolute;
             left: 50%;
             top: 50%;
-            filter: blur(50px);
+            filter: blur(7px);
             opacity: 0.3;
             transform: translate(-50%, -50%);
         }
@@ -249,13 +253,18 @@ const restTracksSelector = createSelector(
 
 const mapStateToProps = (state: State): ViewTvProps => {
     const currentTrackId = currentTrackIdSelector(state);
+    const meta = currentTrackId
+        ? singleMetadataSelector(state, currentTrackId)
+        : null;
     return {
+        // Choose background image to display based on track name
+        backgroundImgIndex: meta && meta.background && meta.background.length > 0
+            ? meta.name.length % meta.background.length
+            : 0,
         currentTrackArtistName: currentTrackId
             ? artistNameSelector(state, currentTrackId)
             : null,
-        currentTrackMetadata: currentTrackId
-            ? singleMetadataSelector(state, currentTrackId)
-            : null,
+        currentTrackMetadata: meta,
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress,
         metadata: state.metadata,
