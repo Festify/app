@@ -117,7 +117,7 @@ const ViewTv = (props: ViewTvProps) => html`
         }
 
         .upper {
-            flex-direction:column;
+            flex-direction: column;
             justify-content: center;
             padding: 0 8.334vh;
             overflow: hidden;
