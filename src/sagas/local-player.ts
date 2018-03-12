@@ -24,6 +24,8 @@ import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, currentTrackSpotifyIdSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
 
+const WATCHER_INTERVAL = 2000;
+
 let currentTrackWatcher: Task | null = null;
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
@@ -134,8 +136,6 @@ function* handlePlaybackStateChange(
 }
 
 function* watchPlayback(player: Spotify.SpotifyPlayer) {
-    const WATCHER_INTERVAL = 2000;
-
     const playbackStateChanges: Channel<Spotify.PlaybackState> =
         yield call(attachToEvents, player, 'player_state_changed');
 
