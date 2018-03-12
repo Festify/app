@@ -28,11 +28,15 @@ function* loadMetadataForNewTracks(action: UpdateTracksAction) {
         .map(k => action.payload![k].reference.id);
 
     for (const ids of chunk(remaining, 50).filter(ch => ch.length > 0)) {
-        const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
-        const resp = yield call(fetchWithAnonymousAuth, url);
-        const { tracks }: SpotifyApi.MultipleTracksResponse = yield resp.json();
+        try {
+            const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
+            const resp = yield call(fetchWithAnonymousAuth, url);
+            const { tracks }: SpotifyApi.MultipleTracksResponse = yield resp.json();
 
-        yield put(updateMetadata(tracks));
+            yield put(updateMetadata(tracks));
+        } catch (err) {
+            console.error("Failed to load metadata for a track chunk.", err);
+        }
     }
 }
 
