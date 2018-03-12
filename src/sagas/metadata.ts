@@ -105,6 +105,7 @@ function* watchTvMode(action, prevView: Views, newView: Views) {
         yield* loadFanartForNewTracks(null);
     } else if (prevView === Views.Tv) {
         yield cancel(loadFanartTask);
+        loadFanartTask = null;
     }
 }
 
