@@ -73,8 +73,11 @@ function* loadFanartForNewTracks(_) {
             );
 
             if (!fanartResponse.ok) {
-                // tslint:disable-next-line:max-line-length
-                console.warn(`Status ${fanartResponse.status} from fanart.tv. Not loading fanart for '${metadata.name}'.`);
+                // We don't need to log 404s
+                if (fanartResponse.status !== 404) {
+                    // tslint:disable-next-line:max-line-length
+                    console.warn(`Status ${fanartResponse.status} from fanart.tv. Not loading fanart for '${metadata.name}'.`);
+                }
                 yield put(updateMetadata(empty()));
                 continue;
             }
