@@ -1,6 +1,7 @@
 import { Actions, Types } from '../actions';
-import { VOTE_FACTOR } from '../config';
 import { ConnectionState, PartyState, Track } from '../state';
+
+const VOTE_FACTOR = 1e12;
 
 export default function (
     state: PartyState = {
