@@ -62,7 +62,7 @@ export const currentTrackSpotifyIdSelector: (state: State) => string | null = cr
     track => track ? `spotify:track:${track.reference.id}` : null,
 );
 
-export function tracksEqual(a: Track | null, b: Track | null): boolean {
+export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
     if (a === b) {
         return true;
     } else if (!a || !b) {
