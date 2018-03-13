@@ -53,9 +53,9 @@ export const currentTrackMetadataSelector = createSelector(
 );
 
 export const voteStringGeneratorFactory = (
-    defaultTrackSelector: (state: State, trackId: string) => Track | null,
+    trackSelector: (state: State, trackId: string) => Track | null,
 ) => createSelector(
-    defaultTrackSelector,
+    trackSelector,
     track => {
         if (!track) {
             return '';
