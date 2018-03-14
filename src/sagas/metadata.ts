@@ -9,7 +9,7 @@ import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
 import { UpdateTracksAction } from '../actions/party-data';
 import { Views } from '../routing';
-import { firebaseTrackIdSelector, queueTracksSelector } from '../selectors/track';
+import { firebaseTrackIdSelector, loadFanartTracksSelector } from '../selectors/track';
 import { Metadata, State, Track } from '../state';
 import { takeEveryWithState } from '../util/saga';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
@@ -18,14 +18,7 @@ const FANART_URL = 'https://webservice.fanart.tv/v3/music';
 const MUSICBRAINZ_URL = 'https://musicbrainz.org/ws/2/artist/?fmt=json&limit=10&query=';
 
 function* loadFanartForNewTracks(_) {
-    const state: State = yield select();
-    const tracks: Track[] = queueTracksSelector(state);
-
-    const remaining = tracks.slice(0, 3)
-        .filter(t => t.reference.provider && t.reference.id)
-        .map(t => firebaseTrackIdSelector(t))
-        .filter(id => id in state.metadata && !state.metadata[id].background)
-        .map(id => [id, state.metadata[id]] as [string, Metadata]);
+    const remaining: [string, Metadata][] = yield select(loadFanartTracksSelector);
 
     for (const [trackId, metadata] of remaining) {
         const empty = () => ({ [trackId]: [] });
