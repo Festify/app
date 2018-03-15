@@ -1,5 +1,6 @@
 import 'dom-flip';
 import { connect } from 'fit-html';
+import 'ken-burns-carousel';
 import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
@@ -20,6 +21,7 @@ interface ViewTvProps {
     backgroundImgIndex: number;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
+    currentTrackBackground: string[];
     domain: string;
     initError: Error | null;
     isLoading: boolean;
@@ -52,12 +54,7 @@ const Body = (props: ViewTvProps) => {
         `;
     } else if (props.currentTrackMetadata) {
         return html`
-            <div class="background">
-                ${props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0
-                    ? html`<img src="${props.currentTrackMetadata.background[props.backgroundImgIndex]}"
-                                alt="${props.currentTrackMetadata.artists[0]}">`
-                    : srcsetImg(props.currentTrackMetadata.cover, '49vh')}
-            </div>
+            <ken-burns-carousel images="${props.currentTrackBackground}"></ken-burns-carousel>
 
             <div class="upper">
                 <div class="playing-track">
@@ -135,13 +132,13 @@ const ViewTv = (props: ViewTvProps) => html`
             padding-left: 8.334vh;
         }
 
-        .background img {
+        ken-burns-carousel {
             position: absolute;
             opacity: 0.3;
-            filter: blur(7px);
             width: 100%;
             height: 100%;
-            object-fit: cover;
+
+            --img-filter: blur(7px);
         }
 
         .playing-track {
@@ -265,6 +262,9 @@ const mapStateToProps = (state: State): ViewTvProps => {
         currentTrackArtistName: currentTrackId
             ? artistNameSelector(state, currentTrackId)
             : null,
+        currentTrackBackground: meta
+            ? meta.background || meta.cover.map(cvr => cvr.url)
+            : [],
         currentTrackMetadata: meta,
         domain: document.location.host,
         initError: state.party.partyLoadError,
