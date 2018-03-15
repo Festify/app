@@ -2,9 +2,11 @@ import { html } from 'lit-html';
 
 import { Image } from '../state';
 
+const empty = html`<img>`;
+
 export default (images: Image[] | null, size: string, alt: string = '') => {
     if (!images || images.length === 0) {
-        return html`<img>`;
+        return empty;
     }
 
     const largest = images.reduce((acc, img) => img.width > acc.width ? img : acc, images[0]);
