@@ -21,7 +21,6 @@ interface ViewTvProps {
     backgroundImgIndex: number;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
-    currentTrackBackground: string[];
     domain: string;
     initError: Error | null;
     isLoading: boolean;
@@ -54,7 +53,13 @@ const Body = (props: ViewTvProps) => {
         `;
     } else if (props.currentTrackMetadata) {
         return html`
-            <ken-burns-carousel images="${props.currentTrackBackground}"></ken-burns-carousel>
+            ${props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0
+                ? html`<ken-burns-carousel images="${props.currentTrackMetadata.background}"></ken-burns-carousel>`
+                : html`
+                    <div class="background">
+                        ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
+                    </div>
+                `}
 
             <div class="upper">
                 <div class="playing-track">
@@ -131,13 +136,16 @@ const ViewTv = (props: ViewTvProps) => html`
             padding-left: 8.334vh;
         }
 
-        ken-burns-carousel {
+        ken-burns-carousel, .background img {
             position: absolute;
             opacity: 0.3;
             width: 100%;
             height: 100%;
+        }
 
-            --img-filter: blur(7px);
+        .background img {
+            filter: blur(7px);
+            object-fit: cover;
         }
 
         .playing-track {
@@ -261,9 +269,6 @@ const mapStateToProps = (state: State): ViewTvProps => {
         currentTrackArtistName: currentTrackId
             ? artistNameSelector(state, currentTrackId)
             : null,
-        currentTrackBackground: meta
-            ? meta.background || meta.cover.map(cvr => cvr.url)
-            : [],
         currentTrackMetadata: meta,
         domain: document.location.host,
         initError: state.party.partyLoadError,
