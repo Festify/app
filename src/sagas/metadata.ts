@@ -1,6 +1,5 @@
 import { Location, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import chunk from 'lodash-es/chunk';
-import maxBy from 'lodash-es/maxBy';
 import { all, call, cancel, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';
 
@@ -55,10 +54,17 @@ function* loadFanartForNewTracks(_) {
              * the right search result by choosing the artist with the most metadata / most complete
              * profile.
              */
-            const likeliestArtist = maxBy<{ id: string }>(
-                musicBrainzResult.artists,
-                artist => Object.keys(artist).length,
-            )!;
+            const likeliestArtist: { id: string } | null = musicBrainzResult.artists
+                .filter(artist => artist.score >= 50)
+                .reduce(
+                    (acc, it) => acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it,
+                    null,
+                );
+
+            if (!likeliestArtist) {
+                yield put(updateMetadata(empty()));
+                continue;
+            }
 
             const fanartResponse: Response = yield call(
                 fetch,
