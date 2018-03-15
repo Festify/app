@@ -192,6 +192,9 @@ const ViewTv = (props: ViewTvProps) => html`
         h1, h2, h3, h4, h5 {
             margin: 0;
             opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .upper h2 {
