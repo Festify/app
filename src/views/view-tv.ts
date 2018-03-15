@@ -114,7 +114,6 @@ const ViewTv = (props: ViewTvProps) => html`
         .upper, .lower {
             font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             display: flex;
-            z-index: 1;
         }
 
         .upper {
