@@ -9,6 +9,7 @@ export interface Image {
 
 export interface Metadata {
     artists: string[];
+    background?: string[];
     cover: Image[];
     durationMs: number;
     name: string;
@@ -102,6 +103,7 @@ export interface PlayerState {
 
     initializing: boolean;
     initializationError: Error | null;
+    sdkReady: boolean;
     togglingPlayback: boolean;
     togglePlaybackError: Error | null;
 }

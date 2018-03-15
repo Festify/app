@@ -1,4 +1,4 @@
-import { ConnectionState, Party, Track } from '../state';
+import { ConnectionState, Party, Playback, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 
@@ -19,7 +19,8 @@ export type Actions =
     | UpdateNetworkConnectionStateAction
     | UpdatePartyAction
     | UpdateTracksAction
-    | UpdateUserVotesAction;
+    | UpdateUserVotesAction
+    | UpdatePlaybackStateAction;
 
 export interface BecomePlaybackMasterAction {
     type: Types.BECOME_PLAYBACK_MASTER;
@@ -83,6 +84,10 @@ export interface UpdateUserVotesAction extends PayloadAction<Record<string, bool
     type: Types.UPDATE_USER_VOTES;
 }
 
+export interface UpdatePlaybackStateAction extends PayloadAction<Partial<Playback>> {
+    type: Types.UPDATE_PLAYBACK_STATE;
+}
+
 export function becomePlaybackMaster(): BecomePlaybackMasterAction {
     return { type: Types.BECOME_PLAYBACK_MASTER };
 }
@@ -120,7 +125,7 @@ export async function createNewParty(
         playback: {
             last_change: now as any,
             last_position_ms: 0,
-            master_id: masterId,
+            master_id: null,
             playing: false,
             target_playing: null,
         },
@@ -226,4 +231,8 @@ export function updateUserVotes(votes: Record<string, boolean> | null): UpdateUs
         type: Types.UPDATE_USER_VOTES,
         payload: votes,
     };
+}
+
+export function updatePlaybackState(payload: Partial<Playback>): UpdatePlaybackStateAction {
+    return { type: Types.UPDATE_PLAYBACK_STATE, payload };
 }

@@ -1,5 +1,4 @@
-import { DataSnapshot } from '@firebase/database-types';
-import { delay, eventChannel, Channel } from 'redux-saga';
+import { Channel, delay, eventChannel } from 'redux-saga';
 import {
     actionChannel,
     all,
@@ -27,14 +26,14 @@ import {
 } from '../actions/party-data';
 import {
     pause,
+    PauseAction,
     play,
+    PlayAction,
     playerError,
     playerInitFinish,
     togglePlaybackFail,
     togglePlaybackFinish,
     togglePlaybackStart,
-    PauseAction,
-    PlayAction,
 } from '../actions/playback-spotify';
 import { removeTrack } from '../actions/queue';
 import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
@@ -299,8 +298,6 @@ function* handlePlayPause(
                 .ref(`/parties`)
                 .child(partyId)
                 .child('playback');
-
-            playbackDisconnect = playbackRef.onDisconnect();
 
             // Update playback state in Firebase and ensure state stays valid
             // even if browser is closed / internet disconnects

@@ -10,7 +10,7 @@ import {
     joinPartyFail,
     resolveShortId,
     JoinPartyStartAction,
- } from '../actions/party-data';
+} from '../actions/party-data';
 import { State } from '../state';
 
 function* createParty() {

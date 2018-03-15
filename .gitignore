@@ -20,6 +20,7 @@ functions/**/*.js
 functions/**/*.js.map
 
 # Config
+fanart.config.js
 firebase.config.js
 database.rules.json
 firebase-debug.log

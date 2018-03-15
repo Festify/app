@@ -1,7 +1,7 @@
 import { DataSnapshot } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
-import { all, apply, call, put, select, take, takeEvery } from 'redux-saga/effects';
+import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -17,11 +17,12 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { valuesChannel } from '../util/firebase';
-import { requireAccessToken } from '../util/spotify-auth';
+
+import managePlaybackState from './playback-state';
 
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
@@ -113,8 +114,10 @@ function* loadParty() {
         yield takeEvery(votesRef, publishUserVoteUpdates);
 
         yield put(openPartyFinish(party));
+        const playbackManager = yield fork(managePlaybackState, id);
 
         yield take(Types.CLEANUP_PARTY);
+        yield cancel(playbackManager);
 
         connection.close();
         partyRef.close();
@@ -129,31 +132,6 @@ function* loadParty() {
                 .child('master_id')
                 .set(null),
         );
-    }
-}
-
-function* managePlaybackMasterReset() {
-    while (true) {
-        yield take(Types.BECOME_PLAYBACK_MASTER);
-
-        const partyId = partyIdSelector(yield select());
-        if (!partyId) {
-            throw new Error("Missing party ID");
-        }
-
-        yield call(requireAccessToken);
-
-        const dc = firebase.database!()
-            .ref('/parties')
-            .child(partyId)
-            .child('playback')
-            .child('master_id')
-            .onDisconnect();
-        yield apply(dc, dc.remove);
-
-        yield take(Types.RESIGN_PLAYBACK_MASTER);
-
-        yield apply(dc, dc.cancel);
     }
 }
 
@@ -180,7 +158,6 @@ function* watchRoute() {
 export default function*() {
     yield all([
         loadParty(),
-        managePlaybackMasterReset(),
         watchRoute(),
     ]);
 }

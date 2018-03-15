@@ -23,3 +23,5 @@ export const isPlaybackMasterSelector = createSelector(
     state => state.player.instanceId,
     (masterId, instanceId) => masterId === instanceId,
 );
+
+export const playbackSelector = (state: State) => state.party.currentParty ? state.party.currentParty.playback : null;

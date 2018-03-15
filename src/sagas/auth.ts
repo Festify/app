@@ -4,12 +4,7 @@ import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redu
 
 import { CLIENT_ID, TOKEN_EXCHANGE_URL } from '../../spotify.config';
 import { showToast, Types } from '../actions';
-import {
-    exchangeCodeFail,
-    exchangeCodeFinish,
-    exchangeCodeStart,
-    notifyAuthStatusKnown,
-} from '../actions/auth';
+import { exchangeCodeFail, exchangeCodeFinish, exchangeCodeStart, notifyAuthStatusKnown } from '../actions/auth';
 import { State } from '../state';
 import { requireAuth, AuthData } from '../util/auth';
 import firebase from '../util/firebase';
