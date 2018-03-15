@@ -30,6 +30,25 @@ interface ViewTvProps {
 }
 
 /* tslint:disable:max-line-length */
+const Background = (props: ViewTvProps) => {
+    if (!props.currentTrackMetadata) {
+        throw new Error("Missing metadata");
+    }
+
+    if (props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0) {
+        return html`
+            <ken-burns-carousel images="${props.currentTrackMetadata.background}">
+            </ken-burns-carousel>
+        `;
+    } else {
+        return html`
+            <div class="background">
+                ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
+            </div>
+        `;
+    }
+};
+
 const Body = (props: ViewTvProps) => {
     if (props.isLoading) {
         return html`
@@ -53,13 +72,7 @@ const Body = (props: ViewTvProps) => {
         `;
     } else if (props.currentTrackMetadata) {
         return html`
-            ${props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0
-                ? html`<ken-burns-carousel images="${props.currentTrackMetadata.background}"></ken-burns-carousel>`
-                : html`
-                    <div class="background">
-                        ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
-                    </div>
-                `}
+            ${Background(props)}
 
             <div class="upper">
                 <div class="playing-track">
