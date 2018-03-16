@@ -24,10 +24,6 @@ import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, currentTrackSpotifyIdSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
 
-const WATCHER_INTERVAL = 2000;
-
-let currentTrackWatcher: Task | null = null;
-
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
     return eventChannel<T>(put => {
         const listenerFactory = type => (detail) => {
@@ -49,13 +45,16 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
                 player.removeListener(name as any, listener);
                 prev();
             };
-        }, () => {});
+        }, () => {
+        });
     });
 }
 
-async function playTrack(id: string, deviceId: string, positionMs?: number) {
+function* playTrack(id: string, deviceId: string, positionMs?: number) {
+    yield put(play(id, positionMs || 0));
+
     const playUri = `/me/player/play?device_id=${deviceId}`;
-    await fetchWithAccessToken(playUri, {
+    yield fetchWithAccessToken(playUri, {
         method: 'put',
         headers: {
             'Content-Type': 'application/json',
@@ -70,7 +69,7 @@ async function playTrack(id: string, deviceId: string, positionMs?: number) {
     }
 
     const seekUri = `/me/player/seek?device_id=${deviceId}&position_ms=${positionMs}`;
-    await fetchWithAccessToken(seekUri, {
+    yield fetchWithAccessToken(seekUri, {
         method: 'put',
     });
 }
@@ -127,55 +126,31 @@ function* handlePlaybackStateChange(
     }
 
     yield put(togglePlaybackFinish());
-
-    if (currentTrackWatcher) {
-        yield cancel(currentTrackWatcher);
-    }
-
-    currentTrackWatcher = yield fork(watchPlayback, player);
 }
 
-function* watchPlayback(player: Spotify.SpotifyPlayer) {
-    const playbackStateChanges: Channel<Spotify.PlaybackState> =
+function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
+    const playerStateChanges: Channel<Spotify.PlaybackState> =
         yield call(attachToEvents, player, 'player_state_changed');
 
-    let playerState: Spotify.PlaybackState | null = yield player.getCurrentState();
-    let delayDuration = WATCHER_INTERVAL;
-
-    while (!playerState || playerState.duration === 0) {
-        playerState = yield take(playbackStateChanges);
-    }
-
     while (true) {
-        playerState = yield player.getCurrentState();
+        yield take(Types.PLAY);
 
-        if (!playerState) {
-            throw new Error("Wat! (playback state null)");
+        while (true) {
+            const state = yield take(playerStateChanges);
+            if (state.position === 0 && state.duration > 0 && state.paused === false) {
+                break;
+            }
         }
 
-        delayDuration = Math.min(playerState.duration - playerState.position - 200, WATCHER_INTERVAL);
-
-        /*
-         * Delay durations of <= 0 happen when the user has triggered a skip. Performing business as
-         * usual would result in a double-skip (previously the delay duration was clamped between 0ms and
-         * the watcher interval as upper bound). Thus, in case we are supposed to wait <= 0ms, we wait the
-         * full watcher interval time instead to "ignore" this playback state change and wait for
-         * subsequent ones.
-         */
-        if (delayDuration <= 0) {
-            delayDuration = WATCHER_INTERVAL;
+        while (true) {
+            const state = yield take(playerStateChanges);
+            if (state.position === 0 && state.duration === 0 && state.paused === true) {
+                break;
+            }
         }
 
-        const { state }: { state: Spotify.PlaybackState } = yield race({
-            wait: call(delay, delayDuration),
-            state: take(playbackStateChanges),
-        });
-
-        if (!state && delayDuration < WATCHER_INTERVAL) {
-            const { reference }: Track = yield select(currentTrackSelector);
-            yield put(removeTrack(reference, true) as any);
-            break;
-        }
+        const { reference }: Track = yield select(currentTrackSelector);
+        yield put(removeTrack(reference, true) as any);
     }
 }
 
@@ -183,6 +158,10 @@ function* handleSpotifyPlaybackChange(spotifyPlayback: Spotify.PlaybackState) {
     const localPlayback: Playback | null = yield select(playbackSelector);
 
     if (!localPlayback) {
+        return;
+    }
+
+    if (spotifyPlayback.duration === 0) {
         return;
     }
 
@@ -197,12 +176,11 @@ function* handleSpotifyPlaybackChange(spotifyPlayback: Spotify.PlaybackState) {
     yield put(updatePlaybackState(newStatus));
 }
 
-function* handleQueueChange(
-    action,
-    oldTrack: Track | null,
-    newTrack: Track | null,
-    deviceId: string,
-    partyId: string,
+function* handleQueueChange(action,
+                            oldTrack: Track | null,
+                            newTrack: Track | null,
+                            deviceId: string,
+                            partyId: string,
 ) {
     if (tracksEqual(oldTrack, newTrack)) {
         return;
@@ -238,7 +216,7 @@ export function* manageLocalPlayer(partyId: string) {
             player = new Spotify.Player({
                 name: 'Festify',
                 getOAuthToken: (cb) => requireAccessToken().then(cb),
-                volume: 1,
+                volume: 0.1,
             });
 
             const playerErrors: Channel<Spotify.Error> =
@@ -264,6 +242,8 @@ export function* manageLocalPlayer(partyId: string) {
                     playing: false,
                 }));
             }
+
+            const lifecycle = yield fork(handlePlaybackLifecycle, player);
 
             const { device_id }: Spotify.WebPlaybackInstance = yield take(playerReady);
             yield put(playerInitFinish(device_id));
@@ -296,6 +276,7 @@ export function* manageLocalPlayer(partyId: string) {
 
             yield take(Types.RESIGN_PLAYBACK_MASTER);
 
+            yield cancel(lifecycle);
             yield apply(player, player.disconnect);
         }
     } finally {

@@ -46,7 +46,7 @@ export interface SpotifySdkInitFinishAction {
     type: Types.SPOTIFY_SDK_INIT_Finish;
 }
 
-export interface PlayAction extends PayloadAction<number> {
+export interface PlayAction extends PayloadAction<{trackId: string, position: number}> {
     type: Types.PLAY;
 }
 
@@ -69,8 +69,8 @@ export function playerError(error: Error): PlayerErrorAction {
     };
 }
 
-export function play(position: number): PlayAction {
-    return { type: Types.PLAY, payload: position };
+export function play(trackId: string, position: number): PlayAction {
+    return { type: Types.PLAY, payload: {trackId, position} };
 }
 
 export function pause(): PauseAction {
