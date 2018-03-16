@@ -12,6 +12,7 @@ import { ErrorAction, PayloadAction, Types } from '.';
 import { updateMetadata } from './metadata';
 
 export type Actions =
+    | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
     | InsertFallbackPlaylistFailAction
     | InsertFallbackPlaylistFinishAction
@@ -20,6 +21,10 @@ export type Actions =
     | LoadPlaylistsStartAction
     | LoadPlaylistsFailAction
     | UpdateUserPlaylistsAction;
+
+export interface ChangeDisplayKenBurnsBackgroundAction extends PayloadAction<boolean> {
+    type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND;
+}
 
 export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
@@ -51,6 +56,13 @@ export interface LoadPlaylistsFailAction extends ErrorAction {
 
 export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
     type: Types.UPDATE_USER_PLAYLISTS;
+}
+
+export function changeDisplayKenBurnsBackground(display: boolean): ChangeDisplayKenBurnsBackgroundAction {
+    return {
+        type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND,
+        payload: display,
+    };
 }
 
 export function changePartyName(newName: string): ThunkAction<Promise<void>, State, void> {

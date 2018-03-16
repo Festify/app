@@ -1,17 +1,24 @@
 import '@polymer/paper-button/paper-button';
+import '@polymer/paper-checkbox';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-spinner/paper-spinner-lite';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { changePartyName, changeSearchInput, insertPlaylist } from '../actions/party-settings';
+import {
+    changeDisplayKenBurnsBackground,
+    changePartyName,
+    changeSearchInput,
+    insertPlaylist,
+} from '../actions/party-settings';
 import { flushTracks } from '../actions/queue';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
+    displayKenBurnsBackground: boolean;
     isPlaylistLoadInProgress: boolean;
     partyName: string;
     playlists: Playlist[];
@@ -22,6 +29,7 @@ interface PartySettingsProps {
 }
 
 interface PartySettingsDispatch {
+    changeDisplayKenBurnsBackground: (val: boolean) => void;
     changePartyName: (newName: string) => void;
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
@@ -47,7 +55,7 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             margin-bottom: 0;
         }
 
-        #party-name {
+        .upper > :not(h3) {
             margin-bottom: 16px;
         }
 
@@ -105,13 +113,18 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 
     <div class="upper">
         <h3>General Settings</h3>
-        <paper-input id="party-name"
-                     label="Party Name"
+        <paper-input label="Party Name"
                      value="${props.partyName}"
                      title="Change the name of your party"
                      type="text"
                      on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
         </paper-input>
+
+        <paper-checkbox checked="${props.displayKenBurnsBackground}"
+                        on-checked-changed="${ev => props.changeDisplayKenBurnsBackground((ev.target as HTMLInputElement).checked)}"
+                        title="The Ken Burns effect adds additional visual fidelity to the TV mode but can be heavy on performance. You can disable it here on a per-device basis, if you need to.">
+            Display "Ken Burns" background in TV mode
+        </paper-checkbox>
 
         <paper-button raised
                       on-click="${props.flushTracks}"
@@ -157,6 +170,7 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartySettingsProps => ({
+    displayKenBurnsBackground: state.tvView.displayKenBurnsBackground,
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
     partyName: (state.party.currentParty || { name: '' }).name,
     playlists: filteredPlaylistsSelector(state),
@@ -167,6 +181,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
+    changeDisplayKenBurnsBackground,
     changePartyName,
     changeSearchInput,
     flushTracks,

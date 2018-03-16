@@ -18,9 +18,10 @@ import sharedStyles from '../util/shared-styles';
 import './tv-track';
 
 interface ViewTvProps {
-    backgroundImgIndex: number;
+    backgroundImgIndex: number | null;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
+    displayKenBurns: boolean;
     domain: string;
     initError: Error | null;
     isLoading: boolean;
@@ -35,11 +36,21 @@ const Background = (props: ViewTvProps) => {
         throw new Error("Missing metadata");
     }
 
-    if (props.currentTrackMetadata.background && props.currentTrackMetadata.background.length > 0) {
-        return html`
-            <ken-burns-carousel images="${props.currentTrackMetadata.background}">
-            </ken-burns-carousel>
-        `;
+    if (props.currentTrackMetadata.background &&
+        props.currentTrackMetadata.background.length > 0 &&
+        props.backgroundImgIndex != null) {
+        if (props.displayKenBurns) {
+            return html`
+                <ken-burns-carousel images="${props.currentTrackMetadata.background}">
+                </ken-burns-carousel>
+            `;
+        } else {
+            return html`
+                <div class="background">
+                    <img src="${props.currentTrackMetadata.background[props.backgroundImgIndex]}">
+                </div>
+            `;
+        }
     } else {
         return html`
             <div class="background">
@@ -281,11 +292,12 @@ const mapStateToProps = (state: State): ViewTvProps => {
         // Choose background image to display based on track name
         backgroundImgIndex: meta && meta.background && meta.background.length > 0
             ? meta.name.length % meta.background.length
-            : 0,
+            : null,
         currentTrackArtistName: currentTrackId
             ? artistNameSelector(state, currentTrackId)
             : null,
         currentTrackMetadata: meta,
+        displayKenBurns: state.tvView.displayKenBurnsBackground,
         domain: document.location.host,
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress,

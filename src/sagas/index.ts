@@ -6,6 +6,7 @@ import shareSaga from './share';
 import toastSaga from './toast';
 
 import viewHomeSaga from './view-home';
+import viewTvSaga from './view-tv';
 
 export default [
     authSaga,
@@ -16,4 +17,5 @@ export default [
     toastSaga,
 
     viewHomeSaga,
+    viewTvSaga,
 ];

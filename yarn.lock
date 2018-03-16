@@ -270,6 +270,17 @@
     "@polymer/paper-styles" "^3.0.0-pre.10"
     "@polymer/polymer" "^3.0.0-pre.10"
 
+"@polymer/paper-checkbox@^3.0.0-pre.11":
+  version "3.0.0-pre.11"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-checkbox/-/paper-checkbox-3.0.0-pre.11.tgz#5cd1778e82c7da6db8726c4b01b270449a97763c"
+  dependencies:
+    "@polymer/iron-a11y-keys-behavior" "^3.0.0-pre.10"
+    "@polymer/iron-checked-element-behavior" "^3.0.0-pre.10"
+    "@polymer/paper-behaviors" "^3.0.0-pre.10"
+    "@polymer/paper-ripple" "^3.0.0-pre.10"
+    "@polymer/paper-styles" "^3.0.0-pre.10"
+    "@polymer/polymer" "^3.0.0-pre.10"
+
 "@polymer/paper-fab@^3.0.0-pre.1":
   version "3.0.0-pre.11"
   resolved "https://registry.yarnpkg.com/@polymer/paper-fab/-/paper-fab-3.0.0-pre.11.tgz#5a35deb728f5e8f73ccbe3f071936adc9e40e8ae"
