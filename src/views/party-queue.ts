@@ -50,7 +50,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 
     <dom-flip>
         ${props.tracks.map((track, i) => html`
-            <party-track playing="${i === 0}"
+            <party-track playing?="${i === 0}"
                          data-flip-id$="${track.reference.provider}-${track.reference.id}"
                          trackid="${track.reference.provider}-${track.reference.id}">
             </party-track>
