@@ -20,7 +20,7 @@ import {
 import { isPartyOwnerSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { requireAuth } from '../util/auth';
-import firebase, { valuesChannel } from '../util/firebase';
+import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
 
 import managePlaybackState from './playback-state';
 
@@ -115,6 +115,12 @@ function* loadParty() {
 
         yield put(openPartyFinish(party));
         const playbackManager = yield fork(managePlaybackState, id);
+
+        yield firebase.database!()
+            .ref('/user_parties')
+            .child(uid)
+            .child(id)
+            .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 
         yield take(Types.CLEANUP_PARTY);
         yield cancel(playbackManager);

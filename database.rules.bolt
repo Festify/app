@@ -7,6 +7,11 @@ path /parties/{partyId} is Party {
     write() { createdByCurrent(this.created_by) }
 }
 
+path /user_parties/{uid}/{partyId} {
+    read() { isCurrentUser(uid) }
+    write() { isCurrentUser(uid) }
+}
+
 type Party {
     country: SpotifyCountry,
     created_at: CreatedTimestamp,
