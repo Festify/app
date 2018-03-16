@@ -1,4 +1,4 @@
-import { Track, TrackReference } from '../state';
+import { Track } from '../state';
 
 import { ErrorAction, PayloadAction, Types } from '.';
 

@@ -1,4 +1,3 @@
-import { replace } from '@mraerino/redux-little-router-reactless';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { ErrorAction, PayloadAction, Types } from '.';

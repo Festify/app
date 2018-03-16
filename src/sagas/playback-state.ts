@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-es';
-import { call, cancelled, fork, put, race, select, take, takeEvery } from 'redux-saga/effects';
+import { call, cancelled, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {

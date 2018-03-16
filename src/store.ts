@@ -1,4 +1,4 @@
-import { initializeCurrentLocation, routerForBrowser } from '@mraerino/redux-little-router-reactless';
+import { initializeCurrentLocation } from '@mraerino/redux-little-router-reactless';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import createSagaMiddleware from 'redux-saga';

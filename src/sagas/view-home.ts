@@ -1,8 +1,6 @@
 import { push } from '@mraerino/redux-little-router-reactless';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { CLIENT_ID } from '../../spotify.config';
-
 import { Types } from '../actions';
 import {
     createNewParty,

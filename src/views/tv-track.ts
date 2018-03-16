@@ -8,7 +8,6 @@ import {
     singleTrackSelector,
 } from '../selectors/track';
 import { Metadata, State, Track } from '../state';
-import festifyLogo from '../util/festify-logo';
 
 interface TvTrackProps {
     artistName: string;

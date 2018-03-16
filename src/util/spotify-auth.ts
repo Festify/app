@@ -1,6 +1,6 @@
 import debounce from 'promise-debounce';
 
-import { CLIENT_ID, CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.config';
+import { CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.config';
 
 import { AuthData } from './auth';
 

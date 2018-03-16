@@ -1,13 +1,12 @@
-import { buffers, delay, eventChannel, Channel, Task } from 'redux-saga';
+import { eventChannel, Channel } from 'redux-saga';
 import {
-    actionChannel,
     all,
     apply,
     call,
     cancel,
     cancelled,
-    fork, put,
-    race,
+    fork,
+    put,
     select,
     take,
     takeEvery,
@@ -17,11 +16,11 @@ import { showToast, Types } from '../actions';
 import { Playback, State, Track } from '../state';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
-import { updatePlaybackState, UpdatePlaybackStateAction } from '../actions/party-data';
+import { updatePlaybackState } from '../actions/party-data';
 import { play, playerError, playerInitFinish, togglePlaybackFinish } from '../actions/playback-spotify';
 import { markTrackAsPlayed, removeTrack } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
-import { currentTrackSelector, currentTrackSpotifyIdSelector, tracksEqual } from '../selectors/track';
+import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
