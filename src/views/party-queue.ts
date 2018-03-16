@@ -29,6 +29,21 @@ export const queueStyles = html`
 `;
 
 /* tslint:disable:max-line-length */
+const List = (props: PartyQueueProps & PartyQueueDispatch) => {
+    const list = props.tracks.map((track, i) => html`
+        <party-track playing?="${i === 0}"
+                     data-flip-id$="${track.reference.provider}-${track.reference.id}"
+                     trackid="${track.reference.provider}-${track.reference.id}">
+        </party-track>
+    `);
+
+    // ShadyCSS + lit-html + dom-flip breaks in Firefox causing the track elements
+    // not to be instantiated. Thus, no dom-flip for Firefox.
+    return (window as any).ShadyCSS
+        ? html`<div>${list}</div>`
+        : html`<dom-flip>${list}</dom-flip>`;
+};
+
 const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
     ${sharedStyles}
     ${queueStyles}
@@ -48,14 +63,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
         }
     </style>
 
-    <dom-flip>
-        ${props.tracks.map((track, i) => html`
-            <party-track playing?="${i === 0}"
-                         data-flip-id$="${track.reference.provider}-${track.reference.id}"
-                         trackid="${track.reference.provider}-${track.reference.id}">
-            </party-track>
-        `)}
-    </dom-flip>
+    ${List(props)}
 `;
 /* tslint:enable */
 

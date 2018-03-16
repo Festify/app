@@ -1640,8 +1640,8 @@ firebase@^4.8.1:
     xmlhttprequest "^1.8.0"
 
 fit-html@^0.5.0:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.5.3.tgz#c666120e3757c41d8517f9e127fc75e66ff71d14"
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.5.4.tgz#cd21a9eb297ef512372713e4c823e29d4e862f1a"
   dependencies:
     lit-html "^0.9.0"
     redux "^3.7.2"
