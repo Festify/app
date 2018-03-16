@@ -2183,9 +2183,9 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-ken-burns-carousel@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/ken-burns-carousel/-/ken-burns-carousel-0.1.1.tgz#c5b241415da95621a20848eb0b8df48a4eb12cf6"
+ken-burns-carousel@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/ken-burns-carousel/-/ken-burns-carousel-0.2.1.tgz#f67dd98f4945788c1b7aecec40781543aca4d370"
 
 kind-of@^3.0.2:
   version "3.2.2"

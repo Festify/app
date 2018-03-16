@@ -22,7 +22,7 @@
     "dom-flip": "^0.2.7",
     "firebase": "^4.8.1",
     "fit-html": "^0.5.0",
-    "ken-burns-carousel": "^0.1.1",
+    "ken-burns-carousel": "^0.2.1",
     "lodash-es": "^4.17.4",
     "normalize-css": "^2.3.1",
     "promise-debounce": "^1.0.1",

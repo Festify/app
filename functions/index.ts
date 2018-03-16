@@ -15,7 +15,6 @@ firebase.initializeApp({
 
 export const clientToken = functions.https.onRequest(spotifyAuth.clientToken);
 export const exchangeCode = functions.https.onRequest(spotifyAuth.exchangeCode);
-export const exchangeCodeProtocol = functions.https.onRequest(spotifyAuth.exchangeCodeProtocol);
 export const refreshToken = functions.https.onRequest(spotifyAuth.refreshToken);
 
 export const pinTopTrack = functions.database.ref('/tracks/{partyId}/{trackId}/order')
