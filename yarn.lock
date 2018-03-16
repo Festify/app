@@ -2297,8 +2297,8 @@ limiter@^1.0.5:
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.2.tgz#229d8055891c8b11af9e0ee5200e8e09bb3dcbeb"
 
 lit-html@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.9.0.tgz#a445ecbb3da7d8b17690e6ade6c872c89385092a"
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@festify/lit-html/-/lit-html-0.9.1.tgz#a5abb6df98c9bc32967ebf8defb2776502e42ce9"
 
 load-json-file@^1.0.0:
   version "1.1.0"
