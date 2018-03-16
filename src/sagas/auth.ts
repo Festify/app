@@ -48,7 +48,14 @@ function* exchangeCode() {
     yield put(replace(localStorage[AUTH_REDIRECT_LOCAL_STORAGE_KEY] || '/', {}));
     localStorage.removeItem(AUTH_REDIRECT_LOCAL_STORAGE_KEY);
 
-    const body = `callbackUrl=${encodeURIComponent(location.origin)}&code=${encodeURIComponent(code)}`;
+    const { currentUser } = firebase.auth!();
+
+    let body = `callbackUrl=${encodeURIComponent(location.origin)}&code=${encodeURIComponent(code)}`;
+    if (currentUser) {
+        const currentUserToken = yield currentUser.getIdToken(true);
+        body += `&userToken=${currentUserToken}`;
+    }
+
     const resp = yield call(fetch, TOKEN_EXCHANGE_URL, {
         body,
         headers: {
