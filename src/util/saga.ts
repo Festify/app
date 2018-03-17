@@ -49,7 +49,7 @@ export function takeEveryWithState<S, T>(
             const oldState: T = yield select(selector);
             const action = yield take(pattern as any);
             const newState: T = yield select(selector);
-            yield (fork as any)(saga, ...[action, oldState, newState].concat(args));
+            yield (fork as any)(saga, action, oldState, newState, ...args);
         }
     });
 }
