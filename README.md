@@ -4,7 +4,7 @@
 
 # Festify
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Festify/app.svg)](https://greenkeeper.io/) [![Build Status](https://travis-ci.org/Festify/app.svg?branch=beta)](https://travis-ci.org/Festify/app)
+[![Greenkeeper badge](https://badges.greenkeeper.io/Festify/app.svg)](https://greenkeeper.io/) [![Build Status](https://travis-ci.org/Festify/app.svg?branch=develop)](https://travis-ci.org/Festify/app)
 
 Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones. [festify.rocks](https://festify.rocks/)
 
