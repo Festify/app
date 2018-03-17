@@ -60,8 +60,9 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
     `);
 
     // ShadyCSS + lit-html + dom-flip breaks in Firefox causing the track elements
-    // not to be instantiated. Thus, no dom-flip for Firefox.
-    return (window as any).ShadyCSS
+    // not to be instantiated. Thus, no dom-flip in environments where there isn't support
+    // for native Shady DOM yet.
+    return window.ShadyCSS && !window.ShadyCSS.nativeShadow
         ? html`<div>${list}</div>`
         : html`<dom-flip>${list}</dom-flip>`;
 };
