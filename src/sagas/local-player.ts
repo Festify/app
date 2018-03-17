@@ -25,7 +25,7 @@ import { takeEveryWithState } from '../util/saga';
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
     return eventChannel<T>(put => {
-        const listenerFactory = type => (detail) => {
+        const listener = detail => {
             if (detail) {
                 put(detail as any);
             }
@@ -36,16 +36,13 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
         }
 
         return names.reduce((prev, ev) => {
-            const listener = listenerFactory(ev);
-
             player.on(ev as any, listener);
 
             return () => {
                 player.removeListener(name as any, listener);
                 prev();
             };
-        }, () => {
-        });
+        }, () => {});
     });
 }
 

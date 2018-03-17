@@ -2,6 +2,9 @@ import 'dom-flip';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
+import { handleClick } from '../actions/queue-drawer';
+import { isPartyOwnerSelector } from '../selectors/party';
+import { settingsRouteSelector } from '../selectors/routes';
 import { queueTracksSelector } from '../selectors/track';
 import { State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
@@ -9,10 +12,13 @@ import sharedStyles from '../util/shared-styles';
 import './party-track';
 
 export interface PartyQueueProps {
+    isOwner: boolean;
+    settingsRoute: string;
     tracks: Track[];
 }
 
 interface PartyQueueDispatch {
+    handleClick: (ev: Event, route: string) => void;
 }
 
 export const queueStyles = html`
@@ -30,6 +36,22 @@ export const queueStyles = html`
 
 /* tslint:disable:max-line-length */
 const List = (props: PartyQueueProps & PartyQueueDispatch) => {
+    if (!props.tracks.length) {
+        const inner = props.isOwner
+            ? html`
+                <a href="${props.settingsRoute}"
+                   on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
+                    Go to settings</a>
+                to add a fallback playlist
+            `
+            : 'Search for your favourite tracks and add them to the queue';
+
+        return html`
+            <h2>🌝 The queue is empty!</h2>
+            <h3>${inner}</h3>
+        `;
+    }
+
     const list = props.tracks.map((track, i) => html`
         <party-track playing?="${i === 0}"
                      data-flip-id$="${track.reference.provider}-${track.reference.id}"
@@ -52,13 +74,9 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             padding-top: 13px;
         }
 
-        paper-button {
-            display: inline-block;
-            margin: 20px;
-        }
-
-        p {
-            margin: 0;
+        h2, h3 {
+            margin-left: 16px;
+            margin-right: 16px;
             text-align: center;
         }
     </style>
@@ -68,10 +86,14 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartyQueueProps => ({
+    isOwner: isPartyOwnerSelector(state),
+    settingsRoute: settingsRouteSelector(state),
     tracks: queueTracksSelector(state),
 });
 
-const mapDispatchToProps: PartyQueueDispatch = {};
+const mapDispatchToProps: PartyQueueDispatch = {
+    handleClick,
+};
 
 customElements.define(
     'party-queue',

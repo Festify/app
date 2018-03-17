@@ -1,12 +1,17 @@
 import '@polymer/iron-icon/iron-icon';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
-import { createSelector } from 'reselect';
 
 import { loginWithSpotify } from '../actions/auth';
 import { handleClick } from '../actions/queue-drawer';
 import { PartyViews } from '../routing';
-import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector } from '../selectors/party';
+import {
+    queueRouteSelector,
+    settingsRouteSelector,
+    shareRouteSelector,
+    tvRouteSelector,
+} from '../selectors/routes';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
@@ -108,7 +113,13 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                     Settings
                 </a>
             `
-            : null
+            : html`
+                <a href="#"
+                on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
+                    <iron-icon icon="festify:settings-remote"></iron-icon>
+                    Login for Admin Mode
+                </a>
+            `
         }
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
@@ -116,15 +127,6 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
-        ${!props.isOwner
-            ? html`
-                <a href="#"
-                   on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
-                    <iron-icon icon="festify:settings-remote"></iron-icon>
-                    Login for Admin Mode
-                </a>
-            `
-            : null}
         <a href="${props.tvRoute}"
            on-click="${ev => props.handleClick(ev, props.tvRoute)}">
             <iron-icon icon="festify:tv"></iron-icon>
@@ -142,26 +144,6 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     </div>
 `;
 /* tslint:enable */
-
-const queueRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => `/party/${partyId}`,
-);
-
-const settingsRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => `${queueRoute}/settings`,
-);
-
-const shareRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => `${queueRoute}/share`,
-);
-
-const tvRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => `/tv/${partyId}`,
-);
 
 const mapStateToProps = (state: State): QueueDrawerProps => ({
     isOwner: isPartyOwnerSelector(state),
