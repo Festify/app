@@ -51,6 +51,10 @@ const AppShellView = (props: AppShellProps) => html`
             min-height: 100vh;
         }
 
+        view-home {
+            min-height: 100vh;
+        }
+
         paper-toast {
             --paper-toast-background-color: var(--primary-color);
             box-shadow: 0 1px 10px 0 rgba(0,0,0,1);

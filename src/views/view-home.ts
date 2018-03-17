@@ -67,9 +67,14 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 500px;
+            height: 100%;
             padding: 0 10px;
             text-align: center;
+
+            background:
+                linear-gradient(rgba(28, 31, 36, .9), rgba(28, 31, 36, .9)),
+                url(/home-bg.jpg) no-repeat center;
+            background-size: cover;
 
             --paper-input-container-input: {
                 font-size: 24px;
