@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Festify</title>
+    <meta name="description" content="Use this site to join a Festify Party and vote for tracks in the queue.">
+
+    <link rel="preload" as="script" href="/index.js">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#282b30">
+    <meta name="theme-color" content="#282b30">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <base href="/">
+
+    <style>
+        body {
+            background-color: #1c1f24;
+            font-family: 'Roboto', 'Noto', sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <app-shell></app-shell>
+
+    <script src="/node_modules/webcomponents-loader-no-hi/webcomponents-loader.js"></script>
+    <script>
+        window.addEventListener('WebComponentsReady', function() {
+            const s = document.createElement('script');
+            s.src = '/index.js';
+            s.async = true;
+            s.defer = true;
+            document.head.appendChild(s);
+        });
+    </script>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-61806395-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
