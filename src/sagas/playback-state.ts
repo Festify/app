@@ -125,9 +125,14 @@ function* handleFirebase(partyId: string) {
 
 function* handlePartyUpdate(
     action: UpdatePartyAction | UpdatePlaybackStateAction,
-    oldPlayback: Playback,
-    newPlayback: Playback,
+    oldPlayback: Playback | null,
+    newPlayback: Playback | null,
 ) {
+    // These cases occur when party is left
+    if (!oldPlayback || !newPlayback) {
+        return;
+    }
+
     // Check if the master status of the player changed
     if (oldPlayback.master_id !== newPlayback.master_id) {
         if (newPlayback.master_id === (yield select((state: State) => state.player.instanceId))) {
