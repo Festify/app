@@ -2,6 +2,7 @@ import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, withProps } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
+import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
@@ -10,8 +11,10 @@ import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
     artistJoinerFactory,
+    queueTracksSelector,
     singleMetadataSelector,
     singleTrackSelector,
+    tracksEqual,
     voteStringGeneratorFactory,
 } from '../selectors/track';
 import { Metadata, State, Track, TrackReference } from '../state';
@@ -19,16 +22,16 @@ import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
     artistName: string | null;
-    hasPlaybackMaster: boolean;
     hasVoted: boolean;
     isOwner: boolean;
     isMusicPlaying: boolean;
-    isPlaybackMaster: boolean;
     isPlayingTrack: boolean;
     metadata: Metadata | null;
+    showRemoveButton: boolean;
+    showTakeoverButton: boolean;
+    togglingPlayback: boolean;
     track: Track | null;
     voteString: string;
-    togglingPlayback: boolean;
 }
 
 interface PartyTrackDispatch {
@@ -209,7 +212,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
     </div>
 
     <div class="icon-wrapper">
-        ${props.isPlayingTrack && props.isOwner && !props.isPlaybackMaster && props.hasPlaybackMaster
+        ${props.showTakeoverButton
             ? html`
                 <paper-icon-button icon="festify:download"
                                    on-click="${props.takeOverPlayback}"
@@ -217,7 +220,7 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
                 </paper-icon-button>
             `
             : null}
-        ${props.isOwner && !props.isPlayingTrack && props.track && (props.track.vote_count > 0 || props.track.is_fallback)
+        ${props.showRemoveButton
             ? html`
                 <paper-icon-button icon="festify:clear"
                                    on-click="${() => props.removeTrack(props.track!.reference)}"
@@ -233,25 +236,48 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
+    const isPlayingSelector = createSelector(
+        queueTracksSelector,
+        trackSelector,
+        (tracks, track) => tracksEqual(tracks[0], track),
+    );
+    const hasVotesOrIsFallbackSelector = createSelector(
+        trackSelector,
+        track => Boolean(track && (track.vote_count > 0 || track.is_fallback)),
+    );
+
     /*
      * Since the selectors use component props, one for each instance must be created.
      */
     return () => {
         const artistJoiner = artistJoinerFactory();
         const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
+        const showRemoveTrackButtonSelector = createSelector(
+            isPartyOwnerSelector,
+            hasVotesOrIsFallbackSelector,
+            isPlayingSelector,
+            (isOwner, hasVotesOrIsFallback, isPlaying) => isOwner && hasVotesOrIsFallback && !isPlaying,
+        );
+        const showTakeoverButtonSelector = createSelector(
+            isPartyOwnerSelector,
+            isPlaybackMasterSelector,
+            playbackMasterSelector,
+            isPlayingSelector,
+            (isOwner, isMaster, master, isPlaying) => isPlaying && isOwner && !isMaster && !!master,
+        );
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
             track: trackSelector(state, ownProps.trackid),
             artistName: artistJoiner(state, ownProps.trackid),
-            hasPlaybackMaster: Boolean(playbackMasterSelector(state)),
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
             isOwner: isPartyOwnerSelector(state),
             isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
-            isPlaybackMaster: isPlaybackMasterSelector(state),
             isPlayingTrack: ownProps.playing,
             metadata: singleMetadataSelector(state, ownProps.trackid),
-            voteString: voteStringGenerator(state, ownProps.trackid),
+            showRemoveButton: showRemoveTrackButtonSelector(state, ownProps.trackid),
+            showTakeoverButton: showTakeoverButtonSelector(state, ownProps.trackid),
             togglingPlayback: state.player.togglingPlayback,
+            voteString: voteStringGenerator(state, ownProps.trackid),
         });
     };
 };
