@@ -91,25 +91,7 @@ function* exchangeCode() {
         return;
     }
 
-    const prevUser = firebase.auth!().currentUser!;
-    const parties: DataSnapshot = yield call(() => firebase.database!()
-        .ref('/parties')
-        .orderByChild('created_by')
-        .equalTo(prevUser.uid)
-        .once('value'));
-
-    const updates = {};
-    parties.forEach(party => {
-        updates[`/${party.key}/created_by`] = user.spotify.user!.uri;
-        return false;
-    });
-
-    yield call(() => firebase.database!().ref('/parties').update(updates));
-
-    yield all([
-        call(() => prevUser.delete()),
-        call(() => firebase.auth!().signInWithCustomToken(firebase_token)),
-    ]);
+    yield call(() => firebase.auth!().signInWithCustomToken(firebase_token));
 
     yield put(exchangeCodeFinish());
 
