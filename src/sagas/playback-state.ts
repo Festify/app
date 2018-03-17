@@ -1,5 +1,6 @@
 import { isEqual } from 'lodash-es';
-import { call, cancelled, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import { Task } from 'redux-saga';
+import { call, cancelled, fork, join, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -44,18 +45,19 @@ function* handlePlayPause() {
 }
 
 function* handleFirebase(partyId: string) {
+    let isPlaybackMaster = false;
     try {
         const playbackRef = firebase.database!()
             .ref('/parties')
             .child(partyId)
             .child('playback');
-
         const playbackDisconnect = playbackRef.onDisconnect();
 
         // Setup deinitialization for playback state on player disconnect
-        yield takeEvery(
+        const becomeTask: Task = yield takeEvery(
             Types.BECOME_PLAYBACK_MASTER,
             function* () {
+                isPlaybackMaster = true;
                 yield call(() => playbackDisconnect.update({
                     playing: false,
                     master_id: null,
@@ -64,23 +66,25 @@ function* handleFirebase(partyId: string) {
         );
 
         // Cancel deinitialization for playback state on player disconnect
-        yield takeEvery(
+        const resignTask: Task = yield takeEvery(
             Types.RESIGN_PLAYBACK_MASTER,
             function* () {
+                isPlaybackMaster = false;
                 yield call(() => playbackDisconnect.cancel());
             },
         );
 
         // Persist playback state changes in Firebase
-        yield fork(function*() {
+        const stateTask: Task = yield fork(function*() {
             while (true) {
-                const oldState: Playback = yield select(playbackSelector);
+                const oldState: Playback | null = yield select(playbackSelector);
                 const { payload }: UpdatePlaybackStateAction = yield take(Types.UPDATE_PLAYBACK_STATE);
 
                 // Exclude last_change for non-playback-state-changing updates to prevent
                 // infinite update loop
                 const { last_change, ...rest } = payload;
-                const isChangingState = oldState.playing !== payload.playing ||
+                const isChangingState = !oldState ||
+                    oldState.playing !== payload.playing ||
                     oldState.last_position_ms !== payload.last_position_ms;
                 const update = isChangingState ? {
                     ...payload,
@@ -91,14 +95,30 @@ function* handleFirebase(partyId: string) {
             }
         });
 
-        yield takeEveryWithState(
+        const updateTask: Task = yield takeEveryWithState(
             [Types.UPDATE_PARTY, Types.UPDATE_PLAYBACK_STATE],
             playbackSelector,
             handlePartyUpdate,
         );
+
+        // Wait for cancellation of this saga (occurs when party is left)
+        yield join(
+            becomeTask,
+            resignTask,
+            stateTask,
+            updateTask,
+        );
     } finally {
-        if (yield cancelled()) {
-            yield put(resignPlaybackMaster());
+        // Remove playback state from DB when party is left while we're playing
+        if (yield cancelled() && isPlaybackMaster) {
+            firebase.database!()
+                .ref('/parties')
+                .child(partyId)
+                .child('playback')
+                .update({
+                    master_id: null,
+                    playing: false,
+                });
         }
     }
 }
@@ -133,30 +153,24 @@ function* handlePartyUpdate(
  * Handles local playback state and syncs changes from and to Firebase
  */
 export function* managePlaybackState(partyId: string) {
-    try {
-        yield takeEvery(Types.INSTALL_PLAYBACK_MASTER, handleTakeOver);
-        yield takeEvery(Types.TOGGLE_PLAYBACK_Start, handlePlayPause);
-        yield fork(handleFirebase, partyId);
-        yield fork(manageLocalPlayer, partyId);
+    yield takeEvery(Types.INSTALL_PLAYBACK_MASTER, handleTakeOver);
+    yield takeEvery(Types.TOGGLE_PLAYBACK_Start, handlePlayPause);
+    yield fork(handleFirebase, partyId);
+    yield fork(manageLocalPlayer, partyId);
 
-        yield takeEveryWithState(
-            Types.UPDATE_TRACKS,
-            currentTrackSelector,
-            function* (action, oldTrack: Track | null, newTrack: Track | null) {
-                if (!oldTrack || tracksEqual(oldTrack, newTrack)) {
-                    return;
-                }
+    yield takeEveryWithState(
+        Types.UPDATE_TRACKS,
+        currentTrackSelector,
+        function* (action, oldTrack: Track | null, newTrack: Track | null) {
+            if (!oldTrack || tracksEqual(oldTrack, newTrack)) {
+                return;
+            }
 
-                yield put(updatePlaybackState({
-                    last_position_ms: 0,
-                }));
-            },
-        );
-    } finally {
-        if (yield cancelled()) {
-            yield put(resignPlaybackMaster());
-        }
-    }
+            yield put(updatePlaybackState({
+                last_position_ms: 0,
+            }));
+        },
+    );
 }
 
 export default managePlaybackState;
