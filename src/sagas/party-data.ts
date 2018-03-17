@@ -23,6 +23,7 @@ import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
 
 import managePlaybackState from './playback-state';
+import { play } from '../actions/playback-spotify';
 
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
@@ -46,11 +47,7 @@ function* publishPartyUpdates(snap: DataSnapshot) {
     yield put(updateParty(party));
 
     const state2: State = yield select();
-    if (!isPartyOwnerSelector(state2)) {
-        return;
-    }
-
-    if (!state1.party.currentParty) {
+    if (!isPartyOwnerSelector(state2) || !state1.party.currentParty) {
         return;
     }
 
@@ -123,6 +120,7 @@ function* loadParty() {
             .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 
         yield take(Types.CLEANUP_PARTY);
+
         yield cancel(playbackManager);
 
         connection.close();
@@ -130,14 +128,12 @@ function* loadParty() {
         tracksRef.close();
         votesRef.close();
 
-        yield call(
-            () => firebase.database!()
-                .ref('/parties')
-                .child(id)
-                .child('playback')
-                .child('master_id')
-                .set(null),
-        );
+        yield firebase.database!()
+            .ref('/parties')
+            .child(id)
+            .child('playback')
+            .child('master_id')
+            .set(null);
     }
 }
 
