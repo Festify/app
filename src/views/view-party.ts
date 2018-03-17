@@ -67,10 +67,6 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             z-index: 1;
         }
 
-        app-drawer[persistent] + div header {
-            left: 256px;
-        }
-
         header app-toolbar {
             height: 48px;
             padding: 8px;
@@ -107,6 +103,16 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
         app-drawer-layout:not([narrow]) [drawer-toggle] {
             display: none;
+        }
+
+        @media (min-width: 641px) {
+            header {
+                left: 256px;
+            }
+
+            header app-toolbar div[main-title] {
+                margin-right: 0;
+            }
         }
     </style>
 
