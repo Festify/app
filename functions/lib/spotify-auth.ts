@@ -145,6 +145,7 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
 
             try {
                 await admin.database().ref().update(updates);
+                await admin.auth().deleteUser(oldUser.uid);
             } catch (ex) {
                 return handleFirebaseRejection(res, ex);
             }
