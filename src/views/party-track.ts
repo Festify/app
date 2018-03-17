@@ -262,7 +262,6 @@ export const createMapStateToPropsFactory = (
      */
     return () => {
         const artistJoiner = artistJoinerFactory();
-        const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
         const showRemoveTrackButtonSelector = createSelector(
             isPartyOwnerSelector,
             hasVotesOrIsFallbackSelector,
@@ -278,6 +277,7 @@ export const createMapStateToPropsFactory = (
             (isOwner, isMaster, master, isPlaying, isCompatible) =>
                 isPlaying && isOwner && !isMaster && !!master && isCompatible,
         );
+        const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
             track: trackSelector(state, ownProps.trackid),
