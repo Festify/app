@@ -85,6 +85,10 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
             }
         }
 
+        paper-button[disabled] {
+            opacity: 0.8;
+        }
+
         svg {
             height: 180px;
             width: 180px;
