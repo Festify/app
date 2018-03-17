@@ -113,7 +113,13 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                     Settings
                 </a>
             `
-            : null
+            : html`
+                <a href="#"
+                on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
+                    <iron-icon icon="festify:settings-remote"></iron-icon>
+                    Login for Admin Mode
+                </a>
+            `
         }
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
@@ -121,15 +127,6 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
-        ${!props.isOwner
-            ? html`
-                <a href="#"
-                   on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
-                    <iron-icon icon="festify:settings-remote"></iron-icon>
-                    Login for Admin Mode
-                </a>
-            `
-            : null}
         <a href="${props.tvRoute}"
            on-click="${ev => props.handleClick(ev, props.tvRoute)}">
             <iron-icon icon="festify:tv"></iron-icon>
