@@ -64,7 +64,8 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
         :host {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: center;
+            align-items: center;
             min-height: 500px;
             padding: 0 10px;
             text-align: center;
@@ -79,12 +80,14 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
         }
 
         svg {
-            height: 150px;
-            width: 150px;
+            height: 180px;
+            width: 180px;
         }
 
         p {
             padding: 0 25px;
+            max-width: 500px;
+            font-size: 20px;
         }
 
         main {
@@ -93,7 +96,6 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
             margin: 0 auto;
             min-width: 250px;
-            height: 180px;
         }
 
         #middle {
@@ -105,7 +107,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
         ${festifyLogo}
     </header>
 
-    <p>Festify is a free Spotify-powered app that lets your guests choose which music should be played using their smartphones.</p>
+    <p>Festify lets your guests choose which music should be played using their smartphones.</p>
 
     <main>
         <paper-input label="Party ID"
