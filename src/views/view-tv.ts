@@ -102,7 +102,7 @@ const Body = (props: ViewTvProps) => {
             </div>
             <dom-flip class="lower">
                 ${props.queueTracks.map(t => html`
-                    <tv-track trackid="${t.reference.provider}-${t.reference.id}"
+                    <tv-track trackid$="${t.reference.provider}-${t.reference.id}"
                               data-flip-id$="${t.reference.provider}-${t.reference.id}">
                     </tv-track>
                 `)}
