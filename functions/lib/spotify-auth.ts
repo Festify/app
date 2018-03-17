@@ -1,20 +1,16 @@
 import createCors from 'cors';
 import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
-import { config } from 'firebase-functions';
 import { Agent } from 'https';
 import request from 'request-promise';
+
+import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
 import { crypto } from './utils';
 
 const cors = createCors({ origin: true });
 
 const API_URL = 'https://accounts.spotify.com/api/token';
-
-const CLIENT_ID = config().spotify.client_id;
-const CLIENT_SECRET = config().spotify.client_secret;
-const CLIENT_CALLBACK_URL = config().spotify.client_callback_url;
-const ENCRYPTION_SECRET = config().spotify.enc_secret;
 
 const agent = new Agent({ keepAlive: true });
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
@@ -72,12 +68,16 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
             msg: 'Missing \'code\' parameter',
         });
     }
-
-    const callbackUrl = req.body.callbackUrl || CLIENT_CALLBACK_URL;
+    if (!req.body.callbackUrl) {
+        return res.status(400).json({
+            success: false,
+            msg: "Missing 'callbackUrl' parameter",
+        });
+    }
 
     const authCodeBody = await spotifyRequest({
         grant_type: 'authorization_code',
-        redirect_uri: callbackUrl,
+        redirect_uri: req.body.callbackUrl,
         code: req.body.code,
     });
 

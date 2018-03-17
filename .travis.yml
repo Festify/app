@@ -2,12 +2,9 @@ language: node_js
 node_js: "8"
 
 before_script:
-  - echo $FANART_CONFIG > fanart.config.js
-  - echo $FIREBASE_CONFIG > firebase.config.js
-  - echo $FIREBASE_SERVICE_ACCOUNT > functions/service-account.json
-  - echo $SPOTIFY_CONFIG > spotify.config.js
   - yarn global add greenkeeper-lockfile@1
   - greenkeeper-lockfile-update
+  - yarn prepare-env
 
 script:
   - yarn build
