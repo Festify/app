@@ -113,14 +113,19 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                     Settings
                 </a>
             `
-            : html`
+            : null
+        }
+
+        ${!props.isOwner
+            ? html`
                 <a href="#"
                    on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
                     <iron-icon icon="festify:settings-remote"></iron-icon>
                     Login for Admin Mode
                 </a>
-            `
+            ` : null
         }
+
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
            on-click="${ev => props.handleClick(ev, props.shareRoute)}">
@@ -141,8 +146,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:cancel"></iron-icon>
             Exit Party
         </a>
-    </div>
-`;
+    </div>`;
 /* tslint:enable */
 
 const mapStateToProps = (state: State): QueueDrawerProps => ({
