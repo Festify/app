@@ -175,11 +175,12 @@ function* handleSpotifyPlaybackChange(spotifyPlayback: Spotify.PlaybackState) {
     yield put(updatePlaybackState(newStatus));
 }
 
-function* handleQueueChange(action,
-                            oldTrack: Track | null,
-                            newTrack: Track | null,
-                            deviceId: string,
-                            partyId: string,
+function* handleQueueChange(
+    action,
+    oldTrack: Track | null,
+    newTrack: Track | null,
+    deviceId: string,
+    partyId: string,
 ) {
     if (tracksEqual(oldTrack, newTrack)) {
         return;
