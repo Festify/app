@@ -1,4 +1,3 @@
-import { DataSnapshot } from '@firebase/database-types';
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 

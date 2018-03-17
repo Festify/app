@@ -1,10 +1,9 @@
+// tslint:disable:variable-name
+
 export default class LoadScriptOnce extends HTMLElement {
     static get observedAttributes() {
         return ['async', 'defer', 'load', 'src'];
     }
-
-    private _hasBeenLoaded = false;
-    private _load = false;
 
     async = false;
     defer = false;
@@ -29,6 +28,9 @@ export default class LoadScriptOnce extends HTMLElement {
         script.src = this.src;
         document.body.appendChild(script);
     }
+
+    private _hasBeenLoaded = false;
+    private _load = false;
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string) {
         if (oldVal === newVal) {
