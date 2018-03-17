@@ -66,8 +66,6 @@ function* checkUserAgent() {
         (userAgent.indexOf('Firefox') !== -1 && userAgent.indexOf('Opera') === -1) ||
         (userAgent.indexOf('Chrome') !== -1);
 
-    console.log(validOS, validBrowser);
-
     if (!validOS || !validBrowser || isMobile) {
         yield put(setPlayerCompatibility(false));
     }
