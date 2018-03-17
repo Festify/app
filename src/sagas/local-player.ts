@@ -1,4 +1,4 @@
-import { eventChannel, Channel } from 'redux-saga';
+import { eventChannel, Channel, Task } from 'redux-saga';
 import {
     all,
     apply,
@@ -243,22 +243,21 @@ export function* manageLocalPlayer(partyId: string) {
                 }));
             }
 
-            const lifecycle = yield fork(handlePlaybackLifecycle, player);
+            const lifecycleManager: Task = yield fork(handlePlaybackLifecycle, player);
 
             const { device_id }: Spotify.WebPlaybackInstance = yield take(playerReady);
             yield put(playerInitFinish(device_id));
 
             yield* handlePlaybackStateChange(null, {}, yield select(playbackSelector), player, device_id, partyId);
 
-            yield takeEveryWithState(
+            const queueChangeManager: Task = yield takeEveryWithState(
                 Types.UPDATE_TRACKS,
                 currentTrackSelector,
                 handleQueueChange,
                 device_id,
                 partyId,
             );
-
-            yield takeEveryWithState(
+            const playbackStateUpdateManager: Task = yield takeEveryWithState(
                 Types.UPDATE_PLAYBACK_STATE,
                 playbackSelector,
                 handlePlaybackStateChange,
@@ -266,18 +265,21 @@ export function* manageLocalPlayer(partyId: string) {
                 device_id,
                 partyId,
             );
-
-            yield takeEvery(
+            const spotifyPlaybackChangeManager: Task = yield takeEvery(
                 playbackStateChanges,
                 handleSpotifyPlaybackChange,
             );
-
             yield takeEvery(playerErrors, handlePlaybackError);
 
             yield take(Types.RESIGN_PLAYBACK_MASTER);
 
-            yield cancel(lifecycle);
             yield apply(player, player.disconnect);
+            yield cancel(
+                lifecycleManager,
+                queueChangeManager,
+                playbackStateUpdateManager,
+                spotifyPlaybackChangeManager,
+            );
         }
     } finally {
         if (player && (yield cancelled())) {
