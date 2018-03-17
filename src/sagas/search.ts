@@ -9,8 +9,13 @@ import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
 function* doSearch(action) {
-    const { params: { partyId }, query: { s } } = action.payload || { params: { partyId: '' }, query: { s: '' } };
-    if (!partyId || !s) {
+    const { party }: State = yield select();
+    if (!party.currentParty) {
+        yield take(Types.UPDATE_PARTY);
+    }
+
+    const { query: { s } } = action.payload || { query: { s: '' } };
+    if (!s) {
         return;
     }
 
@@ -69,17 +74,6 @@ function* updateUrl(action: ChangeTrackSearchInputAction) {
 }
 
 export default function*() {
-    while (true) {
-        // Ensure we have a party before searching
-        yield take(Types.UPDATE_PARTY);
-
-        const search = yield takeLatest(LOCATION_CHANGED, doSearch);
-        const url = yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
-
-        yield take(Types.CLEANUP_PARTY);
-
-        // Stop listening for URL updates when party is left
-        yield cancel(search);
-        yield cancel(url);
-    }
+    yield takeLatest(LOCATION_CHANGED, doSearch);
+    yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
 }
