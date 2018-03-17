@@ -23,7 +23,6 @@ import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
 
 import managePlaybackState from './playback-state';
-import { play } from '../actions/playback-spotify';
 
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
     const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
