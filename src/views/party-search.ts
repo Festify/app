@@ -3,15 +3,16 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html';
 
 import { sortedTracksFactory } from '../selectors/track';
-import { State } from '../state';
+import { State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 import { queueStyles, PartyQueueProps } from './party-queue';
 import './party-track-search';
 
-interface SearchProps extends PartyQueueProps {
+interface SearchProps {
     searchError: Error | null;
     searchInProgress: boolean;
+    tracks: Track[];
 }
 
 const Progress = (props: SearchProps) => {
