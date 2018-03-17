@@ -6,7 +6,6 @@ import { Agent } from 'https';
 import request from 'request-promise';
 
 import { crypto } from './utils';
-import party from '../../src/reducers/party';
 
 const cors = createCors({ origin: true });
 
