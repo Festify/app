@@ -100,6 +100,7 @@ export interface ConnectPlaybackState {
 export interface PlayerState {
     instanceId: string;
     localDeviceId: string | null;
+    isCompatible: boolean;
 
     initializing: boolean;
     initializationError: Error | null;

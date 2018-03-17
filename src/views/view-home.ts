@@ -21,6 +21,7 @@ interface HomeViewProps {
     partyIdValid: boolean;
     partyJoinError: Error | null;
     partyJoinInProgress: boolean;
+    playerCompatible: boolean;
 }
 interface HomeViewDispatch {
     changePartyId: (partyId: string) => void;
@@ -128,7 +129,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
             ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
 
-        ${LowerButton(props)}
+        ${props.playerCompatible ? LowerButton(props) : null}
     </main>
 `;
 /* tslint:enable */
@@ -138,6 +139,7 @@ const mapStateToProps = (state: State): HomeViewProps => ({
     authorizationInProgress: state.user.spotify.authorizing,
     authorized: Boolean(state.user.spotify.user),
     authStatusKnown: state.user.spotify.statusKnown,
+    playerCompatible: state.player.isCompatible,
 });
 
 const mapDispatchToProps: HomeViewDispatch = {

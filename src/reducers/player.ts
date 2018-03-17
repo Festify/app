@@ -7,6 +7,7 @@ export default function (
         localDeviceId: null,
         initializing: false,
         initializationError: null,
+        isCompatible: true,
         togglingPlayback: false,
         togglePlaybackError: null,
         sdkReady: false,
@@ -60,6 +61,11 @@ export default function (
             return {
                 ...state,
                 sdkReady: true,
+            };
+        case Types.SET_PLAYER_COMPATIBILITY:
+            return {
+                ...state,
+                isCompatible: action.payload,
             };
         default:
             return state;

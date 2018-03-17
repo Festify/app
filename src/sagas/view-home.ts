@@ -1,5 +1,5 @@
 import { push } from '@mraerino/redux-little-router-reactless';
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, fork, put, select, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -9,6 +9,7 @@ import {
     resolveShortId,
     JoinPartyStartAction,
 } from '../actions/party-data';
+import { setPlayerCompatibility } from '../actions/playback-spotify';
 import { State } from '../state';
 
 function* createParty() {
@@ -51,9 +52,31 @@ function* joinParty(ac: JoinPartyStartAction) {
     yield put(push(`/party/${longId}`));
 }
 
+function* checkUserAgent() {
+    const { appVersion, userAgent } = navigator;
+
+    const validOS =
+            appVersion.indexOf('Win') !== -1 ||
+            appVersion.indexOf('Mac') !== -1 ||
+            appVersion.indexOf('Linux') !== -1;
+
+    const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
+
+    const validBrowser =
+        (userAgent.indexOf('Firefox') !== -1 && userAgent.indexOf('Opera') === -1) ||
+        (userAgent.indexOf('Chrome') !== -1);
+
+    console.log(validOS, validBrowser);
+
+    if (!validOS || !validBrowser || isMobile) {
+        yield put(setPlayerCompatibility(false));
+    }
+}
+
 export default function*() {
     yield all([
         takeLatest(Types.CREATE_PARTY_Start, createParty),
         takeLatest(Types.JOIN_PARTY_Start, joinParty),
+        fork(checkUserAgent),
     ]);
 }

@@ -12,7 +12,8 @@ export type Actions =
     | PauseAction
     | TogglePlaybackStartAction
     | TogglePlaybackFinishAction
-    | TogglePlaybackFailAction;
+    | TogglePlaybackFailAction
+    | SetPlayerCompatibilityAction;
 
 export interface PlayerErrorAction extends ErrorAction {
     type: Types.PLAYER_ERROR;
@@ -52,6 +53,10 @@ export interface PlayAction extends PayloadAction<{trackId: string, position: nu
 
 export interface PauseAction {
     type: Types.PAUSE;
+}
+
+export interface SetPlayerCompatibilityAction extends PayloadAction<boolean> {
+    type: Types.SET_PLAYER_COMPATIBILITY;
 }
 
 export function playerInitFinish(deviceId: string): PlayerInitFinishAction {
@@ -94,5 +99,12 @@ export function togglePlaybackFail(err: Error): TogglePlaybackFailAction {
         type: Types.TOGGLE_PLAYBACK_Fail,
         error: true,
         payload: err,
+    };
+}
+
+export function setPlayerCompatibility(compatible: boolean): SetPlayerCompatibilityAction {
+    return {
+        type: Types.SET_PLAYER_COMPATIBILITY,
+        payload: compatible,
     };
 }
