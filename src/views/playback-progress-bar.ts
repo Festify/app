@@ -2,6 +2,7 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html';
 import { createSelector } from 'reselect';
 
+import { playbackSelector } from '../selectors/party';
 import { currentTrackIdSelector, metadataSelector } from '../selectors/track';
 import { Metadata, Playback, State } from '../state';
 
@@ -41,7 +42,7 @@ const currentDurationSelector = createSelector(
 
 const mapDispatchToProps = (state: State): ProgressBarProps => ({
     durationMs: currentDurationSelector(state),
-    playback: state.party.currentParty ? state.party.currentParty.playback : null,
+    playback: playbackSelector(state),
 });
 
 const ProgressBarBase = connect(mapDispatchToProps, {}, ProgressBarView);
@@ -54,7 +55,8 @@ class ProgressBar extends ProgressBarBase {
 
         const { durationMs, playback }: ProgressBarProps = this.getProps();
         if (!playback || durationMs <= 0) {
-            return; // todo: Transition to 0
+            this.transitionTo(0, 0, false);
+            return;
         }
 
         const { last_change, last_position_ms, playing } = playback;
@@ -86,7 +88,7 @@ class ProgressBar extends ProgressBarBase {
         return this.indicator;
     }
 
-    private transitionTo(percentage, durationMs, isPlaying) {
+    private transitionTo(percentage: number, durationMs: number, isPlaying: boolean) {
         const value = `opacity 0.25s ease, transform ${durationMs}ms linear`;
         const style = this.getIndicator().style;
         style.transition = value;

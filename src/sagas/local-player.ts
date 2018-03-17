@@ -176,6 +176,7 @@ function* handleQueueChange(
     action,
     oldTrack: Track | null,
     newTrack: Track | null,
+    player: Spotify.SpotifyPlayer,
     deviceId: string,
     partyId: string,
 ) {
@@ -185,14 +186,18 @@ function* handleQueueChange(
 
     const playbackState: Playback | null = yield select(playbackSelector);
 
-    if (!newTrack || !playbackState!.playing) {
+    if ((!oldTrack && !newTrack) || !playbackState!.playing) {
         return;
     }
 
-    yield all([
-        call(playTrack, newTrack.reference.id, deviceId),
-        call(markTrackAsPlayed, partyId, newTrack.reference),
-    ]);
+    if (newTrack) {
+        yield all([
+            call(playTrack, newTrack.reference.id, deviceId),
+            call(markTrackAsPlayed, partyId, newTrack.reference),
+        ]);
+    } else {
+        yield player.pause();
+    }
 }
 
 function* handlePlaybackError(error: Spotify.Error) {
@@ -258,6 +263,7 @@ export function* manageLocalPlayer(partyId: string) {
                 Types.UPDATE_TRACKS,
                 currentTrackSelector,
                 handleQueueChange,
+                player,
                 device_id,
                 partyId,
             );
