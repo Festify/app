@@ -280,7 +280,6 @@ export const createMapStateToPropsFactory = (
         const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
-            track: trackSelector(state, ownProps.trackid),
             artistName: artistJoiner(state, ownProps.trackid),
             disablePlayButton: disablePlayButtonSelector(state),
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
@@ -291,6 +290,7 @@ export const createMapStateToPropsFactory = (
             showRemoveButton: showRemoveTrackButtonSelector(state, ownProps.trackid),
             showTakeoverButton: showTakeoverButtonSelector(state, ownProps.trackid),
             togglingPlayback: state.player.togglingPlayback,
+            track: trackSelector(state, ownProps.trackid),
             voteString: voteStringGenerator(state, ownProps.trackid),
         });
     };
