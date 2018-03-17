@@ -1,12 +1,17 @@
 import '@polymer/iron-icon/iron-icon';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
-import { createSelector } from 'reselect';
 
 import { loginWithSpotify } from '../actions/auth';
 import { handleClick } from '../actions/queue-drawer';
 import { PartyViews } from '../routing';
-import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
+import { isPartyOwnerSelector } from '../selectors/party';
+import {
+    queueRouteSelector,
+    settingsRouteSelector,
+    shareRouteSelector,
+    tvRouteSelector,
+} from '../selectors/routes';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
@@ -142,26 +147,6 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     </div>
 `;
 /* tslint:enable */
-
-const queueRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => `/party/${partyId}`,
-);
-
-const settingsRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => `${queueRoute}/settings`,
-);
-
-const shareRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => `${queueRoute}/share`,
-);
-
-const tvRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => `/tv/${partyId}`,
-);
 
 const mapStateToProps = (state: State): QueueDrawerProps => ({
     isOwner: isPartyOwnerSelector(state),
