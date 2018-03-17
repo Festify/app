@@ -22,6 +22,7 @@ import sharedStyles from '../util/shared-styles';
 
 export interface PartyTrackProps {
     artistName: string | null;
+    disablePlayButton: boolean;
     hasVoted: boolean;
     isOwner: boolean;
     isMusicPlaying: boolean;
@@ -77,7 +78,7 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
                 <paper-fab mini
                            icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
                            on-click="${props.togglePlayPause}"
-                           disabled="${!props.isOwner || props.togglingPlayback}">
+                           disabled="${props.disablePlayButton}">
                 </paper-fab>
             </div>
         `;
@@ -233,6 +234,16 @@ export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
 `;
 /* tslint:enable */
 
+const isCompatibleSelector = (s: State) => s.player.isCompatible;
+const disablePlayButtonSelector = createSelector(
+    isPartyOwnerSelector,
+    (s: State) => s.player.togglingPlayback,
+    isCompatibleSelector,
+    playbackMasterSelector,
+    (isOwner, isToggling, isCompatible, playbackMaster) =>
+        Boolean(!isOwner || isToggling || (!isCompatible && !playbackMaster)),
+);
+
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
@@ -263,12 +274,15 @@ export const createMapStateToPropsFactory = (
             isPlaybackMasterSelector,
             playbackMasterSelector,
             isPlayingSelector,
-            (isOwner, isMaster, master, isPlaying) => isPlaying && isOwner && !isMaster && !!master,
+            isCompatibleSelector,
+            (isOwner, isMaster, master, isPlaying, isCompatible) =>
+                isPlaying && isOwner && !isMaster && !!master && isCompatible,
         );
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
             track: trackSelector(state, ownProps.trackid),
             artistName: artistJoiner(state, ownProps.trackid),
+            disablePlayButton: disablePlayButtonSelector(state),
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
             isOwner: isPartyOwnerSelector(state),
             isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
