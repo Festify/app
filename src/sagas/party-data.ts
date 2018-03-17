@@ -126,13 +126,6 @@ function* loadParty() {
         partyRef.close();
         tracksRef.close();
         votesRef.close();
-
-        yield firebase.database!()
-            .ref('/parties')
-            .child(id)
-            .child('playback')
-            .child('master_id')
-            .set(null);
     }
 }
 
