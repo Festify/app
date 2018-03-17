@@ -6,7 +6,7 @@ import { sortedTracksFactory } from '../selectors/track';
 import { State, Track } from '../state';
 import sharedStyles from '../util/shared-styles';
 
-import { queueStyles, PartyQueueProps } from './party-queue';
+import { queueStyles } from './party-queue';
 import './party-track-search';
 
 interface SearchProps {

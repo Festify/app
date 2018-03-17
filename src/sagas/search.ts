@@ -1,6 +1,6 @@
 import { push, replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
-import { call, cancel, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
