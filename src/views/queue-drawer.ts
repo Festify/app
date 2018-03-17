@@ -115,7 +115,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             `
             : html`
                 <a href="#"
-                on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
+                   on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
                     <iron-icon icon="festify:settings-remote"></iron-icon>
                     Login for Admin Mode
                 </a>
