@@ -2,7 +2,7 @@ import '@polymer/paper-toast/paper-toast';
 import { connect, withStore } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import '../components/load-once';
+import '../components/load-script-once';
 import { Views } from '../routing';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { State } from '../state';
@@ -64,11 +64,9 @@ const AppShellView = (props: AppShellProps) => html`
                  opened="${props.isToastOpen}"
                  text="${props.toastText}">
     </paper-toast>
-    <load-once load?="${props.isPlaybackMaster}">
-        <template>
-            <script src="https://sdk.scdn.co/spotify-player.js"></script>
-        </template>
-    </load-once>
+    <load-script-once load?="${props.isPlaybackMaster}"
+                      src="https://sdk.scdn.co/spotify-player.js">
+    </load-script-once>
 `;
 
 const mapStateToProps = (state: State): AppShellProps => ({
