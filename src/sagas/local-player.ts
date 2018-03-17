@@ -248,7 +248,14 @@ export function* manageLocalPlayer(partyId: string) {
             const { device_id }: Spotify.WebPlaybackInstance = yield take(playerReady);
             yield put(playerInitFinish(device_id));
 
-            yield* handlePlaybackStateChange(null, {}, yield select(playbackSelector), player, device_id, partyId);
+            yield* handlePlaybackStateChange(
+                null,
+                {},
+                yield select(playbackSelector),
+                player,
+                device_id,
+                partyId,
+            );
 
             const queueChangeManager: Task = yield takeEveryWithState(
                 Types.UPDATE_TRACKS,
