@@ -81,17 +81,24 @@ function* loadFanartForNewTracks(_) {
                 continue;
             }
 
-            const backgroundImages: string[] = (yield fanartResponse.json()).artistbackground.map(bg => bg.url)
-                .map(url => {
-                    // Proxy fanart through imgix to apply server-side optimizations and blurring (client
-                    // side-blurring kills performance quite extremely).
-                    const u = new URL(url);
-                    u.host = 'festify-fanart.imgix.net';
-                    u.protocol = 'https';
+            const bg = (yield fanartResponse.json()).artistBackground;
+            if (!bg || !bg.length) {
+                yield put(updateMetadata(empty()));
+                continue;
+            }
 
-                    return `${u.toString()}?blur=100&auto=compress,format`;
-                });
-            yield put(updateMetadata({ [trackId]: backgroundImages }));
+            yield put(updateMetadata({
+                [trackId]: bg.map(bg => bg.url)
+                    .map(url => {
+                        // Proxy fanart through imgix to apply server-side optimizations and blurring (client
+                        // side-blurring kills performance quite extremely).
+                        const u = new URL(url);
+                        u.host = 'festify-fanart.imgix.net';
+                        u.protocol = 'https';
+
+                        return `${u.toString()}?blur=100&auto=compress,format`;
+                    })
+            }));
         } catch (err) {
             console.error(`Failed to fetch fanart for '${metadata.name}'.`, err);
         }
