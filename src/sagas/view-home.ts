@@ -56,9 +56,9 @@ function* checkUserAgent() {
     const { appVersion, userAgent } = navigator;
 
     const validOS =
-            appVersion.indexOf('Win') !== -1 ||
-            appVersion.indexOf('Mac') !== -1 ||
-            appVersion.indexOf('Linux') !== -1;
+        appVersion.indexOf('Win') !== -1 ||
+        appVersion.indexOf('Mac') !== -1 ||
+        appVersion.indexOf('Linux') !== -1;
 
     const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
 
