@@ -17,7 +17,13 @@ import { Playback, State, Track } from '../state';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 import { updatePlaybackState } from '../actions/party-data';
-import { play, playerError, playerInitFinish, togglePlaybackFinish } from '../actions/playback-spotify';
+import {
+    play,
+    playerError,
+    playerInitFinish,
+    setPlayerCompatibility,
+    togglePlaybackFinish,
+} from '../actions/playback-spotify';
 import { markTrackAsPlayed, removeTrack } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
@@ -299,3 +305,22 @@ export function* manageLocalPlayer(partyId: string) {
 }
 
 export default manageLocalPlayer;
+
+export function* checkPlaybackSdkCompatibility() {
+    const { appVersion, userAgent } = navigator;
+
+    const validOS =
+        appVersion.indexOf('Win') !== -1 ||
+        appVersion.indexOf('Mac') !== -1 ||
+        appVersion.indexOf('Linux') !== -1;
+
+    const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
+
+    const validBrowser =
+        (userAgent.indexOf('Firefox') !== -1 && userAgent.indexOf('Opera') === -1) ||
+        (userAgent.indexOf('Chrome') !== -1);
+
+    if (!validOS || !validBrowser || isMobile) {
+        yield put(setPlayerCompatibility(false));
+    }
+}
