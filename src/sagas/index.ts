@@ -1,4 +1,5 @@
 import authSaga from './auth';
+import linkJoinCreateSaga from './link-join-create';
 import { checkPlaybackSdkCompatibility as compatibilitySaga } from './local-player';
 import metadataSaga from './metadata';
 import partyDataSaga from './party-data';
@@ -12,6 +13,7 @@ import viewTvSaga from './view-tv';
 export default [
     authSaga,
     compatibilitySaga,
+    linkJoinCreateSaga,
     metadataSaga,
     partyDataSaga,
     searchSaga,

@@ -40,6 +40,13 @@ function* createParty() {
 
 function* joinParty(ac: JoinPartyStartAction) {
     const { homeView }: State = yield select();
+
+    if (!homeView.partyIdValid) {
+        const e = new Error("Party ID is invalid!");
+        yield put(joinPartyFail(e));
+        return;
+    }
+
     const longId = yield call(resolveShortId, homeView.partyId);
 
     if (!longId) {
