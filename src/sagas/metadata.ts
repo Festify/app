@@ -81,7 +81,7 @@ function* loadFanartForNewTracks(_) {
                 continue;
             }
 
-            const bg = (yield fanartResponse.json()).artistBackground;
+            const bg = (yield fanartResponse.json()).artistbackground;
             if (!bg || !bg.length) {
                 yield put(updateMetadata(empty()));
                 continue;
