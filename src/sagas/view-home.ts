@@ -1,5 +1,5 @@
 import { push } from '@mraerino/redux-little-router-reactless';
-import { all, call, fork, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -72,9 +72,8 @@ function* checkUserAgent() {
 }
 
 export default function*() {
-    yield all([
-        takeLatest(Types.CREATE_PARTY_Start, createParty),
-        takeLatest(Types.JOIN_PARTY_Start, joinParty),
-        fork(checkUserAgent),
-    ]);
+    yield takeLatest(Types.CREATE_PARTY_Start, createParty);
+    yield takeLatest(Types.JOIN_PARTY_Start, joinParty);
+
+    yield *checkUserAgent();
 }
