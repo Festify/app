@@ -97,7 +97,7 @@ function* loadFanartForNewTracks(_) {
                         u.protocol = 'https';
 
                         return `${u.toString()}?blur=100&auto=compress,format`;
-                    })
+                    }),
             }));
         } catch (err) {
             console.error(`Failed to fetch fanart for '${metadata.name}'.`, err);
