@@ -44,6 +44,33 @@ export async function getArtistFanart(artistMbId: string): Promise<string[] | nu
  * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
  */
 export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
+    /**
+     * Tries to get a the music brainz ID of the artist of the track identified with
+     * the given ISRC.
+     *
+     * @param {string} isrc the ISRC of the track whose artist to search for
+     * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
+     */
+    async function tryFetchArtistViaIsrc(isrc: string): Promise<string | null> {
+        const isrcResponse = await fetch(
+            `${MUSICBRAINZ_RECORDING_URL}isrc:${encodeURIComponent(isrc)}`,
+            { headers: { 'Accept': 'application/json' } },
+        );
+        if (!isrcResponse.ok) {
+            return null;
+        }
+        const { recordings } = await isrcResponse.json();
+        if (!recordings || !recordings.length) {
+            return null;
+        }
+        const credits = recordings[0]['artist-credit'];
+        if (!credits || !credits.length) {
+            return null;
+        }
+
+        return credits[0].artist.id;
+    }
+
     if (meta.isrc) {
         const maybeId = await tryFetchArtistViaIsrc(meta.isrc);
         if (maybeId) {
@@ -127,31 +154,4 @@ export function updateMetadata(
             payload: meta,
         };
     }
-}
-
-/**
- * Tries to get a the music brainz ID of the artist of the track identified with
- * the given ISRC.
- *
- * @param {string} isrc the ISRC of the track whose artist to search for
- * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
- */
-async function tryFetchArtistViaIsrc(isrc: string): Promise<string | null> {
-    const isrcResponse = await fetch(
-        `${MUSICBRAINZ_RECORDING_URL}isrc:${encodeURIComponent(isrc)}`,
-        { headers: { 'Accept': 'application/json' } },
-    );
-    if (!isrcResponse.ok) {
-        return null;
-    }
-    const { recordings } = await isrcResponse.json();
-    if (!recordings || !recordings.length) {
-        return null;
-    }
-    const credits = recordings[0]['artist-credit'];
-    if (!credits || !credits.length) {
-        return null;
-    }
-
-    return credits[0].artist.id;
 }
