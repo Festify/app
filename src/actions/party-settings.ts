@@ -199,8 +199,7 @@ export function insertPlaylist(
 }
 
 async function fetchTracks(playlist: Playlist, dispatch: Dispatch<State>): Promise<SpotifyApi.TrackObjectFull[]> {
-    let url = `/users/${playlist.reference.userId}/playlists/${playlist.reference.id}/tracks`
-        + `?fields=items(track(album(images),artists,duration_ms,id,name)),next&market=from_token`;
+    let url = `/users/${playlist.reference.userId}/playlists/${playlist.reference.id}/tracks?market=from_token`;
 
     const tracks: SpotifyApi.TrackObjectFull[] = [];
 
