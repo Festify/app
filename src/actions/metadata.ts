@@ -130,7 +130,7 @@ export function updateMetadata(
                 artists: track.artists.map(art => art.name),
                 cover: track.album.images.filter(img => img.width && img.height),
                 durationMs: track.duration_ms,
-                isrc: track.external_ids.isrc,
+                isrc: track.external_ids ? track.external_ids.isrc : undefined,
                 name: track.name,
             } as Metadata;
         }
