@@ -3,12 +3,88 @@ import * as SpotifyApi from 'spotify-web-api-js';
 import { Metadata } from '../state';
 
 import { PayloadAction, Types } from '.';
+import { FANART_TV_API_KEY } from '../../fanart.config';
 
 export type Actions =
     | UpdateMetadataAction;
 
 export interface UpdateMetadataAction extends PayloadAction<Record<string, Partial<Metadata>>> {
     type: Types.UPDATE_METADATA;
+}
+
+const FANART_URL = 'https://webservice.fanart.tv/v3/music';
+const MUSICBRAINZ_ARTIST_URL = 'https://musicbrainz.org/ws/2/artist/?fmt=json&limit=10&query=';
+const MUSICBRAINZ_RECORDING_URL = 'https://musicbrainz.org/ws/2/recording/?fmt=json&limit=10&query=';
+
+/**
+ * Gets fanart images of the given artist identified via its music brainz ID.
+ *
+ * @param {string} artistMbId the music brainz ID of the artist to get fanart images of.
+ * @returns {Promise<string[] | null>} A promise with the fanart images or null, if none could be found.
+ */
+export async function getArtistFanart(artistMbId: string): Promise<string[] | null> {
+    const fanartResponse = await fetch(
+        `${FANART_URL}/${artistMbId}?api_key=${FANART_TV_API_KEY}`,
+    );
+
+    if (!fanartResponse.ok) {
+        return null;
+    }
+
+    const backgrounds = (await fanartResponse.json()).artistbackground;
+    return backgrounds && backgrounds.length
+        ? backgrounds.map(background => background.url)
+        : null;
+}
+
+/**
+ * Tries to get the music brainz ID of the artist associated with the given metadata.
+ *
+ * @param {Metadata} meta The metadata for whose artist to get the music brainz ID of.
+ * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
+ */
+export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
+    if (meta.isrc) {
+        const maybeId = await tryFetchArtistViaIsrc(meta.isrc);
+        if (maybeId) {
+            return maybeId;
+        }
+    }
+
+    const musicBrainzResponse = await fetch(
+         `${MUSICBRAINZ_ARTIST_URL}${encodeURIComponent(meta.artists[0])}`,
+        { headers: { 'Accept': 'application/json' } },
+    );
+
+    if (!musicBrainzResponse.ok) {
+        return null;
+    }
+
+    const musicBrainzResult = await musicBrainzResponse.json();
+    if (!musicBrainzResult.artists || !musicBrainzResult.artists.length) {
+        return null;
+    }
+
+    /*
+     * MusicBrainz has no concept of popularity and does not order the search results in
+     * any meaningful way. This means that searches for popular artists can potentially
+     * yield lots of unknown bands before the band actually searched for. (Searching for UK
+     * rock band `Muse` lists them at index 5, preceeded by four unknown bands with the
+     * same name).
+     *
+     * Under the assumption that Festify users generally like popular music and that popular
+     * artists have more metadata on MusicBrainz than lesser known artists, we try to deduce
+     * the right search result by choosing the artist with the most metadata / most complete
+     * profile.
+     */
+    const likeliestArtist: { id: string } | null = musicBrainzResult.artists
+        .filter(artist => artist.score >= 50)
+        .reduce(
+            (acc, it) => acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it,
+            null,
+        );
+
+    return likeliestArtist ? likeliestArtist.id : null;
 }
 
 export function updateMetadata(
@@ -27,6 +103,7 @@ export function updateMetadata(
                 artists: track.artists.map(art => art.name),
                 cover: track.album.images.filter(img => img.width && img.height),
                 durationMs: track.duration_ms,
+                isrc: track.external_ids.isrc,
                 name: track.name,
             } as Metadata;
         }
@@ -50,4 +127,31 @@ export function updateMetadata(
             payload: meta,
         };
     }
+}
+
+/**
+ * Tries to get a the music brainz ID of the artist of the track identified with
+ * the given ISRC.
+ *
+ * @param {string} isrc the ISRC of the track whose artist to search for
+ * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
+ */
+async function tryFetchArtistViaIsrc(isrc: string): Promise<string | null> {
+    const isrcResponse = await fetch(
+        `${MUSICBRAINZ_RECORDING_URL}isrc:${encodeURIComponent(isrc)}`,
+        { headers: { 'Accept': 'application/json' } },
+    );
+    if (!isrcResponse.ok) {
+        return null;
+    }
+    const { recordings } = await isrcResponse.json();
+    if (!recordings || !recordings.length) {
+        return null;
+    }
+    const credits = recordings[0]['artist-credit'];
+    if (!credits || !credits.length) {
+        return null;
+    }
+
+    return credits[0].artist.id;
 }

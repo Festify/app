@@ -12,6 +12,7 @@ export interface Metadata {
     background?: string[];
     cover: Image[];
     durationMs: number;
+    isrc?: string;
     name: string;
 }
 
