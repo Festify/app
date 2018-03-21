@@ -2227,8 +2227,8 @@ jsprim@^1.2.2:
     verror "1.10.0"
 
 ken-burns-carousel@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ken-burns-carousel/-/ken-burns-carousel-0.2.1.tgz#f67dd98f4945788c1b7aecec40781543aca4d370"
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/ken-burns-carousel/-/ken-burns-carousel-0.2.2.tgz#bce529139adae45fb2e791ebef4b5d3cc6c2f51e"
 
 kind-of@^3.0.2:
   version "3.2.2"
