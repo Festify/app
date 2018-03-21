@@ -5,10 +5,9 @@ import * as SpotifyApi from 'spotify-web-api-js';
 
 import { Types } from '../actions';
 import { getArtistFanart, getMusicBrainzId, updateMetadata } from '../actions/metadata';
-import { UpdateTracksAction } from '../actions/party-data';
 import { Views } from '../routing';
-import { firebaseTrackIdSelector, loadFanartTracksSelector } from '../selectors/track';
-import { Metadata, State, Track } from '../state';
+import { loadFanartTracksSelector, loadMetadataSelector } from '../selectors/track';
+import { Metadata, State } from '../state';
 import { takeEveryWithState } from '../util/saga';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
@@ -69,25 +68,8 @@ function* watchTvMode(action, prevView: Views, newView: Views) {
     }
 }
 
-function shouldLoadMetadata(t: Track | null, metadata: Record<string, Metadata>): boolean {
-    if (!t || !t.reference.provider || !t.reference.id) {
-        return false;
-    }
-
-    const id = firebaseTrackIdSelector(t);
-    return !(id in metadata) || metadata[id].durationMs == null;
-}
-
-function* loadMetadataForNewTracks(action: UpdateTracksAction) {
-    if (!action.payload) {
-        return;
-    }
-
-    const { metadata }: State = yield select();
-    const remaining = Object.keys(action.payload)
-        .filter(k => shouldLoadMetadata(action.payload![k], metadata))
-        .map(k => action.payload![k].reference.id);
-
+function* loadMetadataForNewTracks(_) {
+    const remaining: string[] = yield select(loadMetadataSelector);
     for (const ids of chunk(remaining, 50).filter(ch => ch.length > 0)) {
         try {
             const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;

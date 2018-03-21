@@ -100,3 +100,13 @@ export const loadFanartTracksSelector = createSelector(
         .filter(id => id in meta && !meta[id].background)
         .map(id => [id, meta[id]] as [string, Metadata]),
 );
+
+export const loadMetadataSelector = createSelector(
+    metadataSelector,
+    queueTracksSelector,
+    (meta, tracks) => tracks.filter(t => {
+            const fbId = firebaseTrackIdSelector(t);
+            return !(fbId in meta) || meta[fbId].durationMs == null;
+        })
+        .map(t => t.reference.id),
+);
