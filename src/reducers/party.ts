@@ -7,6 +7,7 @@ export default function (
     state: PartyState = {
         connectionState: ConnectionState.Unknown,
         currentParty: null,
+        hasTracksLoaded: false,
         partyLoadError: null,
         partyLoadInProgress: false,
         tracks: null,
@@ -71,6 +72,7 @@ export default function (
         case Types.UPDATE_TRACKS:
             return {
                 ...state,
+                hasTracksLoaded: true,
                 tracks: action.payload,
             };
         case Types.UPDATE_USER_VOTES:
@@ -82,6 +84,7 @@ export default function (
             return {
                 connectionState: ConnectionState.Unknown,
                 currentParty: null,
+                hasTracksLoaded: false,
                 partyLoadError: null,
                 partyLoadInProgress: false,
                 userVotes: null,

@@ -61,7 +61,7 @@ const Background = (props: ViewTvProps) => {
 };
 
 const Body = (props: ViewTvProps) => {
-    if (props.isLoading) {
+    if (props.isLoading || !props.currentTrackMetadata) {
         return html`
             <div class="no-tracks">
                 <div class="header">
@@ -81,7 +81,18 @@ const Body = (props: ViewTvProps) => {
                 <h2>${props.initError.message}</h2>
             </div>
         `;
-    } else if (props.currentTrackMetadata) {
+    } else if (!props.queueTracks.length) {
+        return html`
+            <div class="no-tracks">
+                <div class="header">
+                    ${festifyLogo}
+                    <h1>Oh, no!</h1>
+                </div>
+                <h2>There are no tracks in the queue right now.</h2>
+                <h2>Enter ${props.party && props.party.short_id} on ${props.domain} and vote for new ones!</h2>
+            </div>
+        `;
+    } else {
         return html`
             ${Background(props)}
 
@@ -107,17 +118,6 @@ const Body = (props: ViewTvProps) => {
                     </tv-track>
                 `)}
             </dom-flip>
-        `;
-    } else {
-        return html`
-            <div class="no-tracks">
-                <div class="header">
-                    ${festifyLogo}
-                    <h1>Oh, no!</h1>
-                </div>
-                <h2>There are no tracks in the queue right now.</h2>
-                <h2>Enter ${props.party && props.party.short_id} on ${props.domain} and vote for new ones!</h2>
-            </div>
         `;
     }
 };
@@ -300,7 +300,7 @@ const mapStateToProps = (state: State): ViewTvProps => {
         displayKenBurns: state.tvView.displayKenBurnsBackground,
         domain: document.location.host,
         initError: state.party.partyLoadError,
-        isLoading: state.party.partyLoadInProgress,
+        isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
         metadata: state.metadata,
         party: state.party.currentParty,
         queueTracks: restTracksSelector(state),

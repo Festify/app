@@ -12,6 +12,7 @@ import sharedStyles from '../util/shared-styles';
 import './party-track';
 
 export interface PartyQueueProps {
+    hasTracksLoaded: boolean;
     isOwner: boolean;
     settingsRoute: string;
     tracks: Track[];
@@ -36,6 +37,13 @@ export const queueStyles = html`
 
 /* tslint:disable:max-line-length */
 const List = (props: PartyQueueProps & PartyQueueDispatch) => {
+    if (!props.hasTracksLoaded) {
+        return html`
+            <div class="spinner">
+                <paper-spinner-lite active alt="Loading tracks..."></paper-spinner-lite>
+            </div>
+        `;
+    }
     if (!props.tracks.length) {
         const inner = props.isOwner
             ? html`
@@ -71,6 +79,12 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
     ${sharedStyles}
     ${queueStyles}
     <style>
+        .spinner {
+            display: flex;
+            justify-content: center;
+            margin: 32px;
+        }
+    
         party-track[playing] + party-track {
             padding-top: 13px;
         }
@@ -87,6 +101,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartyQueueProps => ({
+    hasTracksLoaded: state.party.hasTracksLoaded,
     isOwner: isPartyOwnerSelector(state),
     settingsRoute: settingsRouteSelector(state),
     tracks: queueTracksSelector(state),
