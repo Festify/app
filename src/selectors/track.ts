@@ -35,7 +35,7 @@ export const sortedTracksFactory = (
 ): ((state: State) => Track[]) => createSelector(
     tracksSelector,
     tracks => values(tracks)
-        .filter(t => t.reference.provider && t.reference.id)
+        .filter(t => t.reference && t.reference.provider && t.reference.id)
         .sort((a, b) => a.order - b.order),
 );
 
@@ -95,8 +95,7 @@ export const voteStringGeneratorFactory = (
 export const loadFanartTracksSelector = createSelector(
     metadataSelector,
     queueTracksSelector,
-    (meta, tracks) => tracks.filter(t => t.reference && t.reference.provider && t.reference.id)
-        .slice(0, 2)
+    (meta, tracks) => tracks.slice(0, 2)
         .map(t => firebaseTrackIdSelector(t))
         .filter(id => id in meta && !meta[id].background)
         .map(id => [id, meta[id]] as [string, Metadata]),
