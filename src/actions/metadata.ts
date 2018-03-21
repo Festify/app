@@ -1,9 +1,9 @@
 import * as SpotifyApi from 'spotify-web-api-js';
 
+import { FANART_TV_API_KEY } from '../../fanart.config';
 import { Metadata } from '../state';
 
 import { PayloadAction, Types } from '.';
-import { FANART_TV_API_KEY } from '../../fanart.config';
 
 export type Actions =
     | UpdateMetadataAction;
@@ -49,7 +49,8 @@ export async function getMusicBrainzId(meta: Metadata): Promise<string | null> 
      * the given ISRC.
      *
      * @param {string} isrc the ISRC of the track whose artist to search for
-     * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null, if it cannot be found.
+     * @returns {Promise<string | null>} A promise with the music brainz ID of the artist or null,
+     * if it cannot be found.
      */
     async function tryFetchArtistViaIsrc(isrc: string): Promise<string | null> {
         const isrcResponse = await fetch(
