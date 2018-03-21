@@ -95,8 +95,8 @@ export const voteStringGeneratorFactory = (
 export const loadFanartTracksSelector = createSelector(
     metadataSelector,
     queueTracksSelector,
-    (meta, tracks) => tracks.slice(0, 2)
-        .filter(t => t.reference.provider && t.reference.id)
+    (meta, tracks) => tracks.filter(t => t.reference && t.reference.provider && t.reference.id)
+        .slice(0, 2)
         .map(t => firebaseTrackIdSelector(t))
         .filter(id => id in meta && !meta[id].background)
         .map(id => [id, meta[id]] as [string, Metadata]),
