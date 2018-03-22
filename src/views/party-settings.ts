@@ -10,9 +10,9 @@ import {
     changeDisplayKenBurnsBackground,
     changePartyName,
     changeSearchInput,
-    insertPlaylist,
-} from '../actions/party-settings';
-import { flushTracks } from '../actions/queue';
+    flushQueueStart,
+    insertPlaylistStart,
+} from '../actions/view-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
@@ -23,6 +23,7 @@ interface PartySettingsProps {
     partyName: string;
     playlists: Playlist[];
     playlistSearch: string;
+    queueFlushInProgress: boolean;
     tracksLoadInProgress: boolean;
     tracksToLoad: number;
     tracksLoaded: number;
@@ -128,7 +129,8 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 
         <paper-button raised
                       on-click="${props.flushTracks}"
-                      title="Remove all but the playing track from the queue to start over">
+                      title="Remove all but the playing track from the queue to start over"
+                      disabled="${props.queueFlushInProgress}">
             Flush queue
         </paper-button>
     </div>
@@ -175,6 +177,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     partyName: (state.party.currentParty || { name: '' }).name,
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,
+    queueFlushInProgress: state.settingsView.queueFlushInProgress,
     tracksLoadInProgress: state.settingsView.tracksLoadInProgress,
     tracksLoaded: state.settingsView.tracksLoaded,
     tracksToLoad: state.settingsView.tracksToLoad,
@@ -184,8 +187,8 @@ const mapDispatchToProps: PartySettingsDispatch = {
     changeDisplayKenBurnsBackground,
     changePartyName,
     changeSearchInput,
-    flushTracks,
-    insert: insertPlaylist,
+    flushTracks: flushQueueStart,
+    insert: insertPlaylistStart,
 };
 
 customElements.define(

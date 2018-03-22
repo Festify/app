@@ -4,12 +4,17 @@ import { all, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { hideToast, showToast, ShowToastAction, Types } from '../actions';
 import { ExchangeCodeFailAction } from '../actions/auth';
 import { CreatePartyFailAction, JoinPartyFailAction, OpenPartyFailAction } from '../actions/party-data';
-import { InsertFallbackPlaylistFailAction, LoadPlaylistsFailAction } from '../actions/party-settings';
 import { PlayerErrorAction, TogglePlaybackFailAction } from '../actions/playback-spotify';
+import {
+    FlushQueueFailAction,
+    InsertFallbackPlaylistFailAction,
+    LoadPlaylistsFailAction,
+} from '../actions/view-settings';
 
 type ErrorActions =
     | CreatePartyFailAction
     | ExchangeCodeFailAction
+    | FlushQueueFailAction
     | InsertFallbackPlaylistFailAction
     | JoinPartyFailAction
     | LoadPlaylistsFailAction
@@ -36,6 +41,7 @@ export default function*() {
         takeEvery([
             Types.CREATE_PARTY_Fail,
             Types.EXCHANGE_CODE_Fail,
+            Types.FLUSH_QUEUE_Fail,
             Types.INSERT_FALLBACK_PLAYLIST_Fail,
             Types.JOIN_PARTY_Fail,
             Types.LOAD_PLAYLISTS_Fail,

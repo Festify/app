@@ -6,6 +6,8 @@ export default function(
         playlistLoadError: null,
         playlistLoadInProgress: false,
         playlistSearchQuery: '',
+        queueFlushError: null,
+        queueFlushInProgress: false,
         tracksLoadError: null,
         tracksLoadInProgress: false,
         tracksToLoad: 0,
@@ -19,12 +21,30 @@ export default function(
                 ...state,
                 playlistSearchQuery: action.payload,
             };
+        case Types.FLUSH_QUEUE_Start:
+            return {
+                ...state,
+                queueFlushError: null,
+                queueFlushInProgress: true,
+            };
+        case Types.FLUSH_QUEUE_Fail:
+            return {
+                ...state,
+                queueFlushError: action.payload,
+                queueFlushInProgress: false,
+            };
+        case Types.FLUSH_QUEUE_Finish:
+            return {
+                ...state,
+                queueFlushError: null,
+                queueFlushInProgress: false,
+            };
         case Types.INSERT_FALLBACK_PLAYLIST_Start:
             return {
                 ...state,
                 tracksLoadError: null,
                 tracksLoadInProgress: true,
-                tracksToLoad: action.payload,
+                tracksToLoad: action.payload.playlist.trackCount,
                 tracksLoaded: 0,
             };
         case Types.INSERT_FALLBACK_PLAYLIST_Progress:

@@ -11,12 +11,12 @@ import {
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
-import { Actions as SettingsActions } from './party-settings';
 import { Actions as ShareActions } from './party-share';
 import { Actions as PlaybackSpotifyActions } from './playback-spotify';
 import { Actions as QueueActions } from './queue';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
+import { Actions as SettingsActions } from './view-settings';
 
 export type RouterActions =
     | typeof push
@@ -57,6 +57,9 @@ export const enum Types {
     EXCHANGE_CODE_Start = 'EXCHANGE_CODE_START',
     EXCHANGE_CODE_Fail = 'EXCHANGE_CODE_FAIL',
     EXCHANGE_CODE_Finish = 'EXCHANGE_CODE_FINISH',
+    FLUSH_QUEUE_Start = 'FLUSH_QUEUE_START',
+    FLUSH_QUEUE_Fail = 'FLUSH_QUEUE_FAIL',
+    FLUSH_QUEUE_Finish = 'FLUSH_QUEUE_FINISH',
     JOIN_PARTY_Start = 'JOIN_PARTY_START',
     JOIN_PARTY_Fail = 'JOIN_PARTY_FAIL',
     INSERT_FALLBACK_PLAYLIST_Start = 'INSERT_FALLBACK_PLAYLIST_START',
@@ -87,6 +90,7 @@ export const enum Types {
     UPDATE_NETWORK_CONNECTION_STATE = 'UPDATE_NETWORK_CONNECTION_STATE',
     UPDATE_METADATA = 'UPDATE_METADATA',
     UPDATE_PARTY = 'UPDATE_PARTY',
+    UPDATE_PARTY_NAME = 'UPDATE_PARTY_NAME',
     UPDATE_TRACKS = 'UPDATE_TRACKS',
     UPDATE_USER_PLAYLISTS = 'UPDATE_USER_PLAYLISTS',
     UPDATE_USER_VOTES = 'UPDATE_USER_VOTES',

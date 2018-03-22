@@ -7,7 +7,6 @@ import thunk from 'redux-thunk';
 import { generateInstanceId } from './actions';
 import { checkSpotifyLoginStatus } from './actions/auth';
 import { spotifySdkInitFinish } from './actions/playback-spotify';
-import middlewares from './middlewares';
 import reducers from './reducers';
 import {
     enhancer as routerEnhancer,
@@ -30,7 +29,6 @@ export const store = createStore<State>(
             thunk,
             routerMiddleware,
             saga,
-             ...middlewares,
         ),
         devToolsEnhancer({}),
     ),
