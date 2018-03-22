@@ -30,25 +30,27 @@ function* doSearch(action) {
     let tracks: SpotifyApi.TrackObjectFull[];
     try {
         const trackResponse = yield call(fetchWithAnonymousAuth, url);
-        tracks = (yield trackResponse.json()).tracks.items;
+        const resp: SpotifyApi.TrackSearchResponse = yield trackResponse.json();
+        tracks = resp.tracks.items;
     } catch (e) {
         yield put(searchFail(e));
         return;
     }
 
-    const result = tracks.reduce((acc, track, i) => {
-        acc[`spotify-${track.id}`] = {
-            added_at: Date.now(),
-            is_fallback: false,
-            order: i,
-            reference: {
-                provider: 'spotify',
-                id: track.id,
-            },
-            vote_count: 0,
-        } as Track;
-        return acc;
-    }, {});
+    const result = tracks.filter(t => t.is_playable !== false)
+        .reduce((acc, track, i) => {
+            acc[`spotify-${track.id}`] = {
+                added_at: Date.now(),
+                is_fallback: false,
+                order: i,
+                reference: {
+                    provider: 'spotify',
+                    id: track.id,
+                },
+                vote_count: 0,
+            } as Track;
+            return acc;
+        }, {});
 
     yield put(updateMetadata(tracks));
     yield put(searchFinish(result));
