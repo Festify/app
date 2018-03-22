@@ -97,12 +97,11 @@ export interface PartyViewState {
 }
 
 export interface PlayerState {
-    instanceId: string;
     localDeviceId: string | null;
-    isCompatible: boolean;
-
+    instanceId: string;
     initializing: boolean;
     initializationError: Error | null;
+    isCompatible: boolean;
     sdkReady: boolean;
     togglingPlayback: boolean;
     togglePlaybackError: Error | null;
