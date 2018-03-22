@@ -21,15 +21,9 @@ interface PartyViewProps {
     party: Party | { name: string };
     view: PartyViews;
 }
-const mapStateToProps = (state: State): PartyViewProps => ({
-    party: state.party.currentParty || { name: '' },
-    view: (state.router.result || {}).subView || PartyViews.Queue,
-});
 
 interface PartyViewDispatch {
 }
-const mapDispatchToProps: PartyViewDispatch = {
-};
 
 const Body = (view: PartyViews) => {
     switch (view) {
@@ -138,6 +132,13 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
     </app-drawer-layout>
 `;
 /* tslint:enable */
+
+const mapStateToProps = (state: State): PartyViewProps => ({
+    party: state.party.currentParty || { name: '' },
+    view: (state.router.result || {}).subView || PartyViews.Queue,
+});
+const mapDispatchToProps: PartyViewDispatch = {
+};
 
 customElements.define(
     'view-party',
