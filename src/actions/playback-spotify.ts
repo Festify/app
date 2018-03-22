@@ -1,12 +1,9 @@
-import { ConnectPlaybackState } from '../state';
-
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
     | PlayerInitStartAction
     | PlayerInitFinishAction
     | PlayerErrorAction
-    | UpdateConnectStateAction
     | SpotifySdkInitFinishAction
     | PlayAction
     | PauseAction
@@ -37,10 +34,6 @@ export interface TogglePlaybackFinishAction {
 
 export interface TogglePlaybackFailAction extends ErrorAction {
     type: Types.TOGGLE_PLAYBACK_Fail;
-}
-
-export interface UpdateConnectStateAction extends PayloadAction<ConnectPlaybackState> {
-    type: Types.UPDATE_CONNECT_STATE;
 }
 
 export interface SpotifySdkInitFinishAction {
