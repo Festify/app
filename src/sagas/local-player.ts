@@ -24,7 +24,7 @@ import {
     setPlayerCompatibility,
     togglePlaybackFinish,
 } from '../actions/playback-spotify';
-import { markTrackAsPlayed, removeTrack } from '../actions/queue';
+import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { takeEveryWithState } from '../util/saga';
@@ -152,7 +152,7 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
         }
 
         const { reference }: Track = yield select(currentTrackSelector);
-        yield put(removeTrack(reference, true) as any);
+        yield put(removeTrackAction(reference, true));
     }
 }
 

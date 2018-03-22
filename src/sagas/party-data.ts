@@ -23,6 +23,7 @@ import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
 
 import managePlaybackState from './playback-state';
+import manageQueue from './queue';
 import { managePartySettings } from './view-party-settings';
 
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
@@ -113,6 +114,7 @@ function* loadParty() {
         yield put(openPartyFinish(party));
         const partySettings = yield fork(managePartySettings, id);
         const playbackManager = yield fork(managePlaybackState, id);
+        const queueManager = yield fork(manageQueue, id);
 
         yield firebase.database!()
             .ref('/user_parties')
@@ -122,7 +124,7 @@ function* loadParty() {
 
         yield take(Types.CLEANUP_PARTY);
 
-        yield cancel(partySettings, playbackManager);
+        yield cancel(partySettings, playbackManager, queueManager);
 
         connection.close();
         partyRef.close();

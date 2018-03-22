@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
-import { removeTrack, toggleVote } from '../actions/queue';
+import { removeTrackAction, setVoteAction } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
@@ -39,7 +39,7 @@ interface PartyTrackDispatch {
     removeTrack: (ref: TrackReference) => void;
     takeOverPlayback: () => void;
     togglePlayPause: () => void;
-    toggleVote: (ref: TrackReference) => void;
+    setVote: (ref: TrackReference, vote: boolean) => void;
 }
 
 interface PartyTrackOwnProps {
@@ -86,8 +86,8 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
         return props.track
             ? html`
                 <paper-icon-button icon="${LikeButtonIcon(props)}"
-                                on-click="${ev => props.toggleVote(props.track!.reference)}"
-                                title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
+                                   on-click="${() => props.setVote(props.track!.reference, !props.hasVoted)}"
+                                   title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
                 </paper-icon-button>
             `
             : null;
@@ -297,9 +297,9 @@ export const createMapStateToPropsFactory = (
 };
 
 export const mapDispatchToProps: PartyTrackDispatch = {
-    removeTrack: (ref: TrackReference) => removeTrack(ref, false),
+    removeTrack: (ref: TrackReference) => removeTrackAction(ref, false),
+    setVote: setVoteAction,
     takeOverPlayback: installPlaybackMaster,
-    toggleVote,
     togglePlayPause: togglePlaybackStart,
 };
 

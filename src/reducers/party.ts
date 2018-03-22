@@ -35,7 +35,7 @@ export default function (
                 partyLoadError: null,
                 partyLoadInProgress: false,
             };
-        case Types.TOGGLE_VOTE:
+        case Types.SET_VOTE:
             const [ref, vote] = action.payload;
             const trackId = firebaseTrackIdSelector(ref);
 
