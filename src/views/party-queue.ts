@@ -84,7 +84,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             justify-content: center;
             margin: 32px;
         }
-    
+
         party-track[playing] + party-track {
             padding-top: 13px;
         }
