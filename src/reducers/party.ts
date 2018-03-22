@@ -1,4 +1,5 @@
 import { Actions, Types } from '../actions';
+import { firebaseTrackIdSelector } from '../selectors/track';
 import { ConnectionState, PartyState, Track } from '../state';
 
 const VOTE_FACTOR = 1e12;
@@ -36,7 +37,7 @@ export default function (
             };
         case Types.TOGGLE_VOTE:
             const [ref, vote] = action.payload;
-            const trackId = `${ref.provider}-${ref.id}`;
+            const trackId = firebaseTrackIdSelector(ref);
 
             const trackList: Record<string, Track> = { ...state.tracks };
             if (state.tracks && state.tracks[trackId]) {
