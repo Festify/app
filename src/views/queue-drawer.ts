@@ -3,7 +3,7 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import { loginWithSpotify } from '../actions/auth';
-import { handleClick } from '../actions/queue-drawer';
+import { handleClick } from '../actions/view-queue-drawer';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import {

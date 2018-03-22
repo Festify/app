@@ -4,7 +4,7 @@ import '@polymer/paper-input/paper-input';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { shareParty } from '../actions/party-share';
+import { shareParty } from '../actions/view-party-share';
 import { State } from '../state';
 import sharedStyles from '../util/shared-styles';
 

@@ -9,7 +9,7 @@ import {
     FlushQueueFailAction,
     InsertFallbackPlaylistFailAction,
     LoadPlaylistsFailAction,
-} from '../actions/view-settings';
+} from '../actions/view-party-settings';
 
 type ErrorActions =
     | CreatePartyFailAction

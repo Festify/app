@@ -19,7 +19,7 @@ import {
     ChangeDisplayKenBurnsBackgroundAction,
     InsertFallbackPlaylistStartAction,
     UpdatePartyNameAction,
-} from '../actions/view-settings';
+} from '../actions/view-party-settings';
 import { PartyViews } from '../routing';
 import { queueTracksSelector } from '../selectors/track';
 import { Playlist, State, Track } from '../state';

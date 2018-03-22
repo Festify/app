@@ -11,12 +11,12 @@ import {
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';
 import { Actions as PartyDataActions } from './party-data';
-import { Actions as ShareActions } from './party-share';
 import { Actions as PlaybackSpotifyActions } from './playback-spotify';
 import { Actions as QueueActions } from './queue';
 import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
-import { Actions as SettingsActions } from './view-settings';
+import { Actions as SettingsActions } from './view-party-settings';
+import { Actions as ShareActions } from './view-party-share';
 
 export type RouterActions =
     | typeof push

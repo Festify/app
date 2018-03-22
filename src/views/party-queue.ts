@@ -2,7 +2,7 @@ import 'dom-flip';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { handleClick } from '../actions/queue-drawer';
+import { handleClick } from '../actions/view-queue-drawer';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { settingsRouteSelector } from '../selectors/routes';
 import { queueTracksSelector } from '../selectors/track';

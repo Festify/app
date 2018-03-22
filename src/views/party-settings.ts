@@ -12,7 +12,7 @@ import {
     changeSearchInput,
     flushQueueStart,
     insertPlaylistStart,
-} from '../actions/view-settings';
+} from '../actions/view-party-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
