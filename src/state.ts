@@ -1,6 +1,12 @@
 import { Location } from '@mraerino/redux-little-router-reactless';
 import * as SpotifyApi from 'spotify-web-api-js';
 
+export const enum ConnectionState {
+    Unknown,
+    Connected,
+    Disconnected,
+}
+
 export interface Image {
     height: number;
     url: string;
@@ -43,27 +49,6 @@ export interface Party {
     short_id: string;
 }
 
-export const enum ConnectionState {
-    Unknown,
-    Connected,
-    Disconnected,
-}
-
-export interface PartyState {
-    connectionState: ConnectionState;
-    currentParty: Party | null;
-    hasTracksLoaded: boolean;
-    partyLoadError: Error | null;
-    partyLoadInProgress: boolean;
-    tracks: Record<string, Track> | null;
-    userVotes: Record<string, boolean> | null;
-}
-
-export interface TrackReference {
-    id: string;
-    provider: 'spotify';
-}
-
 export interface Track {
     added_at: number;
     is_fallback: boolean;
@@ -72,6 +57,15 @@ export interface Track {
     played_at?: number;
     vote_count: number;
 }
+
+export interface TrackReference {
+    id: string;
+    provider: 'spotify';
+}
+
+/*
+ * Redux state
+ */
 
 export interface AppShellState {
     currentToast: string | null;
@@ -84,6 +78,16 @@ export interface HomeViewState {
     partyJoinError: Error | null;
     partyId: string;
     partyIdValid: boolean;
+}
+
+export interface PartyState {
+    connectionState: ConnectionState;
+    currentParty: Party | null;
+    hasTracksLoaded: boolean;
+    partyLoadError: Error | null;
+    partyLoadInProgress: boolean;
+    tracks: Record<string, Track> | null;
+    userVotes: Record<string, boolean> | null;
 }
 
 export interface PartyViewState {
