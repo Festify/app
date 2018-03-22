@@ -80,16 +80,6 @@ export default function (
                 ...state,
                 userVotes: action.payload,
             };
-        case Types.CLEANUP_PARTY:
-            return {
-                connectionState: ConnectionState.Unknown,
-                currentParty: null,
-                hasTracksLoaded: false,
-                partyLoadError: null,
-                partyLoadInProgress: false,
-                userVotes: null,
-                tracks: null,
-            };
         case Types.UPDATE_PLAYBACK_STATE:
             if (!state.currentParty) {
                 return state;
@@ -104,6 +94,16 @@ export default function (
                         ...action.payload,
                     },
                 },
+            };
+        case Types.CLEANUP_PARTY:
+            return {
+                connectionState: ConnectionState.Unknown,
+                currentParty: null,
+                hasTracksLoaded: false,
+                partyLoadError: null,
+                partyLoadInProgress: false,
+                userVotes: null,
+                tracks: null,
             };
         default:
             return state;
