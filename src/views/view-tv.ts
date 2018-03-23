@@ -23,6 +23,7 @@ interface ViewTvProps {
     currentTrackMetadata: Metadata | null;
     displayKenBurns: boolean;
     domain: string;
+    hasTracks: boolean;
     initError: Error | null;
     isLoading: boolean;
     metadata: Record<string, Metadata>;
@@ -81,7 +82,7 @@ const Body = (props: ViewTvProps) => {
                 <h2>${props.initError.message}</h2>
             </div>
         `;
-    } else if (!props.queueTracks.length) {
+    } else if (!props.hasTracks) {
         return html`
             <div class="no-tracks">
                 <div class="header">
@@ -277,7 +278,10 @@ const ViewTv = (props: ViewTvProps) => html`
 /* tslint:enable */
 
 const artistNameSelector = artistJoinerFactory();
-
+const hasTracksSelector = createSelector(
+    queueTracksSelector,
+    tracks => !!tracks.length,
+);
 const restTracksSelector = createSelector(
     queueTracksSelector,
     (tracks: Track[]) => tracks.slice(1, 30),
@@ -299,6 +303,7 @@ const mapStateToProps = (state: State): ViewTvProps => {
         currentTrackMetadata: meta,
         displayKenBurns: state.tvView.displayKenBurnsBackground,
         domain: document.location.host,
+        hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
         metadata: state.metadata,
