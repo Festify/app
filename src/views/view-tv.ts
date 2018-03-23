@@ -61,6 +61,18 @@ const Background = (props: ViewTvProps) => {
     }
 };
 
+const Lower = (props: ViewTvProps) => {
+    const list = props.queueTracks.map(t => html`
+        <tv-track trackid$="${t.reference.provider}-${t.reference.id}"
+                  data-flip-id$="${t.reference.provider}-${t.reference.id}">
+        </tv-track>
+    `);
+
+    return typeof window.ShadyCSS === 'object'
+        ? html`<div class="lower">${list}</div>`
+        : html`<dom-flip class="lower">${list}</dom-flip>`
+};
+
 const Body = (props: ViewTvProps) => {
     if (props.isLoading || !props.currentTrackMetadata) {
         return html`
@@ -112,13 +124,8 @@ const Body = (props: ViewTvProps) => {
                     </div>
                 </div>
             </div>
-            <dom-flip class="lower">
-                ${props.queueTracks.map(t => html`
-                    <tv-track trackid$="${t.reference.provider}-${t.reference.id}"
-                              data-flip-id$="${t.reference.provider}-${t.reference.id}">
-                    </tv-track>
-                `)}
-            </dom-flip>
+            
+            ${Lower(props)}
         `;
     }
 };
