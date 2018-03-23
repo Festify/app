@@ -114,7 +114,7 @@ function* insertPlaylist(partyId: string, ac: InsertFallbackPlaylistStartAction)
 
 function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
     yield firebase.database!()
-        .ref('/party')
+        .ref('/parties')
         .child(partyId)
         .child('name')
         .set(ac.payload);
