@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash-es';
+import isEqual from 'lodash-es/isEqual';
 import { Task } from 'redux-saga';
 import { call, cancelled, fork, join, put, select, take, takeEvery } from 'redux-saga/effects';
 
