@@ -1,3 +1,4 @@
+import * as Raven from 'raven-js';
 import { eventChannel, Channel, Task } from 'redux-saga';
 import {
     all,
@@ -13,9 +14,6 @@ import {
 } from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';
-import { Playback, State, Track } from '../state';
-import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
-
 import { updatePlaybackState } from '../actions/party-data';
 import {
     play,
@@ -27,7 +25,9 @@ import {
 import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
+import { Playback, State, Track } from '../state';
 import { takeEveryWithState } from '../util/saga';
+import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
     return eventChannel<T>(put => {
@@ -208,6 +208,9 @@ function* handleQueueChange(
 
 function* handlePlaybackError(error: Spotify.Error) {
     yield put(showToast(error.message));
+    console.error("Spotify error:", error);
+
+    Raven.captureException(error.message);
 }
 
 export function* manageLocalPlayer(partyId: string) {
