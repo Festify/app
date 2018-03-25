@@ -225,7 +225,7 @@ export function* manageLocalPlayer(partyId: string) {
             }
 
             player = new Spotify.Player({
-                name: 'Festify',
+                name: 'Festify 🎉',
                 getOAuthToken: (cb) => requireAccessToken().then(cb),
                 volume: 1,
             });
