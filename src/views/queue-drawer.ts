@@ -133,7 +133,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             Share
         </a>
         <a href="${props.tvRoute}"
-           on-click="${ev => props.handleClick(ev, props.tvRoute)}">
+           target="_blank">
             <iron-icon icon="festify:tv"></iron-icon>
             TV Mode
         </a>
