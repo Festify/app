@@ -1,7 +1,7 @@
 import { DataSnapshot } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
-import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import { call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
@@ -154,8 +154,6 @@ function* watchRoute() {
 }
 
 export default function*() {
-    yield all([
-        loadParty(),
-        watchRoute(),
-    ]);
+    yield loadParty();
+    yield watchRoute();
 }

@@ -1,5 +1,5 @@
 import { delay } from 'redux-saga';
-import { all, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { hideToast, showToast, ShowToastAction, Types } from '../actions';
 import { ExchangeCodeFailAction } from '../actions/auth';
@@ -36,18 +36,16 @@ function* displayErrorToast(action: ErrorActions) {
 }
 
 export default function*() {
-    yield all([
-        takeLatest(Types.SHOW_TOAST, displayToast),
-        takeEvery([
-            Types.CREATE_PARTY_Fail,
-            Types.EXCHANGE_CODE_Fail,
-            Types.FLUSH_QUEUE_Fail,
-            Types.INSERT_FALLBACK_PLAYLIST_Fail,
-            Types.JOIN_PARTY_Fail,
-            Types.LOAD_PLAYLISTS_Fail,
-            Types.OPEN_PARTY_Fail,
-            Types.PLAYER_ERROR,
-            Types.TOGGLE_PLAYBACK_Fail,
-        ], displayErrorToast),
-    ]);
+    yield takeLatest(Types.SHOW_TOAST, displayToast);
+    yield takeEvery([
+        Types.CREATE_PARTY_Fail,
+        Types.EXCHANGE_CODE_Fail,
+        Types.FLUSH_QUEUE_Fail,
+        Types.INSERT_FALLBACK_PLAYLIST_Fail,
+        Types.JOIN_PARTY_Fail,
+        Types.LOAD_PLAYLISTS_Fail,
+        Types.OPEN_PARTY_Fail,
+        Types.PLAYER_ERROR,
+        Types.TOGGLE_PLAYBACK_Fail,
+    ], displayErrorToast);
 }

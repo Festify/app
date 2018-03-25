@@ -1,6 +1,6 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import chunk from 'lodash-es/chunk';
-import { all, call, cancel, put, select, takeLatest } from 'redux-saga/effects';
+import { call, cancel, put, select, takeLatest } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { Types } from '../actions';
@@ -87,12 +87,10 @@ function* loadMetadataForNewTracks(_) {
 }
 
 export default function*() {
-    yield all([
-        takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks),
-        takeEveryWithState(
-            LOCATION_CHANGED,
-            (s: State) => (s.router!.result || { view: Views.Home }).view,
-            watchTvMode,
-        ),
-    ]);
+    yield takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks);
+    yield takeEveryWithState(
+        LOCATION_CHANGED,
+        (s: State) => (s.router!.result || { view: Views.Home }).view,
+        watchTvMode,
+    );
 }
