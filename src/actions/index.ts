@@ -29,6 +29,7 @@ export type RouterActions =
 
 export type Actions =
     | AuthActions
+    | CommonActions
     | HomeViewActions
     | MetadataActions
     | PartyDataActions
@@ -37,9 +38,7 @@ export type Actions =
     | QueueActions
     | RouterActions
     | SettingsActions
-    | ShareActions
-    | ShowToastAction
-    | HideToastAction;
+    | ShareActions;
 
 export const enum Types {
     ASSIGN_INSTANCE_ID = 'ASSIGN_INSTANCE_ID',
@@ -113,7 +112,13 @@ export interface ErrorAction extends PayloadAction<Error> {
     error: true;
 }
 
-export interface AssignInstanceId extends PayloadAction<string> {
+export type CommonActions =
+    | AssignInstanceIdAction
+    | ClickLinkAction
+    | HideToastAction
+    | ShowToastAction;
+
+export interface AssignInstanceIdAction extends PayloadAction<string> {
     type: Types.ASSIGN_INSTANCE_ID;
 }
 
@@ -183,7 +188,7 @@ export function queueDragDrop(event: DragEvent): QueueDragDropAction {
     };
 }
 
-export function generateInstanceId(): AssignInstanceId {
+export function generateInstanceId(): AssignInstanceIdAction {
     return {
         type: Types.ASSIGN_INSTANCE_ID,
         payload: String(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
