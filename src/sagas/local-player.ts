@@ -227,7 +227,7 @@ export function* manageLocalPlayer(partyId: string) {
             player = new Spotify.Player({
                 name: 'Festify',
                 getOAuthToken: (cb) => requireAccessToken().then(cb),
-                volume: 0.1,
+                volume: 1,
             });
 
             const playerErrors: Channel<Spotify.Error> =
