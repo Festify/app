@@ -1,4 +1,5 @@
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { delay } from 'redux-saga';
 import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { CLIENT_ID, TOKEN_EXCHANGE_URL } from '../../spotify.config';
@@ -111,10 +112,27 @@ function* triggerOAuthLogin() {
     window.location.href = oauthUrl;
 }
 
+/**
+ * This saga forcefully refreshes the user token every 55 minutes
+ * to prevent Firebase from disconnecting and thus destroying playback.
+ */
+function* refreshFirebaseAuth() {
+    while (true) {
+        yield call(delay, 1000 * 60 * 55);
+
+        const { currentUser } = firebase.auth!();
+
+        if (currentUser) {
+            currentUser.getToken(true);
+        }
+    }
+}
+
 export default function*() {
     yield all([
         takeEvery(Types.CHECK_SPOTIFY_LOGIN_STATUS, checkSpotifyLoginStatus),
         takeLatest(Types.TRIGGER_SPOTIFY_OAUTH_LOGIN, triggerOAuthLogin),
         exchangeCode(),
+        refreshFirebaseAuth(),
     ]);
 }
