@@ -123,7 +123,7 @@ function* refreshFirebaseAuth() {
         const { currentUser } = firebase.auth!();
 
         if (currentUser) {
-            currentUser.getToken(true);
+            currentUser.getIdToken(true);
         }
     }
 }
