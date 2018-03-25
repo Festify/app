@@ -69,10 +69,13 @@ function* watchTvMode(action, prevView: Views, newView: Views) {
 }
 
 function* loadMetadataForNewTracks(_) {
-    const remaining: string[] = yield select(loadMetadataSelector);
+    const state: State = yield select();
+    const country = state.party.currentParty!.country;
+    const remaining: string[] = loadMetadataSelector(state);
+
     for (const ids of chunk(remaining, 50).filter(ch => ch.length > 0)) {
         try {
-            const url = `/tracks?ids=${encodeURIComponent(ids.join(','))}`;
+            const url = `/tracks?market=${country}&ids=${encodeURIComponent(ids.join(','))}`;
             const resp = yield call(fetchWithAnonymousAuth, url);
             const { tracks }: SpotifyApi.MultipleTracksResponse = yield resp.json();
 
