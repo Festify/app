@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "prod": "festify-79b08",
+    "dev": "festify-dev"
+  }
+}
