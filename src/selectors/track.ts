@@ -56,17 +56,6 @@ export const currentTrackIdSelector = createSelector(
     track => track ? `${track.reference.provider}-${track.reference.id}` : null,
 );
 
-export const currentTrackMetadataSelector = createSelector(
-    currentTrackIdSelector,
-    metadataSelector,
-    (trackId, metadata) => trackId ? metadata[trackId] : null,
-);
-
-export const currentTrackSpotifyIdSelector: (state: State) => string | null = createSelector(
-    currentTrackSelector,
-    track => track ? `spotify:track:${track.reference.id}` : null,
-);
-
 export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
     if (a === b) {
         return true;
