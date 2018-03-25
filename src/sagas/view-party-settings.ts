@@ -131,7 +131,7 @@ export default function*() {
     yield* fetchKenBurnsDisplayValue();
     yield takeEveryWithState(
         LOCATION_CHANGED,
-        (s: State) => s.router.result.subView,
+        (s: State) => (s.router!.result || { subView: PartyViews.Queue }).subView,
         fetchPlaylists,
     );
 }

@@ -77,7 +77,7 @@ const mapStateToProps = (state: State): AppShellProps => ({
     isPlaybackMaster: isPlaybackMasterSelector(state),
     isToastOpen: !!state.appShell.currentToast,
     toastText: state.appShell.currentToast || '',
-    view: (state.router.result || {}).view,
+    view: (state.router!.result || { view: Views.Home }).view,
 });
 
 const Shell = connect(

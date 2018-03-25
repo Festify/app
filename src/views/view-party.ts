@@ -141,7 +141,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
 const mapStateToProps = (state: State): PartyViewProps => ({
     party: state.party.currentParty || { name: '' },
-    view: (state.router.result || {}).subView || PartyViews.Queue,
+    view: (state.router.result || { subView: PartyViews.Queue }).subView,
 });
 const mapDispatchToProps: PartyViewDispatch = {
     trackDragEnter: queueDragEnter,

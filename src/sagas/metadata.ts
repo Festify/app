@@ -88,7 +88,7 @@ export default function*() {
         takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks),
         takeEveryWithState(
             LOCATION_CHANGED,
-            (s: State) => (s.router!.result || {}).view || Views.Home,
+            (s: State) => (s.router!.result || { view: Views.Home }).view,
             watchTvMode,
         ),
     ]);
