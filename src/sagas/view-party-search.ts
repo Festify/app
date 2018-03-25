@@ -5,6 +5,7 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
 import { searchFail, searchFinish, searchStart, ChangeTrackSearchInputAction } from '../actions/view-party';
+import { queueRouteSelector, searchRouteSelector } from '../selectors/routes';
 import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
@@ -57,22 +58,18 @@ function* doSearch(action) {
 }
 
 function* updateUrl(action: ChangeTrackSearchInputAction) {
-    const { router }: State = yield select();
-    const { params: { partyId }, query: {s} } = router || { params: { partyId: '' }, query: { s: '' } };
-
-    if (!partyId) {
-        throw new Error("Searching without party!");
-    }
+    const state: State = yield select();
+    const { s } = state.router!.query || { s: '' };
 
     if (!action.payload) {
-        yield put(push(`/party/${partyId}`, {}));
+        yield put(push(queueRouteSelector(state), {}));
         return;
     }
 
     // Replace URL if we already have an incomplete query to avoid clobbing
     // up the users browser history.
     const routerFn = s ? replace : push;
-    yield put(routerFn(`/party/${partyId}/search?s=${encodeURIComponent(action.payload)}`, {}));
+    yield put(routerFn(searchRouteSelector(state, action.payload), {}));
 }
 
 export default function*() {
