@@ -3,7 +3,7 @@
  */
 
 const FILE_PATH_MAP = {
-    'FANART_CONFIG': 'fanart.config.js',
+    'COMMON_CONFIG': 'common.config.js',
     'FIREBASE_CONFIG': 'firebase.config.js',
     'FIREBASE_SERVICE_ACCOUNT': 'functions/service-account.json',
     'SPOTIFY_CONFIG': 'spotify.config.js',

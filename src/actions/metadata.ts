@@ -1,6 +1,6 @@
 import * as SpotifyApi from 'spotify-web-api-js';
 
-import { FANART_TV_API_KEY } from '../../fanart.config';
+import { FANART_TV_API_KEY } from '../../common.config';
 import { Metadata } from '../state';
 
 import { PayloadAction, Types } from '.';
