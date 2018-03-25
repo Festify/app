@@ -18,6 +18,7 @@ export interface Metadata {
     background?: string[];
     cover: Image[];
     durationMs: number;
+    isPlayable: boolean;
     isrc?: string;
     name: string;
 }

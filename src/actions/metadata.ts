@@ -132,6 +132,7 @@ export function updateMetadata(
                 cover: track.album.images.filter(img => img.width && img.height),
                 durationMs: track.duration_ms,
                 isrc: track.external_ids ? track.external_ids.isrc : undefined,
+                isPlayable: track.is_playable !== false,
                 name: track.name,
             } as Metadata;
         }

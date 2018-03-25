@@ -34,8 +34,13 @@ export const sortedTracksFactory = (
     tracksSelector: (state: State) => Record<string, Track> | null,
 ): ((state: State) => Track[]) => createSelector(
     tracksSelector,
-    tracks => values(tracks)
+    metadataSelector,
+    (tracks, meta) => values(tracks)
         .filter(t => t.reference && t.reference.provider && t.reference.id)
+        .filter(t => {
+            const fbId = firebaseTrackIdSelector(t);
+            return !(fbId in meta) || meta[fbId].isPlayable;
+        })
         .sort((a, b) => a.order - b.order),
 );
 
