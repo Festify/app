@@ -2,8 +2,8 @@ import '@polymer/iron-icon/iron-icon';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
+import { clickLink } from '../actions';
 import { loginWithSpotify } from '../actions/auth';
-import { handleClick } from '../actions/view-queue-drawer';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import {
@@ -159,7 +159,7 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
 });
 
 const mapDispatchToProps: QueueDrawerDispatch = {
-    handleClick,
+    handleClick: clickLink,
     enterAdmin: loginWithSpotify,
 };
 

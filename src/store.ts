@@ -2,7 +2,6 @@ import { initializeCurrentLocation } from '@mraerino/redux-little-router-reactle
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import createSagaMiddleware from 'redux-saga';
-import thunk from 'redux-thunk';
 
 import { generateInstanceId } from './actions';
 import { checkSpotifyLoginStatus } from './actions/auth';
@@ -25,11 +24,7 @@ export const store = createStore<State>(
     }),
     compose(
         routerEnhancer,
-        applyMiddleware(
-            thunk,
-            routerMiddleware,
-            saga,
-        ),
+        applyMiddleware(routerMiddleware, saga),
         devToolsEnhancer({}),
     ),
 );

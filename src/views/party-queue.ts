@@ -2,7 +2,7 @@ import 'dom-flip';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { handleClick } from '../actions/view-queue-drawer';
+import { clickLink } from '../actions';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { settingsRouteSelector } from '../selectors/routes';
 import { queueTracksSelector } from '../selectors/track';
@@ -108,7 +108,7 @@ const mapStateToProps = (state: State): PartyQueueProps => ({
 });
 
 const mapDispatchToProps: PartyQueueDispatch = {
-    handleClick,
+    handleClick: clickLink,
 };
 
 customElements.define(

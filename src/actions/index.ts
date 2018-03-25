@@ -46,6 +46,7 @@ export const enum Types {
     BECOME_PLAYBACK_MASTER = 'BECOME_PLAYBACK_MASTER',
     RESIGN_PLAYBACK_MASTER = 'RESIGN_PLAYBACK_MASTER',
     INSTALL_PLAYBACK_MASTER = 'INSTALL_PLAYBACK_MASTER',
+    CLICK_LINK = 'CLICK_LINK',
     CHANGE_DISPLAY_KEN_BURNS_BACKGROUND = 'CHANGE_DISPLAY_KEN_BURNS_BACKGROUND',
     CHANGE_PARTY_ID = 'CHANGE_PARTY_ID',
     CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT',
@@ -113,8 +114,17 @@ export interface AssignInstanceId extends PayloadAction<string> {
     type: Types.ASSIGN_INSTANCE_ID;
 }
 
+export interface ClickLinkAction extends PayloadAction<LinkData> {
+    type: Types.CLICK_LINK;
+}
+
 export interface HideToastAction {
     type: Types.HIDE_TOAST;
+}
+
+export interface LinkData {
+    event: MouseEvent;
+    route: string;
 }
 
 export interface ShowToastAction extends PayloadAction<ToastData> {
@@ -124,6 +134,13 @@ export interface ShowToastAction extends PayloadAction<ToastData> {
 export interface ToastData {
     duration: number;
     text: string;
+}
+
+export function clickLink(event: MouseEvent, route: string): ClickLinkAction {
+    return {
+        type: Types.CLICK_LINK,
+        payload: { event, route },
+    };
 }
 
 export function generateInstanceId(): AssignInstanceId {
