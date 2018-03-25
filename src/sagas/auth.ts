@@ -1,6 +1,6 @@
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
-import { apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { CLIENT_ID, TOKEN_EXCHANGE_URL } from '../../spotify.config';
 import { showToast, Types } from '../actions';
@@ -129,8 +129,10 @@ function* refreshFirebaseAuth() {
 }
 
 export default function*() {
-    yield takeEvery(Types.CHECK_SPOTIFY_LOGIN_STATUS, checkSpotifyLoginStatus);
-    yield takeLatest(Types.TRIGGER_SPOTIFY_OAUTH_LOGIN, triggerOAuthLogin);
-    yield exchangeCode();
-    yield refreshFirebaseAuth();
+    yield all([
+        takeEvery(Types.CHECK_SPOTIFY_LOGIN_STATUS, checkSpotifyLoginStatus),
+        takeLatest(Types.TRIGGER_SPOTIFY_OAUTH_LOGIN, triggerOAuthLogin),
+        exchangeCode(),
+        refreshFirebaseAuth(),
+    ]);
 }
