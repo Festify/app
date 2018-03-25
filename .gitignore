@@ -1,15 +1,8 @@
 # Package Managers
-bower_components/
 node_modules/
 npm-debug.log
-package-lock.json
-
-# Cordova and Electron stuff
-plugins/
-platforms/
-res/
-www/
-!www/.gitkeep
+package-lock.json # we use yarn
+.rpt2_cache
 
 # Build Output
 .tmp/
@@ -18,12 +11,27 @@ build-mobile/
 dist/
 .env*
 /images/manifest/*.png
+yarn-error.log
 
-# Firebase
+# Firebase Functions specifically want a functions/index.js file
+# Thus, we cannot let TS output the build sources into a dist/ or
+# build/ folder which we could ignore as a whole.
+functions/**/*.js
+functions/**/*.js.map
+
+# Config
+common.config.js
+firebase.config.js
 database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
 google-services.json
+spotify.config.js
+service-account.json
+functions/spotify.config.ts
 
 # IDE
 .idea/
+.vscode/
+
+.DS_Store

@@ -1,38 +1,14 @@
-matrix:
-  include:
-    - os: osx
-      osx_image: xcode9.1
-      language: node_js
-      node_js: "8"
-      env:
-        - ELECTRON_CACHE=$HOME/.cache/electron
-        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-      cache:
-        directories:
-        - $HOME/.cache/electron
-        - $HOME/.cache/electron-builder
-        yarn: true
-
-    - os: linux
-      language: node_js
-      node_js: "8"
-      cache:
-        yarn: true
+language: node_js
+node_js: "8"
 
 before_script:
   - yarn global add greenkeeper-lockfile@1
   - greenkeeper-lockfile-update
-  - bower install
+  - yarn prepare-env
 
 script:
-  - |
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      gulp build
-    fi
-  - |
-    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      yarn build-electron
-    fi
+  - yarn build
+  - (cd functions && yarn && yarn build)
 
 after_script:
   - greenkeeper-lockfile-upload
@@ -45,15 +21,6 @@ deploy:
     project: "festify-dev"
     on:
       branch: develop
-      condition: $TRAVIS_OS_NAME = linux
-  - provider: firebase
-    skip_cleanup: true
-    token:
-      secure: "z9aBocF0dHE7/PvNHAsQ1tc6bDNbJX2ERkXP6g9IEQTWGaI9iHV7HxFQSBynoWaVZJjOSnSzPRKWbXZlzKKJ8NxR3KdkNT1ETP06FyanChN0JFxv1SLvsjuKuVlUdV9NzJ6WscQ7UbjCeJtszfJwN0iLHl8+pAWc/yaarEOQx5OfwIMTMpNVho4eH+sHx0BovcWDO8IHPZ6iSPEjrJrP4otlklG7yMuv0DeB2+f10eYH0WN5IX6fq4CFPM8uu6J0ZHKN0QYaiV1uF9dnL2YORuyYY1mUjnv8ZwjCzZmPBH480OzTxJC2IIfO/+cQsdB6A4v5wfz72+UuJIoZQNNYLI6KS1JCIeAojGBT3qubIJEE5Q49l8ES0GJA8SZB9npRtmPDE68t96rKGVj/ZLbK3cNgYP/G+Sdge5GI51WxItiHaGbah2vGtwuxBt42tJfb1AzxK5zb9X5f5HBi1y1FZLpEJvm88LUn7lEG4D7CiOuLP1mgEFh2FrboJK0yzWD+5wfaVV2PEHdH5CnvYA3S2g+1uAVYnvcKU6Nngfxk1k8K29DbJk1CA280uN4KsSA5HaAZ3KrTq6/IeVQoMfTRBhW0JXQ1xANrl5e0I3p5LuNFz6tFvDdf2nMDIwPLfo8LqY3s4aMA30dYJWjMj0yTy5gMrGHRjlf0XwtiUYeCiVc="
-    project: "festify-beta"
-    on:
-      branch: testing
-      condition: $TRAVIS_OS_NAME = linux
   - provider: firebase
     skip_cleanup: true
     token:
@@ -61,7 +28,6 @@ deploy:
     project: "festify-79b08"
     on:
       branch: master
-      condition: $TRAVIS_OS_NAME = linux
 
 notifications:
   email: false

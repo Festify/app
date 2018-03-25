@@ -1,10 +1,15 @@
 path /parties {
     read() { true }
-    index() { "short_id" }
+    index() { ["created_by", "short_id"] }
 }
 
 path /parties/{partyId} is Party {
     write() { createdByCurrent(this.created_by) }
+}
+
+path /user_parties/{uid}/{partyId} {
+    read() { isCurrentUser(uid) }
+    write() { isCurrentUser(uid) }
 }
 
 type Party {
@@ -28,7 +33,9 @@ type PartyShortId extends NonEmptyString {
 type PlaybackState {
     last_change: CurrentTimestamp,
     last_position_ms: Number,
-    playing: Boolean
+    playing: Boolean,
+    target_playing: Boolean | Null,
+    master_id: String | Null
 }
 
 type SpotifyCountry extends String {
