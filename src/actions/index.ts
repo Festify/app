@@ -76,6 +76,9 @@ export const enum Types {
     PLAYER_ERROR = 'PLAYER_ERROR',
     PLAYER_INIT_Start = 'PLAYER_INIT_START',
     PLAYER_INIT_Finish = 'PLAYER_INIT_FINISH',
+    QUEUE_DRAG_Enter = 'QUEUE_DRAG_Enter',
+    QUEUE_DRAG_Over = 'QUEUE_DRAG_Over',
+    QUEUE_DRAG_Drop = 'QUEUE_DRAG_Drop',
     REMOVE_TRACK = 'REMOVE_TRACK',
     SEARCH_Start = 'SEARCH_START',
     SEARCH_Finish = 'SEARCH_FINISH',
@@ -118,6 +121,18 @@ export interface ClickLinkAction extends PayloadAction<LinkData> {
     type: Types.CLICK_LINK;
 }
 
+export interface QueueDragEnterAction extends PayloadAction<DragData> {
+    type: Types.QUEUE_DRAG_Enter;
+}
+
+export interface QueueDragOverAction extends PayloadAction<DragData> {
+    type: Types.QUEUE_DRAG_Over;
+}
+
+export interface QueueDragDropAction extends PayloadAction<DragData> {
+    type: Types.QUEUE_DRAG_Drop;
+}
+
 export interface HideToastAction {
     type: Types.HIDE_TOAST;
 }
@@ -125,6 +140,10 @@ export interface HideToastAction {
 export interface LinkData {
     event: MouseEvent;
     route: string;
+}
+
+export interface DragData {
+    event: DragEvent;
 }
 
 export interface ShowToastAction extends PayloadAction<ToastData> {
@@ -140,6 +159,27 @@ export function clickLink(event: MouseEvent, route: string): ClickLinkAction {
     return {
         type: Types.CLICK_LINK,
         payload: { event, route },
+    };
+}
+
+export function queueDragEnter(event: DragEvent): QueueDragEnterAction {
+    return {
+        type: Types.QUEUE_DRAG_Enter,
+        payload: { event },
+    };
+}
+
+export function queueDragOver(event: DragEvent): QueueDragOverAction {
+    return {
+        type: Types.QUEUE_DRAG_Over,
+        payload: { event },
+    };
+}
+
+export function queueDragDrop(event: DragEvent): QueueDragDropAction {
+    return {
+        type: Types.QUEUE_DRAG_Drop,
+        payload: { event },
     };
 }
 

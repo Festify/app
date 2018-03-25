@@ -3,8 +3,9 @@ import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
-import { html } from 'lit-html';
+import { html } from 'lit-html/lib/lit-extended';
 
+import { queueDragDrop, queueDragEnter, queueDragOver } from '../actions';
 import { PartyViews } from '../routing';
 import { Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
@@ -23,12 +24,17 @@ interface PartyViewProps {
 }
 
 interface PartyViewDispatch {
+    trackDragEnter;
+    trackDragOver;
+    trackDragDrop;
 }
 
-const Body = (view: PartyViews) => {
+const Body = (view: PartyViews, props: PartyViewDispatch & PartyViewProps) => {
     switch (view) {
         case PartyViews.Queue:
-            return html`<party-queue></party-queue>`;
+            return html`<party-queue on-dragenter="${props.trackDragEnter}"
+                                     on-drop="${props.trackDragDrop}"
+                                     on-dragover="${props.trackDragOver}"></party-queue>`;
         case PartyViews.Search:
             return html`<party-search></party-search>`;
         case PartyViews.Settings:
@@ -126,7 +132,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             </header>
 
             <main>
-                ${Body(props.view)}
+                ${Body(props.view, props)}
             </main>
         </div>
     </app-drawer-layout>
@@ -138,6 +144,9 @@ const mapStateToProps = (state: State): PartyViewProps => ({
     view: (state.router.result || {}).subView || PartyViews.Queue,
 });
 const mapDispatchToProps: PartyViewDispatch = {
+    trackDragEnter: queueDragEnter,
+    trackDragOver: queueDragOver,
+    trackDragDrop: queueDragDrop,
 };
 
 customElements.define(
