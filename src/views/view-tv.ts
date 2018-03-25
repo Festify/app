@@ -70,7 +70,7 @@ const Lower = (props: ViewTvProps) => {
 
     return typeof window.ShadyCSS === 'object'
         ? html`<div class="lower">${list}</div>`
-        : html`<dom-flip class="lower">${list}</dom-flip>`
+        : html`<dom-flip class="lower">${list}</dom-flip>`;
 };
 
 const Body = (props: ViewTvProps) => {
@@ -124,7 +124,7 @@ const Body = (props: ViewTvProps) => {
                     </div>
                 </div>
             </div>
-            
+
             ${Lower(props)}
         `;
     }
