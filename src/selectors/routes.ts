@@ -4,20 +4,20 @@ import { partyIdSelector } from './party';
 
 export const queueRouteSelector = createSelector(
     partyIdSelector,
-    partyId => `/party/${partyId}`,
+    partyId => partyId ? `/party/${partyId}` : null,
 );
 
 export const settingsRouteSelector = createSelector(
     queueRouteSelector,
-    queueRoute => `${queueRoute}/settings`,
+    queueRoute => queueRoute ? `${queueRoute}/settings` : null,
 );
 
 export const shareRouteSelector = createSelector(
     queueRouteSelector,
-    queueRoute => `${queueRoute}/share`,
+    queueRoute => queueRoute ? `${queueRoute}/share` : null,
 );
 
 export const tvRouteSelector = createSelector(
     partyIdSelector,
-    partyId => `/tv/${partyId}`,
+    partyId => partyId ? `/tv/${partyId}` : null,
 );

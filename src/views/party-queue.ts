@@ -103,7 +103,7 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
 const mapStateToProps = (state: State): PartyQueueProps => ({
     hasTracksLoaded: state.party.hasTracksLoaded,
     isOwner: isPartyOwnerSelector(state),
-    settingsRoute: settingsRouteSelector(state),
+    settingsRoute: settingsRouteSelector(state)!,
     tracks: queueTracksSelector(state),
 });
 

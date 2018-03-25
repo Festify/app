@@ -151,11 +151,11 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 
 const mapStateToProps = (state: State): QueueDrawerProps => ({
     isOwner: isPartyOwnerSelector(state),
-    queueRoute: queueRouteSelector(state),
-    settingsRoute: settingsRouteSelector(state),
-    shareRoute: shareRouteSelector(state),
+    queueRoute: queueRouteSelector(state)!,
+    settingsRoute: settingsRouteSelector(state)!,
+    shareRoute: shareRouteSelector(state)!,
     subView: state.router.result.subView,
-    tvRoute: tvRouteSelector(state),
+    tvRoute: tvRouteSelector(state)!,
 });
 
 const mapDispatchToProps: QueueDrawerDispatch = {
