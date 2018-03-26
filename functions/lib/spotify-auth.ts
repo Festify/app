@@ -109,44 +109,46 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
                 ...userMeta,
             });
 
-            const oldUser = await admin.auth().verifyIdToken(req.body.userToken);
+            if (req.body.userToken) {
+                const oldUser = await admin.auth().verifyIdToken(req.body.userToken);
 
-            const userParties = await admin.database()
-                .ref('/user_parties')
-                .child(oldUser.uid)
-                .once('value');
+                const userParties = await admin.database()
+                    .ref('/user_parties')
+                    .child(oldUser.uid)
+                    .once('value');
 
-            const parties = Object.keys(userParties.val());
+                const parties = Object.keys(userParties.val());
 
-            const updates = {};
+                const updates = {};
 
-            for (const partyId of parties) {
-                const oldUserVotesRef = admin.database()
-                    .ref('/votes_by_user')
-                    .child(partyId)
-                    .child(oldUser.uid);
+                for (const partyId of parties) {
+                    const oldUserVotesRef = admin.database()
+                        .ref('/votes_by_user')
+                        .child(partyId)
+                        .child(oldUser.uid);
 
-                const oldUserVotes = (await oldUserVotesRef.once('value')).val();
+                    const oldUserVotes = (await oldUserVotesRef.once('value')).val();
 
-                if (oldUserVotes) {
-                    for (const voteId of Object.keys(oldUserVotes)) {
-                        updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
-                        updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+                    if (oldUserVotes) {
+                        for (const voteId of Object.keys(oldUserVotes)) {
+                            updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
+                            updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+                        }
                     }
+
+                    updates[`/votes/${partyId}/${oldUser.uid}`] = null;
+                    updates[`/parties/${partyId}/created_by`] = newUser.uid;
                 }
 
-                updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-                updates[`/parties/${partyId}/created_by`] = newUser.uid;
-            }
+                updates[`/votes_by_user/${oldUser.uid}`] = null;
+                updates[`/user_parties/${oldUser.uid}`] = null;
 
-            updates[`/votes_by_user/${oldUser.uid}`] = null;
-            updates[`/user_parties/${oldUser.uid}`] = null;
-
-            try {
-                await admin.database().ref().update(updates);
-                await admin.auth().deleteUser(oldUser.uid);
-            } catch (ex) {
-                return handleFirebaseRejection(res, ex);
+                try {
+                    await admin.database().ref().update(updates);
+                    await admin.auth().deleteUser(oldUser.uid);
+                } catch (ex) {
+                    return handleFirebaseRejection(res, ex);
+                }
             }
         } else {
             return handleSpotifyRejection(res)(error);

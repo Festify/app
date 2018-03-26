@@ -56,13 +56,19 @@ function* exchangeCode() {
         body += `&userToken=${currentUserToken}`;
     }
 
-    const resp = yield call(fetch, TOKEN_EXCHANGE_URL, {
-        body,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        method: 'post',
-    });
+    let resp: Response;
+    try {
+        resp = yield call(fetch, TOKEN_EXCHANGE_URL, {
+            body,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            method: 'post',
+        });
+    } catch (err) {
+        yield put(exchangeCodeFail(err));
+        return;
+    }
 
     const { access_token, expires_in, firebase_token, msg, refresh_token, success } = yield resp.json();
 
@@ -91,7 +97,7 @@ function* exchangeCode() {
         return;
     }
 
-    yield call(() => firebase.auth!().signInWithCustomToken(firebase_token));
+    yield firebase.auth!().signInWithCustomToken(firebase_token);
 
     yield put(exchangeCodeFinish());
 
