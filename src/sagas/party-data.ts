@@ -1,5 +1,5 @@
 import { DataSnapshot } from '@firebase/database-types';
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { push, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
@@ -80,6 +80,7 @@ function* loadParty() {
 
         if (!partySnap.exists()) {
             yield put(openPartyFail(new Error("Party not found!")));
+            yield put(push('/'));
             continue;
         }
 
