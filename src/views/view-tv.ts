@@ -74,7 +74,7 @@ const Lower = (props: ViewTvProps) => {
 };
 
 const Body = (props: ViewTvProps) => {
-    if (props.isLoading || !props.currentTrackMetadata) {
+    if (props.isLoading || (props.hasTracks && !props.currentTrackMetadata)) {
         return html`
             <div class="no-tracks">
                 <div class="header">
@@ -111,10 +111,10 @@ const Body = (props: ViewTvProps) => {
 
             <div class="upper">
                 <div class="playing-track">
-                    ${srcsetImg(props.currentTrackMetadata.cover, '49vh')}
+                    ${srcsetImg(props.currentTrackMetadata!.cover, '49vh')}
 
                     <div class="metadata">
-                        <h2>${props.currentTrackMetadata.name}</h2>
+                        <h2>${props.currentTrackMetadata!.name}</h2>
                         <h3>${props.currentTrackArtistName}</h3>
 
                         <playback-progress-bar></playback-progress-bar>
