@@ -127,9 +127,20 @@ function* refreshFirebaseAuth() {
         yield call(delay, 1000 * 60 * 55);
 
         const { currentUser } = firebase.auth!();
+        if (!currentUser) {
+            continue;
+        }
 
-        if (currentUser) {
-            currentUser.getIdToken(true);
+        // Retry five times
+        for (let i = 0; i < 5; i++) {
+            try {
+                yield apply(currentUser, currentUser.getIdToken, [true]);
+                break;
+            } catch (err) {
+                const duration = 5000 * i;
+                console.warn(`Failed to forcefully reauth user, trying again after ${duration / 1000}s.`, err);
+                yield call(delay, duration);
+            }
         }
     }
 }
