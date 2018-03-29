@@ -313,15 +313,15 @@ export function* checkPlaybackSdkCompatibility() {
     const { appVersion, userAgent } = navigator;
 
     const validOS =
-        appVersion.indexOf('Win') !== -1 ||
-        appVersion.indexOf('Mac') !== -1 ||
-        appVersion.indexOf('Linux') !== -1;
+        appVersion.includes('Win') ||
+        appVersion.includes('Mac') ||
+        appVersion.includes('Linux');
 
     const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
 
     const validBrowser =
-        (userAgent.indexOf('Firefox') !== -1 && userAgent.indexOf('Opera') === -1) ||
-        (userAgent.indexOf('Chrome') !== -1);
+        (userAgent.includes('Firefox') && !userAgent.includes('Opera')) ||
+        userAgent.includes('Chrome');
 
     if (!validOS || !validBrowser || isMobile) {
         yield put(setPlayerCompatibility(false));

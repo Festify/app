@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import { Agent } from 'https';
 import request from 'request-promise';
+import { URL } from 'url';
 
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
@@ -14,6 +15,15 @@ const API_URL = 'https://accounts.spotify.com/api/token';
 
 const agent = new Agent({ keepAlive: true });
 const authKey = new Buffer(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
+
+function isValidUrl(url: string): boolean {
+    try {
+        new URL(url);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
 
 function spotifyRequest(
     params: string | { [key: string]: any },
@@ -93,7 +103,7 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
 
     const userMeta = {
         displayName: user.display_name || user.id,
-        photoURL: (user.images && user.images.length > 0)
+        photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
             ? user.images[0].url
             : undefined,
         email: user.email,

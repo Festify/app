@@ -15,6 +15,6 @@ export const filteredPlaylistsSelector = createSelector(
         }
 
         const lowercaseFilter = filter.toLowerCase();
-        return playlists.filter(pl => pl.name.toLowerCase().indexOf(lowercaseFilter) !== -1);
+        return playlists.filter(pl => pl.name.toLowerCase().includes(lowercaseFilter));
     },
 );
