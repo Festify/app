@@ -1,3 +1,4 @@
+import { User } from '@firebase/auth-types';
 import { DataSnapshot } from '@firebase/database-types';
 import { push, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
@@ -19,6 +20,7 @@ import {
 } from '../actions/party-data';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
+import { store } from '../store';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, valuesChannel } from '../util/firebase';
 
@@ -67,6 +69,18 @@ function* publishPartyUpdates(snap: DataSnapshot) {
 }
 
 function* loadParty() {
+    const closeListener = (e: BeforeUnloadEvent) => {
+        const { party, player } = store.getState();
+
+        if (!party.currentParty || !party.currentParty.playback.playing ||
+            party.currentParty.playback.master_id !== player.instanceId) {
+            return;
+        }
+
+        e.returnValue = "😅";
+        return "😅";
+    };
+
     while (true) {
         const { payload: id }: OpenPartyStartAction = yield take(Types.OPEN_PARTY_Start);
 
@@ -86,7 +100,7 @@ function* loadParty() {
 
         yield* publishPartyUpdates(partySnap);
 
-        const { uid }: { uid: string } = yield call(requireAuth);
+        const { uid }: User = yield call(requireAuth);
         const party: Party = partySnap.val();
 
         const tracksRef: Channel<DataSnapshot> = yield call(
@@ -122,6 +136,8 @@ function* loadParty() {
             .child(uid)
             .child(id)
             .set(firebaseNS.database!.ServerValue.TIMESTAMP);
+
+        window.onbeforeunload = closeListener;
 
         yield take(Types.CLEANUP_PARTY);
 
