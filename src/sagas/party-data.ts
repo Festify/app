@@ -1,3 +1,4 @@
+import { User } from '@firebase/auth-types';
 import { DataSnapshot } from '@firebase/database-types';
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
@@ -85,7 +86,7 @@ function* loadParty() {
 
         yield* publishPartyUpdates(partySnap);
 
-        const { uid }: { uid: string } = yield call(requireAuth);
+        const { uid }: User = yield call(requireAuth);
         const party: Party = partySnap.val();
 
         const tracksRef: Channel<DataSnapshot> = yield call(
