@@ -8,11 +8,11 @@ export default function(
         playlistSearchQuery: '',
         queueFlushError: null,
         queueFlushInProgress: false,
+        syncedPlayback: false,
         tracksLoadError: null,
         tracksLoadInProgress: false,
         tracksToLoad: 0,
         tracksLoaded: 0,
-        syncedPlayback: false,
     },
     action: Actions,
 ): SettingsViewState {
