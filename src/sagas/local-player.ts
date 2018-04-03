@@ -108,23 +108,22 @@ function* handlePlaybackStateChange(
         return;
     }
 
-    if (spotifyState && spotifyState.track_window.current_track.id === currentTrack.reference.id) {
-        yield player.resume();
-    } else {
-        const playing = 'playing' in oldPlayback ? oldPlayback.playing : undefined;
-        const position = newPlayback.last_position_ms
-            ? newPlayback.last_position_ms + (playing !== false ? Date.now() - newPlayback.last_change : 0)
-            : 0;
+    const { currentParty, syncPlayback } = yield select((state: State) => {
+        return {
+            currentParty: state.party.currentParty,
+            syncPlayback: state.settingsView.syncedPlayback
+        }
+    })
 
-        yield all([
-            call(
-                playTrack,
-                currentTrack.reference.id,
-                deviceId,
-                position,
-            ),
-            call(markTrackAsPlayed, partyId, currentTrack.reference),
-        ]);
+    yield call(
+        playTrack,
+        currentTrack.reference.id,
+        deviceId,
+        syncPlayback ? currentParty.playback.last_position_ms : 0,
+    )
+
+    if (spotifyState && spotifyState.track_window.current_track.id === currentTrack.reference.id) {
+        yield call(markTrackAsPlayed, partyId, currentTrack.reference)
     }
 
     yield put(togglePlaybackFinish());

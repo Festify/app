@@ -12,6 +12,7 @@ export default function(
         tracksLoadInProgress: false,
         tracksToLoad: 0,
         tracksLoaded: 0,
+        syncedPlayback: false,
     },
     action: Actions,
 ): SettingsViewState {
@@ -81,6 +82,11 @@ export default function(
                 ...state,
                 playlistLoadError: action.payload,
                 playlistLoadInProgress: false,
+            };
+        case Types.TOGGLE_PLAYBACK_Sync:
+            return {
+                ...state,
+                syncedPlayback: action.payload
             };
         case Types.UPDATE_USER_PLAYLISTS:
             return {

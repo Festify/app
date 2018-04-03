@@ -20,6 +20,7 @@ export type Actions =
     | InsertFallbackPlaylistStartAction
     | LoadPlaylistsStartAction
     | LoadPlaylistsFailAction
+    | SyncPlaybackWithHost
     | UpdatePartyNameAction
     | UpdateUserPlaylistsAction;
 
@@ -67,6 +68,10 @@ export interface LoadPlaylistsFailAction extends ErrorAction {
     type: Types.LOAD_PLAYLISTS_Fail;
 }
 
+export interface SyncPlaybackWithHost extends PayloadAction<boolean> {
+    type: Types.TOGGLE_PLAYBACK_Sync;
+}
+
 export interface UpdatePartyNameAction extends PayloadAction<string> {
     type: Types.UPDATE_PARTY_NAME;
 }
@@ -79,6 +84,13 @@ export function changeDisplayKenBurnsBackground(display: boolean): ChangeDisplay
     return {
         type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND,
         payload: display,
+    };
+}
+
+export function syncPlaybackWithHost(sync: boolean): SyncPlaybackWithHost {
+    return {
+        type: Types.TOGGLE_PLAYBACK_Sync,
+        payload: sync
     };
 }
 
