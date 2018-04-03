@@ -173,11 +173,13 @@ const ViewTv = (props: ViewTvProps) => html`
             opacity: 0.3;
             width: 100%;
             height: 100%;
+            --img-filter: blur(7px);
         }
 
         .background img {
             filter: blur(7px);
             object-fit: cover;
+            transform: scale(1.02);
         }
 
         .playing-track {
