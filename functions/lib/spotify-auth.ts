@@ -166,12 +166,10 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
         }
     }
 
-    const firebaseToken = await admin.auth().createCustomToken(user.uri);
-
     res.json({
         access_token: authCodeBody.access_token,
         expires_in: authCodeBody.expires_in,
-        firebase_token: firebaseToken,
+        firebase_token: await admin.auth().createCustomToken(escapedUid),
         refresh_token: crypto.encrypt(authCodeBody.refresh_token, ENCRYPTION_SECRET),
         token_type: authCodeBody.token_type,
         success: true,
