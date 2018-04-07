@@ -40,12 +40,7 @@ Festify loads configuration variables though JS / TS / JSON files included in th
 - `spotify.config.js`: This file contains the required configuration for authorization with Spotify and playback.
     ```js
     export const CLIENT_ID = "YOUR_SPOTIFY_APPLICATION_CLIENT_ID";
-    export const CLIENT_TOKEN_URL = "CLIENT_TOKEN_ENDPOINT";
-    export const TOKEN_EXCHANGE_URL = "TOKEN_EXCHANGE_ENDPOINT";
-    export const TOKEN_REFRESH_URL = "TOKEN_REFRESH_ENDPOINT";
     ```
-
-    `CLIENT_TOKEN_ENDPOINT`, `TOKEN_EXCHANGE_ENDPOINT` and `TOKEN_REFRESH_ENDPOINT` are the URLs you get from the cloud functions you get when deploying the project to Firebase. `CLIENT_TOKEN_ENDPOINT` is the URL ending on `/clientToken`, `TOKEN_EXCHANGE_ENDPOINT` the one ending on `/exchangeCode`, and `TOKEN_REFRESH_ENDPOINT` the one ending on `/refreshToken`.
 
 - `functions/service-account.json`: This is the Firebase service account file obtained directly from the web console. You can obtain it by going to Project Settings > Service Accounts > Firebase Admin SDK > Generate new private key.
 
@@ -65,7 +60,7 @@ The `package.json` contains all necessary commands for building Festify.
 - `fix`: Attempts to automatically fix linter errors.
 - `lint`: Lints the TS sources with tslint.
 - `prepare-env`: Used in CI environments to load environment files from branch-name-suffixed environment variables.
-- `serve`: Starts the rollup dev-server serving a local instance of Festify on port 3000. Also supports live-reloading.
+- `serve`: Starts the rollup dev-server serving a local instance of Festify on port 3000. Also supports live-reloading. Ensure you deploy the project to firebase before using the dev server because Festify depends on cloud functions to be present!
 
 ## Contributing
 

@@ -2,9 +2,8 @@
   "name": "politics",
   "description": "Festify voting worker",
   "dependencies": {
-    "cors": "^2.8.3",
     "firebase-admin": "^5.8.2",
-    "firebase-functions": "^0.8.1",
+    "firebase-functions": "^1.0.1",
     "lodash": "^4.17.5",
     "request": "^2.81.0",
     "request-promise": "^4.2.0",
@@ -13,7 +12,6 @@
   "main": "./dist/index.js",
   "private": true,
   "devDependencies": {
-    "@types/cors": "^2.8.3",
     "@types/express": "^4.11.1",
     "@types/node": "^8.9.1",
     "@types/request": "^2.47.0",

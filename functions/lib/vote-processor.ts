@@ -1,5 +1,5 @@
 import firebase from 'firebase-admin';
-import { database, Event } from 'firebase-functions';
+import * as functions from 'firebase-functions';
 import { isEmpty, isEqual, values } from 'lodash';
 
 import { unsafeGetProviderAndId } from './utils';
@@ -91,31 +91,28 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
         });
 }
 
-export default async (event: Event<database.DeltaSnapshot>) => {
-    if (!event.data.changed()) {
-        return;
-    }
+export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
+    .onWrite(async (change, ctx) => {
+        const voteDelta = !!change.after.val() ? 1 : -1;
 
-    const voteDelta = !!event.data.val() ? 1 : -1;
+        const party = firebase.database()
+            .ref('/parties')
+            .child(ctx!.params.partyId)
+            .once('value');
+        const topmostTrack = firebase.database()
+            .ref('/tracks')
+            .child(ctx!.params.partyId)
+            .limitToFirst(1)
+            .orderByChild('order')
+            .once('value');
 
-    const party = firebase.database()
-        .ref('/parties')
-        .child(event.params!.partyId)
-        .once('value');
-    const topmostTrack = firebase.database()
-        .ref('/tracks')
-        .child(event.params!.partyId)
-        .limitToFirst(1)
-        .orderByChild('order')
-        .once('value');
-
-    const [partySnap, trackSnap] = await Promise.all([party, topmostTrack]);
-    const track = values(trackSnap.val())[0];
-    await updateOrder(
-        voteDelta,
-        event.params!.trackId,
-        track,
-        event.params!.partyId,
-        partySnap.val(),
-    );
-};
+        const [partySnap, trackSnap] = await Promise.all([party, topmostTrack]);
+        const track = values(trackSnap.val())[0];
+        await updateOrder(
+            voteDelta,
+            ctx!.params.trackId,
+            track,
+            ctx!.params.partyId,
+            partySnap.val(),
+        );
+    });

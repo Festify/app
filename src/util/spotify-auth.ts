@@ -1,8 +1,7 @@
 import debounce from 'promise-debounce';
 
-import { CLIENT_TOKEN_URL, TOKEN_REFRESH_URL } from '../../spotify.config';
-
 import { AuthData } from './auth';
+import firebase from './firebase';
 
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
 export const SCOPES = [
@@ -22,6 +21,9 @@ export const requireAnonymousAuth: () => Promise<string> = debounce(_requireAnon
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
 
+const clientTokenFn = firebase.functions!().httpsCallable('clientToken');
+const refreshTokenFn = firebase.functions!().httpsCallable('refreshToken');
+
 let authData: AuthData | null = null;
 
 async function _requireAccessToken(): Promise<string> {
@@ -37,22 +39,11 @@ async function _requireAccessToken(): Promise<string> {
     if (!authData.refreshToken) {
         throw new Error("Missing refresh token.");
     }
-    const body = `refresh_token=${encodeURIComponent(authData.refreshToken)}`;
-    const resp = await fetch(TOKEN_REFRESH_URL, {
-        body,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        method: 'post',
-    });
-    const { access_token, expires_in, msg, success } = await resp.json();
-    if (!success) {
-        throw new Error(`Token refresh failed: ${msg}.`);
-    }
 
+    const { accessToken, expiresIn } = (await refreshTokenFn({ refreshToken: authData.refreshToken })).data;
     authData = new AuthData(
-        access_token,
-        Date.now() + (expires_in * 1000),
+        accessToken,
+        Date.now() + (expiresIn * 1000),
         authData.refreshToken,
     );
     authData.saveTo(LOCALSTORAGE_KEY);
@@ -68,12 +59,11 @@ async function _requireAnonymousAuth(): Promise<string> {
         return anonymousAccessToken;
     }
 
-    const resp = await fetch(CLIENT_TOKEN_URL);
-    const { access_token, expires_in } = await resp.json();
+    const { accessToken, expiresIn } = (await clientTokenFn()).data;
 
-    anonymousAccessToken = access_token;
-    anonymousExpireTimeMs = Date.now() + (expires_in * 1000) - 10000; // Safety margin
-    return access_token;
+    anonymousAccessToken = accessToken;
+    anonymousExpireTimeMs = Date.now() + (expiresIn * 1000) - 10000; // Safety margin
+    return accessToken;
 }
 
 function fetchFactory(
