@@ -7,7 +7,7 @@ import { URL } from 'url';
 
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
-import { crypto } from './utils';
+import { crypto, escapeKey } from './utils';
 
 const cors = createCors({ origin: true });
 
@@ -101,6 +101,7 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
         json: true,
     });
 
+    const escapedUid = escapeKey(user.uri);
     const userMeta = {
         displayName: user.display_name || user.id,
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
@@ -110,12 +111,12 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
     };
 
     try {
-        await admin.auth().updateUser(user.uri, userMeta);
+        await admin.auth().updateUser(escapedUid, userMeta);
     } catch (error) {
         // If user does not exist we create it.
         if (error.code === 'auth/user-not-found') {
             const newUser = await admin.auth().createUser({
-                uid: user.uri,
+                uid: escapedUid,
                 ...userMeta,
             });
 
