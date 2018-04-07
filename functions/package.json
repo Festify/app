@@ -9,6 +9,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.0"
   },
+  "main": "./dist/index.js",
   "private": true,
   "devDependencies": {
     "@types/cors": "^2.8.3",
@@ -19,7 +20,7 @@
     "typescript": "^2.7.1"
   },
   "scripts": {
-    "build": "tsc",
-    "deploy": "tsc && firebase deploy --only functions"
+    "build": "tsc && cp service-account.json ./dist",
+    "deploy": "npm run build && firebase deploy --only functions"
   }
 }
