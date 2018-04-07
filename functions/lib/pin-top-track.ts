@@ -18,6 +18,10 @@ export default async (event: Event<database.DeltaSnapshot>) => {
         .limitToFirst(1)
         .once('value');
 
+    if (!topTrack.exists()) {
+        return;
+    }
+
     const keys = Object.keys(topTrack.val());
     if (keys.length === 0) {
         return;
