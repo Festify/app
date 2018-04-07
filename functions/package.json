@@ -7,7 +7,8 @@
     "firebase-functions": "^0.8.1",
     "lodash": "^4.17.5",
     "request": "^2.81.0",
-    "request-promise": "^4.2.0"
+    "request-promise": "^4.2.0",
+    "tslib": "^1.9.0"
   },
   "main": "./dist/index.js",
   "private": true,
