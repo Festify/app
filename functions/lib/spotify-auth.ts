@@ -101,7 +101,7 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
         json: true,
     });
 
-    const escapedUid = escapeKey(user.uri);
+    const escapedUid = `spotify:user:${escapeKey(user.id)}`;
     const userMeta = {
         displayName: user.display_name || user.id,
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
