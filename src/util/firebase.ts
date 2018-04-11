@@ -2,6 +2,7 @@ import firebase from '@firebase/app';
 import '@firebase/auth';
 import '@firebase/database';
 import { DataSnapshot, Query } from '@firebase/database-types';
+import '@firebase/functions';
 import { eventChannel } from 'redux-saga';
 
 import firebaseConfig from '../../firebase.config.js';

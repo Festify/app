@@ -1,6 +1,6 @@
-import createCors from 'cors';
 import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
 import { Agent } from 'https';
 import request from 'request-promise';
 import { URL } from 'url';
@@ -8,8 +8,6 @@ import { URL } from 'url';
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
 import { crypto, escapeKey } from './utils';
-
-const cors = createCors({ origin: true });
 
 const API_URL = 'https://accounts.spotify.com/api/token';
 
@@ -42,55 +40,43 @@ function spotifyRequest(
     });
 }
 
-function handleSpotifyRejection(res: Response) {
-    return err => {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            msg: `Received invalid status code '${err.statusCode}' from Spotify.`,
-        });
+export const clientToken = functions.https.onCall(async (data, ctx) => {
+    let body;
+    try {
+        body = await spotifyRequest({ grant_type: 'client_credentials' });
+    } catch (err) {
+        throw new functions.https.HttpsError(
+            'unknown',
+            `Received invalid status code '${err.statusCode}' from Spotify.`,
+        );
+    }
+
+    return {
+        accessToken: body.access_token,
+        expiresIn: body.expires_in,
     };
-}
-
-function handleFirebaseRejection(res: Response, error: Error) {
-    console.error(error);
-    res.status(500).json({
-        success: false,
-        msg: `Firebase failed with error: ${error.message}.`,
-    });
-}
-
-export const clientToken = (req: Request, res: Response) => cors(req, res, () => {
-    return spotifyRequest({ grant_type: 'client_credentials' })
-        .then(body => {
-            res.json({
-                access_token: body.access_token,
-                expires_in: body.expires_in,
-            });
-        })
-        .catch(handleSpotifyRejection(res));
 });
 
-export const exchangeCode = (req: Request, res: Response) => cors(req, res, async () => {
-    if (!req.body.code) {
-        return res.status(400).json({
-            success: false,
-            msg: 'Missing \'code\' parameter',
-        });
+export const exchangeCode = functions.https.onCall(async (data, ctx) => {
+    const { callbackUrl, code, userToken } = data;
+    if (!code) {
+        throw new functions.https.HttpsError(
+            'invalid-argument',
+            "Missing 'code' parameter",
+        );
     }
-    if (!req.body.callbackUrl) {
-        return res.status(400).json({
-            success: false,
-            msg: "Missing 'callbackUrl' parameter",
-        });
+    if (!callbackUrl) {
+        throw new functions.https.HttpsError(
+            'invalid-argument',
+            "Missing 'callbackUrl' parameter",
+        );
     }
 
     const authCodeBody = await spotifyRequest({
         grant_type: 'authorization_code',
-        redirect_uri: req.body.callbackUrl,
-        code: req.body.code,
+        redirect_uri: callbackUrl,
+        code,
     });
-
     const user = await request({
         agent,
         method: 'GET',
@@ -120,8 +106,8 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
                 ...userMeta,
             });
 
-            if (req.body.userToken) {
-                const oldUser = await admin.auth().verifyIdToken(req.body.userToken);
+            if (userToken) {
+                const oldUser = await admin.auth().verifyIdToken(userToken);
 
                 const userParties = await admin.database()
                     .ref('/user_parties')
@@ -158,42 +144,55 @@ export const exchangeCode = (req: Request, res: Response) => cors(req, res, asyn
                     await admin.database().ref().update(updates);
                     await admin.auth().deleteUser(oldUser.uid);
                 } catch (ex) {
-                    return handleFirebaseRejection(res, ex);
+                    throw new functions.https.HttpsError(
+                        'unknown',
+                        "Failed to delete old and update new user.",
+                        ex.code,
+                    );
                 }
             }
         } else {
-            return handleSpotifyRejection(res)(error);
+            throw new functions.https.HttpsError(
+                'unknown',
+                "Failed to update user.",
+                error.code,
+            );
         }
     }
 
-    res.json({
-        access_token: authCodeBody.access_token,
-        expires_in: authCodeBody.expires_in,
-        firebase_token: await admin.auth().createCustomToken(escapedUid),
-        refresh_token: crypto.encrypt(authCodeBody.refresh_token, ENCRYPTION_SECRET),
-        token_type: authCodeBody.token_type,
-        success: true,
-    });
+    return {
+        accessToken: authCodeBody.access_token,
+        expiresIn: authCodeBody.expires_in,
+        firebaseToken: await admin.auth().createCustomToken(escapedUid),
+        refreshToken: crypto.encrypt(authCodeBody.refresh_token, ENCRYPTION_SECRET),
+        tokenType: authCodeBody.token_type,
+    };
 });
 
-export const refreshToken = (req: Request, res: Response) => cors(req, res, () => {
-    if (!req.body.refresh_token) {
-        return res.status(400).json({
-            success: false,
-            msg: 'Missing \'refresh_token\' parameter',
-        });
+export const refreshToken = functions.https.onCall(async (data, ctx) => {
+    const { refreshToken } = data;
+    if (!refreshToken) {
+        throw new functions.https.HttpsError(
+            'invalid-argument',
+            "Missing 'refreshToken' parameter.",
+        );
     }
 
-    return spotifyRequest({
-        grant_type: 'refresh_token',
-        refresh_token: crypto.decrypt(req.body.refresh_token, ENCRYPTION_SECRET),
-    })
-        .then(body => {
-            res.json({
-                access_token: body.access_token,
-                expires_in: body.expires_in,
-                success: true,
-            });
-        })
-        .catch(handleSpotifyRejection(res));
+    let body;
+    try {
+        body = await spotifyRequest({
+            grant_type: 'refresh_token',
+            refresh_token: crypto.decrypt(refreshToken, ENCRYPTION_SECRET),
+        });
+    } catch (err) {
+        throw new functions.https.HttpsError(
+            'unknown',
+            `Received invalid status code '${err.status}' from Spotify.`,
+        );
+    }
+
+    return {
+        accessToken: body.access_token,
+        expiresIn: body.expires_in,
+    };
 });

@@ -1,8 +1,9 @@
+import { HttpsCallableResult } from '@firebase/functions-types';
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
 import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { CLIENT_ID, TOKEN_EXCHANGE_URL } from '../../spotify.config';
+import { CLIENT_ID } from '../../spotify.config';
 import { showToast, Types } from '../actions';
 import { exchangeCodeFail, exchangeCodeFinish, exchangeCodeStart, notifyAuthStatusKnown } from '../actions/auth';
 import { State } from '../state';
@@ -11,6 +12,7 @@ import firebase from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'authRedirect';
+const exchangeCodeFn = firebase.functions!().httpsCallable('exchangeCode');
 
 function* checkSpotifyLoginStatus() {
     if (!localStorage[LOCALSTORAGE_KEY]) {
@@ -50,40 +52,26 @@ function* exchangeCode() {
 
     const { currentUser } = firebase.auth!();
 
-    let body = `callbackUrl=${encodeURIComponent(location.origin)}&code=${encodeURIComponent(code)}`;
-    if (currentUser) {
-        const currentUserToken = yield currentUser.getIdToken(true);
-        body += `&userToken=${currentUserToken}`;
-    }
-
-    let resp: Response;
+    let resp: HttpsCallableResult;
     try {
-        resp = yield call(fetch, TOKEN_EXCHANGE_URL, {
-            body,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            method: 'post',
+        resp = yield call(exchangeCodeFn, {
+            callbackUrl: location.origin,
+            code,
+            userToken: currentUser ? yield currentUser.getIdToken(true) : undefined,
         });
     } catch (err) {
-        yield put(exchangeCodeFail(err));
-        return;
-    }
-
-    const { access_token, expires_in, firebase_token, msg, refresh_token, success } = yield resp.json();
-
-    if (!success) {
-        const e = new Error(`Token exchange failed: ${msg}.`);
+        const e = new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
         yield put(exchangeCodeFail(e));
         return;
     }
+    const { accessToken, expiresIn, firebaseToken, refreshToken } = resp.data;
 
     yield call(requireAuth);
 
     const data = new AuthData(
-        access_token,
-        Date.now() + (expires_in * 1000),
-        refresh_token,
+        accessToken,
+        Date.now() + (expiresIn * 1000),
+        refreshToken,
     );
 
     yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
@@ -97,7 +85,7 @@ function* exchangeCode() {
         return;
     }
 
-    yield firebase.auth!().signInWithCustomToken(firebase_token);
+    yield firebase.auth!().signInWithCustomToken(firebaseToken);
 
     yield put(exchangeCodeFinish());
 
