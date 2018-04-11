@@ -1,9 +1,11 @@
 import firebase from 'firebase-admin';
 
+const config = JSON.parse(process.env.FIREBASE_CONFIG!);
 // tslint:disable-next-line:no-var-requires
 const serviceAccount = require('./service-account.json');
 
 firebase.initializeApp({
+    ...config,
     credential: firebase.credential.cert(serviceAccount),
 });
 
