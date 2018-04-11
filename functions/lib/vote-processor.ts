@@ -45,7 +45,15 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
 
             const voteCount = (!track ? 0 : track.vote_count) + voteDelta;
 
-            if (!track && voteCount > 0) {
+            if (!track && voteCount < 0) {
+                // This occurs when the track has been removed (thus the above code assigns
+                // it a vote count of 0) and there are no votes for it anymore, which makes
+                // the voteDelta negative. This occurs when the track has been removed.
+                //
+                // Keep it this way.
+
+                return undefined;
+            } else if (!track && voteCount > 0) {
                 // Track does not exist, has just been voted for in via Add Tracks menu.
                 // Add it to the queue.
 
