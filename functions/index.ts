@@ -1,4 +1,5 @@
 import firebase from 'firebase-admin';
+import 'firebase-functions'; // Import to initialize FIREBASE_CONFIG 🙄
 
 const config = JSON.parse(process.env.FIREBASE_CONFIG!);
 // tslint:disable-next-line:no-var-requires
