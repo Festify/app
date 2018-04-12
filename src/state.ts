@@ -114,6 +114,7 @@ export interface SettingsViewState {
     playlistSearchQuery: string;
     queueFlushInProgress: boolean;
     queueFlushError: Error | null;
+    syncedPlayback: boolean;
     tracksLoadInProgress: boolean;
     tracksLoadError: Error | null;
     tracksToLoad: number;

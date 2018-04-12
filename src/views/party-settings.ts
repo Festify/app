@@ -12,6 +12,7 @@ import {
     changeSearchInput,
     flushQueueStart,
     insertPlaylistStart,
+    syncPlaybackWithHost,
 } from '../actions/view-party-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
 import { Playlist, State } from '../state';
@@ -24,6 +25,7 @@ interface PartySettingsProps {
     playlists: Playlist[];
     playlistSearch: string;
     queueFlushInProgress: boolean;
+    syncedPlayback: boolean;
     tracksLoadInProgress: boolean;
     tracksToLoad: number;
     tracksLoaded: number;
@@ -35,6 +37,7 @@ interface PartySettingsDispatch {
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
+    syncPlayback: (sync: boolean) => void;
 }
 
 /* tslint:disable:max-line-length */
@@ -127,6 +130,14 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             Display "Ken Burns" background in TV mode
         </paper-checkbox>
 
+        <br />
+
+        <paper-checkbox checked="${props.syncedPlayback}"
+                        on-checked-changed="${ev => props.syncPlayback((ev.target as HTMLInputElement).checked)}"
+                        title="Syncs your playback with the party host.">
+            Sync playback with party host
+        </paper-checkbox>
+
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over"
@@ -181,6 +192,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     tracksLoadInProgress: state.settingsView.tracksLoadInProgress,
     tracksLoaded: state.settingsView.tracksLoaded,
     tracksToLoad: state.settingsView.tracksToLoad,
+    syncedPlayback: state.settingsView.syncedPlayback,
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
@@ -189,6 +201,7 @@ const mapDispatchToProps: PartySettingsDispatch = {
     changeSearchInput,
     flushTracks: flushQueueStart,
     insert: insertPlaylistStart,
+    syncPlayback: syncPlaybackWithHost,
 };
 
 customElements.define(

@@ -8,6 +8,7 @@ export default function(
         playlistSearchQuery: '',
         queueFlushError: null,
         queueFlushInProgress: false,
+        syncedPlayback: false,
         tracksLoadError: null,
         tracksLoadInProgress: false,
         tracksToLoad: 0,
@@ -81,6 +82,11 @@ export default function(
                 ...state,
                 playlistLoadError: action.payload,
                 playlistLoadInProgress: false,
+            };
+        case Types.TOGGLE_PLAYBACK_Sync:
+            return {
+                ...state,
+                syncedPlayback: action.payload
             };
         case Types.UPDATE_USER_PLAYLISTS:
             return {
