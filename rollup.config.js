@@ -76,6 +76,7 @@ export default {
         }) : null,
         isProduction ? minify({ comments: false }) : null,
         !!process.env.ROLLUP_WATCH ? browsersync({
+            port: process.env.PORT || 3000,
             server: {
                 baseDir: dist(),
                 middleware: [historyApi()]
