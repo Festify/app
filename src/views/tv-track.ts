@@ -1,4 +1,4 @@
-import { connect, withProps } from 'fit-html';
+import { connect, withFit } from 'fit-html';
 import { html } from 'lit-html';
 
 import srcsetImg from '../components/srcset-img';
@@ -104,13 +104,11 @@ const mapStateToPropsFactory = () => {
     });
 };
 
+const TvTrackBase = withFit<TvTrackOwnProps, TvTrackProps>(
+    TvTrack,
+    { trackid: String },
+)(HTMLElement);
 customElements.define(
     'tv-track',
-    withProps(connect(
-        mapStateToPropsFactory,
-        {},
-        TvTrack,
-    ), {
-        trackid: String,
-    }),
+    connect(mapStateToPropsFactory, {})(TvTrackBase),
 );

@@ -75,9 +75,5 @@ const mapStateToProps = (state: State): SearchProps => ({
 
 customElements.define(
     'party-search',
-    connect(
-        mapStateToProps,
-        {},
-        PartySearchView,
-    ),
+    connect(mapStateToProps, {})(PartySearchView),
 );

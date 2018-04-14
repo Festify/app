@@ -168,6 +168,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        QueueDrawer,
-    ),
+    )(QueueDrawer),
 );

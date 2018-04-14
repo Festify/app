@@ -63,7 +63,7 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
     const list = props.tracks.map((track, i) => html`
         <party-track playing?="${i === 0}"
                      data-flip-id$="${track.reference.provider}-${track.reference.id}"
-                     trackid$="${track.reference.provider}-${track.reference.id}">
+                     trackid="${track.reference.provider}-${track.reference.id}">
         </party-track>
     `);
 
@@ -116,6 +116,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        PartyQueue,
-    ),
+    )(PartyQueue),
 );
