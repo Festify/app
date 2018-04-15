@@ -98,6 +98,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        SearchBar,
-    ),
+    )(SearchBar),
 );

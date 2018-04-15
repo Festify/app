@@ -196,6 +196,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        PartySettings,
-    ),
+    )(PartySettings),
 );

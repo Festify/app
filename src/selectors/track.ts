@@ -57,9 +57,15 @@ export const currentTrackIdSelector = createSelector(
 );
 
 export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
-    if (a === b) {
+    // tslint:disable-next-line:triple-equals
+    if (a == b) {
         return true;
     } else if (!a || !b) {
+        return false;
+    // tslint:disable-next-line:triple-equals
+    } else if (a.reference == b.reference) {
+        return true;
+    } else if (!a.reference || !b.reference) {
         return false;
     } else {
         return a.reference.provider === b.reference.provider &&

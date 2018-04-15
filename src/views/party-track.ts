@@ -1,6 +1,6 @@
 import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
-import { connect, withProps } from 'fit-html';
+import { connect, withFit } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
@@ -20,7 +20,7 @@ import {
 import { Metadata, State, Track, TrackReference } from '../state';
 import sharedStyles from '../util/shared-styles';
 
-export interface PartyTrackProps {
+interface PartyTrackProps {
     artistName: string | null;
     disablePlayButton: boolean;
     hasVoted: boolean;
@@ -47,8 +47,10 @@ interface PartyTrackOwnProps {
     trackid: string;
 }
 
+type PartyTrackRenderProps = PartyTrackProps & PartyTrackOwnProps & PartyTrackDispatch;
+
 /* tslint:disable:max-line-length */
-const LikeButtonIcon = (props: PartyTrackProps): string => {
+const LikeButtonIcon = (props: PartyTrackRenderProps): string => {
     if (!props.track) {
         return '';
     }
@@ -62,7 +64,7 @@ const LikeButtonIcon = (props: PartyTrackProps): string => {
     }
 };
 
-const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
+const PlayButton = (props: PartyTrackRenderProps) => {
     if (props.isPlayingTrack) {
         return html`
             ${props.isOwner && props.track
@@ -94,7 +96,7 @@ const PlayButton = (props: PartyTrackProps & PartyTrackDispatch) => {
     }
 };
 
-export const PartyTrack = (props: PartyTrackProps & PartyTrackDispatch) => html`
+export const PartyTrack = (props: PartyTrackRenderProps) => html`
     ${sharedStyles}
     <style>
         :host {
@@ -303,16 +305,14 @@ export const mapDispatchToProps: PartyTrackDispatch = {
     togglePlayPause: togglePlaybackStart,
 };
 
-const PartyTrackBase = withProps(connect(
-    createMapStateToPropsFactory(singleTrackSelector),
-    mapDispatchToProps,
-    PartyTrack,
-), {
+export const PartyTrackElementBase = withFit<PartyTrackOwnProps, PartyTrackRenderProps>(PartyTrack, {
     playing: Boolean,
     trackid: String,
-});
+})(HTMLElement);
 
-customElements.define(
-    'party-track',
-    PartyTrackBase,
-);
+const PartyTrackElement = connect(
+    createMapStateToPropsFactory(singleTrackSelector),
+    mapDispatchToProps,
+)(PartyTrackElementBase);
+
+customElements.define('party-track', PartyTrackElement);

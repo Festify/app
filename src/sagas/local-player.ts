@@ -310,12 +310,12 @@ export function* manageLocalPlayer(partyId: string) {
 export default manageLocalPlayer;
 
 export function* checkPlaybackSdkCompatibility() {
-    const { appVersion, userAgent } = navigator;
+    const { platform, userAgent } = navigator;
 
     const validOS =
-        appVersion.includes('Win') ||
-        appVersion.includes('Mac') ||
-        appVersion.includes('Linux');
+        platform.includes('Win') ||
+        platform.includes('Mac') ||
+        platform.includes('Linux');
 
     const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
 

@@ -79,6 +79,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        ViewShare,
-    ),
+    )(ViewShare),
 );

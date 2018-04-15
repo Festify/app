@@ -45,7 +45,7 @@ const mapDispatchToProps = (state: State): ProgressBarProps => ({
     playback: playbackSelector(state),
 });
 
-const ProgressBarBase = connect(mapDispatchToProps, {}, ProgressBarView);
+const ProgressBarBase = connect(mapDispatchToProps, {})(ProgressBarView);
 
 class ProgressBar extends ProgressBarBase {
     private indicator: HTMLElement;
@@ -53,7 +53,7 @@ class ProgressBar extends ProgressBarBase {
     render() {
         super.render();
 
-        const { durationMs, playback }: ProgressBarProps = this.getProps();
+        const { durationMs, playback }: ProgressBarProps = this.renderProps;
         if (!playback || durationMs <= 0) {
             this.transitionTo(0, 0, false);
             return;

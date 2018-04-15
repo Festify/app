@@ -83,7 +83,6 @@ const mapStateToProps = (state: State): AppShellProps => ({
 const Shell = connect(
     mapStateToProps,
     {},
-    AppShellView,
-);
+)(AppShellView);
 
-customElements.define('app-shell', withStore(Shell, store));
+customElements.define('app-shell', withStore(store)(Shell));
