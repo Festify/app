@@ -52,7 +52,7 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
                 //
                 // Keep it this way.
 
-                return undefined;
+                return track;
             } else if (!track && voteCount > 0) {
                 // Track does not exist, has just been voted for in via Add Tracks menu.
                 // Add it to the queue.
@@ -78,11 +78,10 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
                     Number.MIN_SAFE_INTEGER + 1 :
                     (track.added_at - currentParty.created_at) - (voteCount * VOTE_FACTOR);
 
-                // Order hasn't changed. Undefined tells Firebase SDK that
-                // we have nothing to change.
+                // Order hasn't changed. Tell Firebase SDK that we have nothing to change.
                 // tslint:disable-next-line:triple-equals
                 if (track.order == order) {
-                    return undefined;
+                    return track;
                 }
 
                 track.order = order;
