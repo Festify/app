@@ -1,3 +1,4 @@
+import Dexie from 'dexie';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { FANART_TV_API_KEY } from '../../common.config';
@@ -10,6 +11,76 @@ export type Actions =
 
 export interface UpdateMetadataAction extends PayloadAction<Record<string, Partial<Metadata>>> {
     type: Types.UPDATE_METADATA;
+}
+
+interface StoredMetadata extends Metadata {
+    dateCreated: number;
+    trackId: string;
+}
+
+const META_IDB_TTL = 3600 * 1000 * 12; // 12h
+
+export class MetadataStore extends Dexie {
+    metadata: Dexie.Table<StoredMetadata, string>;
+
+    constructor() {
+        super("Festify");
+
+        this.version(1).stores({ metadata: "trackId, dateCreated" });
+        this.deleteOld();
+    }
+
+    /**
+     * Cache given metadata in IndexedDB.
+     *
+     * @param meta the metadata to cache
+     */
+    async cacheMetadata(meta: Record<string, Partial<Metadata>>) {
+        await this.transaction('rw!', this.metadata, async () => {
+            for (const trackId of Object.keys(meta)) {
+                const item = meta[trackId];
+
+                if (await this.metadata.get(trackId)) {
+                    await this.metadata.update(trackId, item);
+                    continue;
+                }
+
+                await this.metadata.put({
+                    ...(item as Required<Metadata>),
+                    dateCreated: Date.now(),
+                    trackId,
+                });
+            }
+        });
+    }
+
+    /**
+     * Loads cached metadata from IndexedDB.
+     */
+    async getMetadata(ids: Iterable<string>): Promise<Record<string, Metadata>> {
+        const requestedTrackIds = new Set(ids);
+        const stored = await this.metadata
+            .where('dateCreated')
+            .aboveOrEqual(Date.now() - META_IDB_TTL)
+            .filter(meta => requestedTrackIds.has(meta.trackId))
+            .toArray();
+
+        return stored.reduce((acc, item) => {
+            const { dateCreated, trackId, ...rest } = item;
+            acc[trackId] = rest;
+            return acc;
+        }, {});
+    }
+
+    private async deleteOld() {
+        try {
+            await this.metadata.where('dateCreated')
+                .below(Date.now() - META_IDB_TTL)
+                .delete();
+        } catch (err) {
+            console.log("Failed to clear out old metadata.", err);
+        }
+    }
 }
 
 const FANART_URL = 'https://webservice.fanart.tv/v3/music';
