@@ -1707,12 +1707,9 @@ firebase@^4.8.1:
     dom-storage "^2.0.2"
     xmlhttprequest "^1.8.0"
 
-fit-html@^0.5.0:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.5.4.tgz#cd21a9eb297ef512372713e4c823e29d4e862f1a"
-  dependencies:
-    lit-html "^0.9.0"
-    redux "^3.7.2"
+fit-html@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.6.0.tgz#6f5c36c4cdcb0a87789da1d456050879c78d20a9"
 
 for-in@^1.0.1:
   version "1.0.2"
@@ -2418,10 +2415,6 @@ levelup@^0.18.2:
 limiter@^1.0.5:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.2.tgz#229d8055891c8b11af9e0ee5200e8e09bb3dcbeb"
-
-lit-html@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.9.0.tgz#a445ecbb3da7d8b17690e6ade6c872c89385092a"
 
 load-json-file@^1.0.0:
   version "1.1.0"
