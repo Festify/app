@@ -326,6 +326,5 @@ customElements.define(
     connect(
         mapStateToProps,
         {},
-        ViewTv,
-    ),
+    )(ViewTv),
 );

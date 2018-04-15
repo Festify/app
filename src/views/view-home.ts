@@ -163,6 +163,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        HomeView,
-    ),
+    )(HomeView),
 );

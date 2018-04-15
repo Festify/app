@@ -154,6 +154,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-        PartyView,
-    ),
+    )(PartyView),
 );
