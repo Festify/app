@@ -1,18 +1,39 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import chunk from 'lodash-es/chunk';
-import { all, call, cancel, put, select, takeLatest } from 'redux-saga/effects';
+import { call, cancel, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { Types } from '../actions';
-import { getArtistFanart, getMusicBrainzId, updateMetadata } from '../actions/metadata';
+import {
+    getArtistFanart,
+    getMusicBrainzId,
+    updateMetadata,
+    MetadataStore,
+    UpdateMetadataAction,
+} from '../actions/metadata';
 import { Views } from '../routing';
 import { loadFanartTracksSelector, loadMetadataSelector } from '../selectors/track';
 import { Metadata, State } from '../state';
 import { takeEveryWithState } from '../util/saga';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 
-const emptyArray = [];
+const cache = new MetadataStore();
 
+let hasThrownIdbError = false;
+function* cacheMetadata(ac: UpdateMetadataAction) {
+    try {
+        yield cache.cacheMetadata(ac.payload);
+    } catch (err) {
+        // Only warn once
+        if (hasThrownIdbError) {
+            return;
+        }
+        hasThrownIdbError = true;
+        console.warn("Failed to cache metadata to IndexedDB.", err);
+    }
+}
+
+const emptyArray = [];
 function* loadFanartForNewTracks(_) {
     const remaining: [string, Metadata][] = yield select(loadFanartTracksSelector);
 
@@ -63,7 +84,22 @@ function* loadMetadataForNewTracks(_) {
     const country = state.party.currentParty!.country;
     const remaining: string[] = loadMetadataSelector(state);
 
-    for (const ids of chunk(remaining, 50).filter(ch => ch.length > 0)) {
+    /*
+     * Cached metadata lives only for twelve hours, so we can assume that the track hasn't
+     * gone unavailable during that period of time. This means we can load metadata from
+     * IDB first, and only resort to calling the Web API later.
+     */
+
+    try {
+        const fullIds = remaining.map(id => `spotify-${id}`);
+        const cached: Record<string, Metadata> = yield cache.getMetadata(fullIds);
+        yield put(updateMetadata(cached));
+    } catch (err) {
+        console.warn("Failed to load cached tracks from IndexedDB. Fetching from Spotify API...");
+    }
+
+    const uncached: string[] = yield select(loadMetadataSelector);
+    for (const ids of chunk(uncached, 50).filter(ch => ch.length > 0)) {
         try {
             const url = `/tracks?market=${country}&ids=${encodeURIComponent(ids.join(','))}`;
             const resp = yield call(fetchWithAnonymousAuth, url);
@@ -77,12 +113,11 @@ function* loadMetadataForNewTracks(_) {
 }
 
 export default function*() {
-    yield all([
-        takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks),
-        takeEveryWithState(
-            LOCATION_CHANGED,
-            (s: State) => (s.router!.result || { view: Views.Home }).view,
-            watchTvMode,
-        ),
-    ]);
+    yield takeEvery(Types.UPDATE_METADATA, cacheMetadata),
+    yield takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks),
+    yield takeEveryWithState(
+        LOCATION_CHANGED,
+        (s: State) => (s.router!.result || { view: Views.Home }).view,
+        watchTvMode,
+    );
 }

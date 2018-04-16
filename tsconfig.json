@@ -18,7 +18,8 @@
       {
         "name": "typescript-lit-html-plugin"
       }
-    ]
+    ],
+    "importHelpers": true
   },
   "files": [
     "src/index.ts"
