@@ -2,16 +2,16 @@ import shuffleArr from 'lodash-es/shuffle';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { firebaseTrackIdSelector } from '../selectors/track';
-import { Playlist, PlaylistReference, Track } from '../state';
+import { PartySettings, Playlist, PlaylistReference, Track } from '../state';
 import firebase from '../util/firebase';
 import { fetchWithAccessToken } from '../util/spotify-auth';
 
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
-    | ChangeAllowMultiVoteInSearchAction
     | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
+    | ChangePartySettingAction
     | FlushQueueFailAction
     | FlushQueueFinishAction
     | FlushQueueStartAction
@@ -24,16 +24,17 @@ export type Actions =
     | UpdatePartyNameAction
     | UpdateUserPlaylistsAction;
 
-export interface ChangeAllowMultiVoteInSearchAction extends PayloadAction<boolean> {
-    type: Types.CHANGE_ALLOW_MULTI_VOTE_IN_SEARCH;
-}
-
 export interface ChangeDisplayKenBurnsBackgroundAction extends PayloadAction<boolean> {
     type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND;
 }
 
 export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
+}
+
+export interface ChangePartySettingAction extends
+    PayloadAction<{ setting: keyof PartySettings, enable: boolean }> {
+    type: Types.CHANGE_PARTY_SETTING;
 }
 
 export interface FlushQueueFailAction extends ErrorAction {
@@ -80,10 +81,13 @@ export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
     type: Types.UPDATE_USER_PLAYLISTS;
 }
 
-export function changeAllowMultiVoteInSearch(allow: boolean): ChangeAllowMultiVoteInSearchAction {
+export function changePartySetting(
+    setting: keyof PartySettings,
+    enable: boolean,
+): ChangePartySettingAction {
     return {
-        type: Types.CHANGE_ALLOW_MULTI_VOTE_IN_SEARCH,
-        payload: allow,
+        type: Types.CHANGE_PARTY_SETTING,
+        payload: { enable, setting },
     };
 }
 
