@@ -19,6 +19,7 @@ type Party {
     fallback_playlist: Object | Null,
     name: String,
     playback: PlaybackState,
+    settings: PartySettings | Null,
     short_id: PartyShortId
 }
 
@@ -36,6 +37,11 @@ type PlaybackState {
     playing: Boolean,
     target_playing: Boolean | Null,
     master_id: String | Null
+}
+
+type PartySettings {
+    allow_explicit_tracks: Boolean,
+    allow_multi_track_add: Boolean,
 }
 
 type SpotifyCountry extends String {

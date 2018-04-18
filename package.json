@@ -11,6 +11,7 @@
     "@mraerino/redux-little-router-reactless": "^14.3.0",
     "@polymer/app-layout": "^3.0.0-pre.1",
     "@polymer/iron-iconset-svg": "^3.0.0-pre.3",
+    "@polymer/iron-pages": "^3.0.0-pre.12",
     "@polymer/paper-button": "^3.0.0-pre.1",
     "@polymer/paper-checkbox": "^3.0.0-pre.11",
     "@polymer/paper-fab": "^3.0.0-pre.1",
@@ -43,7 +44,7 @@
     "connect-history-api-fallback": "^1.5.0",
     "firebase-bolt": "^0.8.2",
     "raven-js": "^3.24.0",
-    "rollup": "^0.57.1",
+    "rollup": "^0.58.0",
     "rollup-plugin-babel-minify": "^4.0.0",
     "rollup-plugin-browsersync": "^0.2.6",
     "rollup-plugin-commonjs": "^9.1.0",
@@ -54,7 +55,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-typescript2": "^0.13.0",
     "rollup-plugin-visualizer": "^0.6.0",
-    "spotify-web-api-js": "^0.23.0",
+    "spotify-web-api-js": "^0.24.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
     "typescript-lit-html-plugin": "^0.2.0"
@@ -70,7 +71,7 @@
   "bundlesize": [
     {
       "path": "build/index.js",
-      "maxSize": "240 kb"
+      "maxSize": "250 kb"
     }
   ]
 }

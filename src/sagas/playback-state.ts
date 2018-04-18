@@ -11,7 +11,7 @@ import {
     UpdatePlaybackStateAction,
 } from '../actions/party-data';
 import { togglePlaybackFinish } from '../actions/playback-spotify';
-import { playbackSelector } from '../selectors/party';
+import { isPartyOwnerSelector, playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
 import firebase, { firebaseNS } from '../util/firebase';
@@ -79,6 +79,10 @@ function* handleFirebase(partyId: string) {
             while (true) {
                 const oldState: Playback | null = yield select(playbackSelector);
                 const { payload }: UpdatePlaybackStateAction = yield take(Types.UPDATE_PLAYBACK_STATE);
+
+                if (!(yield select(isPartyOwnerSelector))) {
+                    continue;
+                }
 
                 // Exclude last_change for non-playback-state-changing updates to prevent
                 // infinite update loop

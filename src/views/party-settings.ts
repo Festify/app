@@ -9,12 +9,13 @@ import { html } from 'lit-html/lib/lit-extended';
 import {
     changeDisplayKenBurnsBackground,
     changePartyName,
+    changePartySetting,
     changeSearchInput,
     flushQueueStart,
     insertPlaylistStart,
 } from '../actions/view-party-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
-import { Playlist, State } from '../state';
+import { PartySettings, Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
@@ -24,6 +25,7 @@ interface PartySettingsProps {
     playlists: Playlist[];
     playlistSearch: string;
     queueFlushInProgress: boolean;
+    settings: PartySettings;
     tracksLoadInProgress: boolean;
     tracksToLoad: number;
     tracksLoaded: number;
@@ -32,13 +34,14 @@ interface PartySettingsProps {
 interface PartySettingsDispatch {
     changeDisplayKenBurnsBackground: (val: boolean) => void;
     changePartyName: (newName: string) => void;
+    changePartySetting: (setting: keyof PartySettings, val: boolean) => void;
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
 }
 
 /* tslint:disable:max-line-length */
-const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => html`
+const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html`
     ${sharedStyles}
     <style>
         :host {
@@ -65,6 +68,10 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             margin: 16px auto 16px auto;
 
             --paper-spinner-color: var(--primary-color);
+        }
+
+        paper-checkbox {
+            display: block;
         }
 
         .fallback-playlist {
@@ -127,6 +134,18 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             Display "Ken Burns" background in TV mode
         </paper-checkbox>
 
+        <paper-checkbox checked="${!props.settings.allow_multi_track_add}"
+                        on-checked-changed="${ev => props.changePartySetting('allow_multi_track_add', !(ev.target as HTMLInputElement).checked)}"
+                        title="To avoid spam, you might want to prevent your users from adding lots of tracks quickly from the search menu.">
+            Close search after a track has been added
+        </paper-checkbox>
+
+        <paper-checkbox checked="${props.settings.allow_explicit_tracks}"
+                        on-checked-changed="${ev => props.changePartySetting('allow_explicit_tracks', (ev.target as HTMLInputElement).checked)}"
+                        title="If you are prude, you can disable adding explict tracks here. Be aware, though, that Spotify does not provide 100% reliable information about whether a track is explicit or not, so there might be 'false negatives'.">
+            Allow guests to add explict tracks
+        </paper-checkbox>
+
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over"
@@ -178,6 +197,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,
     queueFlushInProgress: state.settingsView.queueFlushInProgress,
+    settings: PartySettings.defaultSettings(state.party.currentParty && state.party.currentParty.settings),
     tracksLoadInProgress: state.settingsView.tracksLoadInProgress,
     tracksLoaded: state.settingsView.tracksLoaded,
     tracksToLoad: state.settingsView.tracksToLoad,
@@ -186,6 +206,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
 const mapDispatchToProps: PartySettingsDispatch = {
     changeDisplayKenBurnsBackground,
     changePartyName,
+    changePartySetting,
     changeSearchInput,
     flushTracks: flushQueueStart,
     insert: insertPlaylistStart,
@@ -196,5 +217,5 @@ customElements.define(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-    )(PartySettings),
+    )(SettingsView),
 );

@@ -9,7 +9,7 @@ import {
     resolveShortId,
     JoinPartyStartAction,
 } from '../actions/party-data';
-import { State } from '../state';
+import { PartySettings, State } from '../state';
 
 function* createParty() {
     const { player, user }: State = yield select();
@@ -29,6 +29,7 @@ function* createParty() {
             userDisplayName,
             player.instanceId,
             spotifyUser.country,
+            PartySettings.defaultSettings(),
         );
     } catch (err) {
         yield put(createPartyFail(err));

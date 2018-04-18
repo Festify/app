@@ -2,7 +2,7 @@ import shuffleArr from 'lodash-es/shuffle';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { firebaseTrackIdSelector } from '../selectors/track';
-import { Playlist, PlaylistReference, Track } from '../state';
+import { PartySettings, Playlist, PlaylistReference, Track } from '../state';
 import firebase from '../util/firebase';
 import { fetchWithAccessToken } from '../util/spotify-auth';
 
@@ -11,6 +11,7 @@ import { ErrorAction, PayloadAction, Types } from '.';
 export type Actions =
     | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
+    | ChangePartySettingAction
     | FlushQueueFailAction
     | FlushQueueFinishAction
     | FlushQueueStartAction
@@ -29,6 +30,11 @@ export interface ChangeDisplayKenBurnsBackgroundAction extends PayloadAction<boo
 
 export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
+}
+
+export interface ChangePartySettingAction extends
+    PayloadAction<{ setting: keyof PartySettings, enable: boolean }> {
+    type: Types.CHANGE_PARTY_SETTING;
 }
 
 export interface FlushQueueFailAction extends ErrorAction {
@@ -73,6 +79,16 @@ export interface UpdatePartyNameAction extends PayloadAction<string> {
 
 export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
     type: Types.UPDATE_USER_PLAYLISTS;
+}
+
+export function changePartySetting(
+    setting: keyof PartySettings,
+    enable: boolean,
+): ChangePartySettingAction {
+    return {
+        type: Types.CHANGE_PARTY_SETTING,
+        payload: { enable, setting },
+    };
 }
 
 export function changeDisplayKenBurnsBackground(display: boolean): ChangeDisplayKenBurnsBackgroundAction {

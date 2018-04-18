@@ -17,6 +17,7 @@ import {
     loadPlaylistsStart,
     updateUserPlaylists,
     ChangeDisplayKenBurnsBackgroundAction,
+    ChangePartySettingAction,
     InsertFallbackPlaylistStartAction,
     UpdatePartyNameAction,
 } from '../actions/view-party-settings';
@@ -27,6 +28,15 @@ import firebase from '../util/firebase';
 import { takeEveryWithState } from '../util/saga';
 
 const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
+
+function* changePartySetting(partyId: string, ac: ChangePartySettingAction) {
+    yield firebase.database!()
+        .ref('/parties')
+        .child(partyId)
+        .child('settings')
+        .child(ac.payload.setting)
+        .set(ac.payload.enable);
+}
 
 function* changeDisplayKenBurnsValue(ac: ChangeDisplayKenBurnsBackgroundAction) {
     yield apply(
@@ -122,6 +132,7 @@ function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
 
 export function* managePartySettings(partyId: string) {
     yield takeLatest(Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND, changeDisplayKenBurnsValue);
+    yield takeLatest(Types.CHANGE_PARTY_SETTING, changePartySetting, partyId);
     yield takeLatest(Types.FLUSH_QUEUE_Start, flushTracks, partyId);
     yield takeLatest(Types.INSERT_FALLBACK_PLAYLIST_Start, insertPlaylist, partyId);
     yield takeLatest(Types.UPDATE_PARTY_NAME, updatePartyName, partyId);

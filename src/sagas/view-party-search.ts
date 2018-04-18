@@ -4,7 +4,9 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
+import { SetVoteAction } from '../actions/queue';
 import { searchFail, searchFinish, searchStart, ChangeTrackSearchInputAction } from '../actions/view-party';
+import { PartyViews } from '../routing';
 import { queueRouteSelector, searchRouteSelector } from '../selectors/routes';
 import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
@@ -24,37 +26,62 @@ function* doSearch(action) {
     yield call(delay, 500);
 
     const { party: { currentParty } }: State = yield select();
-    const url =
+    let url =
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(s.replace('-', ' ') + '*')}`;
 
-    let tracks: SpotifyApi.TrackObjectFull[];
+    const tracks: SpotifyApi.TrackObjectFull[] = [];
     try {
-        const trackResponse = yield call(fetchWithAnonymousAuth, url);
-        const resp: SpotifyApi.TrackSearchResponse = yield trackResponse.json();
-        tracks = resp.tracks.items;
+        // Search until we have at least 20 available and playable search results
+        while (tracks.length < 20 && url) {
+            const trackResponse = yield call(fetchWithAnonymousAuth, url);
+            const resp: SpotifyApi.TrackSearchResponse = yield trackResponse.json();
+            const votableTracks = resp.tracks.items
+                .filter(t => t.is_playable !== false)
+                .filter(t => {
+                    return (currentParty!.settings && !currentParty!.settings!.allow_explicit_tracks)
+                        ? !t.explicit
+                        : true;
+                });
+
+            tracks.push(...votableTracks);
+            url = resp.tracks.next;
+        }
     } catch (e) {
         yield put(searchFail(e));
         return;
     }
 
-    const result = tracks.filter(t => t.is_playable !== false)
-        .reduce((acc, track, i) => {
-            acc[`spotify-${track.id}`] = {
-                added_at: Date.now(),
-                is_fallback: false,
-                order: i,
-                reference: {
-                    provider: 'spotify',
-                    id: track.id,
-                },
-                vote_count: 0,
-            } as Track;
-            return acc;
-        }, {});
+    const result = tracks.reduce((acc, track, i) => {
+        acc[`spotify-${track.id}`] = {
+            added_at: Date.now(),
+            is_fallback: false,
+            order: i,
+            reference: {
+                provider: 'spotify',
+                id: track.id,
+            },
+            vote_count: 0,
+        } as Track;
+        return acc;
+    }, {});
 
     yield put(updateMetadata(tracks));
     yield put(searchFinish(result));
+}
+
+function* enforceMultiVoteSetting(ac: SetVoteAction) {
+    const state: State = yield select();
+    if (!state.party.currentParty || !state.party.currentParty.settings) {
+        return;
+    }
+
+    const hasVoted: boolean = ac.payload[1];
+    if (!state.party.currentParty.settings.allow_multi_track_add &&
+        state.router.result.subView === PartyViews.Search &&
+        hasVoted) {
+        yield put(push(queueRouteSelector(state)));
+    }
 }
 
 function* updateUrl(action: ChangeTrackSearchInputAction) {
@@ -75,4 +102,5 @@ function* updateUrl(action: ChangeTrackSearchInputAction) {
 export default function*() {
     yield takeLatest(LOCATION_CHANGED, doSearch);
     yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
+    yield takeEvery(Types.SET_VOTE, enforceMultiVoteSetting);
 }
