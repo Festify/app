@@ -10,8 +10,8 @@ import { store } from '../store';
 import iconSet from '../util/icons';
 
 import './view-home';
-import './view-party';
-import './view-tv';
+// import './view-party';
+// import './view-tv';
 
 interface AppShellProps {
     isPlaybackMaster: boolean;

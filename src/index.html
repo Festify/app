@@ -7,7 +7,7 @@
     <title>Festify</title>
     <meta name="description" content="Use this site to join a Festify Party and vote for tracks in the queue.">
 
-    <link rel="preload" as="script" href="/index.js">
+    <!-- <link rel="preload" as="script" href="/module/index.ts.js"> -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -61,15 +61,25 @@
     </div>
 
     <script>
+        function attachIndex(src, mod) {
+            const s = document.createElement('script');
+            s.src = src;
+            s.async = true;
+            s.defer = true;
+            s.type = mod ? 'module' : 'text/javascript';
+            if (!mod) {
+                s.setAttribute('nomodule', '');
+            }
+            document.body.appendChild(s);
+        }
+
         try {
             eval('"use strict"; class ES6CompatTestClass {}; const test = () => {};');
 
             window.addEventListener('WebComponentsReady', function() {
-                const s = document.createElement('script');
-                s.src = '/index.js';
-                s.async = true;
-                s.defer = true;
-                document.body.appendChild(s);
+                attachIndex('/module/index.ts.js', true);
+                attachIndex('/node_modules/systemjs/dist/system-production.js', false);
+                attachIndex('/nomodule/index.ts.js', false);
             });
         } catch (e) {
             console.error("Your browser doesn't support ES6 classes or arrow functions (or both). Please upgrade to a modern one.");
