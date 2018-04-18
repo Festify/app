@@ -142,7 +142,7 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
 
         <paper-checkbox checked="${props.settings.allow_explicit_tracks}"
                         on-checked-changed="${ev => props.changePartySetting('allow_explicit_tracks', (ev.target as HTMLInputElement).checked)}"
-                        title="If you are prudent, you can disable adding explict tracks here. Be aware, though, that Spotify does not provide 100% reliable information about whether a track is explicit or not, so there might be 'false negatives'.">
+                        title="If you are prude, you can disable adding explict tracks here. Be aware, though, that Spotify does not provide 100% reliable information about whether a track is explicit or not, so there might be 'false negatives'.">
             Allow guests to add explict tracks
         </paper-checkbox>
 
