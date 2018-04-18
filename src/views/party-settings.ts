@@ -70,6 +70,10 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
             --paper-spinner-color: var(--primary-color);
         }
 
+        paper-checkbox {
+            display: block;
+        }
+
         .fallback-playlist {
             cursor: pointer;
             display: flex;
