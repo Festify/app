@@ -11,6 +11,7 @@
     "@mraerino/redux-little-router-reactless": "^14.3.0",
     "@polymer/app-layout": "^3.0.0-pre.1",
     "@polymer/iron-iconset-svg": "^3.0.0-pre.3",
+    "@polymer/iron-pages": "^3.0.0-pre.12",
     "@polymer/paper-button": "^3.0.0-pre.1",
     "@polymer/paper-checkbox": "^3.0.0-pre.11",
     "@polymer/paper-fab": "^3.0.0-pre.1",
@@ -70,7 +71,7 @@
   "bundlesize": [
     {
       "path": "build/index.js",
-      "maxSize": "240 kb"
+      "maxSize": "250 kb"
     }
   ]
 }

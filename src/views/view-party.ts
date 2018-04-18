@@ -1,6 +1,7 @@
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout';
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
+import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
@@ -28,21 +29,6 @@ interface PartyViewDispatch {
     trackDragOver;
     trackDragDrop;
 }
-
-const Body = (view: PartyViews, props: PartyViewDispatch & PartyViewProps) => {
-    switch (view) {
-        case PartyViews.Queue:
-            return html`<party-queue on-dragenter="${props.trackDragEnter}"
-                                     on-drop="${props.trackDragDrop}"
-                                     on-dragover="${props.trackDragOver}"></party-queue>`;
-        case PartyViews.Search:
-            return html`<party-search></party-search>`;
-        case PartyViews.Settings:
-            return html`<party-settings></party-settings>`;
-        case PartyViews.Share:
-            return html`<party-share></party-share>`;
-    }
-};
 
 /* tslint:disable:max-line-length */
 const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
@@ -97,7 +83,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             width: 100%;
         }
 
-        main {
+        iron-pages {
             padding-top: 120px;
         }
 
@@ -131,9 +117,16 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
                 <playback-progress-bar></playback-progress-bar>
             </header>
 
-            <main>
-                ${Body(props.view, props)}
-            </main>
+            <iron-pages selected="${props.view}" attr-for-selected="view" role="main">
+                <party-queue view$="${PartyViews.Queue}"
+                                on-dragenter="${props.trackDragEnter}"
+                                on-drop="${props.trackDragDrop}"
+                                on-dragover="${props.trackDragOver}">
+                </party-queue>
+                <party-search view$="${PartyViews.Search}"></party-search>
+                <party-settings view$="${PartyViews.Settings}"></party-settings>
+                <party-share view$="${PartyViews.Share}"></party-share>
+            </iron-pages>
         </div>
     </app-drawer-layout>
 `;
