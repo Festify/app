@@ -16,6 +16,7 @@ import {
     loadPlaylistsFail,
     loadPlaylistsStart,
     updateUserPlaylists,
+    ChangeAllowMultiVoteInSearchAction,
     ChangeDisplayKenBurnsBackgroundAction,
     InsertFallbackPlaylistStartAction,
     UpdatePartyNameAction,
@@ -27,6 +28,15 @@ import firebase from '../util/firebase';
 import { takeEveryWithState } from '../util/saga';
 
 const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
+
+function* changeAllowMultiVoteInSearch(partyId: string, ac: ChangeAllowMultiVoteInSearchAction) {
+    yield firebase.database!()
+        .ref('/parties')
+        .child(partyId)
+        .child('settings')
+        .child('allow_multi_track_add')
+        .set(ac.payload);
+}
 
 function* changeDisplayKenBurnsValue(ac: ChangeDisplayKenBurnsBackgroundAction) {
     yield apply(
@@ -121,6 +131,7 @@ function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
 }
 
 export function* managePartySettings(partyId: string) {
+    yield takeLatest(Types.CHANGE_ALLOW_MULTI_VOTE_IN_SEARCH, changeAllowMultiVoteInSearch, partyId);
     yield takeLatest(Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND, changeDisplayKenBurnsValue);
     yield takeLatest(Types.FLUSH_QUEUE_Start, flushTracks, partyId);
     yield takeLatest(Types.INSERT_FALLBACK_PLAYLIST_Start, insertPlaylist, partyId);

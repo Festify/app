@@ -47,7 +47,26 @@ export interface Party {
     created_by: string;
     name: string;
     playback: Playback;
+    settings?: PartySettings;
     short_id: string;
+}
+
+export interface PartySettings {
+    /**
+     * Toggles whether the search menu closes after a guest has voted for
+     * one track, or if multiple tracks can be added to the queue from search.
+     */
+    allow_multi_track_add: boolean;
+}
+
+// tslint:disable-next-line:no-namespace
+export namespace PartySettings {
+    export function defaultSettings(overrides?: Partial<PartySettings>): PartySettings {
+        return {
+            allow_multi_track_add: true,
+            ...overrides,
+        };
+    }
 }
 
 export interface Track {

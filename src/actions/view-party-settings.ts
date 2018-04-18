@@ -9,6 +9,7 @@ import { fetchWithAccessToken } from '../util/spotify-auth';
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
+    | ChangeAllowMultiVoteInSearchAction
     | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
     | FlushQueueFailAction
@@ -22,6 +23,10 @@ export type Actions =
     | LoadPlaylistsFailAction
     | UpdatePartyNameAction
     | UpdateUserPlaylistsAction;
+
+export interface ChangeAllowMultiVoteInSearchAction extends PayloadAction<boolean> {
+    type: Types.CHANGE_ALLOW_MULTI_VOTE_IN_SEARCH;
+}
 
 export interface ChangeDisplayKenBurnsBackgroundAction extends PayloadAction<boolean> {
     type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND;
@@ -73,6 +78,13 @@ export interface UpdatePartyNameAction extends PayloadAction<string> {
 
 export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
     type: Types.UPDATE_USER_PLAYLISTS;
+}
+
+export function changeAllowMultiVoteInSearch(allow: boolean): ChangeAllowMultiVoteInSearchAction {
+    return {
+        type: Types.CHANGE_ALLOW_MULTI_VOTE_IN_SEARCH,
+        payload: allow,
+    };
 }
 
 export function changeDisplayKenBurnsBackground(display: boolean): ChangeDisplayKenBurnsBackgroundAction {

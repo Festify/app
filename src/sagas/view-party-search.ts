@@ -4,7 +4,9 @@ import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effec
 
 import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
+import { SetVoteAction } from '../actions/queue';
 import { searchFail, searchFinish, searchStart, ChangeTrackSearchInputAction } from '../actions/view-party';
+import { PartyViews } from '../routing';
 import { queueRouteSelector, searchRouteSelector } from '../selectors/routes';
 import { State, Track } from '../state';
 import { fetchWithAnonymousAuth } from '../util/spotify-auth';
@@ -57,6 +59,20 @@ function* doSearch(action) {
     yield put(searchFinish(result));
 }
 
+function* enforceMultiVoteSetting(ac: SetVoteAction) {
+    const state: State = yield select();
+    if (!state.party.currentParty || !state.party.currentParty.settings) {
+        return;
+    }
+
+    const hasVoted: boolean = ac.payload[1];
+    if (!state.party.currentParty.settings.allow_multi_track_add &&
+        state.router.result.subView === PartyViews.Search &&
+        hasVoted) {
+        yield put(push(queueRouteSelector(state)));
+    }
+}
+
 function* updateUrl(action: ChangeTrackSearchInputAction) {
     const state: State = yield select();
     const { s } = state.router!.query || { s: '' };
@@ -75,4 +91,5 @@ function* updateUrl(action: ChangeTrackSearchInputAction) {
 export default function*() {
     yield takeLatest(LOCATION_CHANGED, doSearch);
     yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
+    yield takeEvery(Types.SET_VOTE, enforceMultiVoteSetting);
 }

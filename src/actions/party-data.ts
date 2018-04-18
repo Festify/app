@@ -1,4 +1,4 @@
-import { ConnectionState, Party, Playback, Track } from '../state';
+import { ConnectionState, Party, PartySettings, Playback, Track } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 
@@ -112,6 +112,7 @@ export async function createNewParty(
     displayName: string,
     masterId: string,
     country: string,
+    settings: PartySettings,
 ): Promise<string> {
     const { uid } = await requireAuth();
     const now = firebaseNS.database!.ServerValue.TIMESTAMP;
@@ -129,6 +130,7 @@ export async function createNewParty(
             playing: false,
             target_playing: null,
         },
+        settings,
         short_id: String(Math.floor(Math.random() * 1000000)),
     };
 

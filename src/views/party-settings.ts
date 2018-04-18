@@ -7,6 +7,7 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import {
+    changeAllowMultiVoteInSearch,
     changeDisplayKenBurnsBackground,
     changePartyName,
     changeSearchInput,
@@ -18,6 +19,7 @@ import { Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
+    allowMultiVoteInSearch: boolean;
     displayKenBurnsBackground: boolean;
     isPlaylistLoadInProgress: boolean;
     partyName: string;
@@ -30,6 +32,7 @@ interface PartySettingsProps {
 }
 
 interface PartySettingsDispatch {
+    changeAllowMultiVoteInSearch: (val: boolean) => void;
     changeDisplayKenBurnsBackground: (val: boolean) => void;
     changePartyName: (newName: string) => void;
     changeSearchInput: (newContent: string) => void;
@@ -127,6 +130,12 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
             Display "Ken Burns" background in TV mode
         </paper-checkbox>
 
+        <paper-checkbox checked="${!props.allowMultiVoteInSearch}"
+                        on-checked-changed="${ev => props.changeAllowMultiVoteInSearch(!(ev.target as HTMLInputElement).checked)}"
+                        title="To avoid spam, you might want to prevent your users from adding lots of tracks quickly from the search menu.">
+            Close search after a track has been added
+        </paper-checkbox>
+
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over"
@@ -172,6 +181,9 @@ const PartySettings = (props: PartySettingsProps & PartySettingsDispatch) => htm
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartySettingsProps => ({
+    allowMultiVoteInSearch: !!(state.party.currentParty &&
+        state.party.currentParty.settings &&
+        state.party.currentParty.settings.allow_multi_track_add),
     displayKenBurnsBackground: state.tvView.displayKenBurnsBackground,
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
     partyName: (state.party.currentParty || { name: '' }).name,
@@ -184,6 +196,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
+    changeAllowMultiVoteInSearch,
     changeDisplayKenBurnsBackground,
     changePartyName,
     changeSearchInput,
