@@ -39,6 +39,7 @@
     "@mraerino/rollup-plugin-minifyliterals": "^1.2.0",
     "@types/lodash-es": "^4.17.0",
     "@types/spotify-web-playback-sdk": "^0.1.1",
+    "bundlesize": "^0.17.0",
     "connect-history-api-fallback": "^1.5.0",
     "firebase-bolt": "^0.8.2",
     "raven-js": "^3.24.0",
@@ -53,16 +54,23 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-typescript2": "^0.13.0",
     "rollup-plugin-visualizer": "^0.6.0",
-    "spotify-web-api-js": "^0.23.0",
+    "spotify-web-api-js": "^0.24.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
     "typescript-lit-html-plugin": "^0.2.0"
   },
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
+    "check-size": "bundlesize",
     "fix": "tslint -p tsconfig.json --fix",
     "lint": "tslint -p tsconfig.json",
     "prepare-env": "node prepare-env.js",
     "serve": "rollup -c --watch"
-  }
+  },
+  "bundlesize": [
+    {
+      "path": "build/index.js",
+      "maxSize": "240 kb"
+    }
+  ]
 }
