@@ -144,7 +144,7 @@ const ViewTv = (props: ViewTvProps) => html`
             font-size: 5.278vh;
         }
 
-        :host(.nocursor) {
+        :host(.no-cursor) {
             cursor: none;
         }
 
@@ -321,10 +321,35 @@ const mapStateToProps = (state: State): ViewTvProps => {
     };
 };
 
-customElements.define(
-    'view-tv',
-    connect(
-        mapStateToProps,
-        {},
-    )(ViewTv),
-);
+class TvMode extends connect(mapStateToProps, {})(ViewTv) {
+    private boundMouseMoveHandler: () => void;
+    private mouseTimeout: number = 0;
+
+    constructor() {
+        super();
+
+        this.boundMouseMoveHandler = () => this.onMouseMove();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.addEventListener('mousemove', this.boundMouseMoveHandler);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+
+        this.removeEventListener('mousemove', this.boundMouseMoveHandler);
+    }
+
+    onMouseMove() {
+        this.classList.remove('no-cursor');
+        if (this.mouseTimeout) {
+            clearTimeout(this.mouseTimeout);
+        }
+        setTimeout(() => this.classList.add('no-cursor'), 3000);
+    }
+}
+
+customElements.define('view-tv', TvMode);
