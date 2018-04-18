@@ -136,6 +136,12 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
             Close search after a track has been added
         </paper-checkbox>
 
+        <paper-checkbox checked="${props.settings.allow_explicit_tracks}"
+                        on-checked-changed="${ev => props.changePartySetting('allow_explicit_tracks', (ev.target as HTMLInputElement).checked)}"
+                        title="If you are prudent, you can disable adding explict tracks here. Be aware, though, that Spotify does not provide 100% reliable information about whether a track is explicit or not, so there might be 'false negatives'.">
+            Allow guests to add explict tracks
+        </paper-checkbox>
+
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over"
@@ -187,8 +193,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,
     queueFlushInProgress: state.settingsView.queueFlushInProgress,
-    settings: (state.party.currentParty && state.party.currentParty.settings) ||
-        PartySettings.defaultSettings(),
+    settings: PartySettings.defaultSettings(state.party.currentParty && state.party.currentParty.settings),
     tracksLoadInProgress: state.settingsView.tracksLoadInProgress,
     tracksLoaded: state.settingsView.tracksLoaded,
     tracksToLoad: state.settingsView.tracksToLoad,

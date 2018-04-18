@@ -53,6 +53,14 @@ export interface Party {
 
 export interface PartySettings {
     /**
+     * Toggles whether to allow explicit songs to be added to the party
+     * via the search.
+     *
+     * Does not affect fallback playlists (intentionally).
+     */
+    allow_explicit_tracks: boolean;
+
+    /**
      * Toggles whether the search menu closes after a guest has voted for
      * one track, or if multiple tracks can be added to the queue from search.
      */
@@ -61,8 +69,9 @@ export interface PartySettings {
 
 // tslint:disable-next-line:no-namespace
 export namespace PartySettings {
-    export function defaultSettings(overrides?: Partial<PartySettings>): PartySettings {
+    export function defaultSettings(overrides?: Partial<PartySettings> | null): PartySettings {
         return {
+            allow_explicit_tracks: true,
             allow_multi_track_add: true,
             ...overrides,
         };
