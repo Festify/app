@@ -28,7 +28,6 @@ function tracksEqual(
         return true;
     } else if (!a || !b) {
         return false;
-    // tslint:disable-next-line:triple-equals
     }
 
     const aVal = a.val();
