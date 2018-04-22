@@ -116,11 +116,16 @@ export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{
 
         const [partySnap, trackSnap] = await Promise.all([party, topmostTrack]);
         const track = values(trackSnap.val())[0];
-        await updateOrder(
-            voteDelta,
-            trackId,
-            track,
-            partyId,
-            partySnap.val(),
-        );
+        try {
+            await updateOrder(
+                voteDelta,
+                trackId,
+                track,
+                partyId,
+                partySnap.val(),
+            );
+        } catch (err) {
+            console.error(`An error occured while processing votes for /votes/${partyId}/${trackId}/${userId}.`);
+            throw err;
+        }
     });
