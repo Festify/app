@@ -100,15 +100,16 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
 
 export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
     .onWrite(async (change, ctx) => {
+        const { partyId, trackId, userId } = ctx!.params;
         const voteDelta = !!change.after.val() ? 1 : -1;
 
         const party = firebase.database()
             .ref('/parties')
-            .child(ctx!.params.partyId)
+            .child(partyId)
             .once('value');
         const topmostTrack = firebase.database()
             .ref('/tracks')
-            .child(ctx!.params.partyId)
+            .child(partyId)
             .limitToFirst(1)
             .orderByChild('order')
             .once('value');
@@ -117,9 +118,9 @@ export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{
         const track = values(trackSnap.val())[0];
         await updateOrder(
             voteDelta,
-            ctx!.params.trackId,
+            trackId,
             track,
-            ctx!.params.partyId,
+            partyId,
             partySnap.val(),
         );
     });
