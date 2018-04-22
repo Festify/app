@@ -1,34 +1,69 @@
 import firebase from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Change, EventContext } from 'firebase-functions';
+import { values } from 'lodash';
 
-export const pinTopTrack = functions.database.ref('/tracks/{partyId}/{trackId}/order')
+/**
+ * Finds the top track within a database snapshot of a parties tracks.
+ *
+ * @param snap the snapshot containing all party tracks
+ */
+function findTopTrack(snap: firebase.database.DataSnapshot): firebase.database.DataSnapshot | null {
+    let result: firebase.database.DataSnapshot | null = null;
+    snap.forEach(s => {
+        if (!result || s.child('order').val() < result.child('order').val()) {
+            result = s;
+        }
+        return false;
+    });
+    return result;
+}
+
+function tracksEqual(
+    a: firebase.database.DataSnapshot | null | undefined,
+    b: firebase.database.DataSnapshot | null | undefined,
+): boolean {
+    // tslint:disable-next-line:triple-equals
+    if (a == b) {
+        return true;
+    } else if (!a || !b) {
+        return false;
+    // tslint:disable-next-line:triple-equals
+    }
+
+    const aVal = a.val();
+    const bVal = b.val();
+    // tslint:disable-next-line:triple-equals
+    if (aVal.reference == bVal.reference) {
+        return true;
+    } else if (!aVal.reference || !bVal.reference) {
+        return false;
+    } else {
+        return aVal.reference.provider === bVal.reference.provider &&
+            aVal.reference.id === bVal.reference.id;
+    }
+}
+
+export const pinTopTrack = functions.database.ref('/tracks/{partyId}')
     .onWrite(async (change, ctx) => {
         const { partyId } = ctx!.params;
         if (!partyId || !(typeof partyId === 'string')) {
             throw new Error("Missing party ID");
         }
 
-        const topTrack: firebase.database.DataSnapshot = await firebase.database!()
-            .ref('/tracks')
-            .child(partyId)
-            .orderByChild('order')
-            .limitToFirst(1)
-            .once('value');
+        // Dirty check and do nothing, if top tracks haven't changed
+        const oldTopTrack = change.before && findTopTrack(change.before);
+        const newTopTrack = change.after && findTopTrack(change.after);
 
-        if (!topTrack.exists()) {
-            return;
-        }
-
-        const keys = Object.keys(topTrack.val());
-        if (keys.length === 0) {
+        // tslint:disable-next-line:triple-equals
+        if (tracksEqual(oldTopTrack, newTopTrack) || !newTopTrack || !newTopTrack.exists()) {
             return;
         }
 
         await firebase.database!()
             .ref('/tracks')
             .child(partyId)
-            .child(keys[0])
+            .child(newTopTrack.key!)
             .child('order')
             .set(Number.MIN_SAFE_INTEGER);
     });
