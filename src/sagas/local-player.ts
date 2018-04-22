@@ -1,4 +1,3 @@
-import * as Raven from 'raven-js';
 import { eventChannel, Channel, Task } from 'redux-saga';
 import {
     all,
@@ -26,6 +25,7 @@ import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
+import Raven from '../util/raven';
 import { takeEveryWithState } from '../util/saga';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
