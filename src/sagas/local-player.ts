@@ -146,7 +146,7 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
 
         while (true) {
             const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.duration === 0 && state.paused === true) {
+            if (state.position === 0 && state.paused === true) {
                 break;
             }
         }
