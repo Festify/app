@@ -28,7 +28,7 @@
             min-height: 100vh;
         }
 
-        .no-es6-class {
+        .no-es6 {
             color: white;
             display: none;
             margin: auto;
@@ -36,11 +36,11 @@
             text-align: center;
         }
 
-        .no-es6-class .flash {
+        .no-es6 .flash {
             color: yellow;
         }
 
-        .no-es6-class a {
+        .no-es6 a {
             color: white;
         }
     </style>
@@ -48,12 +48,12 @@
 <body>
     <app-shell></app-shell>
 
-    <div class="no-es6-class">
+    <div class="no-es6">
         <h1><span class="flash">⚡️</span> Oh, no! Unsupported Browser!</h1>
         <p>
             Seems like you're using an unsupported browser. Please use a modern one to use Festify.
             <a href="https://www.google.com/chrome/" alt="Download Google Chrome">Google Chrome</a>,
-            <a href="https://www.mozilla.org/de/firefox/" alt="Download Mozilla Firefox">Firefox</a>
+            <a href="https://www.mozilla.org/firefox/" alt="Download Mozilla Firefox">Firefox</a>
             or <a href="https://www.apple.com/safari/" alt="Download Safari">Safari</a> are really
             good choices. Any other browser that is based on one of them (like Opera) is also going
             to work well.
@@ -62,7 +62,7 @@
 
     <script>
         try {
-            eval('"use strict"; class ES6CompatTestClass {}; const test = () => {};');
+            eval('"use strict"; class ES6CompatTestClass {}; const test = () => {}; function* iterator() { yield 1; }');
 
             window.addEventListener('WebComponentsReady', function() {
                 const s = document.createElement('script');
@@ -72,8 +72,8 @@
                 document.body.appendChild(s);
             });
         } catch (e) {
-            console.error("Your browser doesn't support ES6 classes or arrow functions (or both). Please upgrade to a modern one.");
-            document.getElementsByClassName('no-es6-class').item(0).style.display = 'block';
+            console.error("Your browser doesn't support ES6 classes, ES6 generators or arrow functions (or all of them). Please upgrade to a modern one.");
+            document.getElementsByClassName('no-es6').item(0).style.display = 'block';
         }
     </script>
     <script src="/node_modules/webcomponents-loader-no-hi/webcomponents-loader.js"></script>
