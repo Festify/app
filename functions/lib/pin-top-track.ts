@@ -55,7 +55,7 @@ export const pinTopTrack = functions.database.ref('/tracks/{partyId}')
         const newTopTrack = change.after && findTopTrack(change.after);
 
         // tslint:disable-next-line:triple-equals
-        if (tracksEqual(oldTopTrack, newTopTrack) || !newTopTrack || !newTopTrack.exists()) {
+        if (tracksEqual(oldTopTrack, newTopTrack) || !newTopTrack) {
             return;
         }
 
@@ -64,5 +64,5 @@ export const pinTopTrack = functions.database.ref('/tracks/{partyId}')
             .child(partyId)
             .child(newTopTrack.key!)
             .child('order')
-            .set(Number.MIN_SAFE_INTEGER);
+            .transaction(() => Number.MIN_SAFE_INTEGER + 1);
     });
