@@ -153,6 +153,7 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
 
         const { reference }: Track = yield select(currentTrackSelector);
         yield put(removeTrackAction(reference, true));
+        yield put(updatePlaybackState({ playing: true }));
     }
 }
 
