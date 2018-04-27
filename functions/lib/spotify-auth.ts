@@ -40,7 +40,7 @@ function spotifyRequest(
     });
 }
 
-export const clientToken = functions.https.onCall(async (data, ctx) => {
+export const getClientToken = functions.https.onCall(async (data, ctx) => {
     let body;
     try {
         body = await spotifyRequest({ grant_type: 'client_credentials' });
