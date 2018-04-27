@@ -1,13 +1,12 @@
-import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { Agent } from 'https';
+import {Agent} from 'https';
 import request from 'request-promise';
-import { URL } from 'url';
+import {URL} from 'url';
 
-import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
+import {CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET} from '../spotify.config';
 
-import { crypto, escapeKey } from './utils';
+import {crypto, escapeKey} from './utils';
 
 const API_URL = 'https://accounts.spotify.com/api/token';
 
@@ -114,45 +113,49 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
             await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedUid });
 
             const oldUser = await admin.auth().getUser(ctx.auth.uid);
-            const userParties = await admin.database()
-                .ref('/user_parties')
-                .child(oldUser.uid)
-                .once('value');
-            const parties = Object.keys(userParties.val());
 
-            const updates = {};
+            if(oldUser.providerData.length == 0) {
+                // If the user is anonymous, merge it with Spotify's user
+                const userParties = await admin.database()
+                    .ref('/user_parties')
+                    .child(oldUser.uid)
+                    .once('value');
+                const parties = Object.keys(userParties.val());
 
-            for (const partyId of parties) {
-                const oldUserVotesRef = admin.database()
-                    .ref('/votes_by_user')
-                    .child(partyId)
-                    .child(oldUser.uid);
+                const updates = {};
 
-                const oldUserVotes = (await oldUserVotesRef.once('value')).val();
+                for (const partyId of parties) {
+                    const oldUserVotesRef = admin.database()
+                        .ref('/votes_by_user')
+                        .child(partyId)
+                        .child(oldUser.uid);
 
-                if (oldUserVotes) {
-                    for (const voteId of Object.keys(oldUserVotes)) {
-                        updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
-                        updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+                    const oldUserVotes = (await oldUserVotesRef.once('value')).val();
+
+                    if (oldUserVotes) {
+                        for (const voteId of Object.keys(oldUserVotes)) {
+                            updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
+                            updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+                        }
                     }
+
+                    updates[`/votes/${partyId}/${oldUser.uid}`] = null;
+                    updates[`/parties/${partyId}/created_by`] = newUser.uid;
                 }
 
-                updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-                updates[`/parties/${partyId}/created_by`] = newUser.uid;
-            }
+                updates[`/votes_by_user/${oldUser.uid}`] = null;
+                updates[`/user_parties/${oldUser.uid}`] = null;
 
-            updates[`/votes_by_user/${oldUser.uid}`] = null;
-            updates[`/user_parties/${oldUser.uid}`] = null;
-
-            try {
-                await admin.database().ref().update(updates);
-                await admin.auth().deleteUser(oldUser.uid);
-            } catch (ex) {
-                throw new functions.https.HttpsError(
-                    'unknown',
-                    "Failed to update user data.",
-                    ex.code,
-                );
+                try {
+                    await admin.database().ref().update(updates);
+                    await admin.auth().deleteUser(oldUser.uid);
+                } catch (ex) {
+                    throw new functions.https.HttpsError(
+                        'unknown',
+                        "Failed to update user data.",
+                        ex.code,
+                    );
+                }
             }
         } else {
             throw new functions.https.HttpsError(
