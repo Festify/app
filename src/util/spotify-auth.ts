@@ -21,7 +21,7 @@ export const requireAnonymousAuth: () => Promise<string> = debounce(_requireAnon
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
 
-const clientTokenFn = firebase.functions!().httpsCallable('clientToken');
+const clientTokenFn = firebase.functions!().httpsCallable('getClientToken');
 const refreshTokenFn = firebase.functions!().httpsCallable('refreshToken');
 
 let authData: AuthData | null = null;
