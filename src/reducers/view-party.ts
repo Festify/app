@@ -1,6 +1,7 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless/lib';
 
 import { Actions, Types } from '../actions';
+import { SearchFailAction, SearchFinishAction } from '../actions/view-party';
 import { PartyViewState } from '../state';
 
 export default function(
@@ -15,7 +16,7 @@ export default function(
         case LOCATION_CHANGED:
             return {
                 ...state,
-                searchResult: !action.payload.params || !action.payload.params.query
+                searchResult: !(action as any).payload.params || !(action as any).payload.params.query
                     ? null
                     : state.searchResult,
             };
@@ -29,14 +30,14 @@ export default function(
             return {
                 ...state,
                 searchInProgress: false,
-                searchError: action.payload,
+                searchError: (action as SearchFailAction).payload,
             };
         case Types.SEARCH_Finish:
             return {
                 ...state,
                 searchInProgress: false,
                 searchError: null,
-                searchResult: action.payload,
+                searchResult: (action as SearchFinishAction).payload,
             };
         case Types.CLEANUP_PARTY:
             return {

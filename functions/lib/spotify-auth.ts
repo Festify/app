@@ -58,7 +58,7 @@ export const getClientToken = functions.https.onCall(async (data, ctx) => {
 });
 
 export const exchangeCode = functions.https.onCall(async (data, ctx) => {
-    const { callbackUrl, code, userToken } = data;
+    const { callbackUrl, code } = data;
     if (!code) {
         throw new functions.https.HttpsError(
             'invalid-argument',
@@ -69,6 +69,12 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
         throw new functions.https.HttpsError(
             'invalid-argument',
             "Missing 'callbackUrl' parameter",
+        );
+    }
+    if (!ctx.auth || !ctx.auth.uid) {
+        throw new functions.https.HttpsError(
+            'unauthenticated',
+            "Missing user authorization",
         );
     }
 
@@ -105,51 +111,48 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                 uid: escapedUid,
                 ...userMeta,
             });
+            await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedUid });
 
-            if (userToken) {
-                const oldUser = await admin.auth().verifyIdToken(userToken);
+            const oldUser = await admin.auth().getUser(ctx.auth.uid);
+            const userParties = await admin.database()
+                .ref('/user_parties')
+                .child(oldUser.uid)
+                .once('value');
+            const parties = Object.keys(userParties.val());
 
-                const userParties = await admin.database()
-                    .ref('/user_parties')
-                    .child(oldUser.uid)
-                    .once('value');
+            const updates = {};
 
-                const parties = Object.keys(userParties.val());
+            for (const partyId of parties) {
+                const oldUserVotesRef = admin.database()
+                    .ref('/votes_by_user')
+                    .child(partyId)
+                    .child(oldUser.uid);
 
-                const updates = {};
+                const oldUserVotes = (await oldUserVotesRef.once('value')).val();
 
-                for (const partyId of parties) {
-                    const oldUserVotesRef = admin.database()
-                        .ref('/votes_by_user')
-                        .child(partyId)
-                        .child(oldUser.uid);
-
-                    const oldUserVotes = (await oldUserVotesRef.once('value')).val();
-
-                    if (oldUserVotes) {
-                        for (const voteId of Object.keys(oldUserVotes)) {
-                            updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
-                            updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
-                        }
+                if (oldUserVotes) {
+                    for (const voteId of Object.keys(oldUserVotes)) {
+                        updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
+                        updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
                     }
-
-                    updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-                    updates[`/parties/${partyId}/created_by`] = newUser.uid;
                 }
 
-                updates[`/votes_by_user/${oldUser.uid}`] = null;
-                updates[`/user_parties/${oldUser.uid}`] = null;
+                updates[`/votes/${partyId}/${oldUser.uid}`] = null;
+                updates[`/parties/${partyId}/created_by`] = newUser.uid;
+            }
 
-                try {
-                    await admin.database().ref().update(updates);
-                    await admin.auth().deleteUser(oldUser.uid);
-                } catch (ex) {
-                    throw new functions.https.HttpsError(
-                        'unknown',
-                        "Failed to delete old and update new user.",
-                        ex.code,
-                    );
-                }
+            updates[`/votes_by_user/${oldUser.uid}`] = null;
+            updates[`/user_parties/${oldUser.uid}`] = null;
+
+            try {
+                await admin.database().ref().update(updates);
+                await admin.auth().deleteUser(oldUser.uid);
+            } catch (ex) {
+                throw new functions.https.HttpsError(
+                    'unknown',
+                    "Failed to update user data.",
+                    ex.code,
+                );
             }
         } else {
             throw new functions.https.HttpsError(

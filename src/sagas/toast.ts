@@ -32,7 +32,11 @@ function* displayToast(action: ShowToastAction) {
 }
 
 function* displayErrorToast(action: ErrorActions) {
-    yield put(showToast(action.payload.message));
+    yield put(showToast(
+        (action.type === Types.EXCHANGE_CODE_Fail)
+            ? action.payload.data.message
+            : action.payload.message,
+    ));
 }
 
 export default function*() {

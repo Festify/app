@@ -36,7 +36,6 @@ export type Actions =
     | PartyViewActions
     | PlaybackSpotifyActions
     | QueueActions
-    | RouterActions
     | SettingsActions
     | ShareActions;
 
@@ -57,7 +56,6 @@ export const enum Types {
     CREATE_PARTY_Fail = 'CREATE_PARTY_FAIL',
     EXCHANGE_CODE_Start = 'EXCHANGE_CODE_START',
     EXCHANGE_CODE_Fail = 'EXCHANGE_CODE_FAIL',
-    EXCHANGE_CODE_Finish = 'EXCHANGE_CODE_FINISH',
     FLUSH_QUEUE_Start = 'FLUSH_QUEUE_START',
     FLUSH_QUEUE_Fail = 'FLUSH_QUEUE_FAIL',
     FLUSH_QUEUE_Finish = 'FLUSH_QUEUE_FINISH',
@@ -90,7 +88,7 @@ export const enum Types {
     TOGGLE_PLAYBACK_Start = 'TOGGLE_PLAYBACK_START',
     TOGGLE_PLAYBACK_Finish = 'TOGGLE_PLAYBACK_FINISH',
     TOGGLE_PLAYBACK_Fail = 'TOGGLE_PLAYBACK_FAIL',
-    TRIGGER_SPOTIFY_OAUTH_LOGIN = 'TRIGGER_SPOTIFY_OAUTH_LOGIN',
+    TRIGGER_OAUTH_LOGIN = 'TRIGGER_OAUTH_LOGIN',
     UPDATE_NETWORK_CONNECTION_STATE = 'UPDATE_NETWORK_CONNECTION_STATE',
     UPDATE_METADATA = 'UPDATE_METADATA',
     UPDATE_PARTY = 'UPDATE_PARTY',
@@ -116,6 +114,9 @@ export interface ErrorAction extends PayloadAction<Error> {
 export type CommonActions =
     | AssignInstanceIdAction
     | ClickLinkAction
+    | QueueDragDropAction
+    | QueueDragEnterAction
+    | QueueDragOverAction
     | HideToastAction
     | ShowToastAction;
 

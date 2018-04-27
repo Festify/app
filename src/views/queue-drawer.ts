@@ -3,7 +3,7 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import { clickLink } from '../actions';
-import { loginWithSpotify } from '../actions/auth';
+import { triggerOAuthLogin } from '../actions/auth';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import {
@@ -160,7 +160,7 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
 
 const mapDispatchToProps: QueueDrawerDispatch = {
     handleClick: clickLink,
-    enterAdmin: loginWithSpotify,
+    enterAdmin: () => triggerOAuthLogin('spotify'),
 };
 
 customElements.define(

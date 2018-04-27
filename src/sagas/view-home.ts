@@ -13,7 +13,7 @@ import { PartySettings, State } from '../state';
 
 function* createParty() {
     const { player, user }: State = yield select();
-    const spotifyUser = user.spotify.user;
+    const spotifyUser = user.credentials.spotify.user;
 
     if (!spotifyUser) {
         const e = new Error("Missing Spotify user");

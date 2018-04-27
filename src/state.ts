@@ -1,5 +1,5 @@
+import { User } from '@firebase/auth-types';
 import { Location } from '@mraerino/redux-little-router-reactless';
-import * as SpotifyApi from 'spotify-web-api-js';
 
 export const enum ConnectionState {
     Unknown,
@@ -159,8 +159,17 @@ export interface AuthProviderStatus<T> {
     user: T | null;
 }
 
-export interface UserState {
+export interface UserCredentials {
+    facebook: AuthProviderStatus<User>;
+    firebase: AuthProviderStatus<User>;
+    github: AuthProviderStatus<User>;
+    google: AuthProviderStatus<User>;
     spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
+    twitter: AuthProviderStatus<User>;
+}
+
+export interface UserState {
+    credentials: UserCredentials;
     playlists: Playlist[];
 }
 

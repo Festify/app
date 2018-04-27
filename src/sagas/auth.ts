@@ -1,109 +1,52 @@
-import { HttpsCallableResult } from '@firebase/functions-types';
-import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { User, UserCredential } from '@firebase/auth-types';
 import { delay } from 'redux-saga';
-import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 
-import { CLIENT_ID } from '../../spotify.config';
-import { showToast, Types } from '../actions';
-import { exchangeCodeFail, exchangeCodeFinish, exchangeCodeStart, notifyAuthStatusKnown } from '../actions/auth';
-import { State } from '../state';
-import { requireAuth, AuthData } from '../util/auth';
+import { Types } from '../actions';
+import { exchangeCodeFail, notifyAuthStatusKnown, TriggerOAuthLoginAction } from '../actions/auth';
+import { getProvider, requireAuth } from '../util/auth';
 import firebase from '../util/firebase';
-import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
 
-const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'authRedirect';
-const exchangeCodeFn = firebase.functions!().httpsCallable('exchangeCode');
+function* checkInitialLogin() {
+    const user: User = yield call(requireAuth);
+    if (user.isAnonymous) {
+        return;
+    }
+    const strippedProviderId = user.providerId.replace('.com', '');
+    yield put(notifyAuthStatusKnown(strippedProviderId as any, user));
+}
 
-function* checkSpotifyLoginStatus() {
-    if (!localStorage[LOCALSTORAGE_KEY]) {
-        yield put(notifyAuthStatusKnown('spotify', null));
+function* handleOAuthLogin(ac: TriggerOAuthLoginAction) {
+    if (ac.payload === 'spotify') { // handled in ./spotify-auth.ts
         return;
     }
 
     try {
-        const resp = yield call(fetchWithAccessToken, '/me');
-        const user = yield resp.json();
-
-        yield put(notifyAuthStatusKnown('spotify', user));
+        const user: User = yield requireAuth();
+        yield user.linkWithRedirect(getProvider(ac.payload));
     } catch (err) {
-        console.error('Failed to fetch Spotify Login Status.');
-        return;
+        const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
+            ? new Error(`Failed to start OAuth because the account is already linked with an account from ${ac.payload}.`)
+            : new Error(`Failed to start OAuth with code ${err.code}: ${err.message}`);
+        yield put(exchangeCodeFail(ac.payload, e));
     }
 }
 
-function* exchangeCode() {
-    const action = yield take(LOCATION_CHANGED);
-    const { code, error, state } = action.payload.query;
-
-    if (state !== 'SPOTIFY_AUTH') {
-        return;
-    }
-
-    yield put(exchangeCodeStart());
-
-    if (error === 'access_denied') {
-        const e = new Error('Oops, Spotify denied access.');
-        yield put(exchangeCodeFail(e));
-        return;
-    }
-
-    yield put(replace(localStorage[AUTH_REDIRECT_LOCAL_STORAGE_KEY] || '/', {}));
-    localStorage.removeItem(AUTH_REDIRECT_LOCAL_STORAGE_KEY);
-
-    const { currentUser } = firebase.auth!();
-
-    let resp: HttpsCallableResult;
+function* handleOAuthRedirect() {
+    let result: UserCredential;
     try {
-        resp = yield call(exchangeCodeFn, {
-            callbackUrl: location.origin,
-            code,
-            userToken: currentUser ? yield currentUser.getIdToken(true) : undefined,
-        });
+        result = yield firebase.auth!().getRedirectResult();
     } catch (err) {
-        const e = new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
-        yield put(exchangeCodeFail(e));
-        return;
-    }
-    const { accessToken, expiresIn, firebaseToken, refreshToken } = resp.data;
-
-    yield call(requireAuth);
-
-    const data = new AuthData(
-        accessToken,
-        Date.now() + (expiresIn * 1000),
-        refreshToken,
-    );
-
-    yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
-    yield* checkSpotifyLoginStatus();
-
-    const { user }: State = yield select();
-
-    if (!user.spotify.user) {
-        yield put(exchangeCodeFail(new Error('Spotify user is not set.')));
-        yield apply(data, data.remove, [LOCALSTORAGE_KEY]);
+        console.error("Faield redirect result getting");
         return;
     }
 
-    yield firebase.auth!().signInWithCustomToken(firebaseToken);
+    // User aborted login
+    if (!result.credential || !result.user) {
+        return;
+    }
 
-    yield put(exchangeCodeFinish());
-
-    const welcomeText = user.spotify.user
-        ? `Welcome, ${user.spotify.user.display_name || user.spotify.user.id}!`
-        : 'Welcome!';
-    yield put(showToast(welcomeText));
-}
-
-const oauthUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
-    + `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`
-    + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
-
-function* triggerOAuthLogin() {
-    localStorage[AUTH_REDIRECT_LOCAL_STORAGE_KEY] =
-        window.location.pathname + window.location.search + window.location.hash;
-    yield call(console.log, 'Only the swaggiest of developers hacking on Festify will see this 🙌.');
-    window.location.href = oauthUrl;
+    yield requireAuth();
 }
 
 /**
@@ -134,10 +77,9 @@ function* refreshFirebaseAuth() {
 }
 
 export default function*() {
-    yield all([
-        takeEvery(Types.CHECK_SPOTIFY_LOGIN_STATUS, checkSpotifyLoginStatus),
-        takeLatest(Types.TRIGGER_SPOTIFY_OAUTH_LOGIN, triggerOAuthLogin),
-        exchangeCode(),
-        refreshFirebaseAuth(),
-    ]);
+    yield fork(refreshFirebaseAuth);
+    yield takeEvery(Types.TRIGGER_OAUTH_LOGIN, handleOAuthLogin);
+
+    yield* handleOAuthRedirect();
+    yield* checkInitialLogin();
 }
