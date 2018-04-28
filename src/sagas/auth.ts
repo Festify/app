@@ -5,7 +5,7 @@ import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 import { Types } from '../actions';
 import { exchangeCodeFail, notifyAuthStatusKnown, TriggerOAuthLoginAction } from '../actions/auth';
 import { getProvider, requireAuth } from '../util/auth';
-import firebase, { firebaseNS } from '../util/firebase';
+import firebase from '../util/firebase';
 
 function* checkInitialLogin() {
     const user: User = yield call(requireAuth);

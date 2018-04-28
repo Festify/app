@@ -9,7 +9,7 @@ import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import { queueDragDrop, queueDragEnter, queueDragOver } from '../actions';
-import { triggerOAuthLogin, OAuthLoginProviders } from '../actions/auth';
+import { triggerOAuthLogin } from '../actions/auth';
 import { changeDisplayLoginModal } from '../actions/view-party';
 import { PartyViews } from '../routing';
 import { Party, State } from '../state';

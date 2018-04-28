@@ -1,12 +1,12 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import {Agent} from 'https';
+import { Agent } from 'https';
 import request from 'request-promise';
-import {URL} from 'url';
+import { URL } from 'url';
 
-import {CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET} from '../spotify.config';
+import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
-import {crypto, escapeKey} from './utils';
+import { crypto, escapeKey } from './utils';
 
 const API_URL = 'https://accounts.spotify.com/api/token';
 
@@ -114,7 +114,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
 
             const oldUser = await admin.auth().getUser(ctx.auth.uid);
 
-            if(oldUser.providerData.length == 0) {
+            if (oldUser.providerData.length === 0) {
                 // If the user is anonymous, merge it with Spotify's user
                 const userParties = await admin.database()
                     .ref('/user_parties')
