@@ -22,6 +22,7 @@ import {
     UpdatePartyNameAction,
 } from '../actions/view-party-settings';
 import { PartyViews } from '../routing';
+import { isPartyOwnerSelector } from '../selectors/party';
 import { queueTracksSelector } from '../selectors/track';
 import { Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
@@ -30,6 +31,10 @@ import { takeEveryWithState } from '../util/saga';
 const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
 
 function* changePartySetting(partyId: string, ac: ChangePartySettingAction) {
+    if (!(yield select(isPartyOwnerSelector))) {
+        return;
+    }
+
     yield firebase.database!()
         .ref('/parties')
         .child(partyId)

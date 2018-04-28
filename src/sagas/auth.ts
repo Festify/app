@@ -5,7 +5,7 @@ import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 import { Types } from '../actions';
 import { exchangeCodeFail, notifyAuthStatusKnown, TriggerOAuthLoginAction } from '../actions/auth';
 import { getProvider, requireAuth } from '../util/auth';
-import firebase from '../util/firebase';
+import firebase, { firebaseNS } from '../util/firebase';
 
 function* checkInitialLogin() {
     const user: User = yield call(requireAuth);
@@ -37,11 +37,18 @@ function* handleOAuthRedirect() {
     try {
         result = yield firebase.auth!().getRedirectResult();
     } catch (err) {
-        console.error("Faield redirect result getting");
-        return;
+        switch (err.code) {
+            case 'auth/credential-already-in-use':
+                result = yield firebase.auth!().signInAndRetrieveDataWithCredential(err.credential);
+                break;
+            default:
+                const e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
+                yield put(exchangeCodeFail((err.credential && err.credential.providerId) || 'firebase', e));
+                return;
+        }
     }
 
-    // User aborted login
+    // User aborted login, do nothing
     if (!result.credential || !result.user) {
         return;
     }

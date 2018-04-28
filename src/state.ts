@@ -53,6 +53,13 @@ export interface Party {
 
 export interface PartySettings {
     /**
+     * Toggles whether anonymous users can vote.
+     *
+     * This can be disabled to prevent vote cheating.
+     */
+    allow_anonymous_voters: boolean;
+
+    /**
      * Toggles whether to allow explicit songs to be added to the party
      * via the search.
      *
@@ -71,6 +78,7 @@ export interface PartySettings {
 export namespace PartySettings {
     export function defaultSettings(overrides?: Partial<PartySettings> | null): PartySettings {
         return {
+            allow_anonymous_voters: true,
             allow_explicit_tracks: true,
             allow_multi_track_add: true,
             ...overrides,
@@ -120,6 +128,7 @@ export interface PartyState {
 }
 
 export interface PartyViewState {
+    displayLoginModal: boolean;
     searchInProgress: boolean;
     searchError: Error | null;
     searchResult: Record<string, Track> | null;

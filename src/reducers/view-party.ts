@@ -1,11 +1,12 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless/lib';
 
 import { Actions, Types } from '../actions';
-import { SearchFailAction, SearchFinishAction } from '../actions/view-party';
+import { ChangeDisplayLoginModalAction, SearchFailAction, SearchFinishAction } from '../actions/view-party';
 import { PartyViewState } from '../state';
 
 export default function(
     state: PartyViewState = {
+        displayLoginModal: false,
         searchInProgress: false,
         searchError: null,
         searchResult: null,
@@ -13,6 +14,11 @@ export default function(
     action: Actions,
 ): PartyViewState {
     switch (action.type) {
+        case Types.CHANGE_DISPLAY_LOGIN_MODAL:
+            return {
+                ...state,
+                displayLoginModal: (action as ChangeDisplayLoginModalAction).payload,
+            };
         case LOCATION_CHANGED:
             return {
                 ...state,

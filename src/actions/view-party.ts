@@ -3,10 +3,15 @@ import { Track } from '../state';
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
+    | ChangeDisplayLoginModalAction
     | ChangeTrackSearchInputAction
     | SearchStartAction
     | SearchFinishAction
     | SearchFailAction;
+
+export interface ChangeDisplayLoginModalAction extends PayloadAction<boolean> {
+    type: Types.CHANGE_DISPLAY_LOGIN_MODAL;
+}
 
 export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_TRACK_SEARCH_INPUT;
@@ -22,6 +27,13 @@ export interface SearchFinishAction extends PayloadAction<Record<string, Track>>
 
 export interface SearchFailAction extends ErrorAction {
     type: Types.SEARCH_Fail;
+}
+
+export function changeDisplayLoginModal(display: boolean): ChangeDisplayLoginModalAction {
+    return {
+        type: Types.CHANGE_DISPLAY_LOGIN_MODAL,
+        payload: display,
+    };
 }
 
 export function changeTrackSearchInput(text: string): ChangeTrackSearchInputAction {

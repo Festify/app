@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@mraerino/rollup-plugin-minifyliterals": "^1.2.0",
+    "@polymer/paper-dialog": "^3.0.0-pre.12",
     "@types/lodash-es": "^4.17.0",
     "@types/spotify-web-playback-sdk": "^0.1.1",
     "bundlesize": "^0.17.0",

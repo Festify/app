@@ -146,6 +146,12 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
             Allow guests to add explict tracks
         </paper-checkbox>
 
+        <paper-checkbox checked="${!props.settings.allow_anonymous_voters}"
+                        on-checked-changed="${ev => props.changePartySetting('allow_anonymous_voters', !(ev.target as HTMLInputElement).checked)}"
+                        title="Prevent vote cheating by requiring guests to sign-in with a social account such as Facebook or Google.">
+            Require guests to sign in before voting
+        </paper-checkbox>
+
         <paper-button raised
                       on-click="${props.flushTracks}"
                       title="Remove all but the playing track from the queue to start over"
