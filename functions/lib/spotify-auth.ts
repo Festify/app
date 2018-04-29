@@ -153,6 +153,20 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     );
                 }
             }
+        } else if (error.code === 'auth/invalid-display-name') {
+            console.error(error, userMeta.displayName);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${userMeta.displayName} is not a valid username.`,
+                error.code,
+            );
+        } else if (error.code === 'auth/invalid-email') {
+            console.error(error, user.email);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${user.email} is not a valid email address.`,
+                error.code,
+            );
         } else {
             console.error(error);
             throw new functions.https.HttpsError(
