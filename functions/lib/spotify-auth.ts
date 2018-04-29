@@ -45,6 +45,7 @@ export const getClientToken = functions.https.onCall(async (data, ctx) => {
     try {
         body = await spotifyRequest({ grant_type: 'client_credentials' });
     } catch (err) {
+        console.error(err);
         throw new functions.https.HttpsError(
             'unknown',
             `Received invalid status code '${err.statusCode}' from Spotify.`,
@@ -144,6 +145,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     await admin.database().ref().update(updates);
                     await admin.auth().deleteUser(oldUser.uid);
                 } catch (ex) {
+                    console.error(ex);
                     throw new functions.https.HttpsError(
                         'unknown',
                         "Failed to delete old and update new user.",
@@ -152,6 +154,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                 }
             }
         } else {
+            console.error(error);
             throw new functions.https.HttpsError(
                 'unknown',
                 "Failed to update user.",
@@ -185,6 +188,7 @@ export const refreshToken = functions.https.onCall(async (data, ctx) => {
             refresh_token: crypto.decrypt(refreshToken, ENCRYPTION_SECRET),
         });
     } catch (err) {
+        console.error(err);
         throw new functions.https.HttpsError(
             'unknown',
             `Received invalid status code '${err.status}' from Spotify.`,
