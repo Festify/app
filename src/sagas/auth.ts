@@ -1,4 +1,4 @@
-import { HttpsCallableResult } from '@firebase/functions-types';
+import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
 import { all, apply, call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
@@ -60,7 +60,9 @@ function* exchangeCode() {
             userToken: currentUser ? yield currentUser.getIdToken(true) : undefined,
         });
     } catch (err) {
-        const e = new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
+        const e = ((err as HttpsError).code === 'invalid-argument')
+            ? err // In this case the error message is suitable for displaying to the user
+            : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
         yield put(exchangeCodeFail(e));
         return;
     }
