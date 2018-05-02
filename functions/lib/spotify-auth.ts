@@ -1,4 +1,3 @@
-import { Request, Response } from 'express';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Agent } from 'https';
@@ -87,6 +86,14 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
         },
         json: true,
     });
+
+    if (!user.email) {
+        throw new functions.https.HttpsError(
+            'invalid-argument', // tslint:disable-next-line:max-line-length
+            "The account is lacking an E-Mail address. Please ensure your Spotify account has a valid E-Mail address associated with it.",
+            'auth/invalid-email',
+        );
+    }
 
     const escapedUid = `spotify:user:${escapeKey(user.id)}`;
     const userMeta = {

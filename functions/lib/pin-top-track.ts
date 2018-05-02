@@ -1,7 +1,5 @@
 import firebase from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { Change, EventContext } from 'firebase-functions';
-import { values } from 'lodash';
 
 /**
  * Finds the top track within a database snapshot of a parties tracks.
