@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Agent } from 'https';
-import request from 'request-promise';
+import request from 'requestretry';
 import { URL } from 'url';
 
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
@@ -36,6 +36,7 @@ function spotifyRequest(
             'Authorization': `Basic ${authKey}`,
         },
         json: true,
+        fullResponse: false,
     });
 }
 
@@ -85,6 +86,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
             'Authorization': `Bearer ${authCodeBody.access_token}`,
         },
         json: true,
+        fullResponse: false,
     });
 
     if (!user.email) {
