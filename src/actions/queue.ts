@@ -29,6 +29,21 @@ export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise
         .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 }
 
+/**
+ * Pins a track to the top of the queue.
+ *
+ * @param partyId the ID of the affected party
+ * @param ref the ref of the track to pin
+ */
+export function pinTrack(partyId: string, ref: TrackReference): Promise<void> {
+    return firebase.database!()
+        .ref('/tracks')
+        .child(partyId)
+        .child(firebaseTrackIdSelector(ref))
+        .child('order')
+        .set(Number.MIN_SAFE_INTEGER + 1);
+}
+
 export async function removeTrack(
     partyId: string,
     track: Track,
