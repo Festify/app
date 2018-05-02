@@ -32,7 +32,7 @@ function* displayToast(action: ShowToastAction) {
 }
 
 function* displayErrorToast(action: ErrorActions) {
-    yield put(showToast(action.payload.message));
+    yield put(showToast(action.payload.message, 10000));
 }
 
 export default function*() {
