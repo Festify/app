@@ -199,8 +199,8 @@ function* handleQueueChange(
 
     if (newTrack) {
         yield all([
-            call(playTrack, newTrack.reference.id, deviceId),
             call(markTrackAsPlayed, partyId, newTrack.reference),
+            call(playTrack, newTrack.reference.id, deviceId),
         ]);
     } else {
         yield player.pause();
