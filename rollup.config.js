@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import minify from 'rollup-plugin-babel-minify';
 import cjs from 'rollup-plugin-commonjs';
 import copy from 'rollup-plugin-copy';
-import nodeGlobals from 'rollup-plugin-node-globals';
 import nodeBuiltins from 'rollup-plugin-node-builtins';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
@@ -51,9 +50,8 @@ const plugins = [
     }),
     typescript(),
     cjs(),
-    nodeGlobals(),
     isProduction ? minifyLit({
-        include: ['src/index.ts', 'src/{components,views}/**', 'node_modules/@polymer/{paper,iron}-*/**'],
+        include: ['src/entry.ts', 'src/{components,views}/**', 'node_modules/@polymer/{paper,iron}-*/**'],
         includeExtension: ['.ts', '.js'],
         literals: false,
         htmlminifier: {
@@ -74,7 +72,7 @@ const plugins = [
 ].filter(plugin => plugin !== null);
 
 const baseOptions = {
-    input: [src('index.ts'), src('views/view-party.ts'), src('views/view-tv.ts')],
+    input: [src('index.ts'), src('entry.ts'), src('views/view-party.ts'), src('views/view-tv.ts')],
     experimentalDynamicImport: true,
     experimentalCodeSplitting: true,
     plugins,
