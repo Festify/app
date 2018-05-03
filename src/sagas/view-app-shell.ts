@@ -4,33 +4,23 @@ import { put, takeEvery } from 'redux-saga/effects';
 import { showToast } from '../actions';
 import { Views } from '../routing';
 
-let partyViewImported = false;
-let tvModeImported = false;
-
+let prevView: Views;
 function* lazyLoadViews(ac: Location) {
     if (!ac.payload.result) {
         return;
     }
 
     const view: Views = ac.payload.result.view;
+    if (view === Views.Home || view === prevView) {
+        return;
+    }
+
+    prevView = view;
     try {
-        switch (view) {
-            case Views.Party:
-                if (partyViewImported) {
-                    return;
-                }
-
-                yield import('../views/view-party');
-                partyViewImported = true;
-                break;
-            case Views.Tv:
-                if (tvModeImported) {
-                    return;
-                }
-
-                yield import('../views/view-tv');
-                tvModeImported = true;
-                break;
+        if (view === Views.Party) {
+            yield import('../views/view-party');
+        } else {
+            yield import('../views/view-tv');
         }
     } catch (err) {
         yield put(showToast(`Failed to load ${view === Views.Party ? 'queue' : 'TV mode'}. Please try again.`));
