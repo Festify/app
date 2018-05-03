@@ -126,7 +126,6 @@ function* loadParty() {
         yield takeEvery(tracksRef, publishTrackUpdates);
         yield takeEvery(votesRef, publishUserVoteUpdates);
 
-        yield put(openPartyFinish(party));
         const partySettings = yield fork(managePartySettings, id);
         const playbackManager = yield fork(managePlaybackState, id);
         const queueManager = yield fork(manageQueue, id);
@@ -138,6 +137,8 @@ function* loadParty() {
             .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 
         window.onbeforeunload = closeListener;
+
+        yield put(openPartyFinish(party));
 
         yield take(Types.CLEANUP_PARTY);
 

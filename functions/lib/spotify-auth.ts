@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { Agent } from 'https';
-import request from 'request-promise';
+import request from 'requestretry';
 import { URL } from 'url';
 
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
@@ -36,6 +36,7 @@ function spotifyRequest(
             'Authorization': `Basic ${authKey}`,
         },
         json: true,
+        fullResponse: false,
     });
 }
 
@@ -44,6 +45,7 @@ export const getClientToken = functions.https.onCall(async (data, ctx) => {
     try {
         body = await spotifyRequest({ grant_type: 'client_credentials' });
     } catch (err) {
+        console.error(err);
         throw new functions.https.HttpsError(
             'unknown',
             `Received invalid status code '${err.statusCode}' from Spotify.`,
@@ -90,7 +92,16 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
             'Authorization': `Bearer ${authCodeBody.access_token}`,
         },
         json: true,
+        fullResponse: false,
     });
+
+    if (!user.email) {
+        throw new functions.https.HttpsError(
+            'invalid-argument', // tslint:disable-next-line:max-line-length
+            "The account is lacking an E-Mail address. Please ensure your Spotify account has a valid E-Mail address associated with it.",
+            'auth/invalid-email',
+        );
+    }
 
     const escapedUid = `spotify:user:${escapeKey(user.id)}`;
     const userMeta = {
@@ -150,6 +161,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     await admin.database().ref().update(updates);
                     await admin.auth().deleteUser(oldUser.uid);
                 } catch (ex) {
+                    console.error(ex);
                     throw new functions.https.HttpsError(
                         'unknown',
                         "Failed to update user data.",
@@ -157,7 +169,22 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     );
                 }
             }
+        } else if (error.code === 'auth/invalid-display-name') {
+            console.error(error, userMeta.displayName);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${userMeta.displayName} is not a valid username.`,
+                error.code,
+            );
+        } else if (error.code === 'auth/invalid-email') {
+            console.error(error, user.email);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${user.email} is not a valid email address.`,
+                error.code,
+            );
         } else {
+            console.error(error);
             throw new functions.https.HttpsError(
                 'unknown',
                 "Failed to update user.",
@@ -191,6 +218,7 @@ export const refreshToken = functions.https.onCall(async (data, ctx) => {
             refresh_token: crypto.decrypt(refreshToken, ENCRYPTION_SECRET),
         });
     } catch (err) {
+        console.error(err);
         throw new functions.https.HttpsError(
             'unknown',
             `Received invalid status code '${err.status}' from Spotify.`,

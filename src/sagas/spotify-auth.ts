@@ -1,5 +1,5 @@
 import { UserCredential } from '@firebase/auth-types';
-import { HttpsCallableResult } from '@firebase/functions-types';
+import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { apply, call, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
@@ -55,7 +55,9 @@ function* exchangeCode() {
     try {
         resp = yield call(exchangeCodeFn, { callbackUrl: location.origin, code });
     } catch (err) {
-        const e = new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
+        const e = ((err as HttpsError).code === 'invalid-argument')
+            ? err // In this case the error message is suitable for displaying to the user
+            : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
         yield put(exchangeCodeFail('spotify', e));
         return;
     }

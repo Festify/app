@@ -36,6 +36,7 @@ function* displayErrorToast(action: ErrorActions) {
         (action.type === Types.EXCHANGE_CODE_Fail)
             ? action.payload.data.message
             : action.payload.message,
+        10000,
     ));
 }
 
