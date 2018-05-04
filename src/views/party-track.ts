@@ -172,6 +172,10 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
             background-color: var(--primary-color);
         }
 
+        paper-fab[disabled] {
+            opacity: 0.7;
+        }
+
         paper-icon-button {
             margin-left: 5px;
             padding: 6px;
