@@ -24,7 +24,7 @@ function* handleOAuthLogin(ac: TriggerOAuthLoginAction) {
     }
 
     try {
-        const user: User = yield requireAuth();
+        const user: User = yield call(requireAuth);
         yield user.linkWithRedirect(getProvider(ac.payload));
     } catch (err) {
         const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
@@ -55,7 +55,7 @@ function* handleOAuthRedirect() {
         return;
     }
 
-    yield requireAuth();
+    yield call(requireAuth);
 }
 
 /**
