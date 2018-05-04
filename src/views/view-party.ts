@@ -216,7 +216,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
         <paper-dialog-scrollable>
             <p>
-                The party owner requires all guests to sign in to prevent voting fraud,
+                The party owner requires all guests to sign in to prevent cheating,
                 but you wouldn't do that anyway, would ya? 😛
             </p>
 
