@@ -18,22 +18,6 @@ function* checkInitialLogin() {
     yield put(notifyAuthStatusKnown(strippedProviderId as any, user));
 }
 
-function* handleOAuthLogin(ac: TriggerOAuthLoginAction) {
-    if (ac.payload === 'spotify') { // handled in ./spotify-auth.ts
-        return;
-    }
-
-    try {
-        const user: User = yield call(requireAuth);
-        yield user.linkWithRedirect(getProvider(ac.payload));
-    } catch (err) {
-        const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
-            ? new Error(`Failed to start OAuth because the account is already linked with an account from ${ac.payload}.`)
-            : new Error(`Failed to start OAuth with code ${err.code}: ${err.message}`);
-        yield put(exchangeCodeFail(ac.payload, e));
-    }
-}
-
 function* handleOAuthRedirect() {
     let result: UserCredential;
     try {
@@ -85,9 +69,25 @@ function* refreshFirebaseAuth() {
     }
 }
 
+function* triggerOAuthLogin(ac: TriggerOAuthLoginAction) {
+    if (ac.payload === 'spotify') { // handled in ./spotify-auth.ts
+        return;
+    }
+
+    try {
+        const user: User = yield call(requireAuth);
+        yield user.linkWithRedirect(getProvider(ac.payload));
+    } catch (err) {
+        const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
+            ? new Error(`Failed to start OAuth because the account is already linked with an account from ${ac.payload}.`)
+            : new Error(`Failed to start OAuth with code ${err.code}: ${err.message}`);
+        yield put(exchangeCodeFail(ac.payload, e));
+    }
+}
+
 export default function*() {
     yield fork(refreshFirebaseAuth);
-    yield takeEvery(Types.TRIGGER_OAUTH_LOGIN, handleOAuthLogin);
+    yield takeEvery(Types.TRIGGER_OAUTH_LOGIN, triggerOAuthLogin);
 
     yield* handleOAuthRedirect();
     yield* checkInitialLogin();
