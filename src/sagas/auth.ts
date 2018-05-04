@@ -22,15 +22,21 @@ function* handleOAuthRedirect() {
     try {
         yield firebase.auth!().getRedirectResult();
     } catch (err) {
+        let e;
+
         switch (err.code) {
             case 'auth/credential-already-in-use':
                 yield firebase.auth!().signInAndRetrieveDataWithCredential(err.credential);
+                return;
+            case 'auth/web-storage-unsupported':
+                e = new Error("Your browser is not supported or has third party cookies disabled.");
                 break;
             default:
-                const e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
-                yield put(exchangeCodeFail((err.credential && err.credential.providerId) || 'firebase', e));
-                return;
+                e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
+                break;
         }
+
+        yield put(exchangeCodeFail((err.credential && err.credential.providerId) || 'firebase', e));
     }
 
     // The main saga calls checkInitialLogin here, which calls requireAuth
