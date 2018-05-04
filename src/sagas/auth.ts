@@ -19,13 +19,12 @@ function* checkInitialLogin() {
 }
 
 function* handleOAuthRedirect() {
-    let result: UserCredential;
     try {
-        result = yield firebase.auth!().getRedirectResult();
+        yield firebase.auth!().getRedirectResult();
     } catch (err) {
         switch (err.code) {
             case 'auth/credential-already-in-use':
-                result = yield firebase.auth!().signInAndRetrieveDataWithCredential(err.credential);
+                yield firebase.auth!().signInAndRetrieveDataWithCredential(err.credential);
                 break;
             default:
                 const e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
@@ -34,12 +33,7 @@ function* handleOAuthRedirect() {
         }
     }
 
-    // User aborted login, do nothing
-    if (!result.credential || !result.user) {
-        return;
-    }
-
-    yield call(requireAuth);
+    // The main saga calls checkInitialLogin here, which calls requireAuth
 }
 
 /**
