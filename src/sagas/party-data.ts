@@ -18,7 +18,7 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { store } from '../store';
 import { requireAuth } from '../util/auth';
@@ -171,9 +171,25 @@ function* watchRoute() {
     }
 }
 
+function* watchLogin() {
+    while (true) {
+        yield take(Types.EXCHANGE_CODE_Finish);
+        const state: State = yield select();
+        const partyId = partyIdSelector(state);
+
+        if (!partyId) {
+            continue;
+        }
+
+        yield put(cleanupParty());
+        yield put(openPartyStart(partyId));
+    }
+}
+
 export default function*() {
     yield all([
         loadParty(),
         watchRoute(),
+        watchLogin(),
     ]);
 }
