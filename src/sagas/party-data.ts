@@ -5,6 +5,7 @@ import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
+import { NotifyAuthStatusKnownAction } from '../actions/auth';
 import {
     becomePlaybackMaster,
     cleanupParty,
@@ -173,11 +174,11 @@ function* watchRoute() {
 
 function* watchLogin() {
     while (true) {
-        yield take(Types.EXCHANGE_CODE_Finish);
+        const ac: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
         const state: State = yield select();
         const partyId = partyIdSelector(state);
 
-        if (!partyId) {
+        if (!partyId || ac.payload.data) {
             continue;
         }
 

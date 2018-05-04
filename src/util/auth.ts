@@ -1,6 +1,8 @@
 import { FirebaseAuth, User } from '@firebase/auth-types';
 
-import { firebase } from './firebase';
+import { UserCredentials } from '../state';
+
+import { firebase, firebaseNS } from './firebase';
 
 export class AuthData {
     static loadFrom(localStorageKey: string): AuthData {
@@ -42,6 +44,20 @@ export class AuthData {
             expiresAt: this.expiresAt,
             refreshToken: this.refreshToken,
         });
+    }
+}
+
+export function getProvider(prov: Exclude<keyof UserCredentials, 'spotify' | 'firebase'>) {
+    const auth = firebaseNS.auth!;
+    switch (prov) {
+        case 'facebook':
+            return new auth.FacebookAuthProvider();
+        case 'github':
+            return new auth.GithubAuthProvider();
+        case 'google':
+            return new auth.GoogleAuthProvider();
+        case 'twitter':
+            return new auth.TwitterAuthProvider();
     }
 }
 

@@ -10,10 +10,15 @@ import { PayloadAction, Types } from '.';
 
 export type Actions =
     | RemoveTrackAction
+    | RequestSetVoteAction
     | SetVoteAction;
 
 export interface RemoveTrackAction extends PayloadAction<[TrackReference, boolean]> {
     type: Types.REMOVE_TRACK;
+}
+
+export interface RequestSetVoteAction extends PayloadAction<[TrackReference, boolean]> {
+    type: Types.REQUEST_SET_VOTE;
 }
 
 export interface SetVoteAction extends PayloadAction<[TrackReference, boolean]> {
@@ -82,6 +87,13 @@ export function removeTrackAction(ref: TrackReference, moveToHistory: boolean): 
     return {
         type: Types.REMOVE_TRACK,
         payload: [ref, moveToHistory],
+    };
+}
+
+export function requestSetVoteAction(ref: TrackReference, vote: boolean): RequestSetVoteAction {
+    return {
+        type: Types.REQUEST_SET_VOTE,
+        payload: [ref, vote],
     };
 }
 

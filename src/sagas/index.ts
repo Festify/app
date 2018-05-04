@@ -4,6 +4,7 @@ import linkJoinCreateSaga from './link-join-create';
 import { checkPlaybackSdkCompatibility as compatibilitySaga } from './local-player';
 import metadataSaga from './metadata';
 import partyDataSaga from './party-data';
+import spotifyAuthSaga from './spotify-auth';
 import toastSaga from './toast';
 import searchSaga from './view-party-search';
 
@@ -20,6 +21,7 @@ export default [
     metadataSaga,
     partyDataSaga,
     searchSaga,
+    spotifyAuthSaga,
     toastSaga,
 
     viewHomeSaga,

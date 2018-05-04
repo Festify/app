@@ -59,7 +59,7 @@ export const getClientToken = functions.https.onCall(async (data, ctx) => {
 });
 
 export const exchangeCode = functions.https.onCall(async (data, ctx) => {
-    const { callbackUrl, code, userToken } = data;
+    const { callbackUrl, code } = data;
     if (!code) {
         throw new functions.https.HttpsError(
             'invalid-argument',
@@ -70,6 +70,12 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
         throw new functions.https.HttpsError(
             'invalid-argument',
             "Missing 'callbackUrl' parameter",
+        );
+    }
+    if (!ctx.auth || !ctx.auth.uid) {
+        throw new functions.https.HttpsError(
+            'unauthenticated',
+            "Missing user authorization",
         );
     }
 
@@ -115,15 +121,16 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                 uid: escapedUid,
                 ...userMeta,
             });
+            await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedUid });
 
-            if (userToken) {
-                const oldUser = await admin.auth().verifyIdToken(userToken);
+            const oldUser = await admin.auth().getUser(ctx.auth.uid);
 
+            if (oldUser.providerData.length === 0) {
+                // If the user is anonymous, merge it with Spotify's user
                 const userParties = await admin.database()
                     .ref('/user_parties')
                     .child(oldUser.uid)
                     .once('value');
-
                 const parties = Object.keys(userParties.val());
 
                 const updates = {};
@@ -157,7 +164,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     console.error(ex);
                     throw new functions.https.HttpsError(
                         'unknown',
-                        "Failed to delete old and update new user.",
+                        "Failed to update user data.",
                         ex.code,
                     );
                 }

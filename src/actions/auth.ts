@@ -1,72 +1,78 @@
-import * as SpotifyApi from 'spotify-web-api-js';
+import { User } from '@firebase/auth-types';
 
-import { ErrorAction, PayloadAction, Types } from '.';
+import { UserCredentials } from '../state';
+
+import { PayloadAction, Types } from '.';
 
 export type Actions =
     | CheckSpotifyLoginStatusAction
     | ExchangeCodeFailAction
-    | ExchangeCodeFinishAction
     | ExchangeCodeStartAction
     | NotifyAuthStatusKnownAction
-    | TriggerSpotifyOAuthLoginAction;
+    | TriggerOAuthLoginAction;
 
 export interface CheckSpotifyLoginStatusAction {
     type: Types.CHECK_SPOTIFY_LOGIN_STATUS;
 }
 
-export interface ExchangeCodeFailAction extends ErrorAction {
+export interface ExchangeCodeFailAction extends PayloadAction<ProviderObject<Error>> {
+    error: true;
     type: Types.EXCHANGE_CODE_Fail;
 }
 
-export interface ExchangeCodeFinishAction {
-    type: Types.EXCHANGE_CODE_Finish;
-}
-
-export interface ExchangeCodeStartAction {
+export interface ExchangeCodeStartAction extends PayloadAction<keyof UserCredentials> {
     type: Types.EXCHANGE_CODE_Start;
 }
 
-export interface NotifyAuthStatusKnownAction extends PayloadAction<[
-    'spotify',
-    SpotifyApi.UserObjectPrivate | null
-]> {
+export interface NotifyAuthStatusKnownAction extends PayloadAction<ProviderObject<
+    User | SpotifyApi.UserObjectPrivate | null
+>> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
 }
 
-export interface TriggerSpotifyOAuthLoginAction {
-    type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN;
+export type OAuthLoginProviders = Exclude<keyof UserCredentials, 'firebase'>;
+
+export interface TriggerOAuthLoginAction extends PayloadAction<OAuthLoginProviders> {
+    type: Types.TRIGGER_OAUTH_LOGIN;
+}
+
+export interface ProviderObject<T> {
+    data: T;
+    provider: keyof UserCredentials;
 }
 
 export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
     return { type: Types.CHECK_SPOTIFY_LOGIN_STATUS };
 }
 
-export function exchangeCodeFail(err: Error): ExchangeCodeFailAction {
+export function exchangeCodeFail(provider: keyof UserCredentials, err: Error): ExchangeCodeFailAction {
     return {
         type: Types.EXCHANGE_CODE_Fail,
         error: true,
-        payload: err,
+        payload: { provider, data: err },
     };
 }
 
-export function exchangeCodeFinish(): ExchangeCodeFinishAction {
-    return { type: Types.EXCHANGE_CODE_Finish };
-}
-
-export function exchangeCodeStart(): ExchangeCodeStartAction {
-    return { type: Types.EXCHANGE_CODE_Start };
+export function exchangeCodeStart(provider: keyof UserCredentials): ExchangeCodeStartAction {
+    return {
+        type: Types.EXCHANGE_CODE_Start,
+        payload: provider,
+    };
 }
 
 export function notifyAuthStatusKnown(
-    provider: 'spotify',
-    user: SpotifyApi.UserObjectPrivate | null,
+    provider: keyof UserCredentials,
+    user: User | SpotifyApi.UserObjectPrivate | null,
 ): NotifyAuthStatusKnownAction {
     return {
         type: Types.NOTIFY_AUTH_STATUS_KNOWN,
-        payload: [provider, user],
+        payload: { provider, data: user },
     };
 }
 
-export function loginWithSpotify(): TriggerSpotifyOAuthLoginAction {
-    return { type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN };
+export function triggerOAuthLogin(provider: OAuthLoginProviders): TriggerOAuthLoginAction {
+    return {
+        type: Types.TRIGGER_OAUTH_LOGIN,
+        payload: provider,
+    };
 }

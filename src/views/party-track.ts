@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
-import { removeTrackAction, setVoteAction } from '../actions/queue';
+import { removeTrackAction, requestSetVoteAction as setVoteAction } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
 import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
 import {
