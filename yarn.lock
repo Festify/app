@@ -1806,9 +1806,9 @@ firebase@^4.8.1:
     dom-storage "2.1.0"
     xmlhttprequest "1.8.0"
 
-fit-html@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.6.0.tgz#6f5c36c4cdcb0a87789da1d456050879c78d20a9"
+fit-html@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/fit-html/-/fit-html-0.7.0.tgz#737a148dfe2b3b2d2d4b538b06101743aaa2dc6a"
 
 follow-redirects@1.0.0:
   version "1.0.0"
