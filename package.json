@@ -30,7 +30,7 @@
     "lodash-es": "^4.17.4",
     "normalize-css": "^2.3.1",
     "promise-debounce": "^1.0.1",
-    "redux": "^3.7.2",
+    "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.2",
     "redux-saga": "^0.16.0",
     "reselect": "^3.0.1",

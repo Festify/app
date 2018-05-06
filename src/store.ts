@@ -17,7 +17,7 @@ import { State } from './state';
 
 const saga = createSagaMiddleware();
 
-export const store = createStore<State>(
+export const store = createStore(
     combineReducers({
         ...reducers,
         router: routerReducer,
