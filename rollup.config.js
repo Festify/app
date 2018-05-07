@@ -4,6 +4,7 @@ import minify from 'rollup-plugin-babel-minify';
 import cjs from 'rollup-plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import nodeBuiltins from 'rollup-plugin-node-builtins';
+import nodeGlobals from 'rollup-plugin-node-globals';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 import minifyLit from '@mraerino/rollup-plugin-minifyliterals';
@@ -49,6 +50,7 @@ const plugins = [
         },
     }),
     typescript(),
+    nodeGlobals(),
     cjs(),
     isProduction ? minifyLit({
         include: ['src/entry.ts', 'src/{components,views}/**', 'node_modules/@polymer/{paper,iron}-*/**'],
