@@ -72,8 +72,8 @@
   },
   "bundlesize": [
     {
-      "path": "build/index.ts.js",
-      "maxSize": "250 kb"
+      "path": "build/module/entry.ts.js",
+      "maxSize": "60 kb"
     }
   ]
 }
