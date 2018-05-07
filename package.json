@@ -28,7 +28,6 @@
     "ken-burns-carousel": "^0.2.1",
     "lit-html": "^0.10.0",
     "lodash-es": "^4.17.4",
-    "normalize-css": "^2.3.1",
     "promise-debounce": "^1.0.1",
     "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.2",
