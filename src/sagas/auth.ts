@@ -1,6 +1,4 @@
 import { User } from '@firebase/auth-types';
-import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
-import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
 import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 
