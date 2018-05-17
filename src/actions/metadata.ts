@@ -21,10 +21,10 @@ interface StoredMetadata extends Metadata {
 const META_IDB_TTL = 3600 * 1000 * 12; // 12h
 
 export class MetadataStore {
-    private dbPromise: Promise<DB>;
+    private db: Promise<DB>;
 
     constructor() {
-        this.dbPromise = idb.open('Festify', 2, upgrade => {
+        this.db = idb.open('Festify', 2, upgrade => {
             if (upgrade.objectStoreNames.contains('metadata')) {
                 upgrade.deleteObjectStore('metadata');
             }
@@ -40,7 +40,7 @@ export class MetadataStore {
      * @param meta the metadata to cache
      */
     async cacheMetadata(meta: Record<string, Partial<Metadata>>) {
-        const tx = (await this.dbPromise).transaction('metadata', 'readwrite');
+        const tx = (await this.db).transaction('metadata', 'readwrite');
         const store = tx.objectStore<StoredMetadata, string>('metadata');
 
         const entries = Object.keys(meta);
@@ -80,7 +80,7 @@ export class MetadataStore {
      * Loads cached metadata from IndexedDB.
      */
     async getMetadata(ids: Iterable<string>): Promise<Record<string, Metadata>> {
-        const tx = (await this.dbPromise).transaction('metadata');
+        const tx = (await this.db).transaction('metadata');
         const store = tx.objectStore<StoredMetadata, string>('metadata');
 
         const requestedTrackIds = new Set(ids);
@@ -107,7 +107,7 @@ export class MetadataStore {
 
     private async deleteOld() {
         try {
-            const tx = (await this.dbPromise).transaction('metadata');
+            const tx = (await this.db).transaction('metadata');
             const store = tx.objectStore<StoredMetadata, string>('metadata');
             const maxAge = IDBKeyRange.upperBound(Date.now() - META_IDB_TTL);
 
