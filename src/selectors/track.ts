@@ -10,11 +10,13 @@ export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
 
 export const tracksSelector = (state: State) => state.party.tracks || {};
 
-export const singleTrackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
+export const singleTrackSelector = (state: State, trackId: string) =>
+     tracksSelector(state)[trackId];
 
-export const metadataSelector = (state: State) => state.metadata || {};
+export const metadataSelector = (state: State): Record<string, Metadata> => state.metadata || {};
 
-export const singleMetadataSelector = (state: State, trackId: string): Metadata | null => state.metadata[trackId];
+export const singleMetadataSelector = (state: State, trackId: string): Metadata | null =>
+    metadataSelector(state)[trackId];
 
 export const artistJoinerFactory: () => (s: State, id: string) => string | null = () => createSelector(
     singleMetadataSelector,
