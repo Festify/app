@@ -131,7 +131,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
                     .ref('/user_parties')
                     .child(oldUser.uid)
                     .once('value');
-                const parties = Object.keys(userParties.val());
+                const parties = userParties.val() ? Object.keys(userParties.val()) : [];
 
                 const updates = {};
 
