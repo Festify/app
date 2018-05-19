@@ -202,6 +202,12 @@ export const getClientToken = functions.https.onCall(async (data, ctx) => {
     };
 });
 
+export const isSpotifyUser = functions.https.onCall(async (data, ctx) => {
+    const user = await admin.auth().getUserByEmail(data.email);
+    // tslint:disable:no-string-literal
+    return Boolean(user.customClaims && user.customClaims['spotify']);
+});
+
 export const refreshToken = functions.https.onCall(async (data, ctx) => {
     const { refreshToken } = data;
     if (!refreshToken) {

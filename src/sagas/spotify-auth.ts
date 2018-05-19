@@ -4,8 +4,15 @@ import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactle
 import { apply, call, put, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { CLIENT_ID } from '../../spotify.config';
-import { showToast, Types } from '../actions';
-import { exchangeCodeFail, exchangeCodeStart, notifyAuthStatusKnown, TriggerOAuthLoginAction } from '../actions/auth';
+import { Types } from '../actions';
+import {
+    exchangeCodeFail,
+    exchangeCodeStart,
+    linkFollowUpUser,
+    notifyAuthStatusKnown,
+    welcomeUser,
+    TriggerOAuthLoginAction,
+} from '../actions/auth';
 import { requireAuth, AuthData } from '../util/auth';
 import firebase from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
@@ -66,7 +73,7 @@ function* exchangeCode() {
 
     let newUser: UserCredential;
     try {
-        newUser = yield firebase.auth!().signInAndRetrieveDataWithCustomToken(firebaseToken);
+        newUser = yield firebase.auth!().signInWithCustomToken(firebaseToken);
     } catch (err) {
         const e = new Error(`Firebase login failed with ${err.code}: ${err.message}`);
         yield put(exchangeCodeFail('spotify', e));
@@ -80,8 +87,16 @@ function* exchangeCode() {
     );
     yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
 
+    try {
+        yield call(linkFollowUpUser);
+    } catch (err) {
+        const e = new Error("Failed to link authentication providers. :(");
+        yield put(exchangeCodeFail('spotify', e));
+        return;
+    }
+
     yield* checkSpotifyLoginStatus();
-    yield put(showToast(newUser.user!.displayName ? `Welcome, ${newUser.user!.displayName}!` : 'Welcome!'));
+    yield put(welcomeUser(newUser.user!));
 }
 
 const oauthUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`

@@ -1,25 +1,27 @@
-import { AuthCredential, User, UserCredential } from '@firebase/auth-types';
+import { User, UserCredential } from '@firebase/auth-types';
 import { delay } from 'redux-saga';
-import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
+import { all, apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';
 import {
     exchangeCodeFail,
+    linkFollowUpUser,
     notifyAuthStatusKnown,
+    removeSavedFollowUpLoginCredential,
     requireFollowUpLogin,
+    saveForFollowUpLogin,
+    welcomeUser,
     OAuthLoginProviders,
     TriggerOAuthLoginAction,
 } from '../actions/auth';
 import { ChangeDisplayLoginModalAction } from '../actions/view-party';
 import { EnabledProvidersList } from '../state';
 import { getProvider, requireAuth } from '../util/auth';
-import firebase, { firebaseNS } from '../util/firebase';
-
-const FOLLOWUP_LS_KEY = 'FollowUpCredential';
+import firebase from '../util/firebase';
 
 function* checkInitialLogin() {
     const user: User = yield call(requireAuth);
-    if (user.isAnonymous) {
+    if (user.isAnonymous || !user.providerId) {
         return;
     }
     const strippedProviderId = user.providerId.replace('.com', '');
@@ -35,9 +37,11 @@ function* checkInitialLogin() {
  */
 function* handleFollowUpCancellation(ac: ChangeDisplayLoginModalAction) {
     if (!ac.payload) {
-        localStorage.removeItem(FOLLOWUP_LS_KEY);
+        yield call(removeSavedFollowUpLoginCredential);
     }
 }
+
+const isSpotifyUser = firebase.functions!().httpsCallable('isSpotifyUser');
 
 function* handleOAuthRedirect() {
     try {
@@ -48,7 +52,7 @@ function* handleOAuthRedirect() {
     } catch (err) {
         let e;
 
-        localStorage.removeItem(FOLLOWUP_LS_KEY);
+        yield call(removeSavedFollowUpLoginCredential);
         switch (err.code) {
             /*
              * There already exists an account with this email, but using a different OAuth provider.
@@ -59,11 +63,19 @@ function* handleOAuthRedirect() {
              * logins work from now on.
              */
             case 'auth/account-exists-with-different-credential':
-                const providers: string[] = yield firebase.auth!().fetchProvidersForEmail(err.email);
-                const strippedProviders = providers.map(provId => provId.replace('.com', '')) as OAuthLoginProviders[];
-                localStorage[FOLLOWUP_LS_KEY] = JSON.stringify(err.credential);
+                yield call(saveForFollowUpLogin, err.credential);
 
-                yield put(requireFollowUpLogin(EnabledProvidersList.enable(strippedProviders)));
+                const [providers, isSpotify] = yield all([
+                    firebase.auth!().fetchProvidersForEmail(err.email),
+                    call(isSpotifyUser, { email: err.email }),
+                ]);
+                const strippedProviders = providers.map(provId => provId.replace('.com', ''));
+                const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
+
+                yield put(requireFollowUpLogin({
+                    ...enabledProviders,
+                    spotify: isSpotify,
+                }));
                 return;
 
             case 'auth/credential-already-in-use':
@@ -81,43 +93,14 @@ function* handleOAuthRedirect() {
         return;
     }
 
-    // Check whether we need to link the current account to previously signed-in account
-    if (!localStorage[FOLLOWUP_LS_KEY]) {
-        return;
-    }
-
-    const {
-        accessToken,
-        idToken,
-        providerId,
-        secret,
-    } = JSON.parse(localStorage[FOLLOWUP_LS_KEY]);
-    localStorage.removeItem(FOLLOWUP_LS_KEY);
-
-    let credential: AuthCredential;
-    switch (providerId) {
-        case 'facebook.com':
-            credential = firebaseNS.auth!.FacebookAuthProvider.credential(accessToken);
-            break;
-        case 'github.com':
-            credential = firebaseNS.auth!.GithubAuthProvider.credential(accessToken);
-            break;
-        case 'google.com':
-            credential = firebaseNS.auth!.GoogleAuthProvider.credential(idToken, accessToken);
-            break;
-        case 'twitter.com':
-            credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
-            break;
-        default:
-            throw new Error("Unknown provider");
-    }
-
     try {
-        const user: User = yield call(requireAuth);
-        yield user.linkWithCredential(credential);
+        yield call(linkFollowUpUser);
     } catch (err) {
         yield put(showToast("Failed to link authentication providers. :("));
     }
+
+    const user: User = yield call(requireAuth);
+    yield put(welcomeUser(user));
 
     // The main saga calls checkInitialLogin here, which calls requireAuth
 }
