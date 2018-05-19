@@ -40,24 +40,6 @@ function spotifyRequest(
     });
 }
 
-export const getClientToken = functions.https.onCall(async (data, ctx) => {
-    let body;
-    try {
-        body = await spotifyRequest({ grant_type: 'client_credentials' });
-    } catch (err) {
-        console.error(err);
-        throw new functions.https.HttpsError(
-            'unknown',
-            `Received invalid status code '${err.statusCode}' from Spotify.`,
-        );
-    }
-
-    return {
-        accessToken: body.access_token,
-        expiresIn: body.expires_in,
-    };
-});
-
 export const exchangeCode = functions.https.onCall(async (data, ctx) => {
     const { callbackUrl, code } = data;
     if (!code) {
@@ -199,6 +181,24 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
         firebaseToken: await admin.auth().createCustomToken(escapedUid),
         refreshToken: crypto.encrypt(authCodeBody.refresh_token, ENCRYPTION_SECRET),
         tokenType: authCodeBody.token_type,
+    };
+});
+
+export const getClientToken = functions.https.onCall(async (data, ctx) => {
+    let body;
+    try {
+        body = await spotifyRequest({ grant_type: 'client_credentials' });
+    } catch (err) {
+        console.error(err);
+        throw new functions.https.HttpsError(
+            'unknown',
+            `Received invalid status code '${err.statusCode}' from Spotify.`,
+        );
+    }
+
+    return {
+        accessToken: body.access_token,
+        expiresIn: body.expires_in,
     };
 });
 
