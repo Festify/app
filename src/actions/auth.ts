@@ -1,6 +1,6 @@
 import { User } from '@firebase/auth-types';
 
-import { UserCredentials } from '../state';
+import { EnabledProvidersList, UserCredentials } from '../state';
 
 import { PayloadAction, Types } from '.';
 
@@ -9,6 +9,7 @@ export type Actions =
     | ExchangeCodeFailAction
     | ExchangeCodeStartAction
     | NotifyAuthStatusKnownAction
+    | RequireFollowUpLoginAction
     | TriggerOAuthLoginAction;
 
 export interface CheckSpotifyLoginStatusAction {
@@ -28,6 +29,10 @@ export interface NotifyAuthStatusKnownAction extends PayloadAction<ProviderObjec
     User | SpotifyApi.UserObjectPrivate | null
 >> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
+}
+
+export interface RequireFollowUpLoginAction extends PayloadAction<EnabledProvidersList> {
+    type: Types.REQUIRE_FOLLOW_UP_LOGIN;
 }
 
 export type OAuthLoginProviders = Exclude<keyof UserCredentials, 'firebase'>;
@@ -67,6 +72,13 @@ export function notifyAuthStatusKnown(
     return {
         type: Types.NOTIFY_AUTH_STATUS_KNOWN,
         payload: { provider, data: user },
+    };
+}
+
+export function requireFollowUpLogin(withProviders: EnabledProvidersList): RequireFollowUpLoginAction {
+    return {
+        type: Types.REQUIRE_FOLLOW_UP_LOGIN,
+        payload: withProviders,
     };
 }
 

@@ -26,6 +26,11 @@ export default function(
                     ? null
                     : state.searchResult,
             };
+        case Types.REQUIRE_FOLLOW_UP_LOGIN:
+            return {
+                ...state,
+                displayLoginModal: true,
+            };
         case Types.SEARCH_Start:
             return {
                 ...state,

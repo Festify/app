@@ -13,7 +13,6 @@ import {
     reducer as routerReducer,
 } from './routing';
 import sagas from './sagas';
-import { State } from './state';
 
 const saga = createSagaMiddleware();
 

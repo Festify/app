@@ -12,7 +12,7 @@ import { queueDragDrop, queueDragEnter, queueDragOver } from '../actions';
 import { triggerOAuthLogin } from '../actions/auth';
 import { changeDisplayLoginModal } from '../actions/view-party';
 import { PartyViews } from '../routing';
-import { Party, State } from '../state';
+import { EnabledProvidersList, Party, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 import './party-queue';
@@ -25,6 +25,8 @@ import './search-bar';
 
 interface PartyViewProps {
     displayLoginModal: boolean;
+    enabledProviders: EnabledProvidersList;
+    isFollowUpSignIn: boolean;
     party: Party | {
         created_by: string;
         name: string
@@ -137,11 +139,11 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
         paper-button.login span {
             display: none;
-            margin-right: .45ch;
+            margin-right: 3.5px;
         }
 
-        paper-button.cancel {
-            background: transparent;
+        paper-button.login[disabled] {
+            opacity: .5;
         }
 
         paper-button.facebook {
@@ -162,6 +164,10 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
         paper-button.twitter {
             background: #1da1f2;
+        }
+
+        paper-button.cancel {
+            background: transparent;
         }
 
         @media (min-width: 641px) {
@@ -212,40 +218,48 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
     <paper-dialog with-backdrop
                   opened="${props.displayLoginModal}"
                   on-iron-overlay-canceled="${props.closeLoginModal}">
-        <h2>Please sign in to vote</h2>
+        <h2>
+            ${!props.isFollowUpSignIn ? "Please sign in to vote" : "Further action required"}
+        </h2>
 
         <paper-dialog-scrollable>
             <p>
-                The party owner requires all guests to sign in to prevent cheating,
-                but you wouldn't do that anyway, would ya? 😛
+                ${!props.isFollowUpSignIn
+                    ? "The party owner requires all guests to sign in to prevent cheating, but you wouldn't do that anyway, would ya? 😛"
+                    : "There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once."}
             </p>
 
             <paper-button class="login facebook"
-                          on-click="${props.triggerFacebookLogin}">
+                          on-click="${props.triggerFacebookLogin}"
+                          disabled?="${!props.enabledProviders.facebook}">
                 <iron-icon icon="social:facebook"></iron-icon>
                 <span>Sign in with</span>
                 Facebook
             </paper-button>
             <paper-button class="login google"
-                          on-click="${props.triggerGoogleLogin}">
+                          on-click="${props.triggerGoogleLogin}"
+                          disabled?="${!props.enabledProviders.google}">
                 <iron-icon icon="social:google"></iron-icon>
                 <span>Sign in with</span>
                 Google
             </paper-button>
             <paper-button class="login twitter"
-                          on-click="${props.triggerTwitterLogin}">
+                          on-click="${props.triggerTwitterLogin}"
+                          disabled?="${!props.enabledProviders.twitter}">
                 <iron-icon icon="social:twitter"></iron-icon>
                 <span>Sign in with</span>
                 Twitter
             </paper-button>
             <paper-button class="login github"
-                          on-click="${props.triggerGithubLogin}">
+                          on-click="${props.triggerGithubLogin}"
+                          disabled?="${!props.enabledProviders.github}">
                 <iron-icon icon="social:github"></iron-icon>
                 <span>Sign in with</span>
                 GitHub
             </paper-button>
             <paper-button class="login spotify"
-                          on-click="${props.triggerSpotifyLogin}">
+                          on-click="${props.triggerSpotifyLogin}"
+                          disabled?="${!props.enabledProviders.spotify}">
                 <iron-icon icon="social:spotify"></iron-icon>
                 <span>Sign in with</span>
                 Spotify
@@ -262,8 +276,20 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 `;
 /* tslint:enable */
 
+const allEnabled: EnabledProvidersList = {
+    facebook: true,
+    github: true,
+    google: true,
+    spotify: true,
+    twitter: true,
+};
+
 const mapStateToProps = (state: State): PartyViewProps => ({
     displayLoginModal: state.partyView.displayLoginModal,
+    enabledProviders: state.user.needsFollowUpSignInWithProviders
+        ? state.user.needsFollowUpSignInWithProviders
+        : allEnabled,
+    isFollowUpSignIn: !!state.user.needsFollowUpSignInWithProviders,
     party: state.party.currentParty || { created_by: '', name: '' },
     view: (state.router.result || { subView: PartyViews.Queue }).subView,
 });

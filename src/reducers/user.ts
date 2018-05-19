@@ -18,6 +18,7 @@ export default function(
             spotify: defaultUser(),
             twitter: defaultUser(),
         },
+        needsFollowUpSignInWithProviders: null,
         playlists: [],
     },
     action: Actions,
@@ -39,6 +40,15 @@ export default function(
     }
 
     switch (action.type) {
+        case Types.CHANGE_DISPLAY_LOGIN_MODAL:
+            if (state.needsFollowUpSignInWithProviders) {
+                return {
+                    ...state,
+                    needsFollowUpSignInWithProviders: null,
+                };
+            } else {
+                return state;
+            }
         case Types.EXCHANGE_CODE_Fail:
             return reduceAuthProvider(action.payload.provider, {
                 authorizing: false,
@@ -58,6 +68,11 @@ export default function(
                 statusKnown: true,
                 user: action.payload.data,
             });
+        case Types.REQUIRE_FOLLOW_UP_LOGIN:
+            return {
+                ...state,
+                needsFollowUpSignInWithProviders: action.payload,
+            };
         case Types.UPDATE_USER_PLAYLISTS:
             return {
                 ...state,

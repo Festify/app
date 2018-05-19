@@ -1,6 +1,8 @@
 import { User } from '@firebase/auth-types';
 import { Location } from '@mraerino/redux-little-router-reactless';
 
+import { OAuthLoginProviders } from './actions/auth';
+
 export const enum ConnectionState {
     Unknown,
     Connected,
@@ -177,8 +179,34 @@ export interface UserCredentials {
     twitter: AuthProviderStatus<User>;
 }
 
+export type EnabledProvidersList = {
+    [k in OAuthLoginProviders]: boolean;
+};
+
+// tslint:disable-next-line:no-namespace
+export namespace EnabledProvidersList {
+    export function enable(overrides: OAuthLoginProviders[]): EnabledProvidersList {
+        const result = {
+            facebook: false,
+            github: false,
+            google: false,
+            spotify: false,
+            twitter: false,
+        };
+        overrides.forEach(prov => result[prov] = true);
+        return result;
+    }
+}
+
 export interface UserState {
     credentials: UserCredentials;
+
+    /**
+     * The list of providers the user may sign in with, if he is required
+     * to sign in with one of his previous OAuth providers. Otherwise null.
+     */
+    needsFollowUpSignInWithProviders: EnabledProvidersList | null;
+
     playlists: Playlist[];
 }
 
