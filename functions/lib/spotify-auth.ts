@@ -236,7 +236,6 @@ export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
         escapedSpotifyId,
     );
     const userMeta: Partial<admin.auth.CreateRequest> = {
-        displayName: user.display_name || user.id,
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
             ? user.images[0].url
             : undefined,
@@ -248,7 +247,10 @@ export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
     } catch (error) {
         // If user does not exist we create it.
         if (error.code === 'auth/user-not-found') {
-            await createUserAndTransferData(ctx.auth.uid, escapedSpotifyId, userMeta);
+            await createUserAndTransferData(ctx.auth.uid, escapedSpotifyId, {
+                ...userMeta,
+                displayName: user.display_name || user.id,
+            });
         } else if (error.code === 'auth/invalid-display-name') {
             console.error(error, userMeta.displayName);
             throw new functions.https.HttpsError(
