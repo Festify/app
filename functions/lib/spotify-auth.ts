@@ -149,7 +149,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
             ? user.images[0].url
             : undefined,
-        email: user.email || `${user.id}@spotify.festify.us`,
+        email: user.email,
     };
 
     try {
