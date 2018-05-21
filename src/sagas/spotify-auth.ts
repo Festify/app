@@ -8,8 +8,11 @@ import { Types } from '../actions';
 import {
     exchangeCodeFail,
     exchangeCodeStart,
+    getFollowUpLoginProviders,
     linkFollowUpUser,
     notifyAuthStatusKnown,
+    requireFollowUpLogin,
+    saveFollowUpLoginCredentials,
     welcomeUser,
     TriggerOAuthLoginAction,
 } from '../actions/auth';
@@ -19,6 +22,7 @@ import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'authRedirect';
 const exchangeCodeFn = firebase.functions!().httpsCallable('exchangeCode');
+const linkAccountsFn = firebase.functions!().httpsCallable('linkSpotifyAccounts');
 
 function* checkSpotifyLoginStatus() {
     if (!localStorage[LOCALSTORAGE_KEY]) {
@@ -62,14 +66,38 @@ function* exchangeCode() {
     try {
         resp = yield call(exchangeCodeFn, { callbackUrl: location.origin, code });
     } catch (err) {
-        const e = ((err as HttpsError).code === 'invalid-argument')
-            ? err // In this case the error message is suitable for displaying to the user
-            : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
-        yield put(exchangeCodeFail('spotify', e));
+        yield put(exchangeCodeFail('spotify', err));
         return;
     }
 
-    const { accessToken, expiresIn, firebaseToken, refreshToken } = resp.data;
+    const { accessToken, expiresIn, refreshToken } = resp.data;
+
+    const data = new AuthData(
+        accessToken,
+        Date.now() + (expiresIn * 1000),
+        refreshToken,
+    );
+    yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
+
+    let firebaseToken;
+    try {
+        const { data }: HttpsCallableResult = yield call(linkAccountsFn, { accessToken });
+        firebaseToken = data.firebaseToken;
+    } catch (err) {
+        switch (err.code) {
+            case 'already-exists':
+                yield call(saveFollowUpLoginCredentials, { spotify: true });
+                const followUpProviders = yield call(getFollowUpLoginProviders, err.details.email);
+                yield put(requireFollowUpLogin(followUpProviders));
+                return;
+            default:
+                const e = ((err as HttpsError).code === 'invalid-argument')
+                    ? err // In this case the error message is suitable for displaying to the user
+                    : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
+                yield put(exchangeCodeFail('spotify', e));
+                return;
+        }
+    }
 
     let newUser: UserCredential;
     try {
@@ -79,13 +107,6 @@ function* exchangeCode() {
         yield put(exchangeCodeFail('spotify', e));
         return;
     }
-
-    const data = new AuthData(
-        accessToken,
-        Date.now() + (expiresIn * 1000),
-        refreshToken,
-    );
-    yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
 
     try {
         yield call(linkFollowUpUser);

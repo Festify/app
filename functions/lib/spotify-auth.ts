@@ -30,7 +30,7 @@ function spotifyRequest(
     });
 }
 
-async function transferUserData(
+async function createUserAndTransferData(
     oldUid: string,
     escapedNewUid: string,
     meta: Partial<admin.auth.CreateRequest>,
@@ -88,6 +88,68 @@ async function transferUserData(
     }
 }
 
+/**
+ * Check whether the account is already linked to the given Firebase account,
+ * verify access and link them, if possible.
+ *
+ * @param email the email associated with the Spotify account
+ * @param accessToken a Firebase JWT token to the existing account
+ * @param sptId the Spotify ID of the account
+ */
+async function selectAccountAndVerifyAccess(
+    email: string,
+    currentUser: admin.auth.DecodedIdToken,
+    sptId: string,
+): Promise<string> {
+    let existingUser: admin.auth.UserRecord;
+    try {
+        existingUser = await admin.auth().getUserByEmail(email);
+    } catch (err) {
+        // If the user doesn't exist, just create it as before
+        if (err.code === 'auth/user-not-found') {
+            return sptId;
+        }
+
+        throw err;
+    }
+
+    // tslint:disable:no-string-literal
+    const associatedSpotifyId: string | null =
+        existingUser.customClaims && existingUser.customClaims['spotify'];
+
+    // Check whether the existing user is already linked to the given Spotify account
+    if (associatedSpotifyId === sptId) {
+        // The accounts are already linked, all is well!
+
+        return existingUser.uid;
+    } else if (associatedSpotifyId) {
+        // A different Spotify account is already associated with the existing account.
+        // TODO: This case mustn't occur as per the current strategy.
+
+        throw new functions.https.HttpsError(
+            'permission-denied',
+            "An account with the same E-Mail already exists, but is linked to a different Spotify account.",
+        );
+    } else {
+        /*
+         * There is no Spotify account associated with the given account.
+         * Check whether the current client has access to this account and link them.
+         */
+
+        if (currentUser.uid !== existingUser.uid) {
+            throw new functions.https.HttpsError(
+                'already-exists', // tslint:disable-next-line:max-line-length
+                `A Firebase user with email ${email} already exists and the current account does not have the privileges to be linked (emails don't match).`,
+                { email },
+            );
+        }
+
+        // Save Spotify ID in user record
+        await admin.auth().setCustomUserClaims(existingUser.uid, { spotify: sptId });
+        return existingUser.uid;
+    }
+}
+
 export const exchangeCode = functions.https.onCall(async (data, ctx) => {
     const { callbackUrl, code } = data;
     if (!code) {
@@ -102,80 +164,15 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
             "Missing 'callbackUrl' parameter",
         );
     }
-    if (!ctx.auth || !ctx.auth.uid) {
-        throw new functions.https.HttpsError(
-            'unauthenticated',
-            "Missing user authorization",
-        );
-    }
 
     const authCodeBody = await spotifyRequest({
         grant_type: 'authorization_code',
         redirect_uri: callbackUrl,
         code,
     });
-    const user = await request({
-        agent,
-        method: 'GET',
-        uri: 'https://api.spotify.com/v1/me',
-        headers: {
-            'Authorization': `Bearer ${authCodeBody.access_token}`,
-        },
-        json: true,
-        fullResponse: false,
-    });
-
-    if (!user.email) {
-        throw new functions.https.HttpsError(
-            'invalid-argument', // tslint:disable-next-line:max-line-length
-            "The account is lacking an E-Mail address. Please ensure your Spotify account has a valid E-Mail address associated with it.",
-            'auth/invalid-email',
-        );
-    }
-
-    const escapedUid = `spotify:user:${escapeKey(user.id)}`;
-    const userMeta: Partial<admin.auth.CreateRequest> = {
-        displayName: user.display_name || user.id,
-        photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
-            ? user.images[0].url
-            : undefined,
-        email: user.email,
-    };
-
-    try {
-        await admin.auth().updateUser(escapedUid, userMeta);
-    } catch (error) {
-        // If user does not exist we create it.
-        if (error.code === 'auth/user-not-found') {
-            await transferUserData(ctx.auth.uid, escapedUid, userMeta);
-        } else if (error.code === 'auth/invalid-display-name') {
-            console.error(error, userMeta.displayName);
-            throw new functions.https.HttpsError(
-                'invalid-argument',
-                `${userMeta.displayName} is not a valid username.`,
-                error.code,
-            );
-        } else if (error.code === 'auth/invalid-email') {
-            console.error(error, user.email);
-            throw new functions.https.HttpsError(
-                'invalid-argument',
-                `${user.email} is not a valid email address.`,
-                error.code,
-            );
-        } else {
-            console.error(error);
-            throw new functions.https.HttpsError(
-                'unknown',
-                "Failed to update user.",
-                error.code,
-            );
-        }
-    }
-
     return {
         accessToken: authCodeBody.access_token,
         expiresIn: authCodeBody.expires_in,
-        firebaseToken: await admin.auth().createCustomToken(escapedUid),
         refreshToken: crypto.encrypt(authCodeBody.refresh_token, ENCRYPTION_SECRET),
         tokenType: authCodeBody.token_type,
     };
@@ -203,6 +200,80 @@ export const isSpotifyUser = functions.https.onCall(async (data, ctx) => {
     const user = await admin.auth().getUserByEmail(data.email);
     // tslint:disable:no-string-literal
     return Boolean(user.customClaims && user.customClaims['spotify']);
+});
+
+export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
+    if (!ctx.auth || !ctx.auth.uid) {
+        throw new functions.https.HttpsError(
+            'unauthenticated',
+            "Missing user authorization",
+        );
+    }
+
+    const user = await request({
+        agent,
+        method: 'GET',
+        uri: 'https://api.spotify.com/v1/me',
+        headers: {
+            'Authorization': `Bearer ${data.accessToken}`,
+        },
+        json: true,
+        fullResponse: false,
+    });
+
+    if (!user.email) {
+        throw new functions.https.HttpsError(
+            'invalid-argument', // tslint:disable-next-line:max-line-length
+            "The account is lacking an E-Mail address. Please ensure your Spotify account has a valid E-Mail address associated with it.",
+            'auth/invalid-email',
+        );
+    }
+
+    const escapedSpotifyId = `spotify:user:${escapeKey(user.id)}`;
+    const uid = await selectAccountAndVerifyAccess(
+        user.email,
+        ctx.auth.token,
+        escapedSpotifyId,
+    );
+    const userMeta: Partial<admin.auth.CreateRequest> = {
+        displayName: user.display_name || user.id,
+        photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
+            ? user.images[0].url
+            : undefined,
+        email: user.email,
+    };
+
+    try {
+        await admin.auth().updateUser(uid, userMeta);
+    } catch (error) {
+        // If user does not exist we create it.
+        if (error.code === 'auth/user-not-found') {
+            await createUserAndTransferData(ctx.auth.uid, escapedSpotifyId, userMeta);
+        } else if (error.code === 'auth/invalid-display-name') {
+            console.error(error, userMeta.displayName);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${userMeta.displayName} is not a valid username.`,
+                error.code,
+            );
+        } else if (error.code === 'auth/invalid-email') {
+            console.error(error, user.email);
+            throw new functions.https.HttpsError(
+                'invalid-argument',
+                `${user.email} is not a valid email address.`,
+                error.code,
+            );
+        } else {
+            console.error(error);
+            throw new functions.https.HttpsError(
+                'unknown',
+                "Failed to update user.",
+                error.code,
+            );
+        }
+    }
+
+    return { firebaseToken: await admin.auth().createCustomToken(uid) };
 });
 
 export const refreshToken = functions.https.onCall(async (data, ctx) => {

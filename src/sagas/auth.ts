@@ -1,23 +1,24 @@
 import { User, UserCredential } from '@firebase/auth-types';
 import { delay } from 'redux-saga';
-import { all, apply, call, fork, put, takeEvery } from 'redux-saga/effects';
+import { apply, call, fork, put, takeEvery } from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';
 import {
     exchangeCodeFail,
+    getFollowUpLoginProviders,
+    hasFollowUpCredentials,
     linkFollowUpUser,
     notifyAuthStatusKnown,
-    removeSavedFollowUpLoginCredential,
+    removeSavedFollowUpLoginCredentials,
     requireFollowUpLogin,
-    saveForFollowUpLogin,
+    saveFollowUpLoginCredentials,
     welcomeUser,
-    OAuthLoginProviders,
     TriggerOAuthLoginAction,
 } from '../actions/auth';
 import { ChangeDisplayLoginModalAction } from '../actions/view-party';
-import { EnabledProvidersList } from '../state';
-import { getProvider, requireAuth } from '../util/auth';
+import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase from '../util/firebase';
+import { LOCALSTORAGE_KEY } from '../util/spotify-auth';
 
 function* checkInitialLogin() {
     const user: User = yield call(requireAuth);
@@ -36,12 +37,11 @@ function* checkInitialLogin() {
  * @param ac the redux action
  */
 function* handleFollowUpCancellation(ac: ChangeDisplayLoginModalAction) {
-    if (!ac.payload) {
-        yield call(removeSavedFollowUpLoginCredential);
+    if (!ac.payload && hasFollowUpCredentials()) {
+        yield call(removeSavedFollowUpLoginCredentials);
+        yield call(AuthData.remove, LOCALSTORAGE_KEY);
     }
 }
-
-const isSpotifyUser = firebase.functions!().httpsCallable('isSpotifyUser');
 
 function* handleOAuthRedirect() {
     try {
@@ -52,7 +52,7 @@ function* handleOAuthRedirect() {
     } catch (err) {
         let e;
 
-        yield call(removeSavedFollowUpLoginCredential);
+        yield call(removeSavedFollowUpLoginCredentials);
         switch (err.code) {
             /*
              * There already exists an account with this email, but using a different OAuth provider.
@@ -63,19 +63,9 @@ function* handleOAuthRedirect() {
              * logins work from now on.
              */
             case 'auth/account-exists-with-different-credential':
-                yield call(saveForFollowUpLogin, err.credential);
-
-                const [providers, isSpotify] = yield all([
-                    firebase.auth!().fetchProvidersForEmail(err.email),
-                    call(isSpotifyUser, { email: err.email }),
-                ]);
-                const strippedProviders = providers.map(provId => provId.replace('.com', ''));
-                const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
-
-                yield put(requireFollowUpLogin({
-                    ...enabledProviders,
-                    spotify: isSpotify,
-                }));
+                yield call(saveFollowUpLoginCredentials, err.credential);
+                const enabledProviders = yield call(getFollowUpLoginProviders, err.email);
+                yield put(requireFollowUpLogin(enabledProviders));
                 return;
 
             case 'auth/credential-already-in-use':

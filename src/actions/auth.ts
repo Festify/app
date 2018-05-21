@@ -1,8 +1,9 @@
-import { AuthCredential, User } from '@firebase/auth-types';
+import { AuthCredential, OAuthCredential, User } from '@firebase/auth-types';
 
 import { EnabledProvidersList, UserCredentials } from '../state';
 import { requireAuth } from '../util/auth';
-import { firebaseNS } from '../util/firebase';
+import firebase, { firebaseNS } from '../util/firebase';
+import { requireAccessToken } from '../util/spotify-auth';
 
 import { showToast, PayloadAction, ShowToastAction, Types } from '.';
 
@@ -49,6 +50,8 @@ export interface ProviderObject<T> {
 }
 
 const FOLLOWUP_LS_KEY = 'FollowUpCredential';
+const isSpotifyUser = firebase.functions!().httpsCallable('isSpotifyUser');
+const linkSpotifyAccounts = firebase.functions!().httpsCallable('linkSpotifyAccounts');
 
 export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
     return { type: Types.CHECK_SPOTIFY_LOGIN_STATUS };
@@ -69,6 +72,24 @@ export function exchangeCodeStart(provider: keyof UserCredentials): ExchangeCode
     };
 }
 
+export async function getFollowUpLoginProviders(email: string): Promise<EnabledProvidersList> {
+    const [providers, isSpotify] = await Promise.all([
+        firebase.auth!().fetchProvidersForEmail(email),
+        isSpotifyUser({ email }),
+    ]);
+    const strippedProviders = providers.map(provId => provId.replace('.com', ''));
+    const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
+
+    return {
+        ...enabledProviders,
+        spotify: isSpotify.data,
+    };
+}
+
+export function hasFollowUpCredentials(): boolean {
+    return !!localStorage[FOLLOWUP_LS_KEY];
+}
+
 export async function linkFollowUpUser() {
     if (!localStorage[FOLLOWUP_LS_KEY]) {
         return;
@@ -79,29 +100,35 @@ export async function linkFollowUpUser() {
         idToken,
         providerId,
         secret,
+        spotify,
     } = JSON.parse(localStorage[FOLLOWUP_LS_KEY]);
-    removeSavedFollowUpLoginCredential();
+    removeSavedFollowUpLoginCredentials();
 
-    let credential: AuthCredential;
-    switch (providerId) {
-        case 'facebook.com':
-            credential = firebaseNS.auth!.FacebookAuthProvider.credential(accessToken);
-            break;
-        case 'github.com':
-            credential = firebaseNS.auth!.GithubAuthProvider.credential(accessToken);
-            break;
-        case 'google.com':
-            credential = firebaseNS.auth!.GoogleAuthProvider.credential(idToken, accessToken);
-            break;
-        case 'twitter.com':
-            credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
-            break;
-        default:
-            throw new Error("Unknown provider");
+    if (spotify) {
+        const accessToken = await requireAccessToken();
+        await linkSpotifyAccounts({ accessToken });
+    } else {
+        let credential: AuthCredential;
+        switch (providerId) {
+            case 'facebook.com':
+                credential = firebaseNS.auth!.FacebookAuthProvider.credential(accessToken);
+                break;
+            case 'github.com':
+                credential = firebaseNS.auth!.GithubAuthProvider.credential(accessToken);
+                break;
+            case 'google.com':
+                credential = firebaseNS.auth!.GoogleAuthProvider.credential(idToken, accessToken);
+                break;
+            case 'twitter.com':
+                credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
+                break;
+            default:
+                throw new Error("Unknown provider");
+        }
+
+        const user = await requireAuth();
+        await user.linkAndRetrieveDataWithCredential(credential);
     }
-
-    const user = await requireAuth();
-    await user.linkWithCredential(credential);
 }
 
 export function notifyAuthStatusKnown(
@@ -114,7 +141,7 @@ export function notifyAuthStatusKnown(
     };
 }
 
-export function removeSavedFollowUpLoginCredential() {
+export function removeSavedFollowUpLoginCredentials() {
     localStorage.removeItem(FOLLOWUP_LS_KEY);
 }
 
@@ -125,7 +152,7 @@ export function requireFollowUpLogin(withProviders: EnabledProvidersList): Requi
     };
 }
 
-export function saveForFollowUpLogin(cred: AuthCredential) {
+export function saveFollowUpLoginCredentials(cred: OAuthCredential | { spotify: true }) {
     localStorage[FOLLOWUP_LS_KEY] = JSON.stringify(cred);
 }
 

@@ -20,6 +20,10 @@ export class AuthData {
         return new AuthData(accessToken, expiresAt, refreshToken);
     }
 
+    static remove(localStorageKey: string) {
+        localStorage[localStorageKey] = undefined;
+    }
+
     accessToken: string;
     expiresAt: number;
     refreshToken: string;
@@ -32,10 +36,6 @@ export class AuthData {
 
     get isValid(): boolean {
         return !!this.accessToken && this.expiresAt > (Date.now() + 10000);
-    }
-
-    remove(localStorageKey: string) {
-        localStorage[localStorageKey] = undefined;
     }
 
     saveTo(localStorageKey: string): void {
