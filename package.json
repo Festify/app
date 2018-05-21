@@ -44,7 +44,7 @@
     "firebase-bolt": "^0.8.2",
     "raven-js": "^3.24.0",
     "rollup": "^0.59.1",
-    "rollup-plugin-babel-minify": "^4.0.0",
+    "rollup-plugin-babel-minify": "^5.0.0",
     "rollup-plugin-browsersync": "^0.2.6",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-copy": "^0.2.3",
