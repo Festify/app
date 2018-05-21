@@ -111,7 +111,7 @@ function* exchangeCode() {
     try {
         yield call(linkFollowUpUser);
     } catch (err) {
-        const e = new Error("Failed to link authentication providers. :(");
+        const e = new Error(`Failed to link authentication providers: ${err.message}`);
         yield put(exchangeCodeFail('spotify', e));
         return;
     }

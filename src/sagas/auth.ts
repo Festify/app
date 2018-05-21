@@ -86,7 +86,7 @@ function* handleOAuthRedirect() {
     try {
         yield call(linkFollowUpUser);
     } catch (err) {
-        yield put(showToast("Failed to link authentication providers. :("));
+        yield put(showToast(`Failed to link authentication providers: ${err.message}`));
     }
 
     const user: User = yield call(requireAuth);
