@@ -40,6 +40,64 @@ function spotifyRequest(
     });
 }
 
+async function transferUserData(
+    oldUid: string,
+    escapedNewUid: string,
+    meta: Partial<admin.auth.CreateRequest>,
+) {
+    const [oldUser, newUser] = await Promise.all([
+        admin.auth().getUser(oldUid),
+        admin.auth().createUser({ ...meta, uid: escapedNewUid }),
+    ]);
+    await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedNewUid });
+
+    if (oldUser.providerData.length > 0) {
+        return;
+    }
+
+    const userParties = await admin.database()
+        .ref('/user_parties')
+        .child(oldUser.uid)
+        .once('value');
+    const parties = userParties.val() ? Object.keys(userParties.val()) : [];
+
+    const updates = {};
+
+    for (const partyId of parties) {
+        const oldUserVotesRef = admin.database()
+            .ref('/votes_by_user')
+            .child(partyId)
+            .child(oldUser.uid);
+
+        const oldUserVotes = (await oldUserVotesRef.once('value')).val();
+
+        if (oldUserVotes) {
+            for (const voteId of Object.keys(oldUserVotes)) {
+                updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
+                updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+            }
+        }
+
+        updates[`/votes/${partyId}/${oldUser.uid}`] = null;
+        updates[`/parties/${partyId}/created_by`] = newUser.uid;
+    }
+
+    updates[`/votes_by_user/${oldUser.uid}`] = null;
+    updates[`/user_parties/${oldUser.uid}`] = null;
+
+    try {
+        await admin.database().ref().update(updates);
+        await admin.auth().deleteUser(oldUser.uid);
+    } catch (ex) {
+        console.error(ex);
+        throw new functions.https.HttpsError(
+            'unknown',
+            "Failed to update user data.",
+            ex.code,
+        );
+    }
+}
+
 export const exchangeCode = functions.https.onCall(async (data, ctx) => {
     const { callbackUrl, code } = data;
     if (!code) {
@@ -86,7 +144,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
     }
 
     const escapedUid = `spotify:user:${escapeKey(user.id)}`;
-    const userMeta = {
+    const userMeta: Partial<admin.auth.CreateRequest> = {
         displayName: user.display_name || user.id,
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
             ? user.images[0].url
@@ -99,58 +157,7 @@ export const exchangeCode = functions.https.onCall(async (data, ctx) => {
     } catch (error) {
         // If user does not exist we create it.
         if (error.code === 'auth/user-not-found') {
-            const newUser = await admin.auth().createUser({
-                uid: escapedUid,
-                ...userMeta,
-            });
-            await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedUid });
-
-            const oldUser = await admin.auth().getUser(ctx.auth.uid);
-
-            if (oldUser.providerData.length === 0) {
-                // If the user is anonymous, merge it with Spotify's user
-                const userParties = await admin.database()
-                    .ref('/user_parties')
-                    .child(oldUser.uid)
-                    .once('value');
-                const parties = userParties.val() ? Object.keys(userParties.val()) : [];
-
-                const updates = {};
-
-                for (const partyId of parties) {
-                    const oldUserVotesRef = admin.database()
-                        .ref('/votes_by_user')
-                        .child(partyId)
-                        .child(oldUser.uid);
-
-                    const oldUserVotes = (await oldUserVotesRef.once('value')).val();
-
-                    if (oldUserVotes) {
-                        for (const voteId of Object.keys(oldUserVotes)) {
-                            updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
-                            updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
-                        }
-                    }
-
-                    updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-                    updates[`/parties/${partyId}/created_by`] = newUser.uid;
-                }
-
-                updates[`/votes_by_user/${oldUser.uid}`] = null;
-                updates[`/user_parties/${oldUser.uid}`] = null;
-
-                try {
-                    await admin.database().ref().update(updates);
-                    await admin.auth().deleteUser(oldUser.uid);
-                } catch (ex) {
-                    console.error(ex);
-                    throw new functions.https.HttpsError(
-                        'unknown',
-                        "Failed to update user data.",
-                        ex.code,
-                    );
-                }
-            }
+            await transferUserData(ctx.auth.uid, escapedUid, userMeta);
         } else if (error.code === 'auth/invalid-display-name') {
             console.error(error, userMeta.displayName);
             throw new functions.https.HttpsError(
