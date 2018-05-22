@@ -2,7 +2,7 @@ import { AuthCredential, OAuthCredential, User } from '@firebase/auth-types';
 
 import { EnabledProvidersList, UserCredentials } from '../state';
 import { requireAuth } from '../util/auth';
-import firebase, { firebaseNS } from '../util/firebase';
+import firebase, { firebaseNS, functions } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
 
 import { showToast, PayloadAction, ShowToastAction, Types } from '.';
@@ -50,8 +50,6 @@ export interface ProviderObject<T> {
 }
 
 const FOLLOWUP_LS_KEY = 'FollowUpCredential';
-const isSpotifyUser = firebase.functions!().httpsCallable('isSpotifyUser');
-const linkSpotifyAccounts = firebase.functions!().httpsCallable('linkSpotifyAccounts');
 
 export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
     return { type: Types.CHECK_SPOTIFY_LOGIN_STATUS };
@@ -75,7 +73,7 @@ export function exchangeCodeStart(provider: keyof UserCredentials): ExchangeCode
 export async function getFollowUpLoginProviders(email: string): Promise<EnabledProvidersList> {
     const [providers, isSpotify] = await Promise.all([
         firebase.auth!().fetchProvidersForEmail(email),
-        isSpotifyUser({ email }),
+        functions.isSpotifyUser({ email }),
     ]);
     const strippedProviders = providers.map(provId => provId.replace('.com', ''));
     const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
@@ -106,7 +104,7 @@ export async function linkFollowUpUser() {
 
     if (spotify) {
         const accessToken = await requireAccessToken();
-        await linkSpotifyAccounts({ accessToken });
+        await functions.linkSpotifyAccounts({ accessToken });
     } else {
         let credential: AuthCredential;
         switch (providerId) {

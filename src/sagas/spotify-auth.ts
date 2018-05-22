@@ -17,12 +17,10 @@ import {
     TriggerOAuthLoginAction,
 } from '../actions/auth';
 import { requireAuth, AuthData } from '../util/auth';
-import firebase from '../util/firebase';
+import firebase, { functions } from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'authRedirect';
-const exchangeCodeFn = firebase.functions!().httpsCallable('exchangeCode');
-const linkAccountsFn = firebase.functions!().httpsCallable('linkSpotifyAccounts');
 
 function* checkSpotifyLoginStatus() {
     if (!localStorage[LOCALSTORAGE_KEY]) {
@@ -64,7 +62,7 @@ function* exchangeCode() {
 
     let resp: HttpsCallableResult;
     try {
-        resp = yield call(exchangeCodeFn, { callbackUrl: location.origin, code });
+        resp = yield call(functions.exchangeCode, { callbackUrl: location.origin, code });
     } catch (err) {
         yield put(exchangeCodeFail('spotify', err));
         return;
@@ -81,7 +79,7 @@ function* exchangeCode() {
 
     let firebaseToken;
     try {
-        const { data }: HttpsCallableResult = yield call(linkAccountsFn, { accessToken });
+        const { data }: HttpsCallableResult = yield call(functions.linkSpotifyAccounts, { accessToken });
         firebaseToken = data.firebaseToken;
     } catch (err) {
         switch (err.code) {
