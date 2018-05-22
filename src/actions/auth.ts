@@ -8,15 +8,15 @@ import { requireAccessToken } from '../util/spotify-auth';
 import { showToast, PayloadAction, ShowToastAction, Types } from '.';
 
 export type Actions =
-    | CheckSpotifyLoginStatusAction
+    | CheckLoginStatusAction
     | ExchangeCodeFailAction
     | ExchangeCodeStartAction
     | NotifyAuthStatusKnownAction
     | RequireFollowUpLoginAction
     | TriggerOAuthLoginAction;
 
-export interface CheckSpotifyLoginStatusAction {
-    type: Types.CHECK_SPOTIFY_LOGIN_STATUS;
+export interface CheckLoginStatusAction {
+    type: Types.CHECK_LOGIN_STATUS;
 }
 
 export interface ExchangeCodeFailAction extends PayloadAction<ProviderObject<Error>> {
@@ -51,8 +51,8 @@ export interface ProviderObject<T> {
 
 const FOLLOWUP_LS_KEY = 'FollowUpCredential';
 
-export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
-    return { type: Types.CHECK_SPOTIFY_LOGIN_STATUS };
+export function checkLoginStatus(): CheckLoginStatusAction {
+    return { type: Types.CHECK_LOGIN_STATUS };
 }
 
 export function exchangeCodeFail(provider: keyof UserCredentials, err: Error): ExchangeCodeFailAction {

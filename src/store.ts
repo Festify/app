@@ -4,7 +4,6 @@ import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
 import createSagaMiddleware from 'redux-saga';
 
 import { generateInstanceId } from './actions';
-import { checkSpotifyLoginStatus } from './actions/auth';
 import { spotifySdkInitFinish } from './actions/playback-spotify';
 import reducers from './reducers';
 import {
@@ -32,7 +31,6 @@ for (const s of sagas) {
     saga.run(s);
 }
 
-store.dispatch(checkSpotifyLoginStatus());
 store.dispatch(generateInstanceId());
 store.dispatch(initializeCurrentLocation(store.getState().router));
 window.onSpotifyWebPlaybackSDKReady = () => {

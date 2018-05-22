@@ -1,7 +1,7 @@
 import debounce from 'promise-debounce';
 
 import { AuthData } from './auth';
-import firebase, { functions } from './firebase';
+import { functions } from './firebase';
 
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
 export const SCOPES = [
@@ -56,11 +56,11 @@ async function _requireAnonymousAuth(): Promise<string> {
         return anonymousAccessToken;
     }
 
-    const { accessToken, expiresIn } = (await functions.clientToken()).data;
+    const { data } = await functions.clientToken();
 
-    anonymousAccessToken = accessToken;
-    anonymousExpireTimeMs = Date.now() + (expiresIn * 1000) - 10000; // Safety margin
-    return accessToken;
+    anonymousAccessToken = data.accessToken;
+    anonymousExpireTimeMs = Date.now() + (data.expiresIn * 1000) - 10000; // Safety margin
+    return data.accessToken;
 }
 
 function fetchFactory(
