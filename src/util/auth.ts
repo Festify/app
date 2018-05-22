@@ -2,7 +2,7 @@ import { FirebaseAuth, User } from '@firebase/auth-types';
 
 import { UserCredentials } from '../state';
 
-import { firebase, firebaseNS } from './firebase';
+import firebase, { firebaseNS } from './firebase';
 
 export class AuthData {
     static loadFrom(localStorageKey: string): AuthData {

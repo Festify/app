@@ -10,10 +10,7 @@ import firebaseConfig from '../../firebase.config.js';
 const app = firebase.initializeApp(firebaseConfig)!;
 export default app;
 
-export {
-    app as firebase,
-    firebase as firebaseNS,
-};
+export { firebase as firebaseNS };
 
 export const functions = {
     clientToken: app.functions!().httpsCallable('getClientToken'),
