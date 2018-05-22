@@ -26,7 +26,6 @@ import { isPartyOwnerSelector } from '../selectors/party';
 import { queueTracksSelector } from '../selectors/track';
 import { Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
-import { takeEveryWithState } from '../util/saga';
 
 const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
 
@@ -62,8 +61,9 @@ function* fetchKenBurnsDisplayValue() {
     }
 }
 
-function* fetchPlaylists(locChanged, prevView: PartyViews, curView: PartyViews) {
-    if (curView !== PartyViews.Settings) {
+function* fetchPlaylists() {
+    const { router }: State = yield select();
+    if (!router.result || router.result.subView !== PartyViews.Settings) {
         return;
     }
 
@@ -144,10 +144,9 @@ export function* managePartySettings(partyId: string) {
 }
 
 export default function*() {
-    yield* fetchKenBurnsDisplayValue();
-    yield takeEveryWithState(
+    yield takeLatest([
+        Types.NOTIFY_AUTH_STATUS_KNOWN,
         LOCATION_CHANGED,
-        (s: State) => (s.router!.result || { subView: PartyViews.Queue }).subView,
-        fetchPlaylists,
-    );
+    ], fetchPlaylists);
+    yield* fetchKenBurnsDisplayValue();
 }

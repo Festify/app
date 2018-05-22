@@ -6,6 +6,7 @@ import '@polymer/paper-spinner/paper-spinner-lite';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
+import { triggerOAuthLogin } from '../actions/auth';
 import {
     changeDisplayKenBurnsBackground,
     changePartyName,
@@ -20,7 +21,9 @@ import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
     displayKenBurnsBackground: boolean;
+    isAuthorizing: boolean;
     isPlaylistLoadInProgress: boolean;
+    isSpotifyConnected: boolean;
     partyName: string;
     playlists: Playlist[];
     playlistSearch: string;
@@ -38,7 +41,60 @@ interface PartySettingsDispatch {
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
+    triggerSpotifyLogin: () => void;
 }
+
+const LoginView = (props: PartySettingsProps & PartySettingsDispatch) => html`
+    <h3>Sign in to set the Fallback Playlist</h3>
+
+    ${props.isAuthorizing
+        ? html`
+            <paper-spinner-lite active alt="Authorizing...">
+            </paper-spinner-light>
+        `
+        : html`
+            <paper-button class="login spotify" on-click="${props.triggerSpotifyLogin}">
+                <iron-icon icon="social:spotify"></iron-icon>
+                <span>Sign in with</span>
+                Spotify
+            </paper-button>
+        `}
+`;
+
+const PlaylistView = (props: PartySettingsProps & PartySettingsDispatch) => html`
+    <h3>Fallback Playlist</h3>
+
+    <paper-input label="Search your playlists"
+                 value="${props.playlistSearch}"
+                 type="text"
+                 on-input="${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}">
+    </paper-input>
+
+    ${props.isPlaylistLoadInProgress
+        ? html`
+            <paper-spinner-lite active alt="Loading playlists...">
+            </paper-spinner-light>
+        `
+        : null}
+
+    ${props.playlists.map(item => html`
+        <div class="fallback-playlist">
+            <h4>${item.name}</h4>
+
+            <paper-icon-button class="shuffle-button"
+                               icon="festify:shuffle"
+                               on-click="${() => props.insert(item, true)}"
+                               title="Insert shuffled"
+                               disabled="${props.tracksLoadInProgress}">
+            </paper-icon-button>
+            <paper-icon-button icon="festify:add"
+                               on-click="${() => props.insert(item, false)}"
+                               title="Insert"
+                               disabled="${props.tracksLoadInProgress}">
+            </paper-icon-button>
+        </div>
+    `)}
+`;
 
 /* tslint:disable:max-line-length */
 const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html`
@@ -72,6 +128,10 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
 
         paper-checkbox {
             display: block;
+        }
+
+        paper-button.login {
+            margin-top: 1em;
         }
 
         .fallback-playlist {
@@ -161,44 +221,16 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
     </div>
 
     <div class="lower">
-        <h3>Fallback Playlist</h3>
-        <paper-input label="Search your playlists"
-                     value="${props.playlistSearch}"
-                     type="text"
-                     on-input="${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}">
-        </paper-input>
-
-        ${props.isPlaylistLoadInProgress
-            ? html`
-                <paper-spinner-lite active alt="Loading playlists...">
-                </paper-spinner-light>
-            `
-            : null}
-
-        ${props.playlists.map(item => html`
-            <div class="fallback-playlist">
-                <h4>${item.name}</h4>
-
-                <paper-icon-button class="shuffle-button"
-                                   icon="festify:shuffle"
-                                   on-click="${() => props.insert(item, true)}"
-                                   title="Insert shuffled"
-                                   disabled="${props.tracksLoadInProgress}">
-                </paper-icon-button>
-                <paper-icon-button icon="festify:add"
-                                   on-click="${() => props.insert(item, false)}"
-                                   title="Insert"
-                                   disabled="${props.tracksLoadInProgress}">
-                </paper-icon-button>
-            </div>
-        `)}
+        ${props.isSpotifyConnected ? PlaylistView(props) : LoginView(props)}
     </div>
 `;
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartySettingsProps => ({
     displayKenBurnsBackground: state.tvView.displayKenBurnsBackground,
+    isAuthorizing: state.user.credentials.spotify.authorizing,
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
+    isSpotifyConnected: Boolean(state.user.credentials.spotify.user),
     partyName: (state.party.currentParty || { name: '' }).name,
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,
@@ -216,6 +248,7 @@ const mapDispatchToProps: PartySettingsDispatch = {
     changeSearchInput,
     flushTracks: flushQueueStart,
     insert: insertPlaylistStart,
+    triggerSpotifyLogin: () => triggerOAuthLogin('spotify'),
 };
 
 customElements.define(
