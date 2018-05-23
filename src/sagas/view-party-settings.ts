@@ -62,8 +62,10 @@ function* fetchKenBurnsDisplayValue() {
 }
 
 function* fetchPlaylists() {
-    const { router }: State = yield select();
-    if (!router.result || router.result.subView !== PartyViews.Settings) {
+    const { router, user }: State = yield select();
+    if (!router.result ||
+        router.result.subView !== PartyViews.Settings ||
+        !user.credentials.spotify.user) {
         return;
     }
 
