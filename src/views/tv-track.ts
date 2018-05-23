@@ -108,6 +108,7 @@ const TvTrackBase = withFit<TvTrackOwnProps, TvTrackProps>(
     TvTrack,
     { trackid: String },
 )(HTMLElement);
+
 customElements.define(
     'tv-track',
     connect(mapStateToPropsFactory, {})(TvTrackBase),
