@@ -183,35 +183,40 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
                     : "There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once."}
             </p>
 
-            <paper-button class="login facebook"
+            <paper-button raised
+                          class="login facebook"
                           on-click="${props.triggerFacebookLogin}"
                           disabled?="${!props.enabledProviders.facebook}">
                 <iron-icon icon="social:facebook"></iron-icon>
                 <span>Sign in with</span>
                 Facebook
             </paper-button>
-            <paper-button class="login google"
+            <paper-button raised
+                          class="login google"
                           on-click="${props.triggerGoogleLogin}"
                           disabled?="${!props.enabledProviders.google}">
                 <iron-icon icon="social:google"></iron-icon>
                 <span>Sign in with</span>
                 Google
             </paper-button>
-            <paper-button class="login twitter"
+            <paper-button raised
+                          class="login twitter"
                           on-click="${props.triggerTwitterLogin}"
                           disabled?="${!props.enabledProviders.twitter}">
                 <iron-icon icon="social:twitter"></iron-icon>
                 <span>Sign in with</span>
                 Twitter
             </paper-button>
-            <paper-button class="login github"
+            <paper-button raised
+                          class="login github"
                           on-click="${props.triggerGithubLogin}"
                           disabled?="${!props.enabledProviders.github}">
                 <iron-icon icon="social:github"></iron-icon>
                 <span>Sign in with</span>
                 GitHub
             </paper-button>
-            <paper-button class="login spotify"
+            <paper-button raised
+                          class="login spotify"
                           on-click="${props.triggerSpotifyLogin}"
                           disabled?="${!props.enabledProviders.spotify}">
                 <iron-icon icon="social:spotify"></iron-icon>

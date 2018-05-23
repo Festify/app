@@ -53,7 +53,9 @@ const LoginView = (props: PartySettingsProps & PartySettingsDispatch) => html`
             </paper-spinner-light>
         `
         : html`
-            <paper-button class="login spotify" on-click="${props.triggerSpotifyLogin}">
+            <paper-button raised
+                          class="login spotify"
+                          on-click="${props.triggerSpotifyLogin}">
                 <iron-icon icon="social:spotify"></iron-icon>
                 <span>Sign in with</span>
                 Spotify
