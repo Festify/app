@@ -133,7 +133,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
         <paper-button id="middle"
                       raised
-                      disabled="${!props.partyIdValid}"
+                      disabled?="${!props.partyIdValid}"
                       on-click="${props.joinParty}">
             ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
