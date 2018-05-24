@@ -16,6 +16,7 @@ import {
     insertPlaylistStart,
 } from '../actions/view-party-settings';
 import { filteredPlaylistsSelector } from '../selectors/playlists';
+import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
 import { PartySettings, Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
@@ -232,7 +233,7 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
     displayKenBurnsBackground: state.tvView.displayKenBurnsBackground,
     isAuthorizing: state.user.credentials.spotify.authorizing,
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
-    isSpotifyConnected: Boolean(state.user.credentials.spotify.user),
+    isSpotifyConnected: hasConnectedSpotifyAccountSelector(state),
     partyName: (state.party.currentParty || { name: '' }).name,
     playlists: filteredPlaylistsSelector(state),
     playlistSearch: state.settingsView.playlistSearchQuery,

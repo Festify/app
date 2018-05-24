@@ -24,6 +24,7 @@ import {
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { queueTracksSelector } from '../selectors/track';
+import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
 import { Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
 
@@ -62,10 +63,10 @@ function* fetchKenBurnsDisplayValue() {
 }
 
 function* fetchPlaylists() {
-    const { router, user }: State = yield select();
-    if (!router.result ||
-        router.result.subView !== PartyViews.Settings ||
-        !user.credentials.spotify.user) {
+    const state: State = yield select();
+    if (!state.router.result ||
+        state.router.result.subView !== PartyViews.Settings ||
+        !hasConnectedSpotifyAccountSelector(state)) {
         return;
     }
 
