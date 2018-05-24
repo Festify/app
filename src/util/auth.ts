@@ -64,7 +64,7 @@ export function getProvider(prov: Exclude<keyof UserCredentials, 'spotify' | 'fi
 export function requireAuth(): Promise<User> {
     const auth = firebase.auth!() as FirebaseAuth;
 
-    if (auth.currentUser) {
+    if (auth.currentUser && auth.currentUser.uid) {
         return Promise.resolve(auth.currentUser);
     }
 
