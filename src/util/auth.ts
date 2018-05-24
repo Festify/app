@@ -69,9 +69,14 @@ export function requireAuth(): Promise<User> {
     }
 
     return new Promise<User>(resolve => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const unsubscribe = auth.onAuthStateChanged(async user => {
             unsubscribe();
-            resolve(user ? user : auth.signInAnonymously());
+
+            if (user && user.uid) {
+                resolve(user);
+            } else {
+                resolve((await auth.signInAnonymously()).user);
+            }
         });
     });
 }
