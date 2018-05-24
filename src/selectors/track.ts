@@ -79,17 +79,22 @@ export const voteStringGeneratorFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => createSelector(
     trackSelector,
-    track => {
+    currentTrackSelector,
+    (track, currentTrack) => {
         if (!track) {
             return '';
         }
 
-        if (track.vote_count > 1) {
+        if (tracksEqual(track, currentTrack)) {
+            return "Playing now";
+        } else if (track.vote_count > 1) {
             return `${track.vote_count} Votes`;
         } else if (track.vote_count === 1) {
             return "One Vote";
+        } else if (track.is_fallback) {
+            return "Fallback Track";
         } else {
-            return track.is_fallback ? "Fallback Track" : "Not in Queue";
+            return "Not in Queue";
         }
     },
 );
