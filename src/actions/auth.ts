@@ -11,6 +11,7 @@ export type Actions =
     | CheckLoginStatusAction
     | ExchangeCodeFailAction
     | ExchangeCodeStartAction
+    | LogoutAction
     | NotifyAuthStatusKnownAction
     | RequireFollowUpLoginAction
     | TriggerOAuthLoginAction;
@@ -32,6 +33,10 @@ export interface NotifyAuthStatusKnownAction extends PayloadAction<ProviderObjec
     User | SpotifyApi.UserObjectPrivate | null
 >> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
+}
+
+export interface LogoutAction {
+    type: Types.LOGOUT;
 }
 
 export interface RequireFollowUpLoginAction extends PayloadAction<EnabledProvidersList> {
@@ -127,6 +132,10 @@ export async function linkFollowUpUser() {
         const user = await requireAuth();
         await user.linkAndRetrieveDataWithCredential(credential);
     }
+}
+
+export function logout(): LogoutAction {
+    return { type: Types.LOGOUT };
 }
 
 export function notifyAuthStatusKnown(

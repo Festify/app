@@ -134,6 +134,7 @@ export interface PartyViewState {
     searchInProgress: boolean;
     searchError: Error | null;
     searchResult: Record<string, Track> | null;
+    userMenuOpen: boolean;
 }
 
 export interface PlayerState {

@@ -10,6 +10,7 @@ export default function(
         searchInProgress: false,
         searchError: null,
         searchResult: null,
+        userMenuOpen: false,
     },
     action: Actions,
 ): PartyViewState {
@@ -50,12 +51,18 @@ export default function(
                 searchError: null,
                 searchResult: (action as SearchFinishAction).payload,
             };
+        case Types.TOGGLE_USER_MENU:
+            return {
+                ...state,
+                userMenuOpen: !state.userMenuOpen,
+            };
         case Types.CLEANUP_PARTY:
             return {
                 ...state,
                 searchInProgress: false,
                 searchError: null,
                 searchResult: null,
+                userMenuOpen: false,
             };
         default:
             return state;

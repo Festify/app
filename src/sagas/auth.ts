@@ -2,11 +2,12 @@ import { User, UserCredential } from '@firebase/auth-types';
 import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
-import { all, apply, call, fork, put, take, takeEvery } from 'redux-saga/effects';
+import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { CLIENT_ID } from '../../spotify.config';
 import { showToast, Types } from '../actions';
 import {
+    checkLoginStatus,
     exchangeCodeFail,
     exchangeCodeStart,
     getFollowUpLoginProviders,
@@ -19,7 +20,9 @@ import {
     welcomeUser,
     TriggerOAuthLoginAction,
 } from '../actions/auth';
+import { updatePlaybackState } from '../actions/party-data';
 import { ChangeDisplayLoginModalAction } from '../actions/view-party';
+import { isPlaybackMasterSelector } from '../selectors/party';
 import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase, { functions } from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
@@ -202,6 +205,22 @@ function* handleOAuthRedirects() {
 }
 
 /**
+ * Logs the user out of Festify.
+ */
+function* logout() {
+    if (yield select(isPlaybackMasterSelector)) {
+        yield put(updatePlaybackState({
+            master_id: null,
+            playing: false,
+        }));
+    }
+
+    localStorage.removeItem(LOCALSTORAGE_KEY);
+    yield firebase.auth!().signOut();
+    yield put(checkLoginStatus());
+}
+
+/**
  * This saga forcefully refreshes the user token every 55 minutes
  * to prevent Firebase from disconnecting and thus destroying playback.
  */
@@ -250,6 +269,7 @@ export default function*() {
     yield fork(refreshFirebaseAuth);
     yield takeEvery(Types.CHANGE_DISPLAY_LOGIN_MODAL, handleFollowUpCancellation);
     yield takeEvery(Types.CHECK_LOGIN_STATUS, checkLogin);
+    yield takeLatest(Types.LOGOUT, logout);
     yield takeEvery(Types.TRIGGER_OAUTH_LOGIN, triggerOAuthLogin);
 
     yield* handleOAuthRedirects();

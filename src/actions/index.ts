@@ -17,6 +17,7 @@ import { Actions as HomeViewActions } from './view-home';
 import { Actions as PartyViewActions } from './view-party';
 import { Actions as SettingsActions } from './view-party-settings';
 import { Actions as ShareActions } from './view-party-share';
+import { Actions as QueueDrawerActions } from './view-queue-drawer';
 
 export type RouterActions =
     | typeof push
@@ -36,6 +37,7 @@ export type Actions =
     | PartyViewActions
     | PlaybackSpotifyActions
     | QueueActions
+    | QueueDrawerActions
     | SettingsActions
     | ShareActions;
 
@@ -52,6 +54,7 @@ export const enum Types {
     CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT',
     CHANGE_TRACK_SEARCH_INPUT = 'CHANGE_TRACK_SEARCH_INPUT',
     CHECK_LOGIN_STATUS = 'CHECK_LOGIN_STATUS',
+    TOGGLE_USER_MENU = 'TOGGLE_USER_MENU',
     REQUIRE_FOLLOW_UP_LOGIN = 'REQUIRE_FOLLOW_UP_LOGIN',
     CLEANUP_PARTY = 'CLEANUP_PARTY',
     CREATE_PARTY_Start = 'CREATE_PARTY_START',
@@ -69,6 +72,7 @@ export const enum Types {
     INSERT_FALLBACK_PLAYLIST_Fail = 'INSERT_FALLBACK_PLAYLIST_FAIL',
     LOAD_PLAYLISTS_Start = 'LOAD_PLAYLISTS_START',
     LOAD_PLAYLISTS_Fail = 'LOAD_PLAYLISTS_FAIL',
+    LOGOUT = 'LOGOUT',
     NOTIFY_AUTH_STATUS_KNOWN = 'NOTIFY_AUTH_STATUS_KNOWN',
     OPEN_PARTY_Fail = 'OPEN_PARTY_FAIL',
     OPEN_PARTY_Finish = 'OPEN_PARTY_FINISH',
