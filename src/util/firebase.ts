@@ -10,9 +10,14 @@ import firebaseConfig from '../../firebase.config.js';
 const app = firebase.initializeApp(firebaseConfig)!;
 export default app;
 
-export {
-    app as firebase,
-    firebase as firebaseNS,
+export { firebase as firebaseNS };
+
+export const functions = {
+    clientToken: app.functions!().httpsCallable('getClientToken'),
+    exchangeCode: app.functions!().httpsCallable('exchangeCode'),
+    isSpotifyUser: app.functions!().httpsCallable('isSpotifyUser'),
+    linkSpotifyAccounts: app.functions!().httpsCallable('linkSpotifyAccounts'),
+    refreshToken: app.functions!().httpsCallable('refreshToken'),
 };
 
 export function valuesChannel(ref: Query) {

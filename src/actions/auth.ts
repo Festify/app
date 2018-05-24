@@ -1,72 +1,175 @@
-import * as SpotifyApi from 'spotify-web-api-js';
+import { AuthCredential, OAuthCredential, User } from '@firebase/auth-types';
 
-import { ErrorAction, PayloadAction, Types } from '.';
+import { EnabledProvidersList, UserCredentials } from '../state';
+import { requireAuth } from '../util/auth';
+import firebase, { firebaseNS, functions } from '../util/firebase';
+import { requireAccessToken } from '../util/spotify-auth';
+
+import { showToast, PayloadAction, ShowToastAction, Types } from '.';
 
 export type Actions =
-    | CheckSpotifyLoginStatusAction
+    | CheckLoginStatusAction
     | ExchangeCodeFailAction
-    | ExchangeCodeFinishAction
     | ExchangeCodeStartAction
+    | LogoutAction
     | NotifyAuthStatusKnownAction
-    | TriggerSpotifyOAuthLoginAction;
+    | RequireFollowUpLoginAction
+    | TriggerOAuthLoginAction;
 
-export interface CheckSpotifyLoginStatusAction {
-    type: Types.CHECK_SPOTIFY_LOGIN_STATUS;
+export interface CheckLoginStatusAction {
+    type: Types.CHECK_LOGIN_STATUS;
 }
 
-export interface ExchangeCodeFailAction extends ErrorAction {
+export interface ExchangeCodeFailAction extends PayloadAction<ProviderObject<Error>> {
+    error: true;
     type: Types.EXCHANGE_CODE_Fail;
 }
 
-export interface ExchangeCodeFinishAction {
-    type: Types.EXCHANGE_CODE_Finish;
-}
-
-export interface ExchangeCodeStartAction {
+export interface ExchangeCodeStartAction extends PayloadAction<keyof UserCredentials> {
     type: Types.EXCHANGE_CODE_Start;
 }
 
-export interface NotifyAuthStatusKnownAction extends PayloadAction<[
-    'spotify',
-    SpotifyApi.UserObjectPrivate | null
-]> {
+export interface NotifyAuthStatusKnownAction extends PayloadAction<ProviderObject<
+    User | SpotifyApi.UserObjectPrivate | null
+>> {
     type: Types.NOTIFY_AUTH_STATUS_KNOWN;
 }
 
-export interface TriggerSpotifyOAuthLoginAction {
-    type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN;
+export interface LogoutAction {
+    type: Types.LOGOUT;
 }
 
-export function checkSpotifyLoginStatus(): CheckSpotifyLoginStatusAction {
-    return { type: Types.CHECK_SPOTIFY_LOGIN_STATUS };
+export interface RequireFollowUpLoginAction extends PayloadAction<EnabledProvidersList> {
+    type: Types.REQUIRE_FOLLOW_UP_LOGIN;
 }
 
-export function exchangeCodeFail(err: Error): ExchangeCodeFailAction {
+export type OAuthLoginProviders = Exclude<keyof UserCredentials, 'firebase'>;
+
+export interface TriggerOAuthLoginAction extends PayloadAction<OAuthLoginProviders> {
+    type: Types.TRIGGER_OAUTH_LOGIN;
+}
+
+export interface ProviderObject<T> {
+    data: T;
+    provider: keyof UserCredentials;
+}
+
+const FOLLOWUP_LS_KEY = 'FollowUpCredential';
+
+export function checkLoginStatus(): CheckLoginStatusAction {
+    return { type: Types.CHECK_LOGIN_STATUS };
+}
+
+export function exchangeCodeFail(provider: keyof UserCredentials, err: Error): ExchangeCodeFailAction {
     return {
         type: Types.EXCHANGE_CODE_Fail,
         error: true,
-        payload: err,
+        payload: { provider, data: err },
     };
 }
 
-export function exchangeCodeFinish(): ExchangeCodeFinishAction {
-    return { type: Types.EXCHANGE_CODE_Finish };
+export function exchangeCodeStart(provider: keyof UserCredentials): ExchangeCodeStartAction {
+    return {
+        type: Types.EXCHANGE_CODE_Start,
+        payload: provider,
+    };
 }
 
-export function exchangeCodeStart(): ExchangeCodeStartAction {
-    return { type: Types.EXCHANGE_CODE_Start };
+export async function getFollowUpLoginProviders(email: string): Promise<EnabledProvidersList> {
+    const [providers, isSpotify] = await Promise.all([
+        firebase.auth!().fetchProvidersForEmail(email),
+        functions.isSpotifyUser({ email }),
+    ]);
+    const strippedProviders = providers.map(provId => provId.replace('.com', ''));
+    const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
+
+    return {
+        ...enabledProviders,
+        spotify: isSpotify.data,
+    };
+}
+
+export function hasFollowUpCredentials(): boolean {
+    return !!localStorage[FOLLOWUP_LS_KEY];
+}
+
+export async function linkFollowUpUser() {
+    if (!localStorage[FOLLOWUP_LS_KEY]) {
+        return;
+    }
+
+    const {
+        accessToken,
+        idToken,
+        providerId,
+        secret,
+        spotify,
+    } = JSON.parse(localStorage[FOLLOWUP_LS_KEY]);
+    removeSavedFollowUpLoginCredentials();
+
+    if (spotify) {
+        const accessToken = await requireAccessToken();
+        await functions.linkSpotifyAccounts({ accessToken });
+    } else {
+        let credential: AuthCredential;
+        switch (providerId) {
+            case 'facebook.com':
+                credential = firebaseNS.auth!.FacebookAuthProvider.credential(accessToken);
+                break;
+            case 'github.com':
+                credential = firebaseNS.auth!.GithubAuthProvider.credential(accessToken);
+                break;
+            case 'google.com':
+                credential = firebaseNS.auth!.GoogleAuthProvider.credential(idToken, accessToken);
+                break;
+            case 'twitter.com':
+                credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
+                break;
+            default:
+                throw new Error("Unknown provider");
+        }
+
+        const user = await requireAuth();
+        await user.linkAndRetrieveDataWithCredential(credential);
+    }
+}
+
+export function logout(): LogoutAction {
+    return { type: Types.LOGOUT };
 }
 
 export function notifyAuthStatusKnown(
-    provider: 'spotify',
-    user: SpotifyApi.UserObjectPrivate | null,
+    provider: keyof UserCredentials,
+    user: User | SpotifyApi.UserObjectPrivate | null,
 ): NotifyAuthStatusKnownAction {
     return {
         type: Types.NOTIFY_AUTH_STATUS_KNOWN,
-        payload: [provider, user],
+        payload: { provider, data: user },
     };
 }
 
-export function loginWithSpotify(): TriggerSpotifyOAuthLoginAction {
-    return { type: Types.TRIGGER_SPOTIFY_OAUTH_LOGIN };
+export function removeSavedFollowUpLoginCredentials() {
+    localStorage.removeItem(FOLLOWUP_LS_KEY);
+}
+
+export function requireFollowUpLogin(withProviders: EnabledProvidersList): RequireFollowUpLoginAction {
+    return {
+        type: Types.REQUIRE_FOLLOW_UP_LOGIN,
+        payload: withProviders,
+    };
+}
+
+export function saveFollowUpLoginCredentials(cred: OAuthCredential | { spotify: true }) {
+    localStorage[FOLLOWUP_LS_KEY] = JSON.stringify(cred);
+}
+
+export function triggerOAuthLogin(provider: OAuthLoginProviders): TriggerOAuthLoginAction {
+    return {
+        type: Types.TRIGGER_OAUTH_LOGIN,
+        payload: provider,
+    };
+}
+
+export function welcomeUser(user: User): ShowToastAction {
+    return showToast(user.displayName ? `Welcome, ${user.displayName}!` : 'Welcome!');
 }

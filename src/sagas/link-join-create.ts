@@ -2,7 +2,7 @@ import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { put, select, take } from 'redux-saga/effects';
 
 import { Types } from '../actions';
-import { loginWithSpotify } from '../actions/auth';
+import { triggerOAuthLogin } from '../actions/auth';
 import { createPartyStart, joinPartyStart } from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
@@ -18,18 +18,18 @@ export default function*() {
     if ('create' in query) {
         const state: State = yield select();
 
-        if (state.user.spotify.authorizationError) {
+        if (state.user.credentials.spotify.authorizationError) {
             return;
         }
-        if (!state.user.spotify.statusKnown) {
+        if (!state.user.credentials.spotify.statusKnown) {
             yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
         }
-        if (state.user.spotify.authorizing) {
-            yield take(Types.EXCHANGE_CODE_Finish);
+        if (state.user.credentials.spotify.authorizing) {
+            yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
         }
 
-        const maybeUser = yield select((s: State) => s.user.spotify.user);
-        yield put(maybeUser ? createPartyStart() : loginWithSpotify());
+        const maybeUser = yield select((s: State) => s.user.credentials.spotify.user);
+        yield put(maybeUser ? createPartyStart() : triggerOAuthLogin('spotify'));
     } else if (query.join) {
         yield put(changePartyId(query.join));
         yield put(joinPartyStart());

@@ -1,3 +1,4 @@
+import { User } from '@firebase/auth-types';
 import { call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';
@@ -5,12 +6,20 @@ import {
     pinTrack,
     removeTrack as doRemoveTrack,
     setVote as doSetVote,
+    setVoteAction,
     RemoveTrackAction,
     SetVoteAction,
 } from '../actions/queue';
+import { changeDisplayLoginModal } from '../actions/view-party';
 import { hasOtherPlaybackMasterSelector, isPartyOwnerSelector } from '../selectors/party';
-import { currentTrackSelector, firebaseTrackIdSelector, singleTrackSelector, tracksEqual } from '../selectors/track';
+import {
+    currentTrackSelector,
+    firebaseTrackIdSelector,
+    singleTrackSelector,
+    tracksEqual,
+} from '../selectors/track';
 import { State, Track } from '../state';
+import { requireAuth } from '../util/auth';
 
 function* pinTopTrack(partyId: string) {
     let topTrack: Track = undefined!;
@@ -51,8 +60,18 @@ function* removeTrack(partyId: string, ac: RemoveTrackAction) {
 }
 
 function* setVote(partyId: string, ac: SetVoteAction) {
+    const { party }: State = yield select();
+    if (party.currentParty!.settings && !party.currentParty!.settings!.allow_anonymous_voters) {
+        const user: User = yield call(requireAuth);
+        if (user.isAnonymous) {
+            yield put(changeDisplayLoginModal(true));
+            return;
+        }
+    }
+
+    const [ref, vote] = ac.payload;
+    yield put(setVoteAction(ref, vote));
     try {
-        const [ref, vote] = ac.payload;
         yield call(doSetVote, partyId, ref, vote);
     } catch (err) {
         yield put(showToast(`Failed to toggle vote: ${err}`));
@@ -61,6 +80,6 @@ function* setVote(partyId: string, ac: SetVoteAction) {
 
 export default function*(partyId: string) {
     yield takeEvery(Types.REMOVE_TRACK, removeTrack, partyId);
-    yield takeEvery(Types.SET_VOTE, setVote, partyId);
+    yield takeEvery(Types.REQUEST_SET_VOTE, setVote, partyId);
     yield fork(pinTopTrack, partyId);
 }

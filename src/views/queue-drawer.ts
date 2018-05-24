@@ -1,9 +1,11 @@
 import '@polymer/iron-icon/iron-icon';
+import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
 import { clickLink } from '../actions';
-import { loginWithSpotify } from '../actions/auth';
+import { logout, triggerOAuthLogin } from '../actions/auth';
+import { toggleUserMenu } from '../actions/view-queue-drawer';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import {
@@ -12,6 +14,7 @@ import {
     shareRouteSelector,
     tvRouteSelector,
 } from '../selectors/routes';
+import { currentUsernameSelector } from '../selectors/users';
 import { State } from '../state';
 import festifyLogo from '../util/festify-logo';
 import sharedStyles from '../util/shared-styles';
@@ -23,11 +26,15 @@ interface QueueDrawerProps {
     shareRoute: string;
     subView: PartyViews;
     tvRoute: string;
+    userMenuOpen: boolean;
+    username: string | null;
 }
 
 interface QueueDrawerDispatch {
     handleClick: (ev: Event, route: string) => void;
     enterAdmin: () => void;
+    logout: () => void;
+    toggleUserMenu: () => void;
 }
 
 const isActive = (isActive: boolean) => isActive ? 'active' : '';
@@ -48,6 +55,17 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             font-weight: bolder;
         }
 
+        .hidable {
+            transform-origin: 50% 0;
+            transition: transform .3s ease, opacity .3s ease;
+        }
+
+        .hidable.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale3d(1, 1.1, 1);
+        }
+
         /*
          * Header
          */
@@ -56,6 +74,8 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                 linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)),
                 url(https://source.unsplash.com/512x352/?concert) no-repeat center;
             background-size: cover;
+            display: flex;
+            flex-flow: column nowrap;
             height: 176px;
             position: relative;
         }
@@ -66,12 +86,33 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             width: 64px;
         }
 
+        .user-menu {
+            align-items: center;
+            display: flex;
+            font-weight: lighter;
+            margin-top: auto;
+        }
+
+        .user-menu span {
+            margin-left: 16px;
+        }
+
+        .user-menu paper-icon-button {
+            margin-left: auto;
+            transition: transform .3s ease;
+        }
+
+        .user-menu paper-icon-button.open {
+            transform: rotate(-180deg);
+        }
+
         /*
          * Menu
          */
         .menu {
             display: block;
             margin-top: 24px;
+            position: absolute;
             width: 100%;
         }
 
@@ -95,9 +136,18 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 
     <header>
         ${festifyLogo}
+
+        <div class$="user-menu hidable ${props.username ? '' : 'hidden'}">
+            <span>${props.username}</span>
+            <paper-icon-button icon="festify:expand-more"
+                               on-click="${props.toggleUserMenu}"
+                               class$="${props.userMenuOpen ? 'open' : ''}"
+                               title="Open user menu">
+            </paper-icon-button>
+        </div>
     </header>
 
-    <div class="menu" role="menu">
+    <div class$="menu hidable ${props.userMenuOpen ? 'hidden' : ''}" role="menu">
         <a href$="${props.queueRoute}"
            class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
            on-click="${ev => props.handleClick(ev, props.queueRoute)}">
@@ -113,19 +163,14 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
                     Settings
                 </a>
             `
-            : null
-        }
-
-        ${!props.isOwner
-            ? html`
+            : html`
                 <a href="#"
                    on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
                     <iron-icon icon="festify:settings-remote"></iron-icon>
                     Login for Admin Mode
                 </a>
-            ` : null
+            `
         }
-
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
            on-click="${ev => props.handleClick(ev, props.shareRoute)}">
@@ -141,12 +186,20 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:home"></iron-icon>
             Festify Homepage
         </a>
-        <a href="/"
-           on-click="${ev => props.handleClick(ev, '/')}">
+        <a href="/" on-click="${ev => props.handleClick(ev, '/')}">
             <iron-icon icon="festify:cancel"></iron-icon>
             Exit Party
         </a>
-    </div>`;
+    </div>
+
+    <div class$="menu hidable ${props.userMenuOpen ? '' : 'hidden'}" role="menu">
+        <a href="#"
+           on-click="${ev => { ev.preventDefault(); props.logout(); }}">
+            <iron-icon icon="festify:exit-to-app"></iron-icon>
+            Logout
+        </a>
+    </div>
+`;
 /* tslint:enable */
 
 const mapStateToProps = (state: State): QueueDrawerProps => ({
@@ -156,11 +209,15 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
     shareRoute: shareRouteSelector(state)!,
     subView: state.router.result.subView,
     tvRoute: tvRouteSelector(state)!,
+    userMenuOpen: state.partyView.userMenuOpen,
+    username: currentUsernameSelector(),
 });
 
 const mapDispatchToProps: QueueDrawerDispatch = {
+    enterAdmin: () => triggerOAuthLogin('spotify'),
     handleClick: clickLink,
-    enterAdmin: loginWithSpotify,
+    logout,
+    toggleUserMenu,
 };
 
 customElements.define(

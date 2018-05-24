@@ -10,11 +10,13 @@ export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
 
 export const tracksSelector = (state: State) => state.party.tracks || {};
 
-export const singleTrackSelector = (state: State, trackId: string) => state.party.tracks && state.party.tracks[trackId];
+export const singleTrackSelector = (state: State, trackId: string) =>
+     tracksSelector(state)[trackId];
 
-export const metadataSelector = (state: State) => state.metadata || {};
+export const metadataSelector = (state: State): Record<string, Metadata> => state.metadata || {};
 
-export const singleMetadataSelector = (state: State, trackId: string): Metadata | null => state.metadata[trackId];
+export const singleMetadataSelector = (state: State, trackId: string): Metadata | null =>
+    metadataSelector(state)[trackId];
 
 export const artistJoinerFactory: () => (s: State, id: string) => string | null = () => createSelector(
     singleMetadataSelector,
@@ -77,17 +79,22 @@ export const voteStringGeneratorFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => createSelector(
     trackSelector,
-    track => {
+    currentTrackSelector,
+    (track, currentTrack) => {
         if (!track) {
             return '';
         }
 
-        if (track.vote_count > 1) {
+        if (tracksEqual(track, currentTrack)) {
+            return "Playing now";
+        } else if (track.vote_count > 1) {
             return `${track.vote_count} Votes`;
         } else if (track.vote_count === 1) {
             return "One Vote";
+        } else if (track.is_fallback) {
+            return "Fallback Track";
         } else {
-            return track.is_fallback ? "Fallback Track" : "Not in Queue";
+            return "Not in Queue";
         }
     },
 );

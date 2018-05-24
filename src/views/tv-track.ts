@@ -10,7 +10,7 @@ import {
 import { Metadata, State, Track } from '../state';
 
 interface TvTrackProps {
-    artistName: string;
+    artistName: string | null;
     metadata: Metadata | null;
     track: Track | null;
 }
@@ -97,7 +97,7 @@ const TvTrack = (props: TvTrackProps) => html`
 const mapStateToPropsFactory = () => {
     const artistJoiner = artistJoinerFactory();
 
-    return (state: State, ownProps: TvTrackOwnProps) => ({
+    return (state: State, ownProps: TvTrackOwnProps): TvTrackProps => ({
         artistName: artistJoiner(state, ownProps.trackid),
         metadata: singleMetadataSelector(state, ownProps.trackid),
         track: singleTrackSelector(state, ownProps.trackid),
@@ -108,6 +108,7 @@ const TvTrackBase = withFit<TvTrackOwnProps, TvTrackProps>(
     TvTrack,
     { trackid: String },
 )(HTMLElement);
+
 customElements.define(
     'tv-track',
     connect(mapStateToPropsFactory, {})(TvTrackBase),

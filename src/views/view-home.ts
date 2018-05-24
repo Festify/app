@@ -4,7 +4,7 @@ import '@polymer/polymer/lib/elements/custom-style';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { loginWithSpotify } from '../actions/auth';
+import { triggerOAuthLogin } from '../actions/auth';
 import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
@@ -133,7 +133,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
         <paper-button id="middle"
                       raised
-                      disabled="${!props.partyIdValid}"
+                      disabled?="${!props.partyIdValid}"
                       on-click="${props.joinParty}">
             ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
@@ -145,9 +145,9 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
 const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
-    authorizationInProgress: state.user.spotify.authorizing,
-    authorized: Boolean(state.user.spotify.user),
-    authStatusKnown: state.user.spotify.statusKnown,
+    authorizationInProgress: state.user.credentials.spotify.authorizing,
+    authorized: Boolean(state.user.credentials.spotify.user),
+    authStatusKnown: state.user.credentials.spotify.statusKnown,
     playerCompatible: state.player.isCompatible,
 });
 
@@ -155,7 +155,7 @@ const mapDispatchToProps: HomeViewDispatch = {
     changePartyId,
     createParty: createPartyStart,
     joinParty,
-    loginWithSpotify,
+    loginWithSpotify: () => triggerOAuthLogin('spotify'),
 };
 
 customElements.define(

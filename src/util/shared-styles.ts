@@ -37,5 +37,52 @@ export default html`
             font-size: 22px;
             margin: 16px 0;
         }
+
+
+        paper-button.login {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        paper-button.login iron-icon {
+            margin: 0 1em 0 .5em;
+        }
+
+        paper-button.login span {
+            display: none;
+            margin-right: 3.5px;
+        }
+
+        paper-button.login[disabled] {
+            opacity: .5;
+        }
+
+        paper-button.facebook {
+            background: #3b5998;
+        }
+
+        paper-button.github {
+            background: #333333;
+        }
+
+        paper-button.google {
+            background: #dd4b39;
+        }
+
+        paper-button.spotify {
+            background: #1db954;
+        }
+
+        paper-button.twitter {
+            background: #1da1f2;
+        }
+
+        @media (min-width: 420px) {
+            paper-button.login span {
+                display: inline;
+            }
+        }
     </style>
 `;

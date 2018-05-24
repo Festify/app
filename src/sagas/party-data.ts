@@ -5,6 +5,7 @@ import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
+import { NotifyAuthStatusKnownAction } from '../actions/auth';
 import {
     becomePlaybackMaster,
     cleanupParty,
@@ -18,7 +19,7 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { store } from '../store';
 import { requireAuth } from '../util/auth';
@@ -171,9 +172,25 @@ function* watchRoute() {
     }
 }
 
+function* watchLogin() {
+    while (true) {
+        const ac: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
+        const state: State = yield select();
+        const partyId = partyIdSelector(state);
+
+        if (!partyId || ac.payload.data) {
+            continue;
+        }
+
+        yield put(cleanupParty());
+        yield put(openPartyStart(partyId));
+    }
+}
+
 export default function*() {
     yield all([
         loadParty(),
         watchRoute(),
+        watchLogin(),
     ]);
 }
