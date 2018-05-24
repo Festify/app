@@ -244,7 +244,7 @@ const allEnabled: EnabledProvidersList = {
 };
 
 const mapStateToProps = (state: State): PartyViewProps => ({
-    displayLoginModal: state.partyView.displayLoginModal,
+    displayLoginModal: state.partyView.loginModalOpen,
     enabledProviders: state.user.needsFollowUpSignInWithProviders
         ? state.user.needsFollowUpSignInWithProviders
         : allEnabled,

@@ -6,7 +6,7 @@ import { PartyViewState } from '../state';
 
 export default function(
     state: PartyViewState = {
-        displayLoginModal: false,
+        loginModalOpen: false,
         searchInProgress: false,
         searchError: null,
         searchResult: null,
@@ -17,7 +17,7 @@ export default function(
         case Types.CHANGE_DISPLAY_LOGIN_MODAL:
             return {
                 ...state,
-                displayLoginModal: (action as ChangeDisplayLoginModalAction).payload,
+                loginModalOpen: (action as ChangeDisplayLoginModalAction).payload,
             };
         case LOCATION_CHANGED:
             return {
@@ -29,7 +29,7 @@ export default function(
         case Types.REQUIRE_FOLLOW_UP_LOGIN:
             return {
                 ...state,
-                displayLoginModal: true,
+                loginModalOpen: true,
             };
         case Types.SEARCH_Start:
             return {

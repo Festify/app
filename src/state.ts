@@ -130,7 +130,7 @@ export interface PartyState {
 }
 
 export interface PartyViewState {
-    displayLoginModal: boolean;
+    loginModalOpen: boolean;
     searchInProgress: boolean;
     searchError: Error | null;
     searchResult: Record<string, Track> | null;
