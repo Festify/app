@@ -16,7 +16,7 @@ import {
 } from '../selectors/party';
 import {
     artistJoinerFactory,
-    queueTracksSelector,
+    currentTrackSelector,
     singleMetadataSelector,
     singleTrackSelector,
     tracksEqual,
@@ -274,11 +274,6 @@ const enablePlayButtonSelector = createSelector(
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
-    const isPlayingSelector = createSelector(
-        queueTracksSelector,
-        trackSelector,
-        (tracks, track) => tracksEqual(tracks[0], track),
-    );
     const hasVotesOrIsFallbackSelector = createSelector(
         trackSelector,
         track => Boolean(track && (track.vote_count > 0 || track.is_fallback)),
@@ -289,6 +284,11 @@ export const createMapStateToPropsFactory = (
      */
     return () => {
         const artistJoiner = artistJoinerFactory();
+        const isPlayingSelector = createSelector(
+            currentTrackSelector,
+            trackSelector,
+            (currentTrack, track) => tracksEqual(currentTrack, track),
+        );
         const showRemoveTrackButtonSelector = createSelector(
             isPartyOwnerSelector,
             hasVotesOrIsFallbackSelector,
@@ -314,7 +314,7 @@ export const createMapStateToPropsFactory = (
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
             isOwner: isPartyOwnerSelector(state),
             isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
-            isPlayingTrack: ownProps.playing,
+            isPlayingTrack: isPlayingSelector(state, ownProps.trackid),
             metadata: singleMetadataSelector(state, ownProps.trackid),
             showRemoveButton: showRemoveTrackButtonSelector(state, ownProps.trackid),
             showTakeoverButton: showTakeoverButtonSelector(state, ownProps.trackid),
