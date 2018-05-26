@@ -284,7 +284,7 @@ class ViewParty extends Base {
         if (!this.queueFlip) {
             this.queueFlip = this.shadowRoot!.querySelector('party-queue')!
                 .shadowRoot!
-                .querySelector('dom-flip')!;
+                .querySelector('dom-flip');
         }
         if (!this.queueFlip) {
             return;
