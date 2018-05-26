@@ -11,7 +11,7 @@ import {
     SetVoteAction,
 } from '../actions/queue';
 import { changeDisplayLoginModal } from '../actions/view-party';
-import { hasOtherPlaybackMasterSelector, isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, isPlaybackMasterSelector } from '../selectors/party';
 import {
     currentTrackSelector,
     firebaseTrackIdSelector,
@@ -30,12 +30,12 @@ function* pinTopTrack(partyId: string) {
         const state: State = yield select();
 
         const isOwner = isPartyOwnerSelector(state);
-        const hasOtherPlaybackMaster = hasOtherPlaybackMasterSelector(state);
+        const isPlaybackMaster = isPlaybackMasterSelector(state);
         const newTopTrack = currentTrackSelector(state);
 
         // Do nothing if we're not owner, if there is an existing other playback
         // master, if we've got no track to pin, or if the current track hasn't changed.
-        if (!isOwner || hasOtherPlaybackMaster || !newTopTrack || tracksEqual(topTrack, newTopTrack)) {
+        if (!isOwner || !isPlaybackMaster || !newTopTrack || tracksEqual(topTrack, newTopTrack)) {
             continue;
         }
 
