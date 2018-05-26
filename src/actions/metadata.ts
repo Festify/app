@@ -83,7 +83,6 @@ export class MetadataStore {
             cursor.continue();
         });
 
-
         await tx.complete;
 
         return stored.reduce((acc, item) => {

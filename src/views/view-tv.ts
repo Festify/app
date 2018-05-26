@@ -68,7 +68,7 @@ const Lower = (props: ViewTvProps) => {
         </tv-track>
     `);
 
-    return typeof window.ShadyCSS === 'object'
+    return typeof window.ShadyCSS === 'object' && !window.ShadyCSS!.nativeShadow
         ? html`<div class="lower">${list}</div>`
         : html`<dom-flip class="lower">${list}</dom-flip>`;
 };
