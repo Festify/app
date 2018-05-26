@@ -1,7 +1,7 @@
 import { push } from '@mraerino/redux-little-router-reactless';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { Types } from '../actions';
+import { showToast, Types } from '../actions';
 import {
     createNewParty,
     createPartyFail,
@@ -9,6 +9,7 @@ import {
     resolveShortId,
     JoinPartyStartAction,
 } from '../actions/party-data';
+import { Views } from '../routing';
 import { PartySettings, State } from '../state';
 
 function* createParty() {
@@ -59,7 +60,23 @@ function* joinParty(ac: JoinPartyStartAction) {
     yield put(push(`/party/${longId}`));
 }
 
+function* warnNonPremium() {
+    const { router, user }: State = yield select();
+
+    if ((router.result || { view: Views.Home }).view !== Views.Home ||
+        !user.credentials.spotify.user ||
+        user.credentials.spotify.user.product === 'premium') {
+        return;
+    }
+
+    yield put(showToast( // tslint:disable-next-line:max-line-length
+        "To create parties and play music on Festify, you need to have a 'Spotify Premium' account. Please login again using a premium account if you want to host parties.",
+        10000,
+    ));
+}
+
 export default function*() {
+    yield takeLatest(Types.NOTIFY_AUTH_STATUS_KNOWN, warnNonPremium);
     yield takeLatest(Types.CREATE_PARTY_Start, createParty);
     yield takeLatest(Types.JOIN_PARTY_Start, joinParty);
 }

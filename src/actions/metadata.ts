@@ -24,12 +24,17 @@ export class MetadataStore {
     private db: Promise<DB>;
 
     constructor() {
-        this.db = idb.open('Festify', 2, upgrade => {
-            if (upgrade.objectStoreNames.contains('metadata')) {
-                upgrade.deleteObjectStore('metadata');
-            }
-            const store = upgrade.createObjectStore('metadata', { keyPath: 'trackId' });
-            store.createIndex('dateCreated', 'dateCreated', { unique: false });
+        // Wrap IDB initialization to catch synchronous errors
+        this.db = new Promise((res, rej) => {
+            idb.open('Festify', 2, upgrade => {
+                if (upgrade.objectStoreNames.contains('metadata')) {
+                    upgrade.deleteObjectStore('metadata');
+                }
+                const store = upgrade.createObjectStore('metadata', { keyPath: 'trackId' });
+                store.createIndex('dateCreated', 'dateCreated', { unique: false });
+            })
+                .then(res)
+                .catch(rej);
         });
         this.deleteOld();
     }

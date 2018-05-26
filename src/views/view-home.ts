@@ -13,7 +13,7 @@ import sharedStyles from '../util/shared-styles';
 
 interface HomeViewProps {
     authorizationInProgress: boolean;
-    authorized: boolean;
+    authorizedAndPremium: boolean;
     authStatusKnown: boolean;
     partyCreationInProgress: boolean;
     partyCreationError: Error | null;
@@ -37,7 +37,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
                 Creating...
             </paper-button>
         `;
-    } else if (props.authorized) {
+    } else if (props.authorizedAndPremium) {
         return html`
             <paper-button raised on-click="${props.createParty}">
                 Create Party
@@ -146,7 +146,10 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 const mapStateToProps = (state: State): HomeViewProps => ({
     ...state.homeView,
     authorizationInProgress: state.user.credentials.spotify.authorizing,
-    authorized: Boolean(state.user.credentials.spotify.user),
+    authorizedAndPremium: Boolean(
+        state.user.credentials.spotify.user &&
+        state.user.credentials.spotify.user.product === 'premium',
+    ),
     authStatusKnown: state.user.credentials.spotify.statusKnown,
     playerCompatible: state.player.isCompatible,
 });

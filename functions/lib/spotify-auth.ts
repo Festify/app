@@ -30,24 +30,10 @@ function spotifyRequest(
     });
 }
 
-async function createUserAndTransferData(
-    oldUid: string,
-    escapedNewUid: string,
-    meta: Partial<admin.auth.CreateRequest>,
-) {
-    const [oldUser, newUser] = await Promise.all([
-        admin.auth().getUser(oldUid),
-        admin.auth().createUser({ ...meta, uid: escapedNewUid }),
-    ]);
-    await admin.auth().setCustomUserClaims(newUser.uid, { spotify: escapedNewUid });
-
-    if (oldUser.providerData.length > 0) {
-        return;
-    }
-
+async function transferData(oldUid: string, newUid: string) {
     const userParties = await admin.database()
         .ref('/user_parties')
-        .child(oldUser.uid)
+        .child(oldUid)
         .once('value');
     const parties = userParties.val() ? Object.keys(userParties.val()) : [];
 
@@ -57,27 +43,26 @@ async function createUserAndTransferData(
         const oldUserVotesRef = admin.database()
             .ref('/votes_by_user')
             .child(partyId)
-            .child(oldUser.uid);
+            .child(oldUid);
 
         const oldUserVotes = (await oldUserVotesRef.once('value')).val();
 
         if (oldUserVotes) {
             for (const voteId of Object.keys(oldUserVotes)) {
-                updates[`/votes_by_user/${partyId}/${newUser.uid}/${voteId}`] = oldUserVotes[voteId];
-                updates[`/votes/${partyId}/${voteId}/${newUser.uid}`] = oldUserVotes[voteId];
+                updates[`/votes_by_user/${partyId}/${newUid}/${voteId}`] = oldUserVotes[voteId];
+                updates[`/votes/${partyId}/${voteId}/${newUid}`] = oldUserVotes[voteId];
             }
         }
 
-        updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-        updates[`/parties/${partyId}/created_by`] = newUser.uid;
+        updates[`/votes/${partyId}/${oldUid}`] = null;
     }
 
-    updates[`/votes_by_user/${oldUser.uid}`] = null;
-    updates[`/user_parties/${oldUser.uid}`] = null;
+    updates[`/votes_by_user/${oldUid}`] = null;
+    updates[`/user_parties/${oldUid}`] = null;
 
     try {
         await admin.database().ref().update(updates);
-        await admin.auth().deleteUser(oldUser.uid);
+        await admin.auth().deleteUser(oldUid);
     } catch (ex) {
         console.error(ex);
         throw new functions.https.HttpsError(
@@ -94,20 +79,20 @@ async function createUserAndTransferData(
  *
  * @param email the email associated with the Spotify account
  * @param accessToken a Firebase JWT token to the existing account
- * @param sptId the Spotify ID of the account
+ * @param spotifyId the Spotify ID of the account
  */
 async function selectAccountAndVerifyAccess(
     email: string,
     currentUser: admin.auth.DecodedIdToken,
-    sptId: string,
-): Promise<string> {
+    spotifyId: string,
+): Promise<string | null> {
     let existingUser: admin.auth.UserRecord;
     try {
         existingUser = await admin.auth().getUserByEmail(email);
     } catch (err) {
         // If the user doesn't exist, just create it as before
         if (err.code === 'auth/user-not-found') {
-            return sptId;
+            return null;
         }
 
         throw err;
@@ -118,7 +103,7 @@ async function selectAccountAndVerifyAccess(
         existingUser.customClaims && existingUser.customClaims['spotify'];
 
     // Check whether the existing user is already linked to the given Spotify account
-    if (associatedSpotifyId === sptId) {
+    if (associatedSpotifyId === spotifyId) {
         // The accounts are already linked, all is well!
 
         return existingUser.uid;
@@ -145,7 +130,7 @@ async function selectAccountAndVerifyAccess(
         }
 
         // Save Spotify ID in user record
-        await admin.auth().setCustomUserClaims(existingUser.uid, { spotify: sptId });
+        await admin.auth().setCustomUserClaims(existingUser.uid, { spotify: spotifyId });
         return existingUser.uid;
     }
 }
@@ -229,11 +214,11 @@ export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
         );
     }
 
-    const escapedSpotifyId = `spotify:user:${escapeKey(user.id)}`;
-    const uid = await selectAccountAndVerifyAccess(
+    const spotifyId = `spotify:user:${user.id}`;
+    const linkedAccountUid = await selectAccountAndVerifyAccess(
         user.email,
         ctx.auth.token,
-        escapedSpotifyId,
+        spotifyId,
     );
     const userMeta: Partial<admin.auth.CreateRequest> = {
         photoURL: (user.images && user.images.length > 0 && isValidUrl(user.images[0].url))
@@ -242,16 +227,31 @@ export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
         email: user.email,
     };
 
+    let loginUid;
     try {
-        await admin.auth().updateUser(uid, userMeta);
+        if (linkedAccountUid) {
+            await admin.auth().updateUser(linkedAccountUid, userMeta);
+            loginUid = linkedAccountUid;
+        } else {
+            // If user does not exist we create it.
+
+            const [oldUser, newUser] = await Promise.all([
+                admin.auth().getUser(ctx.auth.uid),
+                admin.auth().createUser({
+                    ...userMeta,
+                    displayName: user.display_name || user.id,
+                }),
+            ]);
+
+            await admin.auth().setCustomUserClaims(newUser.uid, { spotify: spotifyId });
+            if (oldUser.providerData.length === 0) {
+                await transferData(ctx.auth.uid, newUser.uid);
+            }
+
+            loginUid = newUser.uid;
+        }
     } catch (error) {
-        // If user does not exist we create it.
-        if (error.code === 'auth/user-not-found') {
-            await createUserAndTransferData(ctx.auth.uid, escapedSpotifyId, {
-                ...userMeta,
-                displayName: user.display_name || user.id,
-            });
-        } else if (error.code === 'auth/invalid-display-name') {
+        if (error.code === 'auth/invalid-display-name') {
             console.error(error, userMeta.displayName);
             throw new functions.https.HttpsError(
                 'invalid-argument',
@@ -275,7 +275,7 @@ export const linkSpotifyAccounts = functions.https.onCall(async (data, ctx) => {
         }
     }
 
-    return { firebaseToken: await admin.auth().createCustomToken(uid) };
+    return { firebaseToken: await admin.auth().createCustomToken(loginUid) };
 });
 
 export const refreshToken = functions.https.onCall(async (data, ctx) => {
