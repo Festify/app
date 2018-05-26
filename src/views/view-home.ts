@@ -120,7 +120,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
     <p>Festify lets your guests choose which music should be played using their smartphones.</p>
 
     <main>
-        <paper-input label="Party ID"
+        <paper-input label="Party Code"
                      type="tel"
                      on-input="${ev => props.changePartyId((ev.target as HTMLInputElement).value)}"
                      on-keypress="${(ev: KeyboardEvent) => {
