@@ -69,7 +69,6 @@ async function createUserAndTransferData(
         }
 
         updates[`/votes/${partyId}/${oldUser.uid}`] = null;
-        updates[`/parties/${partyId}/created_by`] = newUser.uid;
     }
 
     updates[`/votes_by_user/${oldUser.uid}`] = null;
