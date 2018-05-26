@@ -30,7 +30,7 @@ export function isValidUrl(url: string): boolean {
  * @param k the string to escape
  * @returns the key ready to be used with Firebase
  */
-export const escapeKey = (k: string) => encodeURIComponent(k).replace('.', '%2E'); // 2E is char code of .
+export const escapeKey = (k: string) => encodeURIComponent(k).replace(/\./g, '%2E'); // 2E is char code of .
 
 export const unsafeGetProviderAndId = (trackId: string): [string, string] => {
     const separatorIndex = trackId.indexOf('-');
