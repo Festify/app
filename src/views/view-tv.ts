@@ -119,8 +119,8 @@ const Body = (props: ViewTvProps) => {
 
                         <playback-progress-bar></playback-progress-bar>
 
-                        <h4>Go to ${props.domain} and vote for the music!</h4>
-                        <h5>${props.party && props.party.short_id}</h5>
+                        <h4>Add your songs on ${props.domain}!</h4>
+                        <h5>Party Code ${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
             </div>
@@ -197,6 +197,7 @@ const ViewTv = (props: ViewTvProps) => html`
 
         .metadata {
             flex-grow: 1;
+            overflow-x: hidden;
         }
 
         playback-progress-bar {
@@ -239,8 +240,13 @@ const ViewTv = (props: ViewTvProps) => html`
 
         .upper h5 {
             font-size: 4.444vh;
-            font-weight: 100;
-            line-height: 5.185vh;
+            font-weight: 200;
+            line-height: 4.444vh;
+            padding: 0.92vh 1.39vh;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 0.74vh;
+            display: inline-block;
         }
 
         .no-tracks {
@@ -301,6 +307,12 @@ const mapStateToProps = (state: State): ViewTvProps => {
     const meta = currentTrackId
         ? singleMetadataSelector(state, currentTrackId)
         : null;
+
+    const { host } = document.location;
+    const domain = host.indexOf('localhost') !== -1 || host.indexOf('www.') !== -1
+        ? host
+        : `www.${host}`;
+
     return {
         // Choose background image to display based on track name
         backgroundImgIndex: meta && meta.background && meta.background.length > 0
@@ -311,7 +323,7 @@ const mapStateToProps = (state: State): ViewTvProps => {
             : null,
         currentTrackMetadata: meta,
         displayKenBurns: state.tvView.displayKenBurnsBackground,
-        domain: document.location.host,
+        domain,
         hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
