@@ -26,7 +26,7 @@ export class MetadataStore {
     constructor() {
         // Wrap IDB initialization to catch synchronous errors
         this.db = new Promise((res, rej) => {
-            idb.open('Festify', 2, upgrade => {
+            idb.open('Festify', 11, upgrade => {
                 if (upgrade.objectStoreNames.contains('metadata')) {
                     upgrade.deleteObjectStore('metadata');
                 }
