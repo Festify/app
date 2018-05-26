@@ -6,23 +6,30 @@ import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
-import { removeTrackAction, setVoteAction } from '../actions/queue';
+import { removeTrackAction, requestSetVoteAction as setVoteAction } from '../actions/queue';
 import srcsetImg from '../components/srcset-img';
-import { isPartyOwnerSelector, isPlaybackMasterSelector, playbackMasterSelector } from '../selectors/party';
+import {
+    hasOtherPlaybackMasterSelector,
+    isPartyOwnerSelector,
+    isPlaybackMasterSelector,
+    playbackMasterSelector,
+} from '../selectors/party';
 import {
     artistJoinerFactory,
-    queueTracksSelector,
+    currentTrackSelector,
     singleMetadataSelector,
     singleTrackSelector,
     tracksEqual,
     voteStringGeneratorFactory,
 } from '../selectors/track';
+import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
 import { Metadata, State, Track, TrackReference } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartyTrackProps {
     artistName: string | null;
-    disablePlayButton: boolean;
+    enablePlayButton: boolean;
+    hasConnectedSpotifyAccount: boolean;
     hasVoted: boolean;
     isOwner: boolean;
     isMusicPlaying: boolean;
@@ -80,7 +87,7 @@ const PlayButton = (props: PartyTrackRenderProps) => {
                 <paper-fab mini
                            icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
                            on-click="${props.togglePlayPause}"
-                           disabled="${props.disablePlayButton}">
+                           disabled="${!props.enablePlayButton}">
                 </paper-fab>
             </div>
         `;
@@ -172,6 +179,10 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
             background-color: var(--primary-color);
         }
 
+        paper-fab[disabled] {
+            opacity: 0.7;
+        }
+
         paper-icon-button {
             margin-left: 5px;
             padding: 6px;
@@ -237,23 +248,32 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
 /* tslint:enable */
 
 const isCompatibleSelector = (s: State) => s.player.isCompatible;
-const disablePlayButtonSelector = createSelector(
+
+/**
+ * Computes whether the play fab is enabled.
+ *
+ * Enable it when
+ * 1. we're Party Owner AND
+ * 2. we're not toggling the playback right now AND
+ * 3. we're either on a compatible device, or we're just controlling some other device AND
+ * 4. we either have a Spotify account connected, or we're just controlling some other device.
+ */
+const enablePlayButtonSelector = createSelector(
     isPartyOwnerSelector,
     (s: State) => s.player.togglingPlayback,
     isCompatibleSelector,
-    playbackMasterSelector,
-    (isOwner, isToggling, isCompatible, playbackMaster) =>
-        Boolean(!isOwner || isToggling || (!isCompatible && !playbackMaster)),
+    hasConnectedSpotifyAccountSelector,
+    hasOtherPlaybackMasterSelector,
+    (isOwner, isToggling, isCompatible, hasSptAccount, hasOtherMaster) =>
+        isOwner &&
+        !isToggling &&
+        (!isCompatible && hasOtherMaster || isCompatible) &&
+        (!hasSptAccount && hasOtherMaster || hasSptAccount),
 );
 
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
-    const isPlayingSelector = createSelector(
-        queueTracksSelector,
-        trackSelector,
-        (tracks, track) => tracksEqual(tracks[0], track),
-    );
     const hasVotesOrIsFallbackSelector = createSelector(
         trackSelector,
         track => Boolean(track && (track.vote_count > 0 || track.is_fallback)),
@@ -264,6 +284,11 @@ export const createMapStateToPropsFactory = (
      */
     return () => {
         const artistJoiner = artistJoinerFactory();
+        const isPlayingSelector = createSelector(
+            currentTrackSelector,
+            trackSelector,
+            (currentTrack, track) => tracksEqual(currentTrack, track),
+        );
         const showRemoveTrackButtonSelector = createSelector(
             isPartyOwnerSelector,
             hasVotesOrIsFallbackSelector,
@@ -276,18 +301,20 @@ export const createMapStateToPropsFactory = (
             playbackMasterSelector,
             isPlayingSelector,
             isCompatibleSelector,
-            (isOwner, isMaster, master, isPlaying, isCompatible) =>
-                isPlaying && isOwner && !isMaster && !!master && isCompatible,
+            hasConnectedSpotifyAccountSelector,
+            (isOwner, isMaster, master, isPlaying, isCompatible, hasSptConnected) =>
+                isPlaying && isOwner && !isMaster && !!master && isCompatible && hasSptConnected,
         );
         const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
 
         return (state: State, ownProps: PartyTrackOwnProps): PartyTrackProps => ({
             artistName: artistJoiner(state, ownProps.trackid),
-            disablePlayButton: disablePlayButtonSelector(state),
+            enablePlayButton: enablePlayButtonSelector(state),
+            hasConnectedSpotifyAccount: hasConnectedSpotifyAccountSelector(state),
             hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackid] === true,
             isOwner: isPartyOwnerSelector(state),
             isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
-            isPlayingTrack: ownProps.playing,
+            isPlayingTrack: isPlayingSelector(state, ownProps.trackid),
             metadata: singleMetadataSelector(state, ownProps.trackid),
             showRemoveButton: showRemoveTrackButtonSelector(state, ownProps.trackid),
             showTakeoverButton: showTakeoverButtonSelector(state, ownProps.trackid),

@@ -10,7 +10,6 @@ import typescript from 'rollup-plugin-typescript2';
 import minifyLit from '@mraerino/rollup-plugin-minifyliterals';
 import browsersync from 'rollup-plugin-browsersync';
 import replace from 'rollup-plugin-replace';
-import uglify from 'rollup-plugin-uglify';
 import path from 'path';
 
 const distTarget = './build';
@@ -61,7 +60,7 @@ const plugins = [
             collapseWhitespace: true
         }
     }) : null,
-    isProduction ? uglify() : null,
+    isProduction ? minify({ comments: false }) : null,
     !!process.env.ROLLUP_WATCH ? browsersync({
         port: process.env.PORT || 3000,
         server: {
@@ -74,7 +73,7 @@ const plugins = [
 ].filter(plugin => plugin !== null);
 
 const baseOptions = {
-    input: [src('index.ts'), src('entry.ts'), src('views/view-party.ts'), src('views/view-tv.ts')],
+    input: [src('index.ts'), src('views/view-party.ts'), src('views/view-tv.ts')],
     experimentalDynamicImport: true,
     experimentalCodeSplitting: true,
     plugins,

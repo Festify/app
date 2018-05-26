@@ -1,7 +1,7 @@
 import debounce from 'promise-debounce';
 
 import { AuthData } from './auth';
-import firebase from './firebase';
+import { functions } from './firebase';
 
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
 export const SCOPES = [
@@ -21,9 +21,6 @@ export const requireAnonymousAuth: () => Promise<string> = debounce(_requireAnon
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
 
-const clientTokenFn = firebase.functions!().httpsCallable('clientToken');
-const refreshTokenFn = firebase.functions!().httpsCallable('refreshToken');
-
 let authData: AuthData | null = null;
 
 async function _requireAccessToken(): Promise<string> {
@@ -40,7 +37,7 @@ async function _requireAccessToken(): Promise<string> {
         throw new Error("Missing refresh token.");
     }
 
-    const { accessToken, expiresIn } = (await refreshTokenFn({ refreshToken: authData.refreshToken })).data;
+    const { accessToken, expiresIn } = (await functions.refreshToken({ refreshToken: authData.refreshToken })).data;
     authData = new AuthData(
         accessToken,
         Date.now() + (expiresIn * 1000),
@@ -59,11 +56,11 @@ async function _requireAnonymousAuth(): Promise<string> {
         return anonymousAccessToken;
     }
 
-    const { accessToken, expiresIn } = (await clientTokenFn()).data;
+    const { data } = await functions.clientToken();
 
-    anonymousAccessToken = accessToken;
-    anonymousExpireTimeMs = Date.now() + (expiresIn * 1000) - 10000; // Safety margin
-    return accessToken;
+    anonymousAccessToken = data.accessToken;
+    anonymousExpireTimeMs = Date.now() + (data.expiresIn * 1000) - 10000; // Safety margin
+    return data.accessToken;
 }
 
 function fetchFactory(

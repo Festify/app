@@ -1,4 +1,4 @@
-import Dexie from 'dexie';
+import idb, { DB } from 'idb';
 import * as SpotifyApi from 'spotify-web-api-js';
 
 import { FANART_TV_API_KEY } from '../../common.config';
@@ -20,13 +20,22 @@ interface StoredMetadata extends Metadata {
 
 const META_IDB_TTL = 3600 * 1000 * 12; // 12h
 
-export class MetadataStore extends Dexie {
-    metadata: Dexie.Table<StoredMetadata, string>;
+export class MetadataStore {
+    private db: Promise<DB>;
 
     constructor() {
-        super("Festify");
-
-        this.version(1).stores({ metadata: "trackId, dateCreated" });
+        // Wrap IDB initialization to catch synchronous errors
+        this.db = new Promise((res, rej) => {
+            idb.open('Festify', 2, upgrade => {
+                if (upgrade.objectStoreNames.contains('metadata')) {
+                    upgrade.deleteObjectStore('metadata');
+                }
+                const store = upgrade.createObjectStore('metadata', { keyPath: 'trackId' });
+                store.createIndex('dateCreated', 'dateCreated', { unique: false });
+            })
+                .then(res)
+                .catch(rej);
+        });
         this.deleteOld();
     }
 
@@ -36,34 +45,63 @@ export class MetadataStore extends Dexie {
      * @param meta the metadata to cache
      */
     async cacheMetadata(meta: Record<string, Partial<Metadata>>) {
-        await this.transaction('rw!', this.metadata, async () => {
-            for (const trackId of Object.keys(meta)) {
-                const item = meta[trackId];
+        const tx = (await this.db).transaction('metadata', 'readwrite');
+        const store = tx.objectStore<StoredMetadata, string>('metadata');
 
-                if (await this.metadata.get(trackId)) {
-                    await this.metadata.update(trackId, item);
-                    continue;
-                }
+        const entries = Object.keys(meta);
 
-                await this.metadata.put({
-                    ...(item as Required<Metadata>),
-                    dateCreated: Date.now(),
-                    trackId,
-                });
+        // Normally this would be store.getAllKeys, but this isn't supported by Safari
+        const existingIds = new Set();
+        store.iterateKeyCursor(c => {
+            if (!c) {
+                return;
             }
+            existingIds.add(c.key);
+            c.continue();
         });
+
+        for (const trackId of entries) {
+            const item = meta[trackId];
+
+            if (existingIds.has(trackId)) { // update existing entry
+                await store.put({
+                    ...item,
+                    trackId,
+                } as StoredMetadata);
+                continue;
+            }
+
+            await store.put({
+                ...(item as Required<Metadata>),
+                dateCreated: Date.now(),
+                trackId,
+            });
+        }
+
+        await tx.complete;
     }
 
     /**
      * Loads cached metadata from IndexedDB.
      */
     async getMetadata(ids: Iterable<string>): Promise<Record<string, Metadata>> {
+        const tx = (await this.db).transaction('metadata');
+        const store = tx.objectStore<StoredMetadata, string>('metadata');
+
         const requestedTrackIds = new Set(ids);
-        const stored = await this.metadata
-            .where('dateCreated')
-            .aboveOrEqual(Date.now() - META_IDB_TTL)
-            .filter(meta => requestedTrackIds.has(meta.trackId))
-            .toArray();
+        const lastDateCreated = IDBKeyRange.lowerBound(Date.now() - META_IDB_TTL, true);
+        const stored: StoredMetadata[] = [];
+        await store.index<string>('dateCreated').iterateCursor(lastDateCreated, cursor => {
+            if (!cursor) {
+                return;
+            }
+            if (requestedTrackIds.has(cursor.value.trackId)) {
+                stored.push(cursor.value);
+            }
+            cursor.continue();
+        });
+
+        await tx.complete;
 
         return stored.reduce((acc, item) => {
             const { dateCreated, trackId, ...rest } = item;
@@ -74,9 +112,19 @@ export class MetadataStore extends Dexie {
 
     private async deleteOld() {
         try {
-            await this.metadata.where('dateCreated')
-                .below(Date.now() - META_IDB_TTL)
-                .delete();
+            const tx = (await this.db).transaction('metadata');
+            const store = tx.objectStore<StoredMetadata, string>('metadata');
+            const maxAge = IDBKeyRange.upperBound(Date.now() - META_IDB_TTL);
+
+            await store.iterateKeyCursor(maxAge, async cursor => {
+                if (!cursor) {
+                    return;
+                }
+                await cursor.delete();
+                cursor.continue();
+            });
+
+            await tx.complete;
         } catch (err) {
             console.log("Failed to clear out old metadata.", err);
         }

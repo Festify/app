@@ -1,5 +1,7 @@
+import { User } from '@firebase/auth-types';
 import { Location } from '@mraerino/redux-little-router-reactless';
-import * as SpotifyApi from 'spotify-web-api-js';
+
+import { OAuthLoginProviders } from './actions/auth';
 
 export const enum ConnectionState {
     Unknown,
@@ -53,6 +55,13 @@ export interface Party {
 
 export interface PartySettings {
     /**
+     * Toggles whether anonymous users can vote.
+     *
+     * This can be disabled to prevent vote cheating.
+     */
+    allow_anonymous_voters: boolean;
+
+    /**
      * Toggles whether to allow explicit songs to be added to the party
      * via the search.
      *
@@ -71,6 +80,7 @@ export interface PartySettings {
 export namespace PartySettings {
     export function defaultSettings(overrides?: Partial<PartySettings> | null): PartySettings {
         return {
+            allow_anonymous_voters: true,
             allow_explicit_tracks: true,
             allow_multi_track_add: true,
             ...overrides,
@@ -120,9 +130,11 @@ export interface PartyState {
 }
 
 export interface PartyViewState {
+    loginModalOpen: boolean;
     searchInProgress: boolean;
     searchError: Error | null;
     searchResult: Record<string, Track> | null;
+    userMenuOpen: boolean;
 }
 
 export interface PlayerState {
@@ -159,8 +171,43 @@ export interface AuthProviderStatus<T> {
     user: T | null;
 }
 
-export interface UserState {
+export interface UserCredentials {
+    facebook: AuthProviderStatus<User>;
+    firebase: AuthProviderStatus<User>;
+    github: AuthProviderStatus<User>;
+    google: AuthProviderStatus<User>;
     spotify: AuthProviderStatus<SpotifyApi.UserObjectPrivate>;
+    twitter: AuthProviderStatus<User>;
+}
+
+export type EnabledProvidersList = {
+    [k in OAuthLoginProviders]: boolean;
+};
+
+// tslint:disable-next-line:no-namespace
+export namespace EnabledProvidersList {
+    export function enable(overrides: OAuthLoginProviders[]): EnabledProvidersList {
+        const result = {
+            facebook: false,
+            github: false,
+            google: false,
+            spotify: false,
+            twitter: false,
+        };
+        overrides.forEach(prov => result[prov] = true);
+        return result;
+    }
+}
+
+export interface UserState {
+    credentials: UserCredentials;
+
+    /**
+     * The list of providers the user may sign in with, if he is required
+     * to sign in with one of his previous OAuth providers. Otherwise null.
+     */
+    needsFollowUpSignInWithProviders: EnabledProvidersList | null;
+
     playlists: Playlist[];
 }
 

@@ -5,6 +5,7 @@ import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
 import { Types } from '../actions';
+import { NotifyAuthStatusKnownAction } from '../actions/auth';
 import {
     becomePlaybackMaster,
     cleanupParty,
@@ -18,7 +19,7 @@ import {
     updateUserVotes,
     OpenPartyStartAction,
 } from '../actions/party-data';
-import { isPartyOwnerSelector } from '../selectors/party';
+import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
 import { store } from '../store';
 import { requireAuth } from '../util/auth';
@@ -126,7 +127,6 @@ function* loadParty() {
         yield takeEvery(tracksRef, publishTrackUpdates);
         yield takeEvery(votesRef, publishUserVoteUpdates);
 
-        yield put(openPartyFinish(party));
         const partySettings = yield fork(managePartySettings, id);
         const playbackManager = yield fork(managePlaybackState, id);
         const queueManager = yield fork(manageQueue, id);
@@ -138,6 +138,8 @@ function* loadParty() {
             .set(firebaseNS.database!.ServerValue.TIMESTAMP);
 
         window.onbeforeunload = closeListener;
+
+        yield put(openPartyFinish(party));
 
         yield take(Types.CLEANUP_PARTY);
 
@@ -170,9 +172,25 @@ function* watchRoute() {
     }
 }
 
+function* watchLogin() {
+    while (true) {
+        const ac: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
+        const state: State = yield select();
+        const partyId = partyIdSelector(state);
+
+        if (!partyId || ac.payload.data) {
+            continue;
+        }
+
+        yield put(cleanupParty());
+        yield put(openPartyStart(partyId));
+    }
+}
+
 export default function*() {
     yield all([
         loadParty(),
         watchRoute(),
+        watchLogin(),
     ]);
 }

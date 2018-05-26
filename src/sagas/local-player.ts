@@ -1,4 +1,3 @@
-import * as Raven from 'raven-js';
 import { eventChannel, Channel, Task } from 'redux-saga';
 import {
     all,
@@ -26,6 +25,7 @@ import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
+import Raven from '../util/raven';
 import { takeEveryWithState } from '../util/saga';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
@@ -146,13 +146,14 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
 
         while (true) {
             const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.duration === 0 && state.paused === true) {
+            if (state.position === 0 && state.paused === true) {
                 break;
             }
         }
 
         const { reference }: Track = yield select(currentTrackSelector);
         yield put(removeTrackAction(reference, true));
+        yield put(updatePlaybackState({ playing: true }));
     }
 }
 
@@ -198,8 +199,8 @@ function* handleQueueChange(
 
     if (newTrack) {
         yield all([
-            call(playTrack, newTrack.reference.id, deviceId),
             call(markTrackAsPlayed, partyId, newTrack.reference),
+            call(playTrack, newTrack.reference.id, deviceId),
         ]);
     } else {
         yield player.pause();

@@ -1,4 +1,5 @@
 import { createCipher, createDecipher } from 'crypto';
+import { URL } from 'url';
 
 const algo = 'aes-256-cbc';
 
@@ -13,6 +14,15 @@ export const crypto = {
         return decipher.update(text, 'hex', 'utf8') + decipher.final('utf8');
     },
 };
+
+export function isValidUrl(url: string): boolean {
+    try {
+        new URL(url);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
 
 /**
  * Escapes a string so that it can be used as a Firebase key.
