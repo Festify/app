@@ -11,7 +11,7 @@ import { ErrorAction, PayloadAction, Types } from '.';
 export type Actions =
     | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
-    | ChangePartySettingAction
+    | ChangePartySettingAction<keyof PartySettings>
     | FlushQueueFailAction
     | FlushQueueFinishAction
     | FlushQueueStartAction
@@ -32,8 +32,8 @@ export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<s
     type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
 }
 
-export interface ChangePartySettingAction extends
-    PayloadAction<{ setting: keyof PartySettings, enable: boolean }> {
+export interface ChangePartySettingAction<K extends keyof PartySettings> extends
+    PayloadAction<{ setting: K, value: PartySettings[K] }> {
     type: Types.CHANGE_PARTY_SETTING;
 }
 
@@ -81,13 +81,13 @@ export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
     type: Types.UPDATE_USER_PLAYLISTS;
 }
 
-export function changePartySetting(
-    setting: keyof PartySettings,
-    enable: boolean,
-): ChangePartySettingAction {
+export function changePartySetting<K extends keyof PartySettings>(
+    setting: K,
+    value: PartySettings[K],
+): ChangePartySettingAction<K> {
     return {
         type: Types.CHANGE_PARTY_SETTING,
-        payload: { enable, setting },
+        payload: { value, setting },
     };
 }
 

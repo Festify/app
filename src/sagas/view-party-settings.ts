@@ -1,5 +1,5 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
-import { buffers, eventChannel, Channel, END } from 'redux-saga';
+import { buffers, delay, eventChannel, Channel, END } from 'redux-saga';
 import { apply, call, put, select, take, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
@@ -25,12 +25,12 @@ import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { queueTracksSelector } from '../selectors/track';
 import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
-import { Playlist, State, Track } from '../state';
+import { PartySettings, Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
 
 const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
 
-function* changePartySetting(partyId: string, ac: ChangePartySettingAction) {
+function* changePartySetting(partyId: string, ac: ChangePartySettingAction<keyof PartySettings>) {
     if (!(yield select(isPartyOwnerSelector))) {
         return;
     }
@@ -40,7 +40,7 @@ function* changePartySetting(partyId: string, ac: ChangePartySettingAction) {
         .child(partyId)
         .child('settings')
         .child(ac.payload.setting)
-        .set(ac.payload.enable);
+        .set(ac.payload.value);
 }
 
 function* changeDisplayKenBurnsValue(ac: ChangeDisplayKenBurnsBackgroundAction) {

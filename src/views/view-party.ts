@@ -5,6 +5,7 @@ import '@polymer/iron-icon/iron-icon';
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-icon-button/paper-icon-button';
+import DomFlip from 'dom-flip';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
@@ -264,10 +265,38 @@ const mapDispatchToProps: PartyViewDispatch = {
     triggerTwitterLogin: () => triggerOAuthLogin('twitter'),
 };
 
-customElements.define(
-    'view-party',
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(PartyView),
-);
+const Base = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(PartyView);
+
+class ViewParty extends Base {
+    private queueFlip: DomFlip | null = null;
+    private prevView: PartyViews | null = null;
+
+    render() {
+        super.render();
+
+        /*
+         * Update dom-flip positions after view switches to prevent jittering.
+         */
+
+        if (!this.queueFlip) {
+            this.queueFlip = this.shadowRoot!.querySelector('party-queue')!
+                .shadowRoot!
+                .querySelector('dom-flip');
+        }
+        if (!this.queueFlip) {
+            return;
+        }
+
+        const { view } = this.renderProps;
+        if (this.prevView !== PartyViews.Queue && view === PartyViews.Queue) {
+            this.queueFlip.refresh();
+        }
+
+        this.prevView = view;
+    }
+}
+
+customElements.define('view-party', ViewParty);
