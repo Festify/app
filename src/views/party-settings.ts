@@ -38,7 +38,7 @@ interface PartySettingsProps {
 interface PartySettingsDispatch {
     changeDisplayKenBurnsBackground: (val: boolean) => void;
     changePartyName: (newName: string) => void;
-    changePartySetting: (setting: keyof PartySettings, val: boolean) => void;
+    changePartySetting: <K extends keyof PartySettings>(setting: K, val: PartySettings[K]) => void;
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
@@ -189,6 +189,13 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
                      title="Change the name of your party"
                      type="text"
                      on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
+        </paper-input>
+
+        <paper-input label="TV Mode Text"
+                     value="${props.settings.tv_mode_text}"
+                     title="Choose the text you want to show in TV Mode below the progress bar."
+                     type="text"
+                     on-input="${ev => props.changePartySetting('tv_mode_text', (ev.target as HTMLInputElement).value)}">
         </paper-input>
 
         <paper-checkbox checked="${props.displayKenBurnsBackground}"

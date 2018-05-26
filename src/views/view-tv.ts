@@ -5,6 +5,7 @@ import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
+import { domainSelector } from '../selectors/domain';
 import {
     artistJoinerFactory,
     currentTrackIdSelector,
@@ -22,7 +23,7 @@ interface ViewTvProps {
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
     displayKenBurns: boolean;
-    domain: string;
+    text: string;
     hasTracks: boolean;
     initError: Error | null;
     isLoading: boolean;
@@ -102,7 +103,7 @@ const Body = (props: ViewTvProps) => {
                     <h1>Oh, no!</h1>
                 </div>
                 <h2>There are no tracks in the queue right now.</h2>
-                <h2>Enter ${props.party && props.party.short_id} on ${props.domain} and vote for new ones!</h2>
+                <h2>${props.text}</h2>
             </div>
         `;
     } else {
@@ -119,7 +120,7 @@ const Body = (props: ViewTvProps) => {
 
                         <playback-progress-bar></playback-progress-bar>
 
-                        <h4>Add your songs on ${props.domain}!</h4>
+                        <h4>${props.text}</h4>
                         <h5>Party Code ${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
@@ -308,11 +309,6 @@ const mapStateToProps = (state: State): ViewTvProps => {
         ? singleMetadataSelector(state, currentTrackId)
         : null;
 
-    const { host } = document.location;
-    const domain = host.indexOf('localhost') !== -1 || host.indexOf('www.') !== -1
-        ? host
-        : `www.${host}`;
-
     return {
         // Choose background image to display based on track name
         backgroundImgIndex: meta && meta.background && meta.background.length > 0
@@ -323,19 +319,22 @@ const mapStateToProps = (state: State): ViewTvProps => {
             : null,
         currentTrackMetadata: meta,
         displayKenBurns: state.tvView.displayKenBurnsBackground,
-        domain,
         hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
         metadata: state.metadata,
         party: state.party.currentParty,
+        text: state.party.currentParty &&
+            state.party.currentParty.settings &&
+            state.party.currentParty.settings.tv_mode_text ||
+            `Add your songs on ${domainSelector()}!`,
         queueTracks: restTracksSelector(state),
     };
 };
 
 class TvMode extends connect(mapStateToProps, {})(ViewTv) {
     private boundMouseMoveHandler: () => void;
-    private mouseTimeout: number = 0;
+    private mouseTimeout: any;
 
     constructor() {
         super();
@@ -360,7 +359,7 @@ class TvMode extends connect(mapStateToProps, {})(ViewTv) {
         if (this.mouseTimeout) {
             clearTimeout(this.mouseTimeout);
         }
-        setTimeout(() => this.classList.add('no-cursor'), 3000);
+        this.mouseTimeout = setTimeout(() => this.classList.add('no-cursor'), 3000);
     }
 }
 

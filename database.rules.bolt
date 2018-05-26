@@ -43,6 +43,7 @@ type PartySettings {
     allow_anonymous_voters: Boolean,
     allow_explicit_tracks: Boolean,
     allow_multi_track_add: Boolean,
+    tv_mode_text: String,
 }
 
 type SpotifyCountry extends String {
