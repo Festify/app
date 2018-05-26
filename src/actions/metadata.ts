@@ -65,6 +65,7 @@ export class MetadataStore {
 
             if (existingIds.has(trackId)) { // update existing entry
                 await store.put({
+                    ...(await store.get(trackId)),
                     ...item,
                     trackId,
                 } as StoredMetadata);
