@@ -1,4 +1,3 @@
-import values from 'lodash-es/values';
 import { createSelector } from 'reselect';
 
 import { Metadata, State, Track, TrackReference } from '../state';
@@ -37,13 +36,20 @@ export const sortedTracksFactory = (
 ): ((state: State) => Track[]) => createSelector(
     tracksSelector,
     metadataSelector,
-    (tracks, meta) => values(tracks)
-        .filter(t => t.reference && t.reference.provider && t.reference.id)
-        .filter(t => {
-            const fbId = firebaseTrackIdSelector(t);
-            return !(fbId in meta) || meta[fbId].isPlayable;
-        })
-        .sort((a, b) => a.order - b.order),
+    (tracks, meta) => {
+        if (!tracks) {
+            return [];
+        }
+
+        return Object.keys(tracks)
+            .map(k => tracks[k])
+            .filter(t => t.reference && t.reference.provider && t.reference.id)
+            .filter(t => {
+                const fbId = firebaseTrackIdSelector(t);
+                return !(fbId in meta) || meta[fbId].isPlayable;
+            })
+            .sort((a, b) => a.order - b.order);
+    },
 );
 
 export const queueTracksSelector = sortedTracksFactory(tracksSelector);
