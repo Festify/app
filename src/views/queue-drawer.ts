@@ -91,6 +91,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             display: flex;
             font-weight: lighter;
             margin-top: auto;
+            cursor: pointer;
         }
 
         .user-menu span {
@@ -137,10 +138,9 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     <header>
         ${festifyLogo}
 
-        <div class$="user-menu hidable ${props.username ? '' : 'hidden'}">
+        <div class$="user-menu hidable ${props.username ? '' : 'hidden'}" on-click="${props.toggleUserMenu}">
             <span>${props.username}</span>
             <paper-icon-button icon="festify:expand-more"
-                               on-click="${props.toggleUserMenu}"
                                class$="${props.userMenuOpen ? 'open' : ''}"
                                title="Open user menu">
             </paper-icon-button>
