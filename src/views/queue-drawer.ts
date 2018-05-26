@@ -203,6 +203,16 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:exit-to-app"></iron-icon>
             Logout
         </a>
+
+        <a href="https://festify.rocks/disclaimer" target="_blank">
+            <iron-icon icon="festify:gavel"></iron-icon>
+            Legal
+        </a>
+
+        <a href="https://festify.rocks/privacy" target="_blank">
+            <iron-icon icon="festify:verified-user"></iron-icon>
+            Privacy
+        </a>
     </div>
 `;
 /* tslint:enable */
