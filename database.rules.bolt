@@ -40,9 +40,10 @@ type PlaybackState {
 }
 
 type PartySettings {
-    allow_anonymous_voters: Boolean,
-    allow_explicit_tracks: Boolean,
-    allow_multi_track_add: Boolean,
+    allow_anonymous_voters: Boolean | Null,
+    allow_explicit_tracks: Boolean | Null,
+    allow_multi_track_add: Boolean | Null,
+    tv_mode_text: String | Null,
 }
 
 type SpotifyCountry extends String {

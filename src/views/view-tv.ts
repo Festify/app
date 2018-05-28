@@ -5,6 +5,7 @@ import { html } from 'lit-html/lib/lit-extended';
 import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
+import { domainSelector } from '../selectors/domain';
 import {
     artistJoinerFactory,
     currentTrackIdSelector,
@@ -21,8 +22,7 @@ interface ViewTvProps {
     backgroundImgIndex: number | null;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
-    displayKenBurns: boolean;
-    domain: string;
+    text: string;
     hasTracks: boolean;
     initError: Error | null;
     isLoading: boolean;
@@ -40,18 +40,10 @@ const Background = (props: ViewTvProps) => {
     if (props.currentTrackMetadata.background &&
         props.currentTrackMetadata.background.length > 0 &&
         props.backgroundImgIndex != null) {
-        if (props.displayKenBurns) {
-            return html`
-                <ken-burns-carousel images="${props.currentTrackMetadata.background}">
-                </ken-burns-carousel>
-            `;
-        } else {
-            return html`
-                <div class="background">
-                    <img src="${props.currentTrackMetadata.background[props.backgroundImgIndex]}">
-                </div>
-            `;
-        }
+        return html`
+            <ken-burns-carousel images="${props.currentTrackMetadata.background}">
+            </ken-burns-carousel>
+        `;
     } else {
         return html`
             <div class="background">
@@ -68,7 +60,7 @@ const Lower = (props: ViewTvProps) => {
         </tv-track>
     `);
 
-    return typeof window.ShadyCSS === 'object'
+    return typeof window.ShadyCSS === 'object' && !window.ShadyCSS!.nativeShadow
         ? html`<div class="lower">${list}</div>`
         : html`<dom-flip class="lower">${list}</dom-flip>`;
 };
@@ -102,7 +94,7 @@ const Body = (props: ViewTvProps) => {
                     <h1>Oh, no!</h1>
                 </div>
                 <h2>There are no tracks in the queue right now.</h2>
-                <h2>Enter ${props.party && props.party.short_id} on ${props.domain} and vote for new ones!</h2>
+                <h2>${props.text}</h2>
             </div>
         `;
     } else {
@@ -119,8 +111,8 @@ const Body = (props: ViewTvProps) => {
 
                         <playback-progress-bar></playback-progress-bar>
 
-                        <h4>Go to ${props.domain} and vote for the music!</h4>
-                        <h5>${props.party && props.party.short_id}</h5>
+                        <h4>${props.text}</h4>
+                        <h5>Party Code ${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
             </div>
@@ -197,6 +189,7 @@ const ViewTv = (props: ViewTvProps) => html`
 
         .metadata {
             flex-grow: 1;
+            overflow-x: hidden;
         }
 
         playback-progress-bar {
@@ -239,8 +232,13 @@ const ViewTv = (props: ViewTvProps) => html`
 
         .upper h5 {
             font-size: 4.444vh;
-            font-weight: 100;
-            line-height: 5.185vh;
+            font-weight: 200;
+            line-height: 4.444vh;
+            padding: 0.92vh 1.39vh;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 0.74vh;
+            display: inline-block;
         }
 
         .no-tracks {
@@ -301,6 +299,7 @@ const mapStateToProps = (state: State): ViewTvProps => {
     const meta = currentTrackId
         ? singleMetadataSelector(state, currentTrackId)
         : null;
+
     return {
         // Choose background image to display based on track name
         backgroundImgIndex: meta && meta.background && meta.background.length > 0
@@ -310,20 +309,22 @@ const mapStateToProps = (state: State): ViewTvProps => {
             ? artistNameSelector(state, currentTrackId)
             : null,
         currentTrackMetadata: meta,
-        displayKenBurns: state.tvView.displayKenBurnsBackground,
-        domain: document.location.host,
         hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
         metadata: state.metadata,
         party: state.party.currentParty,
+        text: state.party.currentParty &&
+            state.party.currentParty.settings &&
+            state.party.currentParty.settings.tv_mode_text ||
+            `Add your songs on ${domainSelector()}!`,
         queueTracks: restTracksSelector(state),
     };
 };
 
 class TvMode extends connect(mapStateToProps, {})(ViewTv) {
     private boundMouseMoveHandler: () => void;
-    private mouseTimeout: number = 0;
+    private mouseTimeout: any;
 
     constructor() {
         super();
@@ -348,7 +349,7 @@ class TvMode extends connect(mapStateToProps, {})(ViewTv) {
         if (this.mouseTimeout) {
             clearTimeout(this.mouseTimeout);
         }
-        setTimeout(() => this.classList.add('no-cursor'), 3000);
+        this.mouseTimeout = setTimeout(() => this.classList.add('no-cursor'), 3000);
     }
 }
 

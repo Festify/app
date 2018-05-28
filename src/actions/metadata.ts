@@ -26,7 +26,7 @@ export class MetadataStore {
     constructor() {
         // Wrap IDB initialization to catch synchronous errors
         this.db = new Promise((res, rej) => {
-            idb.open('Festify', 2, upgrade => {
+            idb.open('Festify', 11, upgrade => {
                 if (upgrade.objectStoreNames.contains('metadata')) {
                     upgrade.deleteObjectStore('metadata');
                 }
@@ -48,30 +48,12 @@ export class MetadataStore {
         const tx = (await this.db).transaction('metadata', 'readwrite');
         const store = tx.objectStore<StoredMetadata, string>('metadata');
 
-        const entries = Object.keys(meta);
-
-        // Normally this would be store.getAllKeys, but this isn't supported by Safari
-        const existingIds = new Set();
-        store.iterateKeyCursor(c => {
-            if (!c) {
-                return;
-            }
-            existingIds.add(c.key);
-            c.continue();
-        });
-
-        for (const trackId of entries) {
+        for (const trackId of Object.keys(meta)) {
             const item = meta[trackId];
-
-            if (existingIds.has(trackId)) { // update existing entry
-                await store.put({
-                    ...item,
-                    trackId,
-                } as StoredMetadata);
-                continue;
-            }
+            const storedItem = await store.get(trackId);
 
             await store.put({
+                ...storedItem,
                 ...(item as Required<Metadata>),
                 dateCreated: Date.now(),
                 trackId,

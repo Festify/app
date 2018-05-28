@@ -83,7 +83,7 @@ function* loadMetadataForNewTracks(_) {
     const state: State = yield select();
     const remaining: string[] = loadMetadataSelector(state);
 
-    if (!remaining.length) {
+    if (!state.party.currentParty || !remaining.length) {
         return;
     }
 
@@ -101,7 +101,7 @@ function* loadMetadataForNewTracks(_) {
         console.warn("Failed to load cached tracks from IndexedDB. Fetching from Spotify API...");
     }
 
-    const country = state.party.currentParty!.country;
+    const country = state.party.currentParty.country;
     const uncached: string[] = yield select(loadMetadataSelector);
     for (const ids of chunk(uncached, 50).filter(ch => ch.length > 0)) {
         try {

@@ -8,7 +8,6 @@ import { html } from 'lit-html/lib/lit-extended';
 
 import { triggerOAuthLogin } from '../actions/auth';
 import {
-    changeDisplayKenBurnsBackground,
     changePartyName,
     changePartySetting,
     changeSearchInput,
@@ -21,7 +20,6 @@ import { PartySettings, Playlist, State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
 interface PartySettingsProps {
-    displayKenBurnsBackground: boolean;
     isAuthorizing: boolean;
     isPlaylistLoadInProgress: boolean;
     isSpotifyConnected: boolean;
@@ -36,9 +34,8 @@ interface PartySettingsProps {
 }
 
 interface PartySettingsDispatch {
-    changeDisplayKenBurnsBackground: (val: boolean) => void;
     changePartyName: (newName: string) => void;
-    changePartySetting: (setting: keyof PartySettings, val: boolean) => void;
+    changePartySetting: <K extends keyof PartySettings>(setting: K, val: PartySettings[K]) => void;
     changeSearchInput: (newContent: string) => void;
     flushTracks: () => void;
     insert: (playlist: Playlist, shuffle: boolean) => void;
@@ -191,11 +188,12 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
                      on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
         </paper-input>
 
-        <paper-checkbox checked="${props.displayKenBurnsBackground}"
-                        on-checked-changed="${ev => props.changeDisplayKenBurnsBackground((ev.target as HTMLInputElement).checked)}"
-                        title="The Ken Burns effect adds additional visual fidelity to the TV mode but can be heavy on performance. You can disable it here on a per-device basis, if you need to.">
-            Display "Ken Burns" background in TV mode
-        </paper-checkbox>
+        <paper-input label="TV Mode Text"
+                     value="${props.settings.tv_mode_text}"
+                     title="Choose the text you want to show in TV Mode below the progress bar."
+                     type="text"
+                     on-input="${ev => props.changePartySetting('tv_mode_text', (ev.target as HTMLInputElement).value)}">
+        </paper-input>
 
         <paper-checkbox checked="${!props.settings.allow_multi_track_add}"
                         on-checked-changed="${ev => props.changePartySetting('allow_multi_track_add', !(ev.target as HTMLInputElement).checked)}"
@@ -230,7 +228,6 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
 /* tslint:enable */
 
 const mapStateToProps = (state: State): PartySettingsProps => ({
-    displayKenBurnsBackground: state.tvView.displayKenBurnsBackground,
     isAuthorizing: state.user.credentials.spotify.authorizing,
     isPlaylistLoadInProgress: state.settingsView.playlistLoadInProgress,
     isSpotifyConnected: hasConnectedSpotifyAccountSelector(state),
@@ -245,7 +242,6 @@ const mapStateToProps = (state: State): PartySettingsProps => ({
 });
 
 const mapDispatchToProps: PartySettingsDispatch = {
-    changeDisplayKenBurnsBackground,
     changePartyName,
     changePartySetting,
     changeSearchInput,

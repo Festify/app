@@ -2,6 +2,7 @@ import { User } from '@firebase/auth-types';
 import { Location } from '@mraerino/redux-little-router-reactless';
 
 import { OAuthLoginProviders } from './actions/auth';
+import { domainSelector } from './selectors/domain';
 
 export const enum ConnectionState {
     Unknown,
@@ -74,6 +75,11 @@ export interface PartySettings {
      * one track, or if multiple tracks can be added to the queue from search.
      */
     allow_multi_track_add: boolean;
+
+    /**
+     * Sets the text displayed under the progress bar in TV mode
+     */
+    tv_mode_text: string;
 }
 
 // tslint:disable-next-line:no-namespace
@@ -83,6 +89,7 @@ export namespace PartySettings {
             allow_anonymous_voters: true,
             allow_explicit_tracks: true,
             allow_multi_track_add: true,
+            tv_mode_text: `Add your songs on ${domainSelector()}!`,
             ...overrides,
         };
     }
@@ -160,10 +167,6 @@ export interface SettingsViewState {
     tracksLoaded: number;
 }
 
-export interface TvViewState {
-    displayKenBurnsBackground: boolean;
-}
-
 export interface AuthProviderStatus<T> {
     authorizing: boolean;
     authorizationError: Error | null;
@@ -220,6 +223,5 @@ export interface State {
     player: PlayerState;
     router?: Location;
     settingsView: SettingsViewState;
-    tvView: TvViewState;
     user: UserState;
 }
