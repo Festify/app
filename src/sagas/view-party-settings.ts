@@ -1,10 +1,9 @@
 import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
-import { buffers, delay, eventChannel, Channel, END } from 'redux-saga';
-import { apply, call, put, select, take, takeLatest } from 'redux-saga/effects';
+import { buffers, eventChannel, Channel, END } from 'redux-saga';
+import { call, put, select, take, takeLatest } from 'redux-saga/effects';
 
 import { Types } from '../actions';
 import {
-    changeDisplayKenBurnsBackground,
     flushQueue,
     flushQueueFail,
     flushQueueFinish,
@@ -16,7 +15,6 @@ import {
     loadPlaylistsFail,
     loadPlaylistsStart,
     updateUserPlaylists,
-    ChangeDisplayKenBurnsBackgroundAction,
     ChangePartySettingAction,
     InsertFallbackPlaylistStartAction,
     UpdatePartyNameAction,
@@ -27,8 +25,6 @@ import { queueTracksSelector } from '../selectors/track';
 import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
 import { PartySettings, Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
-
-const KEN_BURNS_LS_KEY = 'DisplayKenBurnsBackground';
 
 function* changePartySetting(partyId: string, ac: ChangePartySettingAction<keyof PartySettings>) {
     if (!(yield select(isPartyOwnerSelector))) {
@@ -41,25 +37,6 @@ function* changePartySetting(partyId: string, ac: ChangePartySettingAction<keyof
         .child('settings')
         .child(ac.payload.setting)
         .set(ac.payload.value);
-}
-
-function* changeDisplayKenBurnsValue(ac: ChangeDisplayKenBurnsBackgroundAction) {
-    yield apply(
-        localStorage,
-        localStorage.setItem,
-        [KEN_BURNS_LS_KEY, ac.payload ? 'true' : 'false'],
-    );
-}
-
-function* fetchKenBurnsDisplayValue() {
-    const lsVal: string | null = yield apply(
-        localStorage,
-        localStorage.getItem,
-        [KEN_BURNS_LS_KEY],
-    );
-    if (lsVal) {
-        yield put(changeDisplayKenBurnsBackground(lsVal === 'true'));
-    }
 }
 
 function* fetchPlaylists() {
@@ -139,7 +116,6 @@ function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
 }
 
 export function* managePartySettings(partyId: string) {
-    yield takeLatest(Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND, changeDisplayKenBurnsValue);
     yield takeLatest(Types.CHANGE_PARTY_SETTING, changePartySetting, partyId);
     yield takeLatest(Types.FLUSH_QUEUE_Start, flushTracks, partyId);
     yield takeLatest(Types.INSERT_FALLBACK_PLAYLIST_Start, insertPlaylist, partyId);
@@ -151,5 +127,4 @@ export default function*() {
         Types.NOTIFY_AUTH_STATUS_KNOWN,
         LOCATION_CHANGED,
     ], fetchPlaylists);
-    yield* fetchKenBurnsDisplayValue();
 }
