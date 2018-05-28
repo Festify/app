@@ -1,19 +1,69 @@
 import firebase from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { isEmpty, isEqual, values } from 'lodash';
+import Cache from 'quick-lru';
 
 import { unsafeGetProviderAndId } from './utils';
 
 const VOTE_FACTOR = 1e12;
 
-async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentParty) {
-    if (!partyId) {
-        throw new Error("Invalid party ID!");
-    }
-    if (!currentParty || !currentParty.created_at) {
-        throw new Error("Invalid party!");
+/**
+ * LRU cache used to speed up party creation date lookups over multiple function invocations.
+ *
+ * The cache is bounded at 1000 items to avoid excessive memory usage and will automatically
+ * drop the least-used items on overflow.
+ *
+ * Remark: This assumes the creation date of parties never change after initial setup.
+ */
+const partyCache = new Cache<string, number>({ maxSize: 1000 });
+
+/**
+ * Gets the creation date of the party with the given ID.
+ *
+ * Utilizes a LRU cache to speed up the process over multiple function invocations.
+ *
+ * @param partyId the ID of the party to get the creation date of.
+ */
+async function fetchPartyCreationDate(partyId: string): Promise<number> {
+    const possiblyCached = partyCache.peek(partyId);
+    if (possiblyCached !== undefined) {
+        return possiblyCached;
     }
 
+    const partySnap: firebase.database.DataSnapshot = await firebase.database()
+        .ref('/parties')
+        .child(partyId)
+        .once('value');
+
+    if (!partySnap.exists()) {
+        throw new Error("Party not found!");
+    }
+
+    const party: { created_at: number } = partySnap.val();
+    if (!party.created_at) {
+        throw new Error("Invalid party creation date!");
+    }
+
+    partyCache.set(partyId, party.created_at);
+    return party.created_at;
+}
+
+/**
+ * Updates the queue order of a track after a vote was cast.
+ *
+ * @param voteDelta whether a vote was cast or uncast.
+ * @param trackId the ID of the track on whom a vote was cast.
+ * @param currentTrack the currently playing track.
+ * @param partyId the ID of the party the track belongs to.
+ * @param partyCreated the timestamp when the party was created.
+ */
+async function updateOrder(
+    voteDelta: 1 | -1,
+    trackId: string,
+    currentTrack: { reference: any } | null,
+    partyId: string,
+    partyCreated: number,
+) {
     /**
      * Order calculation is based on a formula, so we don't have to keep an
      * index for ordering tracks.
@@ -39,7 +89,7 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
         .child(trackId)
         .transaction(track => {
             const currentlyPlaying = isEqual(
-                (currentTrack || {}).reference,
+                (currentTrack || { reference: undefined }).reference,
                 (track || {}).reference,
             );
 
@@ -60,7 +110,7 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
                 // If there is no current track, we are going to be the new first one.
                 const order = isEmpty(currentTrack) ?
                     Number.MIN_SAFE_INTEGER + 1 :
-                    (Date.now() - currentParty.created_at) - (voteCount * VOTE_FACTOR);
+                    (Date.now() - partyCreated) - (voteCount * VOTE_FACTOR);
                 const [provider, id] = unsafeGetProviderAndId(trackId);
 
                 return {
@@ -76,7 +126,7 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
 
                 const order = currentlyPlaying ?
                     Number.MIN_SAFE_INTEGER + 1 :
-                    (track.added_at - currentParty.created_at) - (voteCount * VOTE_FACTOR);
+                    (track.added_at - partyCreated) - (voteCount * VOTE_FACTOR);
 
                 // Order hasn't changed. Tell Firebase SDK that we have nothing to change.
                 // tslint:disable-next-line:triple-equals
@@ -101,12 +151,12 @@ async function updateOrder(voteDelta, trackId, currentTrack, partyId, currentPar
 export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{userId}')
     .onWrite(async (change, ctx) => {
         const { partyId, trackId, userId } = ctx!.params;
-        const voteDelta = !!change.after.val() ? 1 : -1;
 
-        const party = firebase.database()
-            .ref('/parties')
-            .child(partyId)
-            .once('value');
+        if (!partyId) {
+            throw new Error("Invalid party ID!");
+        }
+
+        const voteDelta = !!change.after.val() ? 1 : -1;
         const topmostTrack = firebase.database()
             .ref('/tracks')
             .child(partyId)
@@ -114,7 +164,10 @@ export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{
             .orderByChild('order')
             .once('value');
 
-        const [partySnap, trackSnap] = await Promise.all([party, topmostTrack]);
+        const [partyCreated, trackSnap] = await Promise.all([
+            fetchPartyCreationDate(partyId),
+            topmostTrack,
+        ]);
         const track = values(trackSnap.val())[0];
         try {
             await updateOrder(
@@ -122,7 +175,7 @@ export const processVotes = functions.database.ref('/votes/{partyId}/{trackId}/{
                 trackId,
                 track,
                 partyId,
-                partySnap.val(),
+                partyCreated,
             );
         } catch (err) {
             console.error(`An error occured while processing votes for /votes/${partyId}/${trackId}/${userId}.`);
