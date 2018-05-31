@@ -38,23 +38,9 @@ export default {
         }),
         nodeBuiltins(),
         nodeResolve({
+            module: true,
+            jsnext: true,
             browser: true,
-            customResolveOptions: {
-                packageFilter: pkg => {
-                    if (pkg['module']) {
-                        pkg['main'] = pkg['module'];
-                    } else if (pkg['jsnext:main']) {
-                        pkg['main'] = pkg['jsnext:main'];
-                    }
-
-                    const fixedPackages = ['@firebase/util', '@firebase/database'];
-                    if (fixedPackages.indexOf(pkg.name) !== -1) {
-                        pkg['browser'] = pkg.main;
-                    }
-
-                    return pkg;
-                },
-            },
         }),
         typescript(),
         copy({
