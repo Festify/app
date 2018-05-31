@@ -33,6 +33,27 @@ const plugins = [
         module: true,
         jsnext: true,
         browser: true,
+        customResolveOptions: {
+            packageFilter: pkg => {
+                if (pkg['module']) {
+                    pkg['main'] = pkg['module'];
+                } else if (pkg['jsnext:main']) {
+                    pkg['main'] = pkg['jsnext:main'];
+                }
+
+                const fixedPackages = [
+                    '@firebase/app',
+                    '@firebase/database',
+                    '@firebase/functions',
+                    '@firebase/util',
+                ];
+                if (fixedPackages.indexOf(pkg.name) !== -1) {
+                    pkg['browser'] = pkg.module;
+                }
+
+                return pkg;
+            },
+        },
     }),
     typescript(),
     cjs(),
