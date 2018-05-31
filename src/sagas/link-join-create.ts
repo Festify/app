@@ -2,7 +2,7 @@ import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { put, select, take } from 'redux-saga/effects';
 
 import { Types } from '../actions';
-import { triggerOAuthLogin } from '../actions/auth';
+import { triggerOAuthLogin, NotifyAuthStatusKnownAction } from '../actions/auth';
 import { createPartyStart, joinPartyStart } from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
@@ -21,11 +21,11 @@ export default function*() {
         if (state.user.credentials.spotify.authorizationError) {
             return;
         }
-        if (!state.user.credentials.spotify.statusKnown) {
-            yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
-        }
-        if (state.user.credentials.spotify.authorizing) {
-            yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
+        while(true) {
+            const { payload: authPayload }: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
+            if(authPayload.provider === 'spotify' && !!authPayload.data) {
+                break;
+            }
         }
 
         const maybeUser = yield select((s: State) => s.user.credentials.spotify.user);
