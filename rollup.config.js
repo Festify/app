@@ -35,8 +35,8 @@ const plugins = [
         browser: true,
     }),
     typescript(),
-    nodeGlobals(),
     cjs(),
+    nodeGlobals(), // WARNING: Never move above CommonJS plugin!
     isProduction ? minifyLit({
         include: ['src/entry.ts', 'src/{components,views}/**', 'node_modules/@polymer/{paper,iron}-*/**'],
         includeExtension: ['.ts', '.js'],
