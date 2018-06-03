@@ -38,6 +38,8 @@ export default {
         }),
         nodeBuiltins(),
         nodeResolve({
+            module: true,
+            jsnext: true,
             browser: true,
             customResolveOptions: {
                 packageFilter: pkg => {
@@ -47,9 +49,14 @@ export default {
                         pkg['main'] = pkg['jsnext:main'];
                     }
 
-                    const fixedPackages = ['@firebase/util', '@firebase/database'];
+                    const fixedPackages = [
+                        '@firebase/app',
+                        '@firebase/database',
+                        '@firebase/functions',
+                        '@firebase/util',
+                    ];
                     if (fixedPackages.indexOf(pkg.name) !== -1) {
-                        pkg['browser'] = pkg.main;
+                        pkg['browser'] = pkg.module;
                     }
 
                     return pkg;

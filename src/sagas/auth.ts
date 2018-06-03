@@ -215,7 +215,7 @@ function* logout() {
         }));
     }
 
-    localStorage.removeItem(LOCALSTORAGE_KEY);
+    yield call(AuthData.remove, LOCALSTORAGE_KEY);
     yield firebase.auth!().signOut();
     yield put(checkLoginStatus());
 }

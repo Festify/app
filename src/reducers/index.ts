@@ -6,7 +6,6 @@ import userReducer from './user';
 import homeReducer from './view-home';
 import partyViewReducer from './view-party';
 import settingsReducer from './view-settings';
-import tvViewReducer from './view-tv';
 
 export default {
     appShell: appShellReducer,
@@ -16,6 +15,5 @@ export default {
     partyView: partyViewReducer,
     player: playerReducer,
     settingsView: settingsReducer,
-    tvView: tvViewReducer,
     user: userReducer,
 };

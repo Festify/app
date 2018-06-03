@@ -167,10 +167,6 @@ export interface SettingsViewState {
     tracksLoaded: number;
 }
 
-export interface TvViewState {
-    displayKenBurnsBackground: boolean;
-}
-
 export interface AuthProviderStatus<T> {
     authorizing: boolean;
     authorizationError: Error | null;
@@ -227,6 +223,5 @@ export interface State {
     player: PlayerState;
     router?: Location;
     settingsView: SettingsViewState;
-    tvView: TvViewState;
     user: UserState;
 }

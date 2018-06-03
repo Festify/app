@@ -22,7 +22,6 @@ interface ViewTvProps {
     backgroundImgIndex: number | null;
     currentTrackArtistName: string | null;
     currentTrackMetadata: Metadata | null;
-    displayKenBurns: boolean;
     text: string;
     hasTracks: boolean;
     initError: Error | null;
@@ -41,18 +40,10 @@ const Background = (props: ViewTvProps) => {
     if (props.currentTrackMetadata.background &&
         props.currentTrackMetadata.background.length > 0 &&
         props.backgroundImgIndex != null) {
-        if (props.displayKenBurns) {
-            return html`
-                <ken-burns-carousel images="${props.currentTrackMetadata.background}">
-                </ken-burns-carousel>
-            `;
-        } else {
-            return html`
-                <div class="background">
-                    <img src="${props.currentTrackMetadata.background[props.backgroundImgIndex]}">
-                </div>
-            `;
-        }
+        return html`
+            <ken-burns-carousel images="${props.currentTrackMetadata.background}">
+            </ken-burns-carousel>
+        `;
     } else {
         return html`
             <div class="background">
@@ -318,7 +309,6 @@ const mapStateToProps = (state: State): ViewTvProps => {
             ? artistNameSelector(state, currentTrackId)
             : null,
         currentTrackMetadata: meta,
-        displayKenBurns: state.tvView.displayKenBurnsBackground,
         hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,

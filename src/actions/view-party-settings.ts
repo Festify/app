@@ -9,7 +9,6 @@ import { fetchWithAccessToken } from '../util/spotify-auth';
 import { ErrorAction, PayloadAction, Types } from '.';
 
 export type Actions =
-    | ChangeDisplayKenBurnsBackgroundAction
     | ChangeFallbackPlaylistSearchInputAction
     | ChangePartySettingAction<keyof PartySettings>
     | FlushQueueFailAction
@@ -23,10 +22,6 @@ export type Actions =
     | LoadPlaylistsFailAction
     | UpdatePartyNameAction
     | UpdateUserPlaylistsAction;
-
-export interface ChangeDisplayKenBurnsBackgroundAction extends PayloadAction<boolean> {
-    type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND;
-}
 
 export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<string> {
     type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
@@ -88,13 +83,6 @@ export function changePartySetting<K extends keyof PartySettings>(
     return {
         type: Types.CHANGE_PARTY_SETTING,
         payload: { value, setting },
-    };
-}
-
-export function changeDisplayKenBurnsBackground(display: boolean): ChangeDisplayKenBurnsBackgroundAction {
-    return {
-        type: Types.CHANGE_DISPLAY_KEN_BURNS_BACKGROUND,
-        payload: display,
     };
 }
 
