@@ -1506,8 +1506,8 @@ diffie-hellman@^5.0.0:
     randombytes "^2.0.0"
 
 dom-flip@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.4.1.tgz#102f3b7561f894eec62d314f25bc363dfd1fd772"
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.4.3.tgz#cacac4f5953a2ce8c36a9ccbcc19133e7200b1a8"
 
 dom-storage@2.1.0:
   version "2.1.0"
