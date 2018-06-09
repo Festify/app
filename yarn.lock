@@ -3475,9 +3475,9 @@ rollup-plugin-typescript2@^0.14.0:
     rollup-pluginutils "^2.0.1"
     tslib "^1.9.0"
 
-rollup-plugin-visualizer@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-0.7.0.tgz#caa4a607b651cd5af5551edfb39d236d69955f99"
+rollup-plugin-visualizer@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-0.8.0.tgz#dd4df7c7d4dc49443ab6b62a729ff9977aea0697"
   dependencies:
     mkdirp "^0.5.1"
     source-map "^0.7.3"
