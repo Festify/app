@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 
-import { Metadata, State, Track, TrackReference } from '../state';
+import { Metadata, Playback, State, Track, TrackReference } from '../state';
+
+import { playbackSelector } from './party';
 
 export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
     (t as Track).reference
@@ -82,17 +84,18 @@ export function tracksEqual(a: Track | null | undefined, b: Track | null | undef
 }
 
 export const voteStringGeneratorFactory = (
-    trackSelector: (state: State, trackId: string) => Track | null,
+    trackSelector: (state: State, trackId: string, playback: Playback | null) => Track | null,
 ) => createSelector(
     trackSelector,
     currentTrackSelector,
-    (track, currentTrack) => {
-        if (!track) {
+    playbackSelector,
+    (track, currentTrack, playback) => {
+        if (!track || !playback) {
             return '';
         }
 
         if (tracksEqual(track, currentTrack)) {
-            return "Playing now";
+            return playback.playing ? "Playing now" : "Paused";
         } else if (track.vote_count > 1) {
             return `${track.vote_count} Votes`;
         } else if (track.vote_count === 1) {
