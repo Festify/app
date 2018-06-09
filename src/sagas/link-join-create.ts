@@ -21,9 +21,9 @@ export default function*() {
         if (state.user.credentials.spotify.authorizationError) {
             return;
         }
-        while(true) {
+        while (true) {
             const { payload: authPayload }: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
-            if(authPayload.provider === 'spotify' && !!authPayload.data) {
+            if (authPayload.provider === 'spotify' && !!authPayload.data) {
                 break;
             }
         }
