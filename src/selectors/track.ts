@@ -63,7 +63,7 @@ export const currentTrackSelector = createSelector(
 
 export const currentTrackIdSelector = createSelector(
     currentTrackSelector,
-    track => track ? `${track.reference.provider}-${track.reference.id}` : null,
+    track => track ? firebaseTrackIdSelector(track) : null,
 );
 
 export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
