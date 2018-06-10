@@ -84,7 +84,7 @@ export function tracksEqual(a: Track | null | undefined, b: Track | null | undef
 }
 
 export const voteStringGeneratorFactory = (
-    trackSelector: (state: State, trackId: string, playback: Playback | null) => Track | null,
+    trackSelector: (state: State, trackId: string) => Track | null,
 ) => createSelector(
     trackSelector,
     currentTrackSelector,
