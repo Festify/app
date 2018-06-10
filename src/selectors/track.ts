@@ -4,10 +4,10 @@ import { Metadata, Playback, State, Track, TrackReference } from '../state';
 
 import { playbackSelector } from './party';
 
-export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
-    (t as Track).reference
-        ? firebaseTrackIdSelector((t as Track).reference)
-        : `${(t as TrackReference).provider}-${(t as TrackReference).id}`;
+export const firebaseTrackIdSelector = (t: Track | TrackReference): string => {
+    const ref = (t as Track).reference || t as TrackReference;
+    return `${ref.provider}-${ref.id}`;
+};
 
 export const tracksSelector = (state: State) => state.party.tracks || {};
 
