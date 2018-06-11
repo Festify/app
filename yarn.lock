@@ -1506,8 +1506,8 @@ diffie-hellman@^5.0.0:
     randombytes "^2.0.0"
 
 dom-flip@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.4.1.tgz#102f3b7561f894eec62d314f25bc363dfd1fd772"
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/dom-flip/-/dom-flip-0.4.3.tgz#cacac4f5953a2ce8c36a9ccbcc19133e7200b1a8"
 
 dom-storage@2.1.0:
   version "2.1.0"
@@ -3475,12 +3475,12 @@ rollup-plugin-typescript2@^0.14.0:
     rollup-pluginutils "^2.0.1"
     tslib "^1.9.0"
 
-rollup-plugin-visualizer@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-0.6.0.tgz#c7b45b80aac9ab717291432f28b9561b4e3def29"
+rollup-plugin-visualizer@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-0.7.0.tgz#caa4a607b651cd5af5551edfb39d236d69955f99"
   dependencies:
     mkdirp "^0.5.1"
-    source-map "^0.7.2"
+    source-map "^0.7.3"
 
 rollup-pluginutils@^1.3.1:
   version "1.5.2"
@@ -3496,9 +3496,9 @@ rollup-pluginutils@^2.0.1:
     estree-walker "^0.5.2"
     micromatch "^2.3.11"
 
-rollup@^0.59.1:
-  version "0.59.4"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.59.4.tgz#6f80f7017c22667ff1bf3e62adf8624a44cc44aa"
+rollup@^0.60.1:
+  version "0.60.1"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.60.1.tgz#07cb66153f1541d5f7e82b8393b405c31647dae9"
   dependencies:
     "@types/estree" "0.0.39"
     "@types/node" "*"
@@ -3672,7 +3672,7 @@ source-map@0.5.x, source-map@^0.5.6, source-map@^0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.7.2:
+source-map@^0.7.3:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
 
