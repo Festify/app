@@ -13,7 +13,7 @@ export const enum PartyViews {
     Share = "Share",
 }
 
-const routes =  {
+const routes = {
     '/': {
         title: "Home",
         view: Views.Home,

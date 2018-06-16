@@ -1,11 +1,13 @@
 import { createSelector } from 'reselect';
 
-import { Metadata, State, Track, TrackReference } from '../state';
+import { Metadata, Playback, State, Track, TrackReference } from '../state';
 
-export const firebaseTrackIdSelector = (t: Track | TrackReference): string =>
-    (t as Track).reference
-        ? firebaseTrackIdSelector((t as Track).reference)
-        : `${(t as TrackReference).provider}-${(t as TrackReference).id}`;
+import { playbackSelector } from './party';
+
+export const firebaseTrackIdSelector = (t: Track | TrackReference): string => {
+    const ref = (t as Track).reference || t as TrackReference;
+    return `${ref.provider}-${ref.id}`;
+};
 
 export const tracksSelector = (state: State) => state.party.tracks || {};
 
@@ -61,7 +63,7 @@ export const currentTrackSelector = createSelector(
 
 export const currentTrackIdSelector = createSelector(
     currentTrackSelector,
-    track => track ? `${track.reference.provider}-${track.reference.id}` : null,
+    track => track ? firebaseTrackIdSelector(track) : null,
 );
 
 export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
@@ -86,13 +88,14 @@ export const voteStringGeneratorFactory = (
 ) => createSelector(
     trackSelector,
     currentTrackSelector,
-    (track, currentTrack) => {
-        if (!track) {
+    playbackSelector,
+    (track, currentTrack, playback) => {
+        if (!track || !playback) {
             return '';
         }
 
         if (tracksEqual(track, currentTrack)) {
-            return "Playing now";
+            return playback.playing ? "Playing now" : "Paused";
         } else if (track.vote_count > 1) {
             return `${track.vote_count} Votes`;
         } else if (track.vote_count === 1) {

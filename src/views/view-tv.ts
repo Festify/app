@@ -227,7 +227,7 @@ const ViewTv = (props: ViewTvProps) => html`
             font-size: 4.444vh;
             font-weight: normal;
             line-height: 5.185vh;
-            margin-bottom: 0.741vh;
+            margin-bottom: 2.4vh;
         }
 
         .upper h5 {
