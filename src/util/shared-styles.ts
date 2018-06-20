@@ -38,7 +38,6 @@ export default html`
             margin: 16px 0;
         }
 
-
         paper-button.login {
             display: flex;
             align-items: center;
