@@ -43,7 +43,7 @@
     "connect-history-api-fallback": "^1.5.0",
     "firebase-bolt": "^0.8.2",
     "raven-js": "^3.24.0",
-    "rollup": "^0.60.1",
+    "rollup": "^0.61.0",
     "rollup-plugin-babel-minify": "^5.0.0",
     "rollup-plugin-browsersync": "^0.2.6",
     "rollup-plugin-commonjs": "^9.1.0",
