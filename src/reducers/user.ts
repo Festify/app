@@ -1,4 +1,12 @@
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
+import {
+    EXCHANGE_CODE,
+    EXCHANGE_CODE_FAIL,
+    NOTIFY_AUTH_STATUS_KNOWN,
+    REQUIRE_FOLLOW_UP_LOGIN,
+} from '../actions/auth';
+import { CHANGE_DISPLAY_LOGIN_MODAL } from '../actions/view-party';
+import { UPDATE_USER_PLAYLISTS } from '../actions/view-party-settings';
 import { AuthProviderStatus, UserCredentials, UserState } from '../state';
 
 const defaultUser = <T>(): AuthProviderStatus<T> => ({
@@ -40,7 +48,7 @@ export default function(
     }
 
     switch (action.type) {
-        case Types.CHANGE_DISPLAY_LOGIN_MODAL:
+        case CHANGE_DISPLAY_LOGIN_MODAL:
             if (state.needsFollowUpSignInWithProviders) {
                 return {
                     ...state,
@@ -49,31 +57,31 @@ export default function(
             } else {
                 return state;
             }
-        case Types.EXCHANGE_CODE_Fail:
+        case EXCHANGE_CODE_FAIL:
             return reduceAuthProvider(action.payload.provider, {
                 authorizing: false,
                 authorizationError: action.payload.data,
                 statusKnown: true,
             });
-        case Types.EXCHANGE_CODE_Start:
+        case EXCHANGE_CODE:
             return reduceAuthProvider(action.payload, {
                 authorizing: true,
                 authorizationError: null,
                 statusKnown: false,
             });
-        case Types.NOTIFY_AUTH_STATUS_KNOWN:
+        case NOTIFY_AUTH_STATUS_KNOWN:
             return reduceAuthProvider(action.payload.provider, {
                 authorizing: false,
                 authorizationError: null,
                 statusKnown: true,
                 user: action.payload.data,
             });
-        case Types.REQUIRE_FOLLOW_UP_LOGIN:
+        case REQUIRE_FOLLOW_UP_LOGIN:
             return {
                 ...state,
                 needsFollowUpSignInWithProviders: action.payload,
             };
-        case Types.UPDATE_USER_PLAYLISTS:
+        case UPDATE_USER_PLAYLISTS:
             return {
                 ...state,
                 playlists: action.payload,

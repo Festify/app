@@ -6,99 +6,97 @@ import { PartySettings, Playlist, PlaylistReference, Track } from '../state';
 import firebase from '../util/firebase';
 import { fetchWithAccessToken } from '../util/spotify-auth';
 
-import { ErrorAction, PayloadAction, Types } from '.';
-
 export type Actions =
-    | ChangeFallbackPlaylistSearchInputAction
-    | ChangePartySettingAction<keyof PartySettings>
-    | FlushQueueFailAction
-    | FlushQueueFinishAction
-    | FlushQueueStartAction
-    | InsertFallbackPlaylistFailAction
-    | InsertFallbackPlaylistFinishAction
-    | InsertFallbackPlaylistProgressAction
-    | InsertFallbackPlaylistStartAction
-    | LoadPlaylistsStartAction
-    | LoadPlaylistsFailAction
-    | UpdatePartyNameAction
-    | UpdateUserPlaylistsAction;
+    | ReturnType<typeof changeSearchInput>
+    | ReturnType<typeof changePartyName>
+    | ReturnType<typeof changePartySetting>
+    | ReturnType<typeof flushQueueStart>
+    | ReturnType<typeof flushQueueFail>
+    | ReturnType<typeof flushQueueFinish>
+    | ReturnType<typeof insertPlaylistFail>
+    | ReturnType<typeof insertPlaylistFinish>
+    | ReturnType<typeof insertPlaylistProgress>
+    | ReturnType<typeof insertPlaylistStart>
+    | ReturnType<typeof loadPlaylistsFail>
+    | ReturnType<typeof loadPlaylistsStart>
+    | ReturnType<typeof updateUserPlaylists>;
 
-export interface ChangeFallbackPlaylistSearchInputAction extends PayloadAction<string> {
-    type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT;
-}
+export const UPDATE_PARTY_NAME = 'CHANGE_PARTYNAME';
+export const CHANGE_PARTY_SETTING = 'CHANGE_PARTY_SETTING';
+export const CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT';
+export const FLUSH_QUEUE_FAIL = 'FLUSH_QUEUE_Fail';
+export const FLUSH_QUEUE_FINISH = 'FLUSH_QUEUE_Finish';
+export const FLUSH_QUEUE_START = 'FLUSH_QUEUE_Start';
+export const LOAD_PLAYLISTS_FAIL = 'LOAD_PLAYLISTS_Fail';
+export const LOAD_PLAYLISTS_START = 'LOAD_PLAYLISTS_Start';
+export const INSERT_FALLBACK_PLAYLIST_FAIL = 'INSERT_FALLBACK_PLAYLIST_Fail';
+export const INSERT_FALLBACK_PLAYLIST_FINISH = 'INSERT_FALLBACK_PLAYLIST_Finish';
+export const INSERT_FALLBACK_PLAYLIST_PROGRESS = 'INSERT_FALLBACK_PLAYLIST_Progress';
+export const INSERT_FALLBACK_PLAYLIST_START = 'INSERT_FALLBACK_PLAYLIST_Start';
+export const UPDATE_USER_PLAYLISTS = 'UPDATE_USER_PLAYLISTS';
 
-export interface ChangePartySettingAction<K extends keyof PartySettings> extends
-    PayloadAction<{ setting: K, value: PartySettings[K] }> {
-    type: Types.CHANGE_PARTY_SETTING;
-}
+export const changePartyName = (newName: string) => ({
+    type: UPDATE_PARTY_NAME as typeof UPDATE_PARTY_NAME,
+    payload: newName,
+});
 
-export interface FlushQueueFailAction extends ErrorAction {
-    type: Types.FLUSH_QUEUE_Fail;
-}
-
-export interface FlushQueueFinishAction {
-    type: Types.FLUSH_QUEUE_Finish;
-}
-
-export interface FlushQueueStartAction {
-    type: Types.FLUSH_QUEUE_Start;
-}
-
-export interface InsertFallbackPlaylistFailAction extends ErrorAction {
-    type: Types.INSERT_FALLBACK_PLAYLIST_Fail;
-}
-
-export interface InsertFallbackPlaylistFinishAction {
-    type: Types.INSERT_FALLBACK_PLAYLIST_Finish;
-}
-
-export interface InsertFallbackPlaylistProgressAction extends PayloadAction<number> {
-    type: Types.INSERT_FALLBACK_PLAYLIST_Progress;
-}
-
-export interface InsertFallbackPlaylistStartAction extends PayloadAction<{ playlist: Playlist, shuffled: boolean }> {
-    type: Types.INSERT_FALLBACK_PLAYLIST_Start;
-}
-
-export interface LoadPlaylistsStartAction {
-    type: Types.LOAD_PLAYLISTS_Start;
-}
-
-export interface LoadPlaylistsFailAction extends ErrorAction {
-    type: Types.LOAD_PLAYLISTS_Fail;
-}
-
-export interface UpdatePartyNameAction extends PayloadAction<string> {
-    type: Types.UPDATE_PARTY_NAME;
-}
-
-export interface UpdateUserPlaylistsAction extends PayloadAction<Playlist[]> {
-    type: Types.UPDATE_USER_PLAYLISTS;
-}
-
-export function changePartySetting<K extends keyof PartySettings>(
+export const changePartySetting = <K extends keyof PartySettings>(
     setting: K,
     value: PartySettings[K],
-): ChangePartySettingAction<K> {
-    return {
-        type: Types.CHANGE_PARTY_SETTING,
-        payload: { value, setting },
-    };
-}
+) => ({
+    type: CHANGE_PARTY_SETTING as typeof CHANGE_PARTY_SETTING,
+    payload: { value, setting },
+});
 
-export function changePartyName(newName: string): UpdatePartyNameAction {
-    return {
-        type: Types.UPDATE_PARTY_NAME,
-        payload: newName,
-    };
-}
+export const changeSearchInput = (newContent: string) => ({
+    type: CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT as typeof CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT,
+    payload: newContent,
+});
 
-export function changeSearchInput(newContent: string): ChangeFallbackPlaylistSearchInputAction {
-    return {
-        type: Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT,
-        payload: newContent,
-    };
-}
+export const flushQueueFail = (err: Error) => ({
+    type: FLUSH_QUEUE_FAIL as typeof FLUSH_QUEUE_FAIL,
+    error: true,
+    payload: err,
+});
+
+export const flushQueueFinish = () => ({ type: FLUSH_QUEUE_FINISH as typeof FLUSH_QUEUE_FINISH });
+
+export const flushQueueStart = () => ({ type: FLUSH_QUEUE_START as typeof FLUSH_QUEUE_START });
+
+export const loadPlaylistsFail = (err: Error) => ({
+    type: LOAD_PLAYLISTS_FAIL as typeof LOAD_PLAYLISTS_FAIL,
+    error: true,
+    payload: err,
+});
+
+export const loadPlaylistsStart = () => ({ type: LOAD_PLAYLISTS_START as typeof LOAD_PLAYLISTS_START });
+
+export const insertPlaylistFail = (err: Error) => ({
+    type: INSERT_FALLBACK_PLAYLIST_FAIL as typeof INSERT_FALLBACK_PLAYLIST_FAIL,
+    error: true,
+    payload: err,
+});
+
+export const insertPlaylistFinish = () => ({
+    type: INSERT_FALLBACK_PLAYLIST_FINISH as typeof INSERT_FALLBACK_PLAYLIST_FINISH,
+});
+
+export const insertPlaylistProgress = (itemsProcessed: number) => ({
+    type: INSERT_FALLBACK_PLAYLIST_PROGRESS as typeof INSERT_FALLBACK_PLAYLIST_PROGRESS,
+    payload: itemsProcessed,
+});
+
+export const insertPlaylistStart = (playlist: Playlist, shuffled: boolean) => ({
+    type: INSERT_FALLBACK_PLAYLIST_START as typeof INSERT_FALLBACK_PLAYLIST_START,
+    payload: { playlist, shuffled },
+});
+
+export const updateUserPlaylists = (playlists: Playlist[]) => ({
+    type: UPDATE_USER_PLAYLISTS as typeof UPDATE_USER_PLAYLISTS,
+    payload: playlists,
+});
+
+/* Utils */
 
 export async function flushQueue(partyId: string, tracks: Track[]) {
     const trackRemoveObject = {};
@@ -121,22 +119,6 @@ export async function flushQueue(partyId: string, tracks: Track[]) {
     ]);
 }
 
-export function flushQueueFail(err: Error): FlushQueueFailAction {
-    return {
-        type: Types.FLUSH_QUEUE_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function flushQueueFinish(): FlushQueueFinishAction {
-    return { type: Types.FLUSH_QUEUE_Finish };
-}
-
-export function flushQueueStart(): FlushQueueStartAction {
-    return { type: Types.FLUSH_QUEUE_Start };
-}
-
 export async function loadPlaylists(): Promise<Playlist[]> {
     const items: SpotifyApi.PlaylistObjectSimplified[] = [];
     let url = '/me/playlists?limit=50';
@@ -157,18 +139,6 @@ export async function loadPlaylists(): Promise<Playlist[]> {
         } as PlaylistReference,
         trackCount: tracks.total,
     }));
-}
-
-export function loadPlaylistsFail(err: Error): LoadPlaylistsFailAction {
-    return {
-        type: Types.LOAD_PLAYLISTS_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function loadPlaylistsStart(): LoadPlaylistsStartAction {
-    return { type: Types.LOAD_PLAYLISTS_Start };
 }
 
 export async function insertPlaylist(
@@ -260,37 +230,4 @@ export async function insertPlaylist(
         .ref('/tracks')
         .child(partyId)
         .update(updateObject);
-}
-
-export function insertPlaylistFail(err: Error): InsertFallbackPlaylistFailAction {
-    return {
-        type: Types.INSERT_FALLBACK_PLAYLIST_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function insertPlaylistFinish(): InsertFallbackPlaylistFinishAction {
-    return { type: Types.INSERT_FALLBACK_PLAYLIST_Finish };
-}
-
-export function insertPlaylistProgress(itemsProcessed: number): InsertFallbackPlaylistProgressAction {
-    return {
-        type: Types.INSERT_FALLBACK_PLAYLIST_Progress,
-        payload: itemsProcessed,
-    };
-}
-
-export function insertPlaylistStart(playlist: Playlist, shuffled: boolean): InsertFallbackPlaylistStartAction {
-    return {
-        type: Types.INSERT_FALLBACK_PLAYLIST_Start,
-        payload: { playlist, shuffled },
-    };
-}
-
-export function updateUserPlaylists(playlists: Playlist[]): UpdateUserPlaylistsAction {
-    return {
-        type: Types.UPDATE_USER_PLAYLISTS,
-        payload: playlists,
-    };
 }

@@ -1,21 +1,28 @@
 import { delay } from 'redux-saga';
 import { put, takeEvery } from 'redux-saga/effects';
 
-import { QueueDragEnterAction, Types } from '../actions';
+import {
+    queueDragDrop,
+    queueDragEnter,
+    queueDragOver,
+    QUEUE_DRAG_DROP,
+    QUEUE_DRAG_ENTER,
+    QUEUE_DRAG_OVER,
+} from '../actions';
 import { setVoteAction } from '../actions/queue';
 
 export default function*() {
-    yield takeEvery(Types.QUEUE_DRAG_Over, (event: QueueDragEnterAction) => {
+    yield takeEvery(QUEUE_DRAG_OVER, (event: ReturnType<typeof queueDragOver>) => {
         event.payload.event.preventDefault();
     });
 
-    yield takeEvery(Types.QUEUE_DRAG_Enter, (event: QueueDragEnterAction) => {
+    yield takeEvery(QUEUE_DRAG_ENTER, (event: ReturnType<typeof queueDragEnter>) => {
         event.payload.event.returnValue = false;
         event.payload.event.dataTransfer.dropEffect = "copy";
         event.payload.event.preventDefault();
     });
 
-    yield takeEvery(Types.QUEUE_DRAG_Drop, function*(event: QueueDragEnterAction) {
+    yield takeEvery(QUEUE_DRAG_DROP, function*(event: ReturnType<typeof queueDragDrop>) {
         event.payload.event.preventDefault();
         const data: string = event.payload.event.dataTransfer.getData("text/plain");
         const trackRegex = /\/track\/([0-9a-z]+)/gi;

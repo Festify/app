@@ -1,7 +1,10 @@
 import { LOCATION_CHANGED } from '@festify/redux-little-router';
 
-import { Actions, Types } from '../actions';
-import { ChangeDisplayLoginModalAction, SearchFailAction, SearchFinishAction } from '../actions/view-party';
+import { Actions } from '../actions';
+import { REQUIRE_FOLLOW_UP_LOGIN } from '../actions/auth';
+import { CLEANUP_PARTY } from '../actions/party-data';
+import { CHANGE_DISPLAY_LOGIN_MODAL, SEARCH_FAIL, SEARCH_FINISH, SEARCH_START } from '../actions/view-party';
+import { TOGGLE_USER_MENU } from '../actions/view-queue-drawer';
 import { PartyViewState } from '../state';
 
 export default function(
@@ -15,10 +18,10 @@ export default function(
     action: Actions,
 ): PartyViewState {
     switch (action.type) {
-        case Types.CHANGE_DISPLAY_LOGIN_MODAL:
+        case CHANGE_DISPLAY_LOGIN_MODAL:
             return {
                 ...state,
-                loginModalOpen: (action as ChangeDisplayLoginModalAction).payload,
+                loginModalOpen: action.payload,
             };
         case LOCATION_CHANGED:
             return {
@@ -27,36 +30,36 @@ export default function(
                     ? null
                     : state.searchResult,
             };
-        case Types.REQUIRE_FOLLOW_UP_LOGIN:
+        case REQUIRE_FOLLOW_UP_LOGIN:
             return {
                 ...state,
                 loginModalOpen: true,
             };
-        case Types.SEARCH_Start:
+        case SEARCH_START:
             return {
                 ...state,
                 searchInProgress: true,
                 searchError: null,
             };
-        case Types.SEARCH_Fail:
+        case SEARCH_FAIL:
             return {
                 ...state,
                 searchInProgress: false,
-                searchError: (action as SearchFailAction).payload,
+                searchError: action.payload,
             };
-        case Types.SEARCH_Finish:
+        case SEARCH_FINISH:
             return {
                 ...state,
                 searchInProgress: false,
                 searchError: null,
-                searchResult: (action as SearchFinishAction).payload,
+                searchResult: action.payload,
             };
-        case Types.TOGGLE_USER_MENU:
+        case TOGGLE_USER_MENU:
             return {
                 ...state,
                 userMenuOpen: !state.userMenuOpen,
             };
-        case Types.CLEANUP_PARTY:
+        case CLEANUP_PARTY:
             return {
                 ...state,
                 searchInProgress: false,

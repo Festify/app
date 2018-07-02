@@ -12,14 +12,22 @@ import {
     takeEvery,
 } from 'redux-saga/effects';
 
-import { showToast, Types } from '../actions';
-import { updatePlaybackState } from '../actions/party-data';
+import { showToast } from '../actions';
+import {
+    updatePlaybackState,
+    BECOME_PLAYBACK_MASTER,
+    RESIGN_PLAYBACK_MASTER,
+    UPDATE_PLAYBACK_STATE,
+    UPDATE_TRACKS,
+} from '../actions/party-data';
 import {
     play,
     playerError,
     playerInitFinish,
     setPlayerCompatibility,
     togglePlaybackFinish,
+    PLAY,
+    SPOTIFY_SDK_INIT_FINISH,
 } from '../actions/playback-spotify';
 import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
@@ -135,7 +143,7 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
         yield call(attachToEvents, player, 'player_state_changed');
 
     while (true) {
-        yield take(Types.PLAY);
+        yield take(PLAY);
 
         while (true) {
             const state = yield take(playerStateChanges);
@@ -219,10 +227,10 @@ export function* manageLocalPlayer(partyId: string) {
 
     try {
         while (true) {
-            yield take(Types.BECOME_PLAYBACK_MASTER);
+            yield take(BECOME_PLAYBACK_MASTER);
 
             if (!(yield select((state: State) => state.player.sdkReady))) {
-                yield take(Types.SPOTIFY_SDK_INIT_Finish);
+                yield take(SPOTIFY_SDK_INIT_FINISH);
             }
 
             player = new Spotify.Player({
@@ -270,7 +278,7 @@ export function* manageLocalPlayer(partyId: string) {
             );
 
             const queueChangeManager: Task = yield takeEveryWithState(
-                Types.UPDATE_TRACKS,
+                UPDATE_TRACKS,
                 currentTrackSelector,
                 handleQueueChange,
                 player,
@@ -278,7 +286,7 @@ export function* manageLocalPlayer(partyId: string) {
                 partyId,
             );
             const playbackStateUpdateManager: Task = yield takeEveryWithState(
-                Types.UPDATE_PLAYBACK_STATE,
+                UPDATE_PLAYBACK_STATE,
                 playbackSelector,
                 handlePlaybackStateChange,
                 player,
@@ -291,7 +299,7 @@ export function* manageLocalPlayer(partyId: string) {
             );
             yield takeEvery(playerErrors, handlePlaybackError);
 
-            yield take(Types.RESIGN_PLAYBACK_MASTER);
+            yield take(RESIGN_PLAYBACK_MASTER);
 
             yield apply(player, player.disconnect);
             yield cancel(

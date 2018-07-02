@@ -1,4 +1,16 @@
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
+import {
+    CLEANUP_PARTY,
+    OPEN_PARTY_FAIL,
+    OPEN_PARTY_FINISH,
+    OPEN_PARTY_START,
+    UPDATE_NETWORK_CONNECTION_STATE,
+    UPDATE_PARTY,
+    UPDATE_PLAYBACK_STATE,
+    UPDATE_TRACKS,
+    UPDATE_USER_VOTES,
+} from '../actions/party-data';
+import { SET_VOTE } from '../actions/queue';
 import { firebaseTrackIdSelector } from '../selectors/track';
 import { ConnectionState, PartyState, Track } from '../state';
 
@@ -17,25 +29,25 @@ export default function (
     action: Actions,
 ): PartyState {
     switch (action.type) {
-        case Types.OPEN_PARTY_Start:
+        case OPEN_PARTY_START:
             return {
                 ...state,
                 partyLoadError: null,
                 partyLoadInProgress: true,
             };
-        case Types.OPEN_PARTY_Fail:
+        case OPEN_PARTY_FAIL:
             return {
                 ...state,
                 partyLoadError: action.payload,
                 partyLoadInProgress: false,
             };
-        case Types.OPEN_PARTY_Finish:
+        case OPEN_PARTY_FINISH:
             return {
                 ...state,
                 partyLoadError: null,
                 partyLoadInProgress: false,
             };
-        case Types.SET_VOTE:
+        case SET_VOTE:
             const [ref, vote] = action.payload;
             const trackId = firebaseTrackIdSelector(ref);
 
@@ -60,28 +72,28 @@ export default function (
                     [trackId]: vote,
                 },
             };
-        case Types.UPDATE_NETWORK_CONNECTION_STATE:
+        case UPDATE_NETWORK_CONNECTION_STATE:
             return {
                 ...state,
                 connectionState: action.payload,
             };
-        case Types.UPDATE_PARTY:
+        case UPDATE_PARTY:
             return {
                 ...state,
                 currentParty: action.payload,
             };
-        case Types.UPDATE_TRACKS:
+        case UPDATE_TRACKS:
             return {
                 ...state,
                 hasTracksLoaded: true,
                 tracks: action.payload,
             };
-        case Types.UPDATE_USER_VOTES:
+        case UPDATE_USER_VOTES:
             return {
                 ...state,
                 userVotes: action.payload,
             };
-        case Types.UPDATE_PLAYBACK_STATE:
+        case UPDATE_PLAYBACK_STATE:
             if (!state.currentParty) {
                 return state;
             }
@@ -96,7 +108,7 @@ export default function (
                     },
                 },
             };
-        case Types.CLEANUP_PARTY:
+        case CLEANUP_PARTY:
             return {
                 connectionState: ConnectionState.Unknown,
                 currentParty: null,

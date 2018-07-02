@@ -1,14 +1,16 @@
 import { User } from '@firebase/auth-types';
 import { call, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
-import { showToast, Types } from '../actions';
+import { showToast } from '../actions';
+import { UPDATE_TRACKS } from '../actions/party-data';
 import {
     pinTrack,
     removeTrack as doRemoveTrack,
+    removeTrackAction,
     setVote as doSetVote,
     setVoteAction,
-    RemoveTrackAction,
-    SetVoteAction,
+    REMOVE_TRACK,
+    REQUEST_SET_VOTE,
 } from '../actions/queue';
 import { changeDisplayLoginModal } from '../actions/view-party';
 import { isPartyOwnerSelector, isPlaybackMasterSelector } from '../selectors/party';
@@ -25,7 +27,7 @@ function* pinTopTrack(partyId: string) {
     let topTrack: Track = undefined!;
 
     while (true) {
-        yield take(Types.UPDATE_TRACKS);
+        yield take(UPDATE_TRACKS);
 
         const state: State = yield select();
 
@@ -44,7 +46,7 @@ function* pinTopTrack(partyId: string) {
     }
 }
 
-function* removeTrack(partyId: string, ac: RemoveTrackAction) {
+function* removeTrack(partyId: string, ac: ReturnType<typeof removeTrackAction>) {
     try {
         const [ref, moveToHistory] = ac.payload;
         const state: State = yield select();
@@ -59,7 +61,7 @@ function* removeTrack(partyId: string, ac: RemoveTrackAction) {
     }
 }
 
-function* setVote(partyId: string, ac: SetVoteAction) {
+function* setVote(partyId: string, ac: ReturnType<typeof setVoteAction>) {
     const { party }: State = yield select();
     if (party.currentParty!.settings && !party.currentParty!.settings!.allow_anonymous_voters) {
         const user: User = yield call(requireAuth);
@@ -79,7 +81,7 @@ function* setVote(partyId: string, ac: SetVoteAction) {
 }
 
 export default function*(partyId: string) {
-    yield takeEvery(Types.REMOVE_TRACK, removeTrack, partyId);
-    yield takeEvery(Types.REQUEST_SET_VOTE, setVote, partyId);
+    yield takeEvery(REMOVE_TRACK, removeTrack, partyId);
+    yield takeEvery(REQUEST_SET_VOTE, setVote, partyId);
     yield fork(pinTopTrack, partyId);
 }

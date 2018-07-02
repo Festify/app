@@ -1,6 +1,6 @@
 import { call, select, takeEvery } from 'redux-saga/effects';
 
-import { Types } from '../actions';
+import { SHARE_PARTY } from '../actions/view-party-share';
 import { partyIdSelector } from '../selectors/party';
 import { State } from '../state';
 
@@ -29,5 +29,5 @@ export default function*() {
         return;
     }
 
-    yield takeEvery(Types.SHARE_PARTY, share);
+    yield takeEvery(SHARE_PARTY, share);
 }

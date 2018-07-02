@@ -2,15 +2,19 @@ import isEqual from 'lodash-es/isEqual';
 import { Task } from 'redux-saga';
 import { call, cancelled, fork, join, put, select, take, takeEvery } from 'redux-saga/effects';
 
-import { Types } from '../actions';
 import {
     becomePlaybackMaster,
     resignPlaybackMaster,
+    updateParty,
     updatePlaybackState,
-    UpdatePartyAction,
-    UpdatePlaybackStateAction,
+    BECOME_PLAYBACK_MASTER,
+    INSTALL_PLAYBACK_MASTER,
+    RESIGN_PLAYBACK_MASTER,
+    UPDATE_PARTY,
+    UPDATE_PLAYBACK_STATE,
+    UPDATE_TRACKS,
 } from '../actions/party-data';
-import { togglePlaybackFinish } from '../actions/playback-spotify';
+import { togglePlaybackFinish, TOGGLE_PLAYBACK_START } from '../actions/playback-spotify';
 import { isPartyOwnerSelector, playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
@@ -55,7 +59,7 @@ function* handleFirebase(partyId: string) {
 
         // Setup deinitialization for playback state on player disconnect
         const becomeTask: Task = yield takeEvery(
-            Types.BECOME_PLAYBACK_MASTER,
+            BECOME_PLAYBACK_MASTER,
             function* () {
                 isPlaybackMaster = true;
                 yield call(() => playbackDisconnect.update({
@@ -67,7 +71,7 @@ function* handleFirebase(partyId: string) {
 
         // Cancel deinitialization for playback state on player disconnect
         const resignTask: Task = yield takeEvery(
-            Types.RESIGN_PLAYBACK_MASTER,
+            RESIGN_PLAYBACK_MASTER,
             function* () {
                 isPlaybackMaster = false;
                 yield call(() => playbackDisconnect.cancel());
@@ -78,7 +82,7 @@ function* handleFirebase(partyId: string) {
         const stateTask: Task = yield fork(function*() {
             while (true) {
                 const oldState: Playback | null = yield select(playbackSelector);
-                const { payload }: UpdatePlaybackStateAction = yield take(Types.UPDATE_PLAYBACK_STATE);
+                const { payload }: ReturnType<typeof updatePlaybackState> = yield take(UPDATE_PLAYBACK_STATE);
 
                 if (!(yield select(isPartyOwnerSelector))) {
                     continue;
@@ -100,7 +104,7 @@ function* handleFirebase(partyId: string) {
         });
 
         const updateTask: Task = yield takeEveryWithState(
-            [Types.UPDATE_PARTY, Types.UPDATE_PLAYBACK_STATE],
+            [UPDATE_PARTY, UPDATE_PLAYBACK_STATE],
             playbackSelector,
             handlePartyUpdate,
         );
@@ -128,7 +132,7 @@ function* handleFirebase(partyId: string) {
 }
 
 function* handlePartyUpdate(
-    action: UpdatePartyAction | UpdatePlaybackStateAction,
+    action: ReturnType<typeof updateParty> | ReturnType<typeof updatePlaybackState>,
     oldPlayback: Playback | null,
     newPlayback: Playback | null,
 ) {
@@ -153,7 +157,7 @@ function* handlePartyUpdate(
     };
 
     // Make sure updatePlaybackState fires when state changes through updatePartyAction
-    if (action.type !== Types.UPDATE_PLAYBACK_STATE && !isEqual(newPlayback, oldPlayback)) {
+    if (action.type !== UPDATE_PLAYBACK_STATE && !isEqual(newPlayback, oldPlayback)) {
         yield put(updatePlaybackState(newPlayback));
     }
 }
@@ -162,13 +166,13 @@ function* handlePartyUpdate(
  * Handles local playback state and syncs changes from and to Firebase
  */
 export function* managePlaybackState(partyId: string) {
-    yield takeEvery(Types.INSTALL_PLAYBACK_MASTER, handleTakeOver);
-    yield takeEvery(Types.TOGGLE_PLAYBACK_Start, handlePlayPause);
+    yield takeEvery(INSTALL_PLAYBACK_MASTER, handleTakeOver);
+    yield takeEvery(TOGGLE_PLAYBACK_START, handlePlayPause);
     yield fork(handleFirebase, partyId);
     yield fork(manageLocalPlayer, partyId);
 
     yield takeEveryWithState(
-        Types.UPDATE_TRACKS,
+        UPDATE_TRACKS,
         currentTrackSelector,
         function* (action, oldTrack: Track | null, newTrack: Track | null) {
             if (!oldTrack || tracksEqual(oldTrack, newTrack)) {

@@ -1,4 +1,12 @@
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
+import {
+    CREATE_PARTY_FAIL,
+    CREATE_PARTY_START,
+    JOIN_PARTY_FAIL,
+    JOIN_PARTY_START,
+    OPEN_PARTY_START,
+} from '../actions/party-data';
+import { CHANGE_PARTY_ID } from '../actions/view-home';
 import { HomeViewState } from '../state';
 
 export default function(
@@ -13,37 +21,37 @@ export default function(
     action: Actions,
 ): HomeViewState {
     switch (action.type) {
-        case Types.CHANGE_PARTY_ID:
+        case CHANGE_PARTY_ID:
             return {
                 ...state,
                 partyId: action.payload,
                 partyIdValid: /[0-9]+/.test(action.payload),
             };
-        case Types.CREATE_PARTY_Start:
+        case CREATE_PARTY_START:
             return {
                 ...state,
                 partyCreationError: null,
                 partyCreationInProgress: true,
             };
-        case Types.CREATE_PARTY_Fail:
+        case CREATE_PARTY_FAIL:
             return {
                 ...state,
                 partyCreationError: action.payload,
                 partyCreationInProgress: false,
             };
-        case Types.JOIN_PARTY_Start:
+        case JOIN_PARTY_START:
             return {
                 ...state,
                 partyJoinError: null,
                 partyJoinInProgress: true,
             };
-        case Types.JOIN_PARTY_Fail:
+        case JOIN_PARTY_FAIL:
             return {
                 ...state,
                 partyJoinError: action.payload,
                 partyJoinInProgress: false,
             };
-        case Types.OPEN_PARTY_Start:
+        case OPEN_PARTY_START:
             if (!state.partyJoinInProgress && !state.partyCreationInProgress) {
                 return state;
             }

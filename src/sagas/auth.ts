@@ -5,7 +5,7 @@ import { delay } from 'redux-saga';
 import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { CLIENT_ID } from '../../spotify.config';
-import { showToast, Types } from '../actions';
+import { showToast } from '../actions';
 import {
     checkLoginStatus,
     exchangeCodeFail,
@@ -17,11 +17,14 @@ import {
     removeSavedFollowUpLoginCredentials,
     requireFollowUpLogin,
     saveFollowUpLoginCredentials,
+    triggerOAuthLogin as triggerOAuthLoginAction,
     welcomeUser,
-    TriggerOAuthLoginAction,
+    CHECK_LOGIN_STATUS,
+    LOGOUT,
+    TRIGGER_OAUTH_LOGIN,
 } from '../actions/auth';
 import { updatePlaybackState } from '../actions/party-data';
-import { ChangeDisplayLoginModalAction } from '../actions/view-party';
+import { changeDisplayLoginModal, CHANGE_DISPLAY_LOGIN_MODAL } from '../actions/view-party';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase, { functions } from '../util/firebase';
@@ -61,7 +64,7 @@ function* checkLogin() {
  *
  * @param ac the redux action
  */
-function* handleFollowUpCancellation(ac: ChangeDisplayLoginModalAction) {
+function* handleFollowUpCancellation(ac: ReturnType<typeof changeDisplayLoginModal>) {
     if (!ac.payload && hasFollowUpCredentials()) {
         yield call(removeSavedFollowUpLoginCredentials);
         yield call(AuthData.remove, LOCALSTORAGE_KEY);
@@ -247,7 +250,7 @@ function* refreshFirebaseAuth() {
     }
 }
 
-function* triggerOAuthLogin(ac: TriggerOAuthLoginAction) {
+function* triggerOAuthLogin(ac: ReturnType<typeof triggerOAuthLoginAction>) {
     if (ac.payload === 'spotify') {
         yield call(console.log, 'Only the swaggiest of developers hacking on Festify will see this 🙌.');
         localStorage[AUTH_REDIRECT_LOCAL_STORAGE_KEY] =
@@ -267,10 +270,10 @@ function* triggerOAuthLogin(ac: TriggerOAuthLoginAction) {
 
 export default function*() {
     yield fork(refreshFirebaseAuth);
-    yield takeEvery(Types.CHANGE_DISPLAY_LOGIN_MODAL, handleFollowUpCancellation);
-    yield takeEvery(Types.CHECK_LOGIN_STATUS, checkLogin);
-    yield takeLatest(Types.LOGOUT, logout);
-    yield takeEvery(Types.TRIGGER_OAUTH_LOGIN, triggerOAuthLogin);
+    yield takeEvery(CHANGE_DISPLAY_LOGIN_MODAL, handleFollowUpCancellation);
+    yield takeEvery(CHECK_LOGIN_STATUS, checkLogin);
+    yield takeLatest(LOGOUT, logout);
+    yield takeEvery(TRIGGER_OAUTH_LOGIN, triggerOAuthLogin);
 
     yield* handleOAuthRedirects();
     yield* checkLogin();

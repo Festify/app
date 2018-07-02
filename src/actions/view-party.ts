@@ -1,67 +1,39 @@
 import { Track } from '../state';
 
-import { ErrorAction, PayloadAction, Types } from '.';
-
 export type Actions =
-    | ChangeDisplayLoginModalAction
-    | ChangeTrackSearchInputAction
-    | SearchStartAction
-    | SearchFinishAction
-    | SearchFailAction;
+    | ReturnType<typeof changeDisplayLoginModal>
+    | ReturnType<typeof changeTrackSearchInput>
+    | ReturnType<typeof searchFail>
+    | ReturnType<typeof searchFinish>
+    | ReturnType<typeof searchStart>;
 
-export interface ChangeDisplayLoginModalAction extends PayloadAction<boolean> {
-    type: Types.CHANGE_DISPLAY_LOGIN_MODAL;
-}
+export const CHANGE_DISPLAY_LOGIN_MODAL = 'CHANGE_DISPLAY_LOGIN_MODAL';
+export const CHANGE_TRACK_SEARCH_INPUT = 'CHANGE_TRACK_SEARCH_INPUT';
+export const SEARCH_FAIL = 'SEARCH_Fail';
+export const SEARCH_FINISH = 'SEARCH_Finish';
+export const SEARCH_START = 'SEARCH_Start';
 
-export interface ChangeTrackSearchInputAction extends PayloadAction<string> {
-    type: Types.CHANGE_TRACK_SEARCH_INPUT;
-}
+export const changeDisplayLoginModal = (display: boolean) => ({
+    type: CHANGE_DISPLAY_LOGIN_MODAL as typeof CHANGE_DISPLAY_LOGIN_MODAL,
+    payload: display,
+});
 
-export interface SearchStartAction {
-    type: Types.SEARCH_Start;
-}
+export const changeTrackSearchInput = (text: string) => ({
+    type: CHANGE_TRACK_SEARCH_INPUT as typeof CHANGE_TRACK_SEARCH_INPUT,
+    payload: text,
+});
 
-export interface SearchFinishAction extends PayloadAction<Record<string, Track>> {
-    type: Types.SEARCH_Finish;
-}
+export const eraseTrackSearchInput = () => changeTrackSearchInput('');
 
-export interface SearchFailAction extends ErrorAction {
-    type: Types.SEARCH_Fail;
-}
+export const searchFail = (error: Error) => ({
+    type: SEARCH_FAIL as typeof SEARCH_FAIL,
+    error: true,
+    payload: error,
+});
 
-export function changeDisplayLoginModal(display: boolean): ChangeDisplayLoginModalAction {
-    return {
-        type: Types.CHANGE_DISPLAY_LOGIN_MODAL,
-        payload: display,
-    };
-}
+export const searchFinish = (tracks: Record<string, Track>) => ({
+    type: SEARCH_FINISH as typeof SEARCH_FINISH,
+    payload: tracks,
+});
 
-export function changeTrackSearchInput(text: string): ChangeTrackSearchInputAction {
-    return {
-        type: Types.CHANGE_TRACK_SEARCH_INPUT,
-        payload: text,
-    };
-}
-
-export function eraseTrackSearchInput(): ChangeTrackSearchInputAction {
-    return changeTrackSearchInput('');
-}
-
-export function searchFail(error: Error): SearchFailAction {
-    return {
-        type: Types.SEARCH_Fail,
-        error: true,
-        payload: error,
-    };
-}
-
-export function searchFinish(tracks: Record<string, Track>): SearchFinishAction {
-    return {
-        type: Types.SEARCH_Finish,
-        payload: tracks,
-    };
-}
-
-export function searchStart(): SearchStartAction {
-    return { type: Types.SEARCH_Start };
-}
+export const searchStart = () => ({ type: SEARCH_START as typeof SEARCH_START });

@@ -1,4 +1,17 @@
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
+import {
+    CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT,
+    FLUSH_QUEUE_FAIL,
+    FLUSH_QUEUE_FINISH,
+    FLUSH_QUEUE_START,
+    INSERT_FALLBACK_PLAYLIST_FAIL,
+    INSERT_FALLBACK_PLAYLIST_FINISH,
+    INSERT_FALLBACK_PLAYLIST_PROGRESS,
+    INSERT_FALLBACK_PLAYLIST_START,
+    LOAD_PLAYLISTS_FAIL,
+    LOAD_PLAYLISTS_START,
+    UPDATE_USER_PLAYLISTS,
+} from '../actions/view-party-settings';
 import { SettingsViewState } from '../state';
 
 export default function(
@@ -16,30 +29,30 @@ export default function(
     action: Actions,
 ): SettingsViewState {
     switch (action.type) {
-        case Types.CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT:
+        case CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT:
             return {
                 ...state,
                 playlistSearchQuery: action.payload,
             };
-        case Types.FLUSH_QUEUE_Start:
+        case FLUSH_QUEUE_START:
             return {
                 ...state,
                 queueFlushError: null,
                 queueFlushInProgress: true,
             };
-        case Types.FLUSH_QUEUE_Fail:
+        case FLUSH_QUEUE_FAIL:
             return {
                 ...state,
                 queueFlushError: action.payload,
                 queueFlushInProgress: false,
             };
-        case Types.FLUSH_QUEUE_Finish:
+        case FLUSH_QUEUE_FINISH:
             return {
                 ...state,
                 queueFlushError: null,
                 queueFlushInProgress: false,
             };
-        case Types.INSERT_FALLBACK_PLAYLIST_Start:
+        case INSERT_FALLBACK_PLAYLIST_START:
             return {
                 ...state,
                 tracksLoadError: null,
@@ -47,14 +60,14 @@ export default function(
                 tracksToLoad: action.payload.playlist.trackCount,
                 tracksLoaded: 0,
             };
-        case Types.INSERT_FALLBACK_PLAYLIST_Progress:
+        case INSERT_FALLBACK_PLAYLIST_PROGRESS:
             return {
                 ...state,
                 tracksLoaded: state.tracksLoadInProgress
                     ? state.tracksLoaded + action.payload
                     : state.tracksLoaded,
             };
-        case Types.INSERT_FALLBACK_PLAYLIST_Fail:
+        case INSERT_FALLBACK_PLAYLIST_FAIL:
             return {
                 ...state,
                 tracksLoadError: action.payload,
@@ -62,7 +75,7 @@ export default function(
                 tracksToLoad: 0,
                 tracksLoaded: 0,
             };
-        case Types.INSERT_FALLBACK_PLAYLIST_Finish:
+        case INSERT_FALLBACK_PLAYLIST_FINISH:
             return {
                 ...state,
                 tracksLoadError: null,
@@ -70,19 +83,19 @@ export default function(
                 tracksToLoad: 0,
                 tracksLoaded: 0,
             };
-        case Types.LOAD_PLAYLISTS_Start:
+        case LOAD_PLAYLISTS_START:
             return {
                 ...state,
                 playlistLoadError: null,
                 playlistLoadInProgress: true,
             };
-        case Types.LOAD_PLAYLISTS_Fail:
+        case LOAD_PLAYLISTS_FAIL:
             return {
                 ...state,
                 playlistLoadError: action.payload,
                 playlistLoadInProgress: false,
             };
-        case Types.UPDATE_USER_PLAYLISTS:
+        case UPDATE_USER_PLAYLISTS:
             return {
                 ...state,
                 playlistLoadError: null,
