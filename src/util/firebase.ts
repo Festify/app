@@ -1,8 +1,10 @@
-import firebase from '@firebase/app';
-import '@firebase/auth';
-import '@firebase/database';
+// tslint:disable:ordered-imports
+
 import { DataSnapshot, Query } from '@firebase/database-types';
-import '@firebase/functions';
+import firebase from 'firebase/app/dist/index.esm';
+import 'firebase/auth';
+import 'firebase/database';
+import 'firebase/functions';
 import { eventChannel } from 'redux-saga';
 
 import firebaseConfig from '../../firebase.config.js';
