@@ -33,5 +33,8 @@ export default function*() {
     } else if (query.join) {
         yield put(changePartyId(query.join));
         yield put(joinPartyStart());
+    } else if (/\/([0-9]{1,8})/g.test(loc.payload.pathname)) {
+        yield put(changePartyId(loc.payload.pathname.substr(1)));
+        yield put(joinPartyStart());
     }
 }
