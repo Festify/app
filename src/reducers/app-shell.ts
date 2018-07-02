@@ -1,4 +1,4 @@
-import { Actions, Types } from '../actions';
+import { Actions, HIDE_TOAST, SHOW_TOAST } from '../actions';
 import { AppShellState } from '../state';
 
 export default function(
@@ -6,12 +6,12 @@ export default function(
     action: Actions,
 ): AppShellState {
     switch (action.type) {
-        case Types.HIDE_TOAST:
+        case HIDE_TOAST:
             return {
                 ...state,
                 currentToast: null,
             };
-        case Types.SHOW_TOAST:
+        case SHOW_TOAST:
             return {
                 ...state,
                 currentToast: action.payload.text,

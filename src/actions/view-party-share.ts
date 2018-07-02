@@ -1,12 +1,6 @@
-import { Types } from '.';
-
 export type Actions =
-    | SharePartyAction;
+    | ReturnType<typeof shareParty>;
 
-export interface SharePartyAction {
-    type: Types.SHARE_PARTY;
-}
+export const SHARE_PARTY = 'SHARE_PARTY';
 
-export function shareParty(): SharePartyAction {
-    return { type: Types.SHARE_PARTY };
-}
+export const shareParty = () => ({ type: SHARE_PARTY as typeof SHARE_PARTY });

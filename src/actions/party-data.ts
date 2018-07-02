@@ -2,111 +2,107 @@ import { ConnectionState, Party, PartySettings, Playback, Track } from '../state
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 
-import { ErrorAction, PayloadAction, Types } from '.';
-
 export type Actions =
-    | BecomePlaybackMasterAction
-    | CleanupPartyAction
-    | CreatePartyFailAction
-    | CreatePartyStartAction
-    | InstallPlaybackMasterAction
-    | JoinPartyFailAction
-    | JoinPartyStartAction
-    | ResignPlaybackMasterAction
-    | OpenPartyFailAction
-    | OpenPartyFinishAction
-    | OpenPartyStartAction
-    | UpdateNetworkConnectionStateAction
-    | UpdatePartyAction
-    | UpdateTracksAction
-    | UpdateUserVotesAction
-    | UpdatePlaybackStateAction;
+    | ReturnType<typeof becomePlaybackMaster>
+    | ReturnType<typeof cleanupParty>
+    | ReturnType<typeof createPartyFail>
+    | ReturnType<typeof createPartyStart>
+    | ReturnType<typeof installPlaybackMaster>
+    | ReturnType<typeof joinPartyFail>
+    | ReturnType<typeof joinPartyStart>
+    | ReturnType<typeof resignPlaybackMaster>
+    | ReturnType<typeof openPartyFail>
+    | ReturnType<typeof openPartyFinish>
+    | ReturnType<typeof openPartyStart>
+    | ReturnType<typeof updateConnectionState>
+    | ReturnType<typeof updateParty>
+    | ReturnType<typeof updateTracks>
+    | ReturnType<typeof updateUserVotes>
+    | ReturnType<typeof updatePlaybackState>;
 
-export interface BecomePlaybackMasterAction {
-    type: Types.BECOME_PLAYBACK_MASTER;
-}
+export const BECOME_PLAYBACK_MASTER = 'BECOME_PLAYBACK_MASTER';
+export const CLEANUP_PARTY = 'CLEANUP_PARTY';
+export const CREATE_PARTY_FAIL = 'CREATE_PARTY_Fail';
+export const CREATE_PARTY_START = 'CREATE_PARTY_Start';
+export const JOIN_PARTY_FAIL = 'JOIN_PARTY_Fail';
+export const JOIN_PARTY_START = 'JOIN_PARTY_Start';
+export const INSTALL_PLAYBACK_MASTER = 'INSTALL_PLAYBACK_MASTER';
+export const OPEN_PARTY_FAIL = 'OPEN_PARTY_Fail';
+export const OPEN_PARTY_FINISH = 'OPEN_PARTY_Finish';
+export const OPEN_PARTY_START = 'OPEN_PARTY_Start';
+export const RESIGN_PLAYBACK_MASTER = 'RESIGN_PLAYBACK_MASTER';
+export const UPDATE_NETWORK_CONNECTION_STATE = 'UPDATE_NETWORK_CONNECTION_STATE';
+export const UPDATE_PARTY = 'UPDATE_PARTY';
+export const UPDATE_TRACKS = 'UPDATE_TRACKS';
+export const UPDATE_USER_VOTES = 'UPDATE_USER_VOTES';
+export const UPDATE_PLAYBACK_STATE = 'UPDATE_PLAYBACK_STATE';
 
-export interface CleanupPartyAction {
-    type: Types.CLEANUP_PARTY;
-}
+export const becomePlaybackMaster = () => ({ type: BECOME_PLAYBACK_MASTER as typeof BECOME_PLAYBACK_MASTER });
 
-export interface CreatePartyStartAction {
-    type: Types.CREATE_PARTY_Start;
-}
+export const cleanupParty = () => ({ type: CLEANUP_PARTY as typeof CLEANUP_PARTY });
 
-export interface CreatePartyFailAction extends ErrorAction {
-    type: Types.CREATE_PARTY_Fail;
-}
+export const createPartyFail = (err: Error) => ({
+    type: CREATE_PARTY_FAIL as typeof CREATE_PARTY_FAIL,
+    error: true,
+    payload: err,
+});
 
-export interface InstallPlaybackMasterAction {
-    type: Types.INSTALL_PLAYBACK_MASTER;
-}
+export const createPartyStart = () => ({ type: CREATE_PARTY_START as typeof CREATE_PARTY_START });
 
-export interface JoinPartyFailAction extends PayloadAction<Error> {
-    type: Types.JOIN_PARTY_Fail;
-    error: true;
-}
+export const joinPartyFail = (err: Error) => ({
+    type: JOIN_PARTY_FAIL as typeof JOIN_PARTY_FAIL,
+    error: true,
+    payload: err,
+});
 
-export interface JoinPartyStartAction {
-    type: Types.JOIN_PARTY_Start;
-}
+export const joinPartyStart = () => ({ type: JOIN_PARTY_START as typeof JOIN_PARTY_START });
 
-export interface OpenPartyFailAction extends PayloadAction<Error> {
-    type: Types.OPEN_PARTY_Fail;
-    error: true;
-}
+export const installPlaybackMaster = () => ({ type: INSTALL_PLAYBACK_MASTER as typeof INSTALL_PLAYBACK_MASTER });
 
-export interface OpenPartyFinishAction extends PayloadAction<Party> {
-    type: Types.OPEN_PARTY_Finish;
-}
+export const openPartyFail = (err: Error) => ({
+    type: OPEN_PARTY_FAIL as typeof OPEN_PARTY_FAIL,
+    error: true,
+    payload: err,
+});
 
-export interface OpenPartyStartAction extends PayloadAction<string> {
-    type: Types.OPEN_PARTY_Start;
-}
+export const openPartyFinish = (party: Party) => ({
+    type: OPEN_PARTY_FINISH as typeof OPEN_PARTY_FINISH,
+    payload: party,
+});
 
-export interface ResignPlaybackMasterAction {
-    type: Types.RESIGN_PLAYBACK_MASTER;
-}
+export const openPartyStart = (id: string) => ({
+    type: OPEN_PARTY_START as typeof OPEN_PARTY_START,
+    payload: id,
+});
 
-export interface UpdateNetworkConnectionStateAction extends PayloadAction<ConnectionState> {
-    type: Types.UPDATE_NETWORK_CONNECTION_STATE;
-}
+export const resignPlaybackMaster = () => ({ type: RESIGN_PLAYBACK_MASTER as typeof RESIGN_PLAYBACK_MASTER });
 
-export interface UpdatePartyAction extends PayloadAction<Party> {
-    type: Types.UPDATE_PARTY;
-}
+export const updateConnectionState = (isConnected: ConnectionState) => ({
+    type: UPDATE_NETWORK_CONNECTION_STATE as typeof UPDATE_NETWORK_CONNECTION_STATE,
+    payload: isConnected,
+});
 
-export interface UpdateTracksAction extends PayloadAction<Record<string, Track> | null> {
-    type: Types.UPDATE_TRACKS;
-}
+export const updateParty = (party: Party) => ({
+    type: UPDATE_PARTY as typeof UPDATE_PARTY,
+    payload: party,
+});
 
-export interface UpdateUserVotesAction extends PayloadAction<Record<string, boolean> | null> {
-    type: Types.UPDATE_USER_VOTES;
-}
+export const updateTracks = (tracks: Record<string, Track> | null) => ({
+    type: UPDATE_TRACKS as typeof UPDATE_TRACKS,
+    payload: tracks,
+});
 
-export interface UpdatePlaybackStateAction extends PayloadAction<Partial<Playback>> {
-    type: Types.UPDATE_PLAYBACK_STATE;
-}
+export const updateUserVotes = (votes: Record<string, boolean> | null) => ({
+    type: UPDATE_USER_VOTES as typeof UPDATE_USER_VOTES,
+    payload: votes,
+});
 
-export function becomePlaybackMaster(): BecomePlaybackMasterAction {
-    return { type: Types.BECOME_PLAYBACK_MASTER };
-}
+export const updatePlaybackState = (playback: Partial<Playback>) => ({
+    type: UPDATE_PLAYBACK_STATE as typeof UPDATE_PLAYBACK_STATE,
+    payload: playback,
+});
 
-export function cleanupParty(): CleanupPartyAction {
-    return { type: Types.CLEANUP_PARTY };
-}
-
-export function createPartyFail(err: Error): CreatePartyFailAction {
-    return {
-        type: Types.CREATE_PARTY_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function createPartyStart(): CreatePartyStartAction {
-    return { type: Types.CREATE_PARTY_Start };
-}
+/* Utils */
 
 export async function createNewParty(
     displayName: string,
@@ -145,48 +141,6 @@ export async function createNewParty(
     return result.key;
 }
 
-export function joinPartyFail(err: Error): JoinPartyFailAction {
-    return {
-        type: Types.JOIN_PARTY_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function joinPartyStart(): JoinPartyStartAction {
-    return { type: Types.JOIN_PARTY_Start };
-}
-
-export function installPlaybackMaster(): InstallPlaybackMasterAction {
-    return { type: Types.INSTALL_PLAYBACK_MASTER };
-}
-
-export function openPartyFail(err: Error): OpenPartyFailAction {
-    return {
-        type: Types.OPEN_PARTY_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function openPartyFinish(party: Party): OpenPartyFinishAction {
-    return {
-        type: Types.OPEN_PARTY_Finish,
-        payload: party,
-    };
-}
-
-export function openPartyStart(id: string): OpenPartyStartAction {
-    return {
-        type: Types.OPEN_PARTY_Start,
-        payload: id,
-    };
-}
-
-export function resignPlaybackMaster(): ResignPlaybackMasterAction {
-    return { type: Types.RESIGN_PLAYBACK_MASTER };
-}
-
 export async function resolveShortId(shortId: string): Promise<string | null> {
     const snapshot = await firebase.database!()
         .ref('/parties')
@@ -205,36 +159,4 @@ export async function resolveShortId(shortId: string): Promise<string | null> {
     );
 
     return possibleLongId || null; // Filter out empty IDs
-}
-
-export function updateConnectionState(isConnected: ConnectionState): UpdateNetworkConnectionStateAction {
-    return {
-        type: Types.UPDATE_NETWORK_CONNECTION_STATE,
-        payload: isConnected,
-    };
-}
-
-export function updateParty(party: Party): UpdatePartyAction {
-    return {
-        type: Types.UPDATE_PARTY,
-        payload: party,
-    };
-}
-
-export function updateTracks(tracks: Record<string, Track> | null): UpdateTracksAction {
-    return {
-        type: Types.UPDATE_TRACKS,
-        payload: tracks,
-    };
-}
-
-export function updateUserVotes(votes: Record<string, boolean> | null): UpdateUserVotesAction {
-    return {
-        type: Types.UPDATE_USER_VOTES,
-        payload: votes,
-    };
-}
-
-export function updatePlaybackState(payload: Partial<Playback>): UpdatePlaybackStateAction {
-    return { type: Types.UPDATE_PLAYBACK_STATE, payload };
 }
