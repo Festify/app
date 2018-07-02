@@ -80,6 +80,11 @@ export interface PartySettings {
      * Sets the text displayed under the progress bar in TV mode
      */
     tv_mode_text: string;
+
+    /**
+     * Sets the maximum track length in minutes
+     */
+    maximum_track_length: number | null;
 }
 
 // tslint:disable-next-line:no-namespace
@@ -90,6 +95,7 @@ export namespace PartySettings {
             allow_explicit_tracks: true,
             allow_multi_track_add: true,
             tv_mode_text: `Add your songs on ${domainSelector()}!`,
+            maximum_track_length: null,
             ...overrides,
         };
     }
