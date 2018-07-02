@@ -3,8 +3,8 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { clickLink } from '../actions';
 import { logout, triggerOAuthLogin } from '../actions/auth';
+import { handleLinkClick } from '../actions/nav';
 import { toggleUserMenu } from '../actions/view-queue-drawer';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
@@ -31,7 +31,7 @@ interface QueueDrawerProps {
 }
 
 interface QueueDrawerDispatch {
-    handleClick: (ev: Event, route: string) => void;
+    handleClick: (ev: Event) => void;
     enterAdmin: () => void;
     logout: () => void;
     toggleUserMenu: () => void;
@@ -150,7 +150,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     <div class$="menu hidable ${props.userMenuOpen ? 'hidden' : ''}" role="menu">
         <a href$="${props.queueRoute}"
            class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
-           on-click="${ev => props.handleClick(ev, props.queueRoute)}">
+           on-click="${props.handleClick}">
             <iron-icon icon="festify:menu"></iron-icon>
             Queue
         </a>
@@ -158,7 +158,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             ? html`
                 <a href$="${props.settingsRoute}"
                    class$="${isActive(props.subView === PartyViews.Settings)}"
-                   on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
+                   on-click="${props.handleClick}">
                     <iron-icon icon="festify:settings"></iron-icon>
                     Settings
                 </a>
@@ -178,12 +178,12 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 
         <a href$="${props.shareRoute}"
            class$="${isActive(props.subView === PartyViews.Share)}"
-           on-click="${ev => props.handleClick(ev, props.shareRoute)}">
+           on-click="${props.handleClick}">
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
         <a href="${props.tvRoute}"
-           on-click="${ev => props.handleClick(ev, props.tvRoute)}">
+           on-click="${props.handleClick}">
             <iron-icon icon="festify:tv"></iron-icon>
             TV Mode
         </a>
@@ -191,7 +191,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:home"></iron-icon>
             Festify Homepage
         </a>
-        <a href="/" on-click="${ev => props.handleClick(ev, '/')}">
+        <a href="/" on-click="${props.handleClick}">
             <iron-icon icon="festify:cancel"></iron-icon>
             Exit Party
         </a>
@@ -220,7 +220,7 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
     queueRoute: queueRouteSelector(state)!,
     settingsRoute: settingsRouteSelector(state)!,
     shareRoute: shareRouteSelector(state)!,
-    subView: state.router.result.subView,
+    subView: state.router.result!.subView,
     tvRoute: tvRouteSelector(state)!,
     userMenuOpen: state.partyView.userMenuOpen,
     username: currentUsernameSelector(),
@@ -228,7 +228,7 @@ const mapStateToProps = (state: State): QueueDrawerProps => ({
 
 const mapDispatchToProps: QueueDrawerDispatch = {
     enterAdmin: () => triggerOAuthLogin('spotify'),
-    handleClick: clickLink,
+    handleClick: handleLinkClick,
     logout,
     toggleUserMenu,
 };

@@ -1,4 +1,4 @@
-import { push } from '@mraerino/redux-little-router-reactless';
+import { push } from '@festify/redux-little-router';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { showToast, Types } from '../actions';

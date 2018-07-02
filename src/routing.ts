@@ -1,4 +1,4 @@
-import { routerForBrowser } from '@mraerino/redux-little-router-reactless';
+import { routerForBrowser } from '@festify/redux-little-router';
 
 export const enum Views {
     Home = "Home",

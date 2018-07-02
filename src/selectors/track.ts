@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { Metadata, Playback, State, Track, TrackReference } from '../state';
+import { Metadata, State, Track, TrackReference } from '../state';
 
 import { playbackSelector } from './party';
 

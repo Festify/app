@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import { put, select, take } from 'redux-saga/effects';
 
 import { Types } from '../actions';

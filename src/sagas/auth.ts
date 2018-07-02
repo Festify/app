@@ -1,6 +1,6 @@
+import { replace, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { User, UserCredential } from '@firebase/auth-types';
 import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
-import { replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { delay } from 'redux-saga';
 import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 

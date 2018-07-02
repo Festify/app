@@ -1,5 +1,5 @@
+import { Location } from '@festify/redux-little-router';
 import { User } from '@firebase/auth-types';
-import { Location } from '@mraerino/redux-little-router-reactless';
 
 import { OAuthLoginProviders } from './actions/auth';
 import { domainSelector } from './selectors/domain';
@@ -221,7 +221,7 @@ export interface State {
     party: PartyState;
     partyView: PartyViewState;
     player: PlayerState;
-    router?: Location;
+    router: Location;
     settingsView: SettingsViewState;
     user: UserState;
 }

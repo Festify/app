@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless/lib';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 
 import { Actions, Types } from '../actions';
 import { ChangeDisplayLoginModalAction, SearchFailAction, SearchFinishAction } from '../actions/view-party';

@@ -1,4 +1,4 @@
-import { push, replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { push, replace, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { delay } from 'redux-saga';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
@@ -78,9 +78,9 @@ function* enforceMultiVoteSetting(ac: SetVoteAction) {
 
     const hasVoted: boolean = ac.payload[1];
     if (!state.party.currentParty.settings.allow_multi_track_add &&
-        state.router.result.subView === PartyViews.Search &&
+        state.router.result!.subView === PartyViews.Search &&
         hasVoted) {
-        yield put(push(queueRouteSelector(state)));
+        yield put(push(queueRouteSelector(state)!));
     }
 }
 
@@ -89,14 +89,14 @@ function* updateUrl(action: ChangeTrackSearchInputAction) {
     const { s } = state.router!.query || { s: '' };
 
     if (!action.payload) {
-        yield put(push(queueRouteSelector(state), {}));
+        yield put(push(queueRouteSelector(state)!, {}));
         return;
     }
 
     // Replace URL if we already have an incomplete query to avoid clobbing
     // up the users browser history.
     const routerFn = s ? replace : push;
-    yield put(routerFn(searchRouteSelector(state, action.payload), {}));
+    yield put(routerFn(searchRouteSelector(state, action.payload)!, {}));
 }
 
 export default function*() {

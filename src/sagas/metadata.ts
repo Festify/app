@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import chunk from 'lodash-es/chunk';
 import { call, cancel, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';

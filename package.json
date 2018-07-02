@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@mraerino/redux-little-router-reactless": "^14.3.0",
+    "@festify/redux-little-router": "^15.1.2",
     "@polymer/app-layout": "^3.0.0-pre.1",
     "@polymer/iron-iconset-svg": "^3.0.0-pre.3",
     "@polymer/iron-pages": "^3.0.0-pre.12",
