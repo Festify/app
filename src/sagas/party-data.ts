@@ -177,7 +177,7 @@ function* watchLogin() {
         const ac: ReturnType<typeof notifyAuthStatusKnown> = yield take(NOTIFY_AUTH_STATUS_KNOWN);
         const partyId: string = yield select(partyIdSelector);
 
-        if (!partyId || ac.payload.data) {
+        if (!partyId || !ac.payload.data) {
             continue;
         }
 
