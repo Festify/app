@@ -1,12 +1,6 @@
-import { Types } from '.';
-
 export type Actions =
-    | ToggleUserMenuAction;
+    | ReturnType<typeof toggleUserMenu>;
 
-export interface ToggleUserMenuAction {
-    type: Types.TOGGLE_USER_MENU;
-}
+export const TOGGLE_USER_MENU = 'TOGGLE_USER_MENU';
 
-export function toggleUserMenu(): ToggleUserMenuAction {
-    return { type: Types.TOGGLE_USER_MENU };
-}
+export const toggleUserMenu = () => ({ type: TOGGLE_USER_MENU as typeof TOGGLE_USER_MENU });

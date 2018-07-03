@@ -50,10 +50,10 @@ export default {
                     }
 
                     const fixedPackages = [
-                        '@firebase/app',
-                        '@firebase/database',
-                        '@firebase/functions',
-                        '@firebase/util',
+                        'firebase/app',
+                        'firebase/database',
+                        'firebase/functions',
+                        'firebase/util',
                     ];
                     if (fixedPackages.indexOf(pkg.name) !== -1) {
                         pkg['browser'] = pkg.module;

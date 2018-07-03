@@ -1,5 +1,5 @@
 import '@polymer/paper-button/paper-button';
-import '@polymer/paper-checkbox';
+import '@polymer/paper-checkbox/paper-checkbox';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-spinner/paper-spinner-lite';
@@ -186,6 +186,15 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
                      title="Change the name of your party"
                      type="text"
                      on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
+        </paper-input>
+
+        <paper-input label="Maximum Track Length (minutes)"
+                     value="${props.settings.maximum_track_length}"
+                     title="Change the maximum track length in minutes that can be added to the queue."
+                     type="number"
+                     min="1"
+                     prevent-invalid-input
+                     on-input="${ev => props.changePartySetting('maximum_track_length', parseInt((ev.target as HTMLInputElement).value) || null)}">
         </paper-input>
 
         <paper-input label="TV Mode Text"

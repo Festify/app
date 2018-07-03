@@ -1,9 +1,11 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import { buffers, eventChannel, Channel, END } from 'redux-saga';
 import { call, put, select, take, takeLatest } from 'redux-saga/effects';
 
-import { Types } from '../actions';
+import { NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';
 import {
+    changePartyName as updatePartyNameAction,
+    changePartySetting as changePartySettingAction,
     flushQueue,
     flushQueueFail,
     flushQueueFinish,
@@ -11,22 +13,24 @@ import {
     insertPlaylistFail,
     insertPlaylistFinish,
     insertPlaylistProgress,
+    insertPlaylistStart,
     loadPlaylists,
     loadPlaylistsFail,
     loadPlaylistsStart,
     updateUserPlaylists,
-    ChangePartySettingAction,
-    InsertFallbackPlaylistStartAction,
-    UpdatePartyNameAction,
+    CHANGE_PARTY_SETTING,
+    FLUSH_QUEUE_START,
+    INSERT_FALLBACK_PLAYLIST_START,
+    UPDATE_PARTY_NAME,
 } from '../actions/view-party-settings';
 import { PartyViews } from '../routing';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { queueTracksSelector } from '../selectors/track';
 import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
-import { PartySettings, Playlist, State, Track } from '../state';
+import { Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
 
-function* changePartySetting(partyId: string, ac: ChangePartySettingAction<keyof PartySettings>) {
+function* changePartySetting(partyId: string, ac: ReturnType<typeof changePartySettingAction>) {
     if (!(yield select(isPartyOwnerSelector))) {
         return;
     }
@@ -68,7 +72,7 @@ function* flushTracks(partyId: string) {
     }
 }
 
-function* insertPlaylist(partyId: string, ac: InsertFallbackPlaylistStartAction) {
+function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistStart>) {
     type SubActions =
         | { type: 'progress', payload: number }
         | { type: 'error', payload: Error }
@@ -107,7 +111,7 @@ function* insertPlaylist(partyId: string, ac: InsertFallbackPlaylistStartAction)
     }
 }
 
-function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
+function* updatePartyName(partyId: string, ac: ReturnType<typeof updatePartyNameAction>) {
     yield firebase.database!()
         .ref('/parties')
         .child(partyId)
@@ -116,15 +120,15 @@ function* updatePartyName(partyId: string, ac: UpdatePartyNameAction) {
 }
 
 export function* managePartySettings(partyId: string) {
-    yield takeLatest(Types.CHANGE_PARTY_SETTING, changePartySetting, partyId);
-    yield takeLatest(Types.FLUSH_QUEUE_Start, flushTracks, partyId);
-    yield takeLatest(Types.INSERT_FALLBACK_PLAYLIST_Start, insertPlaylist, partyId);
-    yield takeLatest(Types.UPDATE_PARTY_NAME, updatePartyName, partyId);
+    yield takeLatest(CHANGE_PARTY_SETTING, changePartySetting, partyId);
+    yield takeLatest(FLUSH_QUEUE_START, flushTracks, partyId);
+    yield takeLatest(INSERT_FALLBACK_PLAYLIST_START, insertPlaylist, partyId);
+    yield takeLatest(UPDATE_PARTY_NAME, updatePartyName, partyId);
 }
 
 export default function*() {
     yield takeLatest([
-        Types.NOTIFY_AUTH_STATUS_KNOWN,
+        NOTIFY_AUTH_STATUS_KNOWN,
         LOCATION_CHANGED,
     ], fetchPlaylists);
 }

@@ -44,6 +44,7 @@ type PartySettings {
     allow_explicit_tracks: Boolean | Null,
     allow_multi_track_add: Boolean | Null,
     tv_mode_text: String | Null,
+    maximum_track_length: Number | Null
 }
 
 type SpotifyCountry extends String {

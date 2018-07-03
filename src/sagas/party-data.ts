@@ -1,11 +1,10 @@
+import { push, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { User } from '@firebase/auth-types';
 import { DataSnapshot } from '@firebase/database-types';
-import { push, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
 import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 
-import { Types } from '../actions';
-import { NotifyAuthStatusKnownAction } from '../actions/auth';
+import { notifyAuthStatusKnown, NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';
 import {
     becomePlaybackMaster,
     cleanupParty,
@@ -17,7 +16,8 @@ import {
     updateParty,
     updateTracks,
     updateUserVotes,
-    OpenPartyStartAction,
+    CLEANUP_PARTY,
+    OPEN_PARTY_START,
 } from '../actions/party-data';
 import { isPartyOwnerSelector, partyIdSelector } from '../selectors/party';
 import { ConnectionState, Party, State } from '../state';
@@ -83,7 +83,7 @@ function* loadParty() {
     };
 
     while (true) {
-        const { payload: id }: OpenPartyStartAction = yield take(Types.OPEN_PARTY_Start);
+        const { payload: id }: ReturnType<typeof openPartyStart> = yield take(OPEN_PARTY_START);
 
         const partyRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
@@ -141,7 +141,7 @@ function* loadParty() {
 
         yield put(openPartyFinish(party));
 
-        yield take(Types.CLEANUP_PARTY);
+        yield take(CLEANUP_PARTY);
 
         yield cancel(partySettings, playbackManager, queueManager);
 
@@ -174,11 +174,10 @@ function* watchRoute() {
 
 function* watchLogin() {
     while (true) {
-        const ac: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
-        const state: State = yield select();
-        const partyId = partyIdSelector(state);
+        const ac: ReturnType<typeof notifyAuthStatusKnown> = yield take(NOTIFY_AUTH_STATUS_KNOWN);
+        const partyId: string = yield select(partyIdSelector);
 
-        if (!partyId || ac.payload.data) {
+        if (!partyId || !ac.payload.data) {
             continue;
         }
 

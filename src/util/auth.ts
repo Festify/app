@@ -75,7 +75,7 @@ export function requireAuth(): Promise<User> {
             if (user && user.uid) {
                 resolve(user);
             } else {
-                resolve((await auth.signInAnonymously()).user);
+                resolve((await auth.signInAnonymously()).user!);
             }
         });
     });

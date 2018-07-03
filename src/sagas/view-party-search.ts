@@ -1,11 +1,17 @@
-import { push, replace, LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { push, replace, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { delay } from 'redux-saga';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { Types } from '../actions';
 import { updateMetadata } from '../actions/metadata';
-import { SetVoteAction } from '../actions/queue';
-import { searchFail, searchFinish, searchStart, ChangeTrackSearchInputAction } from '../actions/view-party';
+import { UPDATE_PARTY } from '../actions/party-data';
+import { setVoteAction, SET_VOTE } from '../actions/queue';
+import {
+    changeTrackSearchInput,
+    searchFail,
+    searchFinish,
+    searchStart,
+    CHANGE_TRACK_SEARCH_INPUT,
+} from '../actions/view-party';
 import { PartyViews } from '../routing';
 import { queueRouteSelector, searchRouteSelector } from '../selectors/routes';
 import { State, Track } from '../state';
@@ -14,7 +20,7 @@ import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 function* doSearch(action) {
     const { party }: State = yield select();
     if (!party.currentParty) {
-        yield take(Types.UPDATE_PARTY);
+        yield take(UPDATE_PARTY);
     }
 
     const { query: { s } } = action.payload || { query: { s: '' } };
@@ -70,7 +76,7 @@ function* doSearch(action) {
     yield put(searchFinish(result));
 }
 
-function* enforceMultiVoteSetting(ac: SetVoteAction) {
+function* enforceMultiVoteSetting(ac: ReturnType<typeof setVoteAction>) {
     const state: State = yield select();
     if (!state.party.currentParty || !state.party.currentParty.settings) {
         return;
@@ -78,29 +84,29 @@ function* enforceMultiVoteSetting(ac: SetVoteAction) {
 
     const hasVoted: boolean = ac.payload[1];
     if (!state.party.currentParty.settings.allow_multi_track_add &&
-        state.router.result.subView === PartyViews.Search &&
+        state.router.result!.subView === PartyViews.Search &&
         hasVoted) {
-        yield put(push(queueRouteSelector(state)));
+        yield put(push(queueRouteSelector(state)!));
     }
 }
 
-function* updateUrl(action: ChangeTrackSearchInputAction) {
+function* updateUrl(action: ReturnType<typeof changeTrackSearchInput>) {
     const state: State = yield select();
     const { s } = state.router!.query || { s: '' };
 
     if (!action.payload) {
-        yield put(push(queueRouteSelector(state), {}));
+        yield put(push(queueRouteSelector(state)!, {}));
         return;
     }
 
     // Replace URL if we already have an incomplete query to avoid clobbing
     // up the users browser history.
     const routerFn = s ? replace : push;
-    yield put(routerFn(searchRouteSelector(state, action.payload), {}));
+    yield put(routerFn(searchRouteSelector(state, action.payload)!, {}));
 }
 
 export default function*() {
     yield takeLatest(LOCATION_CHANGED, doSearch);
-    yield takeEvery(Types.CHANGE_TRACK_SEARCH_INPUT, updateUrl);
-    yield takeEvery(Types.SET_VOTE, enforceMultiVoteSetting);
+    yield takeEvery(CHANGE_TRACK_SEARCH_INPUT, updateUrl);
+    yield takeEvery(SET_VOTE, enforceMultiVoteSetting);
 }

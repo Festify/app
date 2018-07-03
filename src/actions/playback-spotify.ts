@@ -1,103 +1,55 @@
-import { ErrorAction, PayloadAction, Types } from '.';
-
 export type Actions =
-    | PlayerInitStartAction
-    | PlayerInitFinishAction
-    | PlayerErrorAction
-    | SpotifySdkInitFinishAction
-    | PlayAction
-    | PauseAction
-    | TogglePlaybackStartAction
-    | TogglePlaybackFinishAction
-    | TogglePlaybackFailAction
-    | SetPlayerCompatibilityAction;
+    | ReturnType<typeof playerInitFinish>
+    | ReturnType<typeof playerError>
+    | ReturnType<typeof spotifySdkInitFinish>
+    | ReturnType<typeof play>
+    | ReturnType<typeof pause>
+    | ReturnType<typeof togglePlaybackFail>
+    | ReturnType<typeof togglePlaybackFinish>
+    | ReturnType<typeof togglePlaybackStart>
+    | ReturnType<typeof setPlayerCompatibility>;
 
-export interface PlayerErrorAction extends ErrorAction {
-    type: Types.PLAYER_ERROR;
-}
+export const PLAYER_INIT_FINISH = 'PLAYER_INIT_Finish';
+export const PLAYER_ERROR = 'PLAYER_ERROR';
+export const PLAY = 'PLAY';
+export const PAUSE = 'PAUSE';
+export const SPOTIFY_SDK_INIT_FINISH = 'SPOTIFY_SDK_INIT_Finish';
+export const TOGGLE_PLAYBACK_FAIL = 'TOGGLE_PLAYBACK_Fail';
+export const TOGGLE_PLAYBACK_FINISH = 'TOGGLE_PLAYBACK_Finish';
+export const TOGGLE_PLAYBACK_START = 'TOGGLE_PLAYBACK_Start';
+export const SET_PLAYER_COMPATIBILITY = 'SET_PLAYER_COMPATIBILITY';
 
-export interface PlayerInitStartAction {
-    type: Types.PLAYER_INIT_Start;
-}
+export const playerInitFinish = (deviceId: string) => ({
+    type: PLAYER_INIT_FINISH as typeof PLAYER_INIT_FINISH,
+    payload: deviceId,
+});
 
-export interface PlayerInitFinishAction extends PayloadAction<string> {
-    type: Types.PLAYER_INIT_Finish;
-}
+export const playerError = (error: Error) => ({
+    type: PLAYER_ERROR as typeof PLAYER_ERROR,
+    error: true,
+    payload: error,
+});
 
-export interface TogglePlaybackStartAction {
-    type: Types.TOGGLE_PLAYBACK_Start;
-}
+export const play = (trackId: string, position: number) => ({
+    type: PLAY as typeof PLAY,
+    payload: { trackId, position },
+});
 
-export interface TogglePlaybackFinishAction {
-    type: Types.TOGGLE_PLAYBACK_Finish;
-}
+export const pause = () => ({ type: PAUSE as typeof PAUSE });
 
-export interface TogglePlaybackFailAction extends ErrorAction {
-    type: Types.TOGGLE_PLAYBACK_Fail;
-}
+export const spotifySdkInitFinish = () => ({ type: SPOTIFY_SDK_INIT_FINISH as typeof SPOTIFY_SDK_INIT_FINISH });
 
-export interface SpotifySdkInitFinishAction {
-    type: Types.SPOTIFY_SDK_INIT_Finish;
-}
+export const togglePlaybackStart = () => ({ type: TOGGLE_PLAYBACK_START as typeof TOGGLE_PLAYBACK_START });
 
-export interface PlayAction extends PayloadAction<{trackId: string, position: number}> {
-    type: Types.PLAY;
-}
+export const togglePlaybackFinish = () => ({ type: TOGGLE_PLAYBACK_FINISH as typeof TOGGLE_PLAYBACK_FINISH });
 
-export interface PauseAction {
-    type: Types.PAUSE;
-}
+export const togglePlaybackFail = (err: Error) => ({
+    type: TOGGLE_PLAYBACK_FAIL as typeof TOGGLE_PLAYBACK_FAIL,
+    error: true,
+    payload: err,
+});
 
-export interface SetPlayerCompatibilityAction extends PayloadAction<boolean> {
-    type: Types.SET_PLAYER_COMPATIBILITY;
-}
-
-export function playerInitFinish(deviceId: string): PlayerInitFinishAction {
-    return {
-        type: Types.PLAYER_INIT_Finish,
-        payload: deviceId,
-    };
-}
-
-export function playerError(error: Error): PlayerErrorAction {
-    return {
-        type: Types.PLAYER_ERROR,
-        error: true,
-        payload: error,
-    };
-}
-
-export function play(trackId: string, position: number): PlayAction {
-    return { type: Types.PLAY, payload: {trackId, position} };
-}
-
-export function pause(): PauseAction {
-    return { type: Types.PAUSE };
-}
-
-export function spotifySdkInitFinish(): SpotifySdkInitFinishAction {
-    return { type: Types.SPOTIFY_SDK_INIT_Finish };
-}
-
-export function togglePlaybackStart(): TogglePlaybackStartAction {
-    return { type: Types.TOGGLE_PLAYBACK_Start };
-}
-
-export function togglePlaybackFinish(): TogglePlaybackFinishAction {
-    return { type: Types.TOGGLE_PLAYBACK_Finish };
-}
-
-export function togglePlaybackFail(err: Error): TogglePlaybackFailAction {
-    return {
-        type: Types.TOGGLE_PLAYBACK_Fail,
-        error: true,
-        payload: err,
-    };
-}
-
-export function setPlayerCompatibility(compatible: boolean): SetPlayerCompatibilityAction {
-    return {
-        type: Types.SET_PLAYER_COMPATIBILITY,
-        payload: compatible,
-    };
-}
+export const setPlayerCompatibility = (compatible: boolean) => ({
+    type: SET_PLAYER_COMPATIBILITY as typeof SET_PLAYER_COMPATIBILITY,
+    payload: compatible,
+});

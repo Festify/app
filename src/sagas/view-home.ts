@@ -1,13 +1,16 @@
-import { push } from '@mraerino/redux-little-router-reactless';
+import { push } from '@festify/redux-little-router';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { showToast, Types } from '../actions';
+import { showToast } from '../actions';
+import { NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';
 import {
     createNewParty,
     createPartyFail,
     joinPartyFail,
+    joinPartyStart,
     resolveShortId,
-    JoinPartyStartAction,
+    CREATE_PARTY_START,
+    JOIN_PARTY_START,
 } from '../actions/party-data';
 import { Views } from '../routing';
 import { PartySettings, State } from '../state';
@@ -40,7 +43,7 @@ function* createParty() {
     yield put(push(`/party/${partyId}`));
 }
 
-function* joinParty(ac: JoinPartyStartAction) {
+function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
     const { homeView }: State = yield select();
 
     if (!homeView.partyIdValid) {
@@ -76,7 +79,7 @@ function* warnNonPremium() {
 }
 
 export default function*() {
-    yield takeLatest(Types.NOTIFY_AUTH_STATUS_KNOWN, warnNonPremium);
-    yield takeLatest(Types.CREATE_PARTY_Start, createParty);
-    yield takeLatest(Types.JOIN_PARTY_Start, joinParty);
+    yield takeLatest(NOTIFY_AUTH_STATUS_KNOWN, warnNonPremium);
+    yield takeLatest(CREATE_PARTY_START, createParty);
+    yield takeLatest(JOIN_PARTY_START, joinParty);
 }

@@ -1,28 +1,10 @@
 import { delay } from 'redux-saga';
-import { all, call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { hideToast, showToast, ShowToastAction, Types } from '../actions';
-import { ExchangeCodeFailAction } from '../actions/auth';
-import { CreatePartyFailAction, JoinPartyFailAction, OpenPartyFailAction } from '../actions/party-data';
-import { PlayerErrorAction, TogglePlaybackFailAction } from '../actions/playback-spotify';
-import {
-    FlushQueueFailAction,
-    InsertFallbackPlaylistFailAction,
-    LoadPlaylistsFailAction,
-} from '../actions/view-party-settings';
+import { hideToast, showToast, Actions, SHOW_TOAST } from '../actions';
+import { EXCHANGE_CODE_FAIL } from '../actions/auth';
 
-type ErrorActions =
-    | CreatePartyFailAction
-    | ExchangeCodeFailAction
-    | FlushQueueFailAction
-    | InsertFallbackPlaylistFailAction
-    | JoinPartyFailAction
-    | LoadPlaylistsFailAction
-    | OpenPartyFailAction
-    | PlayerErrorAction
-    | TogglePlaybackFailAction;
-
-function* displayToast(action: ShowToastAction) {
+function* displayToast(action: ReturnType<typeof showToast>) {
     if (!Number.isFinite(action.payload.duration)) {
         return;
     }
@@ -31,9 +13,14 @@ function* displayToast(action: ShowToastAction) {
     yield put(hideToast());
 }
 
-function* displayErrorToast(action: ErrorActions) {
+function* displayErrorToast(action: Actions) {
+    // Check whether action has an `error` prop
+    if (!('error' in action)) {
+        return;
+    }
+
     yield put(showToast(
-        (action.type === Types.EXCHANGE_CODE_Fail)
+        (action.type === EXCHANGE_CODE_FAIL)
             ? action.payload.data.message
             : action.payload.message,
         10000,
@@ -41,18 +28,6 @@ function* displayErrorToast(action: ErrorActions) {
 }
 
 export default function*() {
-    yield all([
-        takeLatest(Types.SHOW_TOAST, displayToast),
-        takeEvery([
-            Types.CREATE_PARTY_Fail,
-            Types.EXCHANGE_CODE_Fail,
-            Types.FLUSH_QUEUE_Fail,
-            Types.INSERT_FALLBACK_PLAYLIST_Fail,
-            Types.JOIN_PARTY_Fail,
-            Types.LOAD_PLAYLISTS_Fail,
-            Types.OPEN_PARTY_Fail,
-            Types.PLAYER_ERROR,
-            Types.TOGGLE_PLAYBACK_Fail,
-        ], displayErrorToast),
-    ]);
+    yield takeLatest(SHOW_TOAST, displayToast);
+    yield takeEvery('*', displayErrorToast);
 }

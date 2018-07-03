@@ -1,6 +1,7 @@
 import merge from 'lodash-es/merge';
 
-import { Actions, Types } from '../actions';
+import { Actions } from '../actions';
+import { UPDATE_METADATA } from '../actions/metadata';
 import { Metadata } from '../state';
 
 export default function(
@@ -8,7 +9,7 @@ export default function(
     action: Actions,
 ): Record<string, Metadata> {
     switch (action.type) {
-        case Types.UPDATE_METADATA:
+        case UPDATE_METADATA:
             return merge({}, state, action.payload);
         default:
             return state;

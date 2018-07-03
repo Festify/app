@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { Metadata, Playback, State, Track, TrackReference } from '../state';
+import { Metadata, State, Track, TrackReference } from '../state';
 
 import { playbackSelector } from './party';
 
@@ -12,7 +12,7 @@ export const firebaseTrackIdSelector = (t: Track | TrackReference): string => {
 export const tracksSelector = (state: State) => state.party.tracks || {};
 
 export const singleTrackSelector = (state: State, trackId: string) =>
-     tracksSelector(state)[trackId];
+    tracksSelector(state)[trackId];
 
 export const metadataSelector = (state: State): Record<string, Metadata> => state.metadata || {};
 
@@ -38,7 +38,12 @@ export const sortedTracksFactory = (
 ): ((state: State) => Track[]) => createSelector(
     tracksSelector,
     metadataSelector,
-    (tracks, meta) => {
+    ({ party }) => {
+        return party.currentParty && party.currentParty.settings && party.currentParty.settings.maximum_track_length
+            ? party.currentParty.settings.maximum_track_length * 60 * 1000
+            : Infinity;
+    },
+    (tracks, meta, maxDurationMs) => {
         if (!tracks) {
             return [];
         }
@@ -48,7 +53,7 @@ export const sortedTracksFactory = (
             .filter(t => t.reference && t.reference.provider && t.reference.id)
             .filter(t => {
                 const fbId = firebaseTrackIdSelector(t);
-                return !(fbId in meta) || meta[fbId].isPlayable;
+                return !(fbId in meta) || (meta[fbId].isPlayable && meta[fbId].durationMs <= maxDurationMs);
             })
             .sort((a, b) => a.order - b.order);
     },
@@ -72,7 +77,7 @@ export function tracksEqual(a: Track | null | undefined, b: Track | null | undef
         return true;
     } else if (!a || !b) {
         return false;
-    // tslint:disable-next-line:triple-equals
+        // tslint:disable-next-line:triple-equals
     } else if (a.reference == b.reference) {
         return true;
     } else if (!a.reference || !b.reference) {
@@ -95,15 +100,15 @@ export const voteStringGeneratorFactory = (
         }
 
         if (tracksEqual(track, currentTrack)) {
-            return playback.playing ? "Playing now" : "Paused";
+            return playback.playing ? 'Playing now' : 'Paused';
         } else if (track.vote_count > 1) {
             return `${track.vote_count} Votes`;
         } else if (track.vote_count === 1) {
-            return "One Vote";
+            return 'One Vote';
         } else if (track.is_fallback) {
-            return "Fallback Track";
+            return 'Fallback Track';
         } else {
-            return "Not in Queue";
+            return 'Not in Queue';
         }
     },
 );
@@ -121,8 +126,8 @@ export const loadMetadataSelector = createSelector(
     metadataSelector,
     queueTracksSelector,
     (meta, tracks) => tracks.filter(t => {
-            const fbId = firebaseTrackIdSelector(t);
-            return !(fbId in meta) || meta[fbId].durationMs == null;
-        })
+        const fbId = firebaseTrackIdSelector(t);
+        return !(fbId in meta) || meta[fbId].durationMs == null;
+    })
         .map(t => t.reference.id),
 );

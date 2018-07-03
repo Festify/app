@@ -6,24 +6,31 @@ import { Track, TrackReference } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS } from '../util/firebase';
 
-import { PayloadAction, Types } from '.';
-
 export type Actions =
-    | RemoveTrackAction
-    | RequestSetVoteAction
-    | SetVoteAction;
+    | ReturnType<typeof removeTrackAction>
+    | ReturnType<typeof requestSetVoteAction>
+    | ReturnType<typeof setVoteAction>;
 
-export interface RemoveTrackAction extends PayloadAction<[TrackReference, boolean]> {
-    type: Types.REMOVE_TRACK;
-}
+export const REMOVE_TRACK = 'REMOVE_TRACK';
+export const REQUEST_SET_VOTE = 'REQUEST_SET_VOTE';
+export const SET_VOTE = 'SET_VOTE';
 
-export interface RequestSetVoteAction extends PayloadAction<[TrackReference, boolean]> {
-    type: Types.REQUEST_SET_VOTE;
-}
+export const removeTrackAction = (ref: TrackReference, moveToHistory: boolean) => ({
+    type: REMOVE_TRACK as typeof REMOVE_TRACK,
+    payload: [ref, moveToHistory] as [TrackReference, boolean],
+});
 
-export interface SetVoteAction extends PayloadAction<[TrackReference, boolean]> {
-    type: Types.SET_VOTE;
-}
+export const requestSetVoteAction = (ref: TrackReference, vote: boolean) => ({
+    type: REQUEST_SET_VOTE as typeof REQUEST_SET_VOTE,
+    payload: [ref, vote],
+});
+
+export const setVoteAction = (ref: TrackReference, vote: boolean) => ({
+    type: SET_VOTE as typeof SET_VOTE,
+    payload: [ref, vote] as [TrackReference, boolean],
+});
+
+/* Utils */
 
 export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise<void> {
     return firebase.database!()
@@ -83,20 +90,6 @@ export async function removeTrack(
     await Promise.all(updates);
 }
 
-export function removeTrackAction(ref: TrackReference, moveToHistory: boolean): RemoveTrackAction {
-    return {
-        type: Types.REMOVE_TRACK,
-        payload: [ref, moveToHistory],
-    };
-}
-
-export function requestSetVoteAction(ref: TrackReference, vote: boolean): RequestSetVoteAction {
-    return {
-        type: Types.REQUEST_SET_VOTE,
-        payload: [ref, vote],
-    };
-}
-
 export async function setVote(
     partyId: string,
     ref: TrackReference,
@@ -119,11 +112,4 @@ export async function setVote(
         .set(vote);
 
     await Promise.all([a, b]);
-}
-
-export function setVoteAction(ref: TrackReference, vote: boolean): SetVoteAction {
-    return {
-        type: Types.SET_VOTE,
-        payload: [ref, vote],
-    };
 }

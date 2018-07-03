@@ -1,15 +1,9 @@
-import { PayloadAction, Types } from '.';
-
 export type Actions =
-    | ChangePartyIdAction;
+    | ReturnType<typeof changePartyId>;
 
-export interface ChangePartyIdAction extends PayloadAction<string> {
-    type: Types.CHANGE_PARTY_ID;
-}
+export const CHANGE_PARTY_ID = 'CHANGE_PARTY_ID';
 
-export function changePartyId(partyId: string): ChangePartyIdAction {
-    return {
-        type: Types.CHANGE_PARTY_ID,
-        payload: partyId,
-    };
-}
+export const changePartyId = (partyId: string) => ({
+    type: CHANGE_PARTY_ID as typeof CHANGE_PARTY_ID,
+    payload: partyId,
+});

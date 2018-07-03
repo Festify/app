@@ -1,16 +1,16 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import chunk from 'lodash-es/chunk';
 import { call, cancel, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as SpotifyApi from 'spotify-web-api-js';
 
-import { Types } from '../actions';
 import {
     getArtistFanart,
     getMusicBrainzId,
     updateMetadata,
     MetadataStore,
-    UpdateMetadataAction,
+    UPDATE_METADATA,
 } from '../actions/metadata';
+import { UPDATE_TRACKS } from '../actions/party-data';
 import { Views } from '../routing';
 import { loadFanartTracksSelector, loadMetadataSelector } from '../selectors/track';
 import { Metadata, State } from '../state';
@@ -20,7 +20,7 @@ import { fetchWithAnonymousAuth } from '../util/spotify-auth';
 const cache = new MetadataStore();
 
 let hasThrownIdbError = false;
-function* cacheMetadata(ac: UpdateMetadataAction) {
+function* cacheMetadata(ac: ReturnType<typeof updateMetadata>) {
     try {
         yield cache.cacheMetadata(ac.payload);
     } catch (err) {
@@ -68,7 +68,7 @@ function* watchTvMode(action, prevView: Views, newView: Views) {
 
     if (newView === Views.Tv) {
         loadFanartTask = yield takeLatest(
-            [Types.UPDATE_TRACKS, Types.UPDATE_METADATA],
+            [UPDATE_TRACKS, UPDATE_METADATA],
             loadFanartForNewTracks,
         );
 
@@ -117,8 +117,8 @@ function* loadMetadataForNewTracks(_) {
 }
 
 export default function*() {
-    yield takeEvery(Types.UPDATE_METADATA, cacheMetadata),
-    yield takeLatest(Types.UPDATE_TRACKS, loadMetadataForNewTracks),
+    yield takeEvery(UPDATE_METADATA, cacheMetadata),
+    yield takeLatest(UPDATE_TRACKS, loadMetadataForNewTracks),
     yield takeEveryWithState(
         LOCATION_CHANGED,
         (s: State) => (s.router!.result || { view: Views.Home }).view,

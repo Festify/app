@@ -2,7 +2,7 @@ import 'dom-flip';
 import { connect } from 'fit-html';
 import { html } from 'lit-html/lib/lit-extended';
 
-import { clickLink } from '../actions';
+import { handleLinkClick } from '../actions/nav';
 import { isPartyOwnerSelector } from '../selectors/party';
 import { settingsRouteSelector } from '../selectors/routes';
 import { queueTracksSelector } from '../selectors/track';
@@ -19,7 +19,7 @@ export interface PartyQueueProps {
 }
 
 interface PartyQueueDispatch {
-    handleClick: (ev: Event, route: string) => void;
+    handleClick: (ev: Event) => void;
 }
 
 export const queueStyles = html`
@@ -48,7 +48,7 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
         const inner = props.isOwner
             ? html`
                 <a href="${props.settingsRoute}"
-                   on-click="${ev => props.handleClick(ev, props.settingsRoute)}">
+                   on-click="${props.handleClick}">
                     Go to settings</a>
                 to add a fallback playlist
             `
@@ -108,7 +108,7 @@ const mapStateToProps = (state: State): PartyQueueProps => ({
 });
 
 const mapDispatchToProps: PartyQueueDispatch = {
-    handleClick: clickLink,
+    handleClick: handleLinkClick,
 };
 
 customElements.define(

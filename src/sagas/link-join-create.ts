@@ -1,8 +1,7 @@
-import { LOCATION_CHANGED } from '@mraerino/redux-little-router-reactless';
+import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import { put, select, take } from 'redux-saga/effects';
 
-import { Types } from '../actions';
-import { triggerOAuthLogin, NotifyAuthStatusKnownAction } from '../actions/auth';
+import { notifyAuthStatusKnown, triggerOAuthLogin, NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';
 import { createPartyStart, joinPartyStart } from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
@@ -22,7 +21,8 @@ export default function*() {
             return;
         }
         while (true) {
-            const { payload: authPayload }: NotifyAuthStatusKnownAction = yield take(Types.NOTIFY_AUTH_STATUS_KNOWN);
+            const { payload: authPayload }: ReturnType<typeof notifyAuthStatusKnown>
+                = yield take(NOTIFY_AUTH_STATUS_KNOWN);
             if (authPayload.provider === 'spotify' && !!authPayload.data) {
                 break;
             }
@@ -32,6 +32,9 @@ export default function*() {
         yield put(maybeUser ? createPartyStart() : triggerOAuthLogin('spotify'));
     } else if (query.join) {
         yield put(changePartyId(query.join));
+        yield put(joinPartyStart());
+    } else if (/\/([0-9]{1,8})/g.test(loc.payload.pathname)) {
+        yield put(changePartyId(loc.payload.pathname.substr(1)));
         yield put(joinPartyStart());
     }
 }
