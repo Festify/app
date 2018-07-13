@@ -68,6 +68,7 @@ export default {
             'node_modules/@webcomponents/webcomponentsjs': dist('node_modules/@webcomponents/webcomponentsjs'),
             'assets': dist(''),
             [src('index.html')]: dist('index.html'),
+            [src('_headers')]: dist('_headers'),
         }),
         cjs(),
         nodeGlobals(),
