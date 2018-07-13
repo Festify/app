@@ -1,3 +1,4 @@
 /*
   Link: </index.js>; rel=preload; as=script
   Link: </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>; rel=preload; as=script
+  Link: </home-bg.jpg>; rel=preload; as=image
