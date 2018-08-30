@@ -1,7 +1,8 @@
 // tslint:disable:ordered-imports
 
-// tslint:disable-next-line:no-reference
+// tslint:disable:no-reference
 /// <reference path="../node_modules/@types/spotify-web-playback-sdk/index.d.ts"/>
+/// <reference path="../node_modules/spotify-web-api-js/src/typings/spotify-api.d.ts"/>
 
 declare global {
     interface Window {

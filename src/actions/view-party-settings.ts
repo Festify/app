@@ -1,5 +1,4 @@
 import shuffleArr from 'lodash-es/shuffle';
-import * as SpotifyApi from 'spotify-web-api-js';
 
 import { firebaseTrackIdSelector } from '../selectors/track';
 import { PartySettings, Playlist, PlaylistReference, Track } from '../state';
