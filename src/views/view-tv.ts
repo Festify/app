@@ -112,7 +112,7 @@ const Body = (props: ViewTvProps) => {
                         <playback-progress-bar></playback-progress-bar>
 
                         <h4>${props.text}</h4>
-                        <h5>Party Code ${props.party && props.party.short_id}</h5>
+                        <h5>Party Code: ${props.party && props.party.short_id}</h5>
                     </div>
                 </div>
             </div>
