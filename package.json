@@ -58,7 +58,7 @@
     "spotify-web-api-js": "^1.1.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
-    "typescript-lit-html-plugin": "^0.5.0"
+    "typescript-lit-html-plugin": "^0.6.0"
   },
   "scripts": {
     "build": "NODE_ENV=production rollup -c",
