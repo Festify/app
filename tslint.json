@@ -26,6 +26,7 @@
     "quotemark": ["avoid-escape"],
     "radix": false,
     "space-before-function-paren": false,
+    "trailing-comma": [true, { "esSpecCompliant": true }],
     "whitespace": [
       true,
       "check-branch",

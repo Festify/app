@@ -30,19 +30,19 @@ export function takeEveryWithState<S, T, A1, A2, A3>(
     pattern: Pattern,
     selector: (state: S) => T,
     saga: (action: any, oldState: T, newState: T, arg1: A1, arg2: A2, arg3: A3, ...rest) => any,
-    arg1: A1, arg2: A2, arg3: A3, ...rest,
+    arg1: A1, arg2: A2, arg3: A3, ...rest
 ): ForkEffect;
 export function takeEveryWithState<S, T, A1, A2, A3, A4>(
     pattern: Pattern,
     selector: (state: S) => T,
     saga: (action: any, oldState: T, newState: T, arg1: A1, arg2: A2, arg3: A3, arg4: A4, ...rest) => any,
-    arg1: A1, arg2: A2, arg3: A3, arg4: A4, ...rest,
+    arg1: A1, arg2: A2, arg3: A3, arg4: A4, ...rest
 ): ForkEffect;
 export function takeEveryWithState<S, T>(
     pattern: Pattern,
     selector: (state: S) => T,
     saga: (action: any, oldState: T, ...rest) => any,
-    ...args,
+    ...args
 ): ForkEffect {
     return fork(function* () {
         while (true) {
