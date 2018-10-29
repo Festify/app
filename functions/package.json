@@ -6,6 +6,7 @@
     "firebase-functions": "^2.1.0",
     "lodash": "^4.17.5",
     "quick-lru": "^1.1.0",
+    "request": "^2.88.0",
     "requestretry": "^3.0.2",
     "tslib": "^1.9.0"
   },
