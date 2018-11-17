@@ -5,7 +5,7 @@ import request from 'requestretry';
 
 import { CLIENT_ID, CLIENT_SECRET, ENCRYPTION_SECRET } from '../spotify.config';
 
-import { crypto, escapeKey, isValidUrl } from './utils';
+import { crypto, isValidUrl } from './utils';
 
 const API_URL = 'https://accounts.spotify.com/api/token';
 

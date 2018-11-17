@@ -2,11 +2,12 @@
   "name": "politics",
   "description": "Festify voting worker",
   "dependencies": {
-    "firebase-admin": "^5.8.2",
-    "firebase-functions": "^1.0.1",
+    "firebase-admin": "^6.1.0",
+    "firebase-functions": "^2.1.0",
     "lodash": "^4.17.5",
     "quick-lru": "^1.1.0",
-    "requestretry": "^1.13.0",
+    "request": "^2.88.0",
+    "requestretry": "^3.0.2",
     "tslib": "^1.9.0"
   },
   "main": "./dist/index.js",
@@ -15,7 +16,7 @@
     "@types/express": "^4.11.1",
     "@types/node": "^8.9.1",
     "@types/quick-lru": "^1.1.0",
-    "typescript": "^2.7.1"
+    "typescript": "^3.1.3"
   },
   "scripts": {
     "build": "tsc && cp service-account.json ./dist",
