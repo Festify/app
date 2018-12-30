@@ -3514,9 +3514,10 @@ rollup-plugin-replace@^2.0.0:
     minimatch "^3.0.2"
     rollup-pluginutils "^2.0.1"
 
-rollup-plugin-typescript2@^0.17.0:
-  version "0.17.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.17.2.tgz#7d18a94b74993307ec69b7c2f571c12b51561a14"
+rollup-plugin-typescript2@^0.18.1:
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.18.1.tgz#921865828080a254c088c6bc181ca654e5ef73c6"
+  integrity sha512-aR2m5NCCAUV/KpcKgCWX6Giy8rTko9z92b5t0NX9eZyjOftCvcdDFa1C9Ze/9yp590hnRymr5hG0O9SAXi1oUg==
   dependencies:
     fs-extra "7.0.0"
     resolve "1.8.1"
