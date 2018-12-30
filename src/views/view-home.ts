@@ -122,7 +122,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
     <main>
         <paper-input label="Party Code"
                      type="tel"
-                    @input=${ev => props.changePartyId((ev.target as HTMLInputElement).value)}
+                     @input=${ev => props.changePartyId((ev.target as HTMLInputElement).value)}
                      on-keypress="${(ev: KeyboardEvent) => {
                          if (props.partyIdValid && ev.key === 'Enter') {
                              props.joinParty();
