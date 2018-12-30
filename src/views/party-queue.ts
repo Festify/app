@@ -1,6 +1,6 @@
 import 'dom-flip';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { handleLinkClick } from '../actions/nav';
 import { isPartyOwnerSelector } from '../selectors/party';
@@ -48,7 +48,7 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
         const inner = props.isOwner
             ? html`
                 <a href="${props.settingsRoute}"
-                   on-click="${props.handleClick}">
+                   @click=${props.handleClick}>
                     Go to settings</a>
                 to add a fallback playlist
             `
@@ -61,9 +61,9 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
     }
 
     const list = props.tracks.map((track, i) => html`
-        <party-track playing?="${i === 0}"
-                     data-flip-id$="${track.reference.provider}-${track.reference.id}"
-                     trackid="${track.reference.provider}-${track.reference.id}">
+        <party-track .playing=${i === 0}
+                     data-flip-id="${track.reference.provider}-${track.reference.id}"
+                     .trackid="${track.reference.provider}-${track.reference.id}">
         </party-track>
     `);
 

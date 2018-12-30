@@ -2,7 +2,7 @@ import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/polymer/lib/elements/custom-style';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { triggerOAuthLogin } from '../actions/auth';
 import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
@@ -39,7 +39,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
         `;
     } else if (props.authorizedAndPremium) {
         return html`
-            <paper-button raised on-click="${props.createParty}">
+            <paper-button raised @click=${props.createParty}>
                 Create Party
             </paper-button>
         `;
@@ -51,7 +51,7 @@ const LowerButton = (props: HomeViewProps & HomeViewDispatch) => {
         `;
     } else {
         return html`
-            <paper-button raised on-click="${props.loginWithSpotify}">
+            <paper-button raised @click=${props.loginWithSpotify}>
                 Login to create Party
             </paper-button>
         `;
@@ -122,7 +122,7 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
     <main>
         <paper-input label="Party Code"
                      type="tel"
-                     on-input="${ev => props.changePartyId((ev.target as HTMLInputElement).value)}"
+                    @input=${ev => props.changePartyId((ev.target as HTMLInputElement).value)}
                      on-keypress="${(ev: KeyboardEvent) => {
                          if (props.partyIdValid && ev.key === 'Enter') {
                              props.joinParty();
@@ -133,8 +133,8 @@ const HomeView = (props: HomeViewProps & HomeViewDispatch) => html`
 
         <paper-button id="middle"
                       raised
-                      disabled?="${!props.partyIdValid}"
-                      on-click="${props.joinParty}">
+                      .disabled=${!props.partyIdValid}
+                      @click=${props.joinParty}>
             ${props.partyJoinInProgress ? "Joining..." : "Join Party"}
         </paper-button>
 

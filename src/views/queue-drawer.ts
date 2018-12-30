@@ -1,7 +1,7 @@
 import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { logout, triggerOAuthLogin } from '../actions/auth';
 import { handleLinkClick } from '../actions/nav';
@@ -138,27 +138,27 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     <header>
         ${festifyLogo}
 
-        <div class$="user-menu hidable ${props.username ? '' : 'hidden'}" on-click="${props.toggleUserMenu}">
+        <div class="user-menu hidable ${props.username ? '' : 'hidden'}" @click=${props.toggleUserMenu}>
             <span>${props.username}</span>
             <paper-icon-button icon="festify:expand-more"
-                               class$="${props.userMenuOpen ? 'open' : ''}"
+                               class="${props.userMenuOpen ? 'open' : ''}"
                                title="Open user menu">
             </paper-icon-button>
         </div>
     </header>
 
-    <div class$="menu hidable ${props.userMenuOpen ? 'hidden' : ''}" role="menu">
-        <a href$="${props.queueRoute}"
-           class$="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
-           on-click="${props.handleClick}">
+    <div class="menu hidable ${props.userMenuOpen ? 'hidden' : ''}" role="menu">
+        <a href="${props.queueRoute}"
+           class="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
+           @click=${props.handleClick}>
             <iron-icon icon="festify:menu"></iron-icon>
             Queue
         </a>
         ${props.isOwner
             ? html`
-                <a href$="${props.settingsRoute}"
-                   class$="${isActive(props.subView === PartyViews.Settings)}"
-                   on-click="${props.handleClick}">
+                <a href="${props.settingsRoute}"
+                   class="${isActive(props.subView === PartyViews.Settings)}"
+                   @click=${props.handleClick}>
                     <iron-icon icon="festify:settings"></iron-icon>
                     Settings
                 </a>
@@ -169,21 +169,21 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
         ${!props.isOwner
             ? html`
                 <a href="#"
-                   on-click="${ev => { ev.preventDefault(); props.enterAdmin(); }}">
+                   @click=${ev => { ev.preventDefault(); props.enterAdmin(); }}>
                     <iron-icon icon="festify:settings-remote"></iron-icon>
                     Login for Admin Mode
                 </a>
             ` : null
         }
 
-        <a href$="${props.shareRoute}"
-           class$="${isActive(props.subView === PartyViews.Share)}"
-           on-click="${props.handleClick}">
+        <a href="${props.shareRoute}"
+           class="${isActive(props.subView === PartyViews.Share)}"
+           @click=${props.handleClick}>
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
         <a href="${props.tvRoute}"
-           on-click="${props.handleClick}">
+           @click=${props.handleClick}>
             <iron-icon icon="festify:tv"></iron-icon>
             TV Mode
         </a>
@@ -191,15 +191,15 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
             <iron-icon icon="festify:home"></iron-icon>
             Festify Homepage
         </a>
-        <a href="/" on-click="${props.handleClick}">
+        <a href="/" @click=${props.handleClick}>
             <iron-icon icon="festify:cancel"></iron-icon>
             Exit Party
         </a>
     </div>
 
-    <div class$="menu hidable ${props.userMenuOpen ? '' : 'hidden'}" role="menu">
+    <div class="menu hidable ${props.userMenuOpen ? '' : 'hidden'}" role="menu">
         <a href="#"
-           on-click="${ev => { ev.preventDefault(); props.logout(); }}">
+           @click=${ev => { ev.preventDefault(); props.logout(); }}>
             <iron-icon icon="festify:exit-to-app"></iron-icon>
             Logout
         </a>
