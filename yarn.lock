@@ -4022,10 +4022,10 @@ rollup-plugin-babel-minify@^6.0.0:
     babel-preset-minify "^0.5.0"
     sourcemap-codec "^1.4.3"
 
-rollup-plugin-browsersync@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-browsersync/-/rollup-plugin-browsersync-0.2.6.tgz#28ab7f8701b590960c4249817cd3ddc79a17bcba"
-  integrity sha512-ld9WQ7HLuhhmWKf6za4OwUy1wYwkPcMYMPyxXVVVXRYo/y7mP7oB0qV3K7jrNhoLWwW8Q9J3oWSdff0oh04Ihw==
+rollup-plugin-browsersync@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-browsersync/-/rollup-plugin-browsersync-1.0.0.tgz#efab872039ea50fcb9bd001efc8eb729ae35d3b8"
+  integrity sha512-0oiy2Wq4GKzBqMF/e6iB5ZnhfQL/2aNRVIkqtx0Hkf+EJ056BgiKHCuI8+sQiCIi9Ql6GktxQKYOXMUF9qhtjQ==
   dependencies:
     browser-sync "^2.18.13"
 
