@@ -11,16 +11,16 @@ import viewSettingsSaga from './view-party-settings';
 import viewShareSaga from './view-party-share';
 
 export default [
-    authSaga,
-    compatibilitySaga,
-    linkJoinCreateSaga,
-    metadataSaga,
-    partyDataSaga,
-    searchSaga,
-    toastSaga,
+  authSaga,
+  compatibilitySaga,
+  linkJoinCreateSaga,
+  metadataSaga,
+  partyDataSaga,
+  searchSaga,
+  toastSaga,
 
-    viewHomeSaga,
-    viewQueueSaga,
-    viewSettingsSaga,
-    viewShareSaga,
+  viewHomeSaga,
+  viewQueueSaga,
+  viewSettingsSaga,
+  viewShareSaga,
 ];

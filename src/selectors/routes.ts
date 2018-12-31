@@ -5,27 +5,27 @@ import { State } from '../state';
 import { partyIdSelector } from './party';
 
 export const queueRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => partyId ? `/party/${partyId}` : null,
+  partyIdSelector,
+  partyId => partyId ? `/party/${partyId}` : null,
 );
 
 export const searchRouteSelector = createSelector(
-    queueRouteSelector,
-    (s: State, query: string) => encodeURIComponent(query),
-    (queueRoute, query) => queueRoute ? `${queueRoute}/search?s=${query}` : null,
+  queueRouteSelector,
+  (s: State, query: string) => encodeURIComponent(query),
+  (queueRoute, query) => queueRoute ? `${queueRoute}/search?s=${query}` : null,
 );
 
 export const settingsRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => queueRoute ? `${queueRoute}/settings` : null,
+  queueRouteSelector,
+  queueRoute => queueRoute ? `${queueRoute}/settings` : null,
 );
 
 export const shareRouteSelector = createSelector(
-    queueRouteSelector,
-    queueRoute => queueRoute ? `${queueRoute}/share` : null,
+  queueRouteSelector,
+  queueRoute => queueRoute ? `${queueRoute}/share` : null,
 );
 
 export const tvRouteSelector = createSelector(
-    partyIdSelector,
-    partyId => partyId ? `/tv/${partyId}` : null,
+  partyIdSelector,
+  partyId => partyId ? `/tv/${partyId}` : null,
 );

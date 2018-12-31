@@ -8,12 +8,12 @@ import partyViewReducer from './view-party';
 import settingsReducer from './view-settings';
 
 export default {
-    appShell: appShellReducer,
-    homeView: homeReducer,
-    metadata: metadataReducer,
-    party: partyReducer,
-    partyView: partyViewReducer,
-    player: playerReducer,
-    settingsView: settingsReducer,
-    user: userReducer,
+  appShell: appShellReducer,
+  homeView: homeReducer,
+  metadata: metadataReducer,
+  party: partyReducer,
+  partyView: partyViewReducer,
+  player: playerReducer,
+  settingsView: settingsReducer,
+  user: userReducer,
 };

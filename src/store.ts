@@ -7,32 +7,32 @@ import { generateInstanceId } from './actions';
 import { spotifySdkInitFinish } from './actions/playback-spotify';
 import reducers from './reducers';
 import {
-    enhancer as routerEnhancer,
-    middleware as routerMiddleware,
-    reducer as routerReducer,
+  enhancer as routerEnhancer,
+  middleware as routerMiddleware,
+  reducer as routerReducer,
 } from './routing';
 import sagas from './sagas';
 
 const saga = createSagaMiddleware();
 
 export const store = createStore(
-    combineReducers({
-        ...reducers,
-        router: routerReducer,
-    }),
-    compose(
-        routerEnhancer,
-        applyMiddleware(routerMiddleware, saga),
-        devToolsEnhancer({}),
-    ),
+  combineReducers({
+    ...reducers,
+    router: routerReducer,
+  }),
+  compose(
+    routerEnhancer,
+    applyMiddleware(routerMiddleware, saga),
+    devToolsEnhancer({}),
+  ),
 );
 
 for (const s of sagas) {
-    saga.run(s);
+  saga.run(s);
 }
 
 store.dispatch(generateInstanceId());
 store.dispatch(initializeCurrentLocation(store.getState().router));
 window.onSpotifyWebPlaybackSDKReady = () => {
-    store.dispatch(spotifySdkInitFinish());
+  store.dispatch(spotifySdkInitFinish());
 };

@@ -13,16 +13,16 @@ export default app;
 export { firebase as firebaseNS };
 
 export const functions = {
-    clientToken: app.functions().httpsCallable('getClientToken'),
-    exchangeCode: app.functions().httpsCallable('exchangeCode'),
-    isSpotifyUser: app.functions().httpsCallable('isSpotifyUser'),
-    linkSpotifyAccounts: app.functions().httpsCallable('linkSpotifyAccounts'),
-    refreshToken: app.functions().httpsCallable('refreshToken'),
+  clientToken: app.functions().httpsCallable('getClientToken'),
+  exchangeCode: app.functions().httpsCallable('exchangeCode'),
+  isSpotifyUser: app.functions().httpsCallable('isSpotifyUser'),
+  linkSpotifyAccounts: app.functions().httpsCallable('linkSpotifyAccounts'),
+  refreshToken: app.functions().httpsCallable('refreshToken'),
 };
 
 export function valuesChannel(ref: Query) {
-    return eventChannel<DataSnapshot>(put => {
-        ref.on('value', put as (snap: DataSnapshot | null) => void);
-        return () => ref.off('value', put);
-    });
+  return eventChannel<DataSnapshot>(put => {
+    ref.on('value', put as (snap: DataSnapshot | null) => void);
+    return () => ref.off('value', put);
+  });
 }
