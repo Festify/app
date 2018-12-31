@@ -13,7 +13,7 @@ import {
   JOIN_PARTY_START,
 } from '../actions/party-data';
 import { Views } from '../routing';
-import { PartySettings, State } from '../state';
+import { defaultPartySettings, State } from '../state';
 
 function* createParty() {
   const { player, user }: State = yield select();
@@ -33,7 +33,7 @@ function* createParty() {
       userDisplayName,
       player.instanceId,
       spotifyUser.country,
-      PartySettings.defaultSettings(),
+      { ...defaultPartySettings },
     );
   } catch (err) {
     yield put(createPartyFail(err));

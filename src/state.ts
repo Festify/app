@@ -4,7 +4,7 @@ import { User } from '@firebase/auth-types';
 import { OAuthLoginProviders } from './actions/auth';
 import { domainSelector } from './selectors/domain';
 
-export const enum ConnectionState {
+export enum ConnectionState {
   Unknown,
   Connected,
   Disconnected,
@@ -88,18 +88,13 @@ export interface PartySettings {
 }
 
 // tslint:disable-next-line:no-namespace
-export namespace PartySettings {
-  export function defaultSettings(overrides?: Partial<PartySettings> | null): PartySettings {
-    return {
-      allow_anonymous_voters: true,
-      allow_explicit_tracks: true,
-      allow_multi_track_add: true,
-      tv_mode_text: `Add your songs on ${domainSelector()}!`,
-      maximum_track_length: null,
-      ...overrides,
-    };
-  }
-}
+export const defaultPartySettings = {
+  allow_anonymous_voters: true,
+  allow_explicit_tracks: true,
+  allow_multi_track_add: true,
+  tv_mode_text: `Add your songs on ${domainSelector()}!`,
+  maximum_track_length: null,
+};
 
 export interface Track {
   added_at: number;
@@ -193,20 +188,17 @@ export type EnabledProvidersList = {
   [k in OAuthLoginProviders]: boolean;
 };
 
-// tslint:disable-next-line:no-namespace
-export namespace EnabledProvidersList {
-  export function enable(overrides: OAuthLoginProviders[]): EnabledProvidersList {
-    const result = {
-      facebook: false,
-      github: false,
-      google: false,
-      spotify: false,
-      twitter: false,
-    };
-    overrides.forEach(prov => result[prov] = true);
-    return result;
-  }
-}
+export const enableAuthProviders = (overrides: OAuthLoginProviders[]) => {
+  const result: EnabledProvidersList = {
+    facebook: false,
+    github: false,
+    google: false,
+    spotify: false,
+    twitter: false,
+  };
+  overrides.forEach(prov => result[prov] = true);
+  return result;
+};
 
 export interface UserState {
   credentials: UserCredentials;

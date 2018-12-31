@@ -1,12 +1,12 @@
 import { routerForBrowser } from '@festify/redux-little-router';
 
-export const enum Views {
+export enum Views {
   Home = "Home",
   Party = "Party",
   Tv = "Tv",
 }
 
-export const enum PartyViews {
+export enum PartyViews {
   Queue = "Queue",
   Search = "Search",
   Settings = "Settings",

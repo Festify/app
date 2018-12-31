@@ -1,6 +1,6 @@
 import { AuthCredential, OAuthCredential, User } from '@firebase/auth-types';
 
-import { EnabledProvidersList, UserCredentials } from '../state';
+import { enableAuthProviders, EnabledProvidersList, UserCredentials } from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, functions } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
@@ -76,7 +76,7 @@ export async function getFollowUpLoginProviders(email: string): Promise<EnabledP
         functions.isSpotifyUser({ email }),
     ]);
     const strippedProviders = providers.map(provId => provId.replace('.com', ''));
-    const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
+    const enabledProviders = enableAuthProviders(strippedProviders as OAuthLoginProviders[]);
 
     return {
         ...enabledProviders,
