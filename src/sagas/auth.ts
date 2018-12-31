@@ -73,7 +73,7 @@ function* handleFollowUpCancellation(ac: ReturnType<typeof changeDisplayLoginMod
 
 function* handleFirebaseOAuth() {
     try {
-        const cred: UserCredential = yield firebase.auth!().getRedirectResult();
+        const cred: UserCredential = yield firebase.auth().getRedirectResult();
         if (!cred.user) {
             return;
         }
@@ -97,7 +97,7 @@ function* handleFirebaseOAuth() {
                 return;
 
             case 'auth/credential-already-in-use':
-                yield firebase.auth!().signInAndRetrieveDataWithCredential(err.credential);
+                yield firebase.auth().signInAndRetrieveDataWithCredential(err.credential);
                 return;
             case 'auth/web-storage-unsupported':
                 e = new Error("Your browser is not supported or has third party cookies disabled.");
@@ -181,7 +181,7 @@ function* handleSpotifyOAuth() {
 
     let newUser: UserCredential;
     try {
-        newUser = yield firebase.auth!().signInWithCustomToken(firebaseToken);
+        newUser = yield firebase.auth().signInWithCustomToken(firebaseToken);
     } catch (err) {
         const e = new Error(`Firebase login failed with ${err.code}: ${err.message}`);
         yield put(exchangeCodeFail('spotify', e));
@@ -219,7 +219,7 @@ function* logout() {
     }
 
     yield call(AuthData.remove, LOCALSTORAGE_KEY);
-    yield firebase.auth!().signOut();
+    yield firebase.auth().signOut();
     yield put(checkLoginStatus());
 }
 
@@ -231,7 +231,7 @@ function* refreshFirebaseAuth() {
     while (true) {
         yield call(delay, 1000 * 60 * 55);
 
-        const { currentUser } = firebase.auth!();
+        const { currentUser } = firebase.auth();
         if (!currentUser) {
             continue;
         }
@@ -258,7 +258,7 @@ function* triggerOAuthLogin(ac: ReturnType<typeof triggerOAuthLoginAction>) {
         window.location.href = OAUTH_URL;
     } else {
         try {
-            yield firebase.auth!().signInWithRedirect(getProvider(ac.payload));
+            yield firebase.auth().signInWithRedirect(getProvider(ac.payload));
         } catch (err) {
             const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
                 ? new Error(`Failed to start OAuth because the account is already linked with an account from ${ac.payload}.`)

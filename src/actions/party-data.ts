@@ -130,7 +130,7 @@ export async function createNewParty(
         short_id: String(Math.floor(Math.random() * 1000000)),
     };
 
-    const result = await firebase.database!()
+    const result = await firebase.database()
         .ref('/parties')
         .push(party);
 
@@ -142,7 +142,7 @@ export async function createNewParty(
 }
 
 export async function resolveShortId(shortId: string): Promise<string | null> {
-    const snapshot = await firebase.database!()
+    const snapshot = await firebase.database()
         .ref('/parties')
         .orderByChild('short_id')
         .equalTo(shortId)
