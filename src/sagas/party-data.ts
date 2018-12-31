@@ -87,7 +87,7 @@ function* loadParty() {
 
         const partyRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database!()
+            firebase.database()
                 .ref('/parties/')
                 .child(id),
         );
@@ -106,20 +106,20 @@ function* loadParty() {
 
         const tracksRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database!()
+            firebase.database()
                 .ref('/tracks')
                 .child(id),
         );
         const votesRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database!()
+            firebase.database()
                 .ref('/votes_by_user')
                 .child(id)
                 .child(uid),
         );
         const connection: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database!().ref('.info/connected'),
+            firebase.database().ref('.info/connected'),
         );
 
         yield takeEvery(connection, publishConnectionStateUpdates);
@@ -131,7 +131,7 @@ function* loadParty() {
         const playbackManager = yield fork(managePlaybackState, id);
         const queueManager = yield fork(manageQueue, id);
 
-        yield firebase.database!()
+        yield firebase.database()
             .ref('/user_parties')
             .child(uid)
             .child(id)

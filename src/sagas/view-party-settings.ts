@@ -35,7 +35,7 @@ function* changePartySetting(partyId: string, ac: ReturnType<typeof changePartyS
         return;
     }
 
-    yield firebase.database!()
+    yield firebase.database()
         .ref('/parties')
         .child(partyId)
         .child('settings')
@@ -112,7 +112,7 @@ function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistSt
 }
 
 function* updatePartyName(partyId: string, ac: ReturnType<typeof updatePartyNameAction>) {
-    yield firebase.database!()
+    yield firebase.database()
         .ref('/parties')
         .child(partyId)
         .child('name')

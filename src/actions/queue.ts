@@ -33,7 +33,7 @@ export const setVoteAction = (ref: TrackReference, vote: boolean) => ({
 /* Utils */
 
 export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise<void> {
-    return firebase.database!()
+    return firebase.database()
         .ref('/tracks')
         .child(partyId)
         .child(firebaseTrackIdSelector(ref))
@@ -48,7 +48,7 @@ export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise
  * @param ref the ref of the track to pin
  */
 export function pinTrack(partyId: string, ref: TrackReference): Promise<void> {
-    return firebase.database!()
+    return firebase.database()
         .ref('/tracks')
         .child(partyId)
         .child(firebaseTrackIdSelector(ref))
@@ -63,24 +63,24 @@ export async function removeTrack(
 ) {
     const trackId = firebaseTrackIdSelector(track);
     const updates: any[] = [
-        firebase.database!()
+        firebase.database()
             .ref('/tracks')
             .child(partyId)
             .child(trackId)
             .set(null),
-        firebase.database!()
+        firebase.database()
             .ref('/votes')
             .child(partyId)
             .child(trackId)
             .set(null),
-        firebase.database!()
+        firebase.database()
             .ref('/votes_by_user')
             .child(partyId)
             .transaction(votes => mapValues(votes, userVotes => omit(userVotes, trackId))),
     ];
     if (moveToHistory) {
         updates.push(
-            firebase.database!()
+            firebase.database()
                 .ref('/tracks_played')
                 .child(partyId)
                 .push(track),
@@ -98,13 +98,13 @@ export async function setVote(
     const { uid } = await requireAuth();
     const trackId = firebaseTrackIdSelector(ref);
 
-    const a = firebase.database!()
+    const a = firebase.database()
         .ref('/votes')
         .child(partyId)
         .child(trackId)
         .child(uid)
         .set(vote);
-    const b = firebase.database!()
+    const b = firebase.database()
         .ref('/votes_by_user')
         .child(partyId)
         .child(uid)

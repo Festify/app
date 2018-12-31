@@ -4,7 +4,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-spinner/paper-spinner-lite';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { triggerOAuthLogin } from '../actions/auth';
 import {
@@ -53,7 +53,7 @@ const LoginView = (props: PartySettingsProps & PartySettingsDispatch) => html`
         : html`
             <paper-button raised
                           class="login spotify"
-                          on-click="${props.triggerSpotifyLogin}">
+                          @click=${props.triggerSpotifyLogin}>
                 <iron-icon icon="social:spotify"></iron-icon>
                 <span>Sign in with</span>
                 Spotify
@@ -65,9 +65,9 @@ const PlaylistView = (props: PartySettingsProps & PartySettingsDispatch) => html
     <h3>Fallback Playlist</h3>
 
     <paper-input label="Search your playlists"
-                 value="${props.playlistSearch}"
+                 .value=${props.playlistSearch}
                  type="text"
-                 on-input="${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}">
+                 @input=${ev => props.changeSearchInput((ev.target as HTMLInputElement).value)}>
     </paper-input>
 
     ${props.isPlaylistLoadInProgress
@@ -83,14 +83,14 @@ const PlaylistView = (props: PartySettingsProps & PartySettingsDispatch) => html
 
             <paper-icon-button class="shuffle-button"
                                icon="festify:shuffle"
-                               on-click="${() => props.insert(item, true)}"
+                               @click=${() => props.insert(item, true)}
                                title="Insert shuffled"
-                               disabled="${props.tracksLoadInProgress}">
+                               .disabled=${props.tracksLoadInProgress}>
             </paper-icon-button>
             <paper-icon-button icon="festify:add"
-                               on-click="${() => props.insert(item, false)}"
+                               @click=${() => props.insert(item, false)}
                                title="Insert"
-                               disabled="${props.tracksLoadInProgress}">
+                               .disabled=${props.tracksLoadInProgress}>
             </paper-icon-button>
         </div>
     `)}
@@ -182,50 +182,50 @@ const SettingsView = (props: PartySettingsProps & PartySettingsDispatch) => html
     <div class="upper">
         <h3>General Settings</h3>
         <paper-input label="Party Name"
-                     value="${props.partyName}"
+                     .value=${props.partyName}
                      title="Change the name of your party"
                      type="text"
-                     on-input="${ev => props.changePartyName((ev.target as HTMLInputElement).value)}">
+                    @input=${ev => props.changePartyName((ev.target as HTMLInputElement).value)}>
         </paper-input>
 
         <paper-input label="Maximum Track Length (minutes)"
-                     value="${props.settings.maximum_track_length}"
+                     .value=${props.settings.maximum_track_length}
                      title="Change the maximum track length in minutes that can be added to the queue."
                      type="number"
                      min="1"
                      prevent-invalid-input
-                     on-input="${ev => props.changePartySetting('maximum_track_length', parseInt((ev.target as HTMLInputElement).value) || null)}">
+                     @input=${ev => props.changePartySetting('maximum_track_length', parseInt((ev.target as HTMLInputElement).value) || null)}>
         </paper-input>
 
         <paper-input label="TV Mode Text"
-                     value="${props.settings.tv_mode_text}"
+                     .value=${props.settings.tv_mode_text}
                      title="Choose the text you want to show in TV Mode below the progress bar."
                      type="text"
-                     on-input="${ev => props.changePartySetting('tv_mode_text', (ev.target as HTMLInputElement).value)}">
+                     @input=${ev => props.changePartySetting('tv_mode_text', (ev.target as HTMLInputElement).value)}>
         </paper-input>
 
-        <paper-checkbox checked="${!props.settings.allow_multi_track_add}"
-                        on-checked-changed="${ev => props.changePartySetting('allow_multi_track_add', !(ev.target as HTMLInputElement).checked)}"
+        <paper-checkbox .checked=${!props.settings.allow_multi_track_add}
+                        @checked-changed=${ev => props.changePartySetting('allow_multi_track_add', !(ev.target as HTMLInputElement).checked)}
                         title="To avoid spam, you might want to prevent your users from adding lots of tracks quickly from the search menu.">
             Close search after a track has been added
         </paper-checkbox>
 
-        <paper-checkbox checked="${props.settings.allow_explicit_tracks}"
-                        on-checked-changed="${ev => props.changePartySetting('allow_explicit_tracks', (ev.target as HTMLInputElement).checked)}"
+        <paper-checkbox .checked=${props.settings.allow_explicit_tracks}
+                        @checked-changed=${ev => props.changePartySetting('allow_explicit_tracks', (ev.target as HTMLInputElement).checked)}
                         title="If you are prude, you can disable adding explict tracks here. Be aware, though, that Spotify does not provide 100% reliable information about whether a track is explicit or not, so there might be 'false negatives'.">
             Allow guests to add explict tracks
         </paper-checkbox>
 
-        <paper-checkbox checked="${!props.settings.allow_anonymous_voters}"
-                        on-checked-changed="${ev => props.changePartySetting('allow_anonymous_voters', !(ev.target as HTMLInputElement).checked)}"
+        <paper-checkbox .checked=${!props.settings.allow_anonymous_voters}
+                        @checked-changed=${ev => props.changePartySetting('allow_anonymous_voters', !(ev.target as HTMLInputElement).checked)}
                         title="Prevent vote cheating by requiring guests to sign-in with a social account such as Facebook or Google.">
             Require guests to sign in before voting
         </paper-checkbox>
 
         <paper-button raised
-                      on-click="${props.flushTracks}"
+                      @click=${props.flushTracks}
                       title="Remove all but the playing track from the queue to start over"
-                      disabled="${props.queueFlushInProgress}">
+                      .disabled=${props.queueFlushInProgress}>
             Flush queue
         </paper-button>
     </div>

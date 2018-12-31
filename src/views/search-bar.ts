@@ -1,6 +1,6 @@
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { changeTrackSearchInput, eraseTrackSearchInput } from '../actions/view-party';
 import { State } from '../state';
@@ -73,14 +73,14 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
     ${props.text
         ? html`
             <paper-icon-button icon="festify:arrow-back"
-                               on-click="${props.eraseText}">
+                               @click=${props.eraseText}>
             </paper-icon-button>
         `
         : festifyLogo}
 
     <input value="${props.text}"
            placeholder="Add Tracks"
-           on-input="${ev => props.changeText((ev.target as HTMLInputElement).value)}">
+          @input=${ev => props.changeText((ev.target as HTMLInputElement).value)}>
 `;
 /* tslint:enable */
 

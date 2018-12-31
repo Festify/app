@@ -1,7 +1,7 @@
 import 'dom-flip';
 import { connect } from 'fit-html';
 import 'ken-burns-carousel';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 import { createSelector } from 'reselect';
 
 import srcsetImg from '../components/srcset-img';
@@ -41,7 +41,7 @@ const Background = (props: ViewTvProps) => {
         props.currentTrackMetadata.background.length > 0 &&
         props.backgroundImgIndex != null) {
         return html`
-            <ken-burns-carousel images="${props.currentTrackMetadata.background}">
+            <ken-burns-carousel .images=${props.currentTrackMetadata.background}>
             </ken-burns-carousel>
         `;
     } else {
@@ -55,8 +55,8 @@ const Background = (props: ViewTvProps) => {
 
 const Lower = (props: ViewTvProps) => {
     const list = props.queueTracks.map(t => html`
-        <tv-track trackid$="${t.reference.provider}-${t.reference.id}"
-                  data-flip-id$="${t.reference.provider}-${t.reference.id}">
+        <tv-track .trackid="${t.reference.provider}-${t.reference.id}"
+                  data-flip-id="${t.reference.provider}-${t.reference.id}">
         </tv-track>
     `);
 
