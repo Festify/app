@@ -1,0 +1,25 @@
+.appShell {
+  --primary-color: #951518;
+  --primary-color-dark: #731417;
+  --secondary-color: #1c1f24;
+
+  --primary-text-color: white;
+  --secondary-text-color: #a9a9a9;
+
+  background: var(--secondary-color);
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  min-height: 100vh;
+}
+
+.toast {
+  --paper-toast-background-color: var(--primary-color);
+  box-shadow: 0 1px 10px 0 rgba(0,0,0,1);
+}
+
+.viewHome {
+  min-height: 100vh;
+}
