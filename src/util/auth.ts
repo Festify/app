@@ -1,4 +1,4 @@
-import { FirebaseAuth, User } from '@firebase/auth-types';
+import { User } from '@firebase/auth-types';
 
 import { UserCredentials } from '../state';
 
@@ -62,7 +62,7 @@ export function getProvider(prov: Exclude<keyof UserCredentials, 'spotify' | 'fi
 }
 
 export function requireAuth(): Promise<User> {
-    const auth = firebase.auth!() as FirebaseAuth;
+    const auth = firebase.auth();
 
     if (auth.currentUser && auth.currentUser.uid) {
         return Promise.resolve(auth.currentUser);

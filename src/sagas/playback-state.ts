@@ -51,7 +51,7 @@ function* handlePlayPause() {
 function* handleFirebase(partyId: string) {
     let isPlaybackMaster = false;
     try {
-        const playbackRef = firebase.database!()
+        const playbackRef = firebase.database()
             .ref('/parties')
             .child(partyId)
             .child('playback');
@@ -119,7 +119,7 @@ function* handleFirebase(partyId: string) {
     } finally {
         // Remove playback state from DB when party is left while we're playing
         if (yield cancelled() && isPlaybackMaster) {
-            firebase.database!()
+            firebase.database()
                 .ref('/parties')
                 .child(partyId)
                 .child('playback')

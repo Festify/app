@@ -72,7 +72,7 @@ const FOLLOWUP_LS_KEY = 'FollowUpCredential';
 
 export async function getFollowUpLoginProviders(email: string): Promise<EnabledProvidersList> {
     const [providers, isSpotify] = await Promise.all([
-        firebase.auth!().fetchProvidersForEmail(email),
+        firebase.auth().fetchProvidersForEmail(email),
         functions.isSpotifyUser({ email }),
     ]);
     const strippedProviders = providers.map(provId => provId.replace('.com', ''));

@@ -103,15 +103,15 @@ export async function flushQueue(partyId: string, tracks: Track[]) {
         .map(t => firebaseTrackIdSelector(t))
         .forEach(k => trackRemoveObject[k] = null);
     await Promise.all([
-        firebase.database!()
+        firebase.database()
             .ref('/tracks')
             .child(partyId)
             .update(trackRemoveObject),
-        firebase.database!()
+        firebase.database()
             .ref('/votes')
             .child(partyId)
             .remove(),
-        firebase.database!()
+        firebase.database()
             .ref('/votes_by_user')
             .child(partyId)
             .remove(),
@@ -173,7 +173,7 @@ export async function insertPlaylist(
         return tracks;
     }
     async function removeFallbackTracks(partyId: string): Promise<void> {
-        const fallbackTracks: Record<string, Track> | null = (await firebase.database!()
+        const fallbackTracks: Record<string, Track> | null = (await firebase.database()
             .ref('/tracks')
             .child(partyId)
             .orderByChild('vote_count')
@@ -190,7 +190,7 @@ export async function insertPlaylist(
             .filter(k => !fallbackTracks[k].played_at)
             .forEach(k => removeObject[k] = null);
 
-        await firebase.database!()
+        await firebase.database()
             .ref('/tracks')
             .child(partyId)
             .update(removeObject);
@@ -225,7 +225,7 @@ export async function insertPlaylist(
         return acc;
     }, {});
 
-    await firebase.database!()
+    await firebase.database()
         .ref('/tracks')
         .child(partyId)
         .update(updateObject);

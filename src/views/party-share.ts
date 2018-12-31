@@ -1,6 +1,5 @@
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
-
 import { connect } from 'fit-html';
 import { html } from 'lit-html';
 
