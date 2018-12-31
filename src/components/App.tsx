@@ -31,6 +31,8 @@ const pageSelector = (view: Views) => {
 };
 
 const loadOnce = (when: boolean, url: string) => {
+  return; // Although hooks are in the typings, we cannot use them atm
+
   const [hasLoaded, setHasLoaded] = useState(false);
 
   if (when && !hasLoaded) {
