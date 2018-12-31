@@ -1,4 +1,4 @@
-import { replace, LOCATION_CHANGED } from '@festify/redux-little-router';
+import { replace, LocationChangedAction, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { User, UserCredential } from '@firebase/auth-types';
 import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { delay } from 'redux-saga';
@@ -26,6 +26,7 @@ import { updatePlaybackState } from '../actions/party-data';
 import { changeDisplayLoginModal, CHANGE_DISPLAY_LOGIN_MODAL } from '../actions/view-party';
 import { SPOTIFY_CLIENT_ID } from '../common.config';
 import { isPlaybackMasterSelector } from '../selectors/party';
+import { State } from '../state';
 import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase, { functions } from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
@@ -122,8 +123,17 @@ function* handleFirebaseOAuth() {
 }
 
 function* handleSpotifyOAuth() {
-  const action = yield take(LOCATION_CHANGED);
-  const { code, error, state } = action.payload.query;
+  const router = yield select((state: State) => state.router);
+
+  let query: any = {};
+  if (!router || !router.query) {
+    const action: LocationChangedAction = yield take(LOCATION_CHANGED);
+    query = action.payload.query!;
+  } else {
+    query = router.query;
+  }
+
+  const { code, error, state } = query;
 
   if (state !== 'SPOTIFY_AUTH') {
     return;
