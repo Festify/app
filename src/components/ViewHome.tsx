@@ -3,7 +3,9 @@ import TextField from '@material-ui/core/es/TextField';
 import classNames from 'classnames';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
+import { Actions } from '../actions';
 import { triggerOAuthLogin } from '../actions/auth';
 import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
@@ -110,16 +112,16 @@ const mapStateToProps = (state: State): HomeViewProps => ({
   playerCompatible: state.player.isCompatible,
 });
 
-const mapDispatchToProps: HomeViewDispatch = {
-  createParty: createPartyStart,
-  joinParty,
-  loginWithSpotify: () => triggerOAuthLogin('spotify'),
-  partyIdInputChange: (ev: React.ChangeEvent<HTMLInputElement>) => changePartyId(ev.target.value),
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  createParty: () => dispatch(createPartyStart()),
+  joinParty: () => dispatch(joinParty()),
+  loginWithSpotify: () => dispatch(triggerOAuthLogin('spotify')),
+  partyIdInputChange: (ev: React.ChangeEvent<HTMLInputElement>) => dispatch(changePartyId(ev.target.value)),
   partyIdInputKeyPress: (ev: React.KeyboardEvent) => {
     if (ev.key === 'Enter') {
-      joinParty();
+      dispatch(joinParty());
     }
   },
-};
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeViewComponent);
