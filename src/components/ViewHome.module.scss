@@ -1,0 +1,45 @@
+.viewHome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
+  text-align: center;
+
+  background:
+    linear-gradient(rgba(28, 31, 36, .9), rgba(28, 31, 36, .9)),
+    url(/home-bg.jpg) no-repeat center;
+  background-size: cover;
+}
+
+.input {
+  font-size: 24px;
+}
+
+.button[disabled] {
+  opacity: 0.8;
+}
+
+.logo {
+  height: 180px;
+  width: 180px;
+}
+
+.intro {
+  padding: 0 25px;
+  max-width: 500px;
+  font-size: 20px;
+}
+
+.form {
+  display: flex;
+  flex-flow: column nowrap;
+
+  margin: 0 auto;
+  min-width: 250px;
+}
+
+.utilMiddle {
+  margin: 8px 0 16px 0;
+}
