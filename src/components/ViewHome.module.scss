@@ -17,8 +17,12 @@
   font-size: 24px;
 }
 
-.button[disabled] {
-  opacity: 0.8;
+.button {
+  margin-top: 1rem !important;
+
+  &[disabled] {
+    opacity: 0.8;
+  }
 }
 
 .logo {
@@ -38,8 +42,4 @@
 
   margin: 0 auto;
   min-width: 250px;
-}
-
-.utilMiddle {
-  margin: 8px 0 16px 0;
 }

@@ -36,8 +36,8 @@ interface HomeViewOwnProps {
 }
 type HomeViewMergedProps = HomeViewProps & HomeViewDispatch & HomeViewOwnProps;
 
-const VariadicButton: React.FC<ButtonProps> = ({ children, ...restProps }) => (
-  <Button className={styles.button} {...restProps}>
+const HomeButton: React.FC<ButtonProps> = ({ children, ...restProps }) => (
+  <Button className={styles.button} color="primary" variant="contained" {...restProps}>
     {children}
   </Button>
 );
@@ -48,23 +48,23 @@ const DynamicButton = (viewProps: HomeViewMergedProps) => {
   }
 
   if (viewProps.partyCreationInProgress) {
-    return <VariadicButton disabled>Creating...</VariadicButton>;
+    return <HomeButton disabled>Creating...</HomeButton>;
   } else if (viewProps.authorizedAndPremium) {
     return (
-      <VariadicButton onClick={viewProps.createParty}>
+      <HomeButton onClick={viewProps.createParty}>
         Create Party
-      </VariadicButton>
+      </HomeButton>
     );
   } else if (viewProps.authorizationInProgress || !viewProps.authStatusKnown) {
-    return <VariadicButton disabled>Authorizing...</VariadicButton>;
+    return <HomeButton disabled>Authorizing...</HomeButton>;
   } else {
     return (
-      <VariadicButton onClick={viewProps.loginWithSpotify}>
+      <HomeButton onClick={viewProps.loginWithSpotify}>
         Login to create Party
-      </VariadicButton>
+      </HomeButton>
     );
   }
-}
+};
 
 const HomeViewComponent: React.FC<HomeViewMergedProps> = (props) => (
   <div className={classNames(styles.viewHome, props.className)}>
@@ -87,14 +87,12 @@ const HomeViewComponent: React.FC<HomeViewMergedProps> = (props) => (
         value={props.partyId}
       />
 
-      <Button
-        className={classNames(styles.button, styles.utilMiddle)}
-        id="middle"
+      <HomeButton
         disabled={!props.partyIdValid}
         onClick={props.joinParty}
       >
         {props.partyJoinInProgress ? "Joining..." : "Join Party"}
-      </Button>
+      </HomeButton>
 
       {DynamicButton(props)}
     </main>
