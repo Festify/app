@@ -4,7 +4,6 @@ import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { delay } from 'redux-saga';
 import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { SPOTIFY_CLIENT_ID } from '../common.config';
 import { showToast } from '../actions';
 import {
   checkLoginStatus,
@@ -25,6 +24,7 @@ import {
 } from '../actions/auth';
 import { updatePlaybackState } from '../actions/party-data';
 import { changeDisplayLoginModal, CHANGE_DISPLAY_LOGIN_MODAL } from '../actions/view-party';
+import { SPOTIFY_CLIENT_ID } from '../common.config';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase, { functions } from '../util/firebase';

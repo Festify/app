@@ -1,5 +1,6 @@
 import React from 'react';
 
+// tslint:disable max-line-length
 const FestifyLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg {...props} viewBox="0 0 512 512">
     <circle cx="256" cy="256" r="256" fill="#282b30"></circle>

@@ -1,16 +1,15 @@
 import Snackbar from '@material-ui/core/es/Snackbar';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/es/styles';
 import React, { useState } from 'react';
-import { Provider as ReduxProvider, connect } from 'react-redux';
+import { connect, Provider as ReduxProvider } from 'react-redux';
 
 import { Views } from '../routing';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { State } from '../state';
 import { store } from '../store';
 
-import ViewHome from './ViewHome';
-
 import styles from './App.module.scss';
+import ViewHome from './ViewHome';
 
 interface AppShellProps {
   isPlaybackMaster: boolean;

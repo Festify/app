@@ -1,16 +1,16 @@
 import Button, { ButtonProps } from '@material-ui/core/es/Button';
 import TextField from '@material-ui/core/es/TextField';
+import classNames from 'classnames';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { changePartyId } from '../actions/view-home';
-import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
 import { triggerOAuthLogin } from '../actions/auth';
+import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
+import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
 import Logo from '../util/festify-logo';
 
-import styles from './ViewHome.module.scss'
-import classNames from 'classnames';
+import styles from './ViewHome.module.scss';
 
 interface HomeViewProps {
   authorizationInProgress: boolean;

@@ -1,0 +1,45 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "array-type": false,
+    "arrow-parens": ["ban-single-arg-parens"],
+    "curly": true,
+    "interface-name": ["never-prefix"],
+    "max-classes-per-file": [true, 5, "exclude-class-expressions"],
+    "member-access": [true, "no-public"],
+    "no-consecutive-blank-lines": true,
+    "no-console": false,
+    "no-empty": false,
+    "no-empty-interface": false,
+    "no-shadowed-variable": false,
+    "no-unsafe-finally": false,
+    "no-unused-expression": false,
+    "no-unused-variable": true,
+    "object-literal-key-quotes": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": [true, { "grouped-imports": true, "named-imports-order": "lowercase-first" }],
+    "prefer-template": [true, "allow-single-concat"],
+    "quotemark": ["avoid-escape"],
+    "radix": false,
+    "space-before-function-paren": false,
+    "trailing-comma": [true, { "esSpecCompliant": true }],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-rest-spread",
+      "check-type",
+      "check-typecast",
+      "check-type-operator",
+      "check-preblock"
+    ]
+  },
+  "rulesDirectory": []
+}

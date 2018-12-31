@@ -31,10 +31,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eject": "react-scripts eject",
+    "fix": "tslint -p tsconfig.json --fix",
+    "lint": "tslint -p tsconfig.json"
   },
   "browserslist": [
     ">0.2%",
