@@ -1,7 +1,7 @@
 import '@polymer/paper-fab/paper-fab';
 import '@polymer/paper-icon-button/paper-icon-button';
 import { connect, withFit } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
@@ -77,17 +77,17 @@ const PlayButton = (props: PartyTrackRenderProps) => {
             ${props.isOwner && props.track
                 ? html`
                     <paper-icon-button icon="festify:skip-next"
-                                       on-click="${() => props.removeTrack(props.track!.reference)}"
+                                       @click=${() => props.removeTrack(props.track!.reference)}
                                        title="Skip ${props.metadata ? props.metadata.name : 'Loading...'}">
                     </paper-icon-button>
                 `
                 : null}
             <div class="fab-spinner">
-                <paper-spinner-lite active="${props.togglingPlayback}"></paper-spinner-lite>
+                <paper-spinner-lite .active=${props.togglingPlayback}></paper-spinner-lite>
                 <paper-fab mini
-                           icon="${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}"
-                           on-click="${props.togglePlayPause}"
-                           disabled="${!props.enablePlayButton}">
+                           icon=${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}
+                           @click=${props.togglePlayPause}
+                           .disabled=${!props.enablePlayButton}>
                 </paper-fab>
             </div>
         `;
@@ -95,7 +95,7 @@ const PlayButton = (props: PartyTrackRenderProps) => {
         return props.track
             ? html`
                 <paper-icon-button icon="${LikeButtonIcon(props)}"
-                                   on-click="${() => props.setVote(props.track!.reference, !props.hasVoted)}"
+                                   @click=${() => props.setVote(props.track!.reference, !props.hasVoted)}
                                    title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
                 </paper-icon-button>
             `
@@ -229,7 +229,7 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
         ${props.showTakeoverButton
             ? html`
                 <paper-icon-button icon="festify:download"
-                                   on-click="${props.takeOverPlayback}"
+                                   @click=${props.takeOverPlayback}
                                    title="Transfer playback to current device">
                 </paper-icon-button>
             `
@@ -237,7 +237,7 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
         ${props.showRemoveButton
             ? html`
                 <paper-icon-button icon="festify:clear"
-                                   on-click="${() => props.removeTrack(props.track!.reference)}"
+                                   @click=${() => props.removeTrack(props.track!.reference)}
                                    title="Remove ${props.metadata ? props.metadata.name : 'Loading...'} from queue">
                 </paper-icon-button>
             `

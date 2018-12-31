@@ -2,7 +2,7 @@ import '@polymer/paper-button/paper-button';
 import '@polymer/paper-input/paper-input';
 
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { shareParty } from '../actions/view-party-share';
 import { State } from '../state';
@@ -54,7 +54,7 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 
     ${props.hasShareApi
         ? html`
-            <paper-button raised on-click="${props.shareParty}">
+            <paper-button raised @click=${props.shareParty}>
                 Share
             </paper-button>
         `

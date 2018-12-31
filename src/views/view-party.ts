@@ -7,7 +7,7 @@ import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-icon-button/paper-icon-button';
 import DomFlip from 'dom-flip';
 import { connect } from 'fit-html';
-import { html } from 'lit-html/lib/lit-extended';
+import { html } from 'lit-html';
 
 import { queueDragDrop, queueDragEnter, queueDragOver } from '../actions';
 import { triggerOAuthLogin } from '../actions/auth';
@@ -158,21 +158,21 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             </header>
 
             <iron-pages selected="${props.view}" attr-for-selected="view" role="main">
-                <party-queue view$="${PartyViews.Queue}"
-                             on-dragenter="${props.trackDragEnter}"
-                             on-drop="${props.trackDragDrop}"
-                             on-dragover="${props.trackDragOver}">
+                <party-queue view="${PartyViews.Queue}"
+                            @dragenter=${props.trackDragEnter}
+                            @drop=${props.trackDragDrop}
+                            @dragover=${props.trackDragOver}>
                 </party-queue>
-                <party-search view$="${PartyViews.Search}"></party-search>
-                <party-settings view$="${PartyViews.Settings}"></party-settings>
-                <party-share view$="${PartyViews.Share}"></party-share>
+                <party-search view="${PartyViews.Search}"></party-search>
+                <party-settings view="${PartyViews.Settings}"></party-settings>
+                <party-share view="${PartyViews.Share}"></party-share>
             </iron-pages>
         </div>
     </app-drawer-layout>
 
     <paper-dialog with-backdrop
-                  opened="${props.displayLoginModal}"
-                  on-iron-overlay-canceled="${props.closeLoginModal}">
+                  .opened=${props.displayLoginModal}
+                  @iron-overlay-canceled=${props.closeLoginModal}>
         <h2>
             ${!props.isFollowUpSignIn ? "Please sign in to vote" : "Further action required"}
         </h2>
@@ -186,40 +186,40 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
             <paper-button raised
                           class="login facebook"
-                          on-click="${props.triggerFacebookLogin}"
-                          disabled?="${!props.enabledProviders.facebook}">
+                          @click=${props.triggerFacebookLogin}
+                          .disabled=${!props.enabledProviders.facebook}>
                 <iron-icon icon="social:facebook"></iron-icon>
                 <span>Sign in with</span>
                 Facebook
             </paper-button>
             <paper-button raised
                           class="login google"
-                          on-click="${props.triggerGoogleLogin}"
-                          disabled?="${!props.enabledProviders.google}">
+                          @click=${props.triggerGoogleLogin}
+                          .disabled=${!props.enabledProviders.google}>
                 <iron-icon icon="social:google"></iron-icon>
                 <span>Sign in with</span>
                 Google
             </paper-button>
             <paper-button raised
                           class="login twitter"
-                          on-click="${props.triggerTwitterLogin}"
-                          disabled?="${!props.enabledProviders.twitter}">
+                          @click=${props.triggerTwitterLogin}
+                          .disabled=${!props.enabledProviders.twitter}>
                 <iron-icon icon="social:twitter"></iron-icon>
                 <span>Sign in with</span>
                 Twitter
             </paper-button>
             <paper-button raised
                           class="login github"
-                          on-click="${props.triggerGithubLogin}"
-                          disabled?="${!props.enabledProviders.github}">
+                          @click=${props.triggerGithubLogin}
+                          .disabled=${!props.enabledProviders.github}>
                 <iron-icon icon="social:github"></iron-icon>
                 <span>Sign in with</span>
                 GitHub
             </paper-button>
             <paper-button raised
                           class="login spotify"
-                          on-click="${props.triggerSpotifyLogin}"
-                          disabled?="${!props.enabledProviders.spotify}">
+                          @click=${props.triggerSpotifyLogin}
+                          .disabled=${!props.enabledProviders.spotify}>
                 <iron-icon icon="social:spotify"></iron-icon>
                 <span>Sign in with</span>
                 Spotify
@@ -228,7 +228,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
 
         <div class="buttons">
             <paper-button class="cancel"
-                          on-click="${props.closeLoginModal}">
+                          @click=${props.closeLoginModal}>
                 Cancel
             </paper-button>
         </div>
