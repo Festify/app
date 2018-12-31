@@ -24,6 +24,8 @@ yarn-error.log*
 
 legacy/
 
+.rpt2_cache/
+
 # Firebase Functions specifically want a functions/index.js file
 # Thus, we cannot let TS output the build sources into a dist/ or
 # build/ folder which we could ignore as a whole.
