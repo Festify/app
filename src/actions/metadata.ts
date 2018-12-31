@@ -1,6 +1,6 @@
 import idb, { DB } from 'idb';
 
-import { FANART_TV_API_KEY } from '../../common.config';
+import { FANART_TV_API_KEY } from '../common.config';
 import { Metadata } from '../state';
 
 export type Actions =

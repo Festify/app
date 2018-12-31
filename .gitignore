@@ -31,15 +31,13 @@ functions/**/*.js
 functions/**/*.js.map
 
 # Config
-common.config.js
-firebase.config.js
 database.rules.json
 firebase-debug.log
 GoogleService-Info.plist
 google-services.json
-spotify.config.js
 service-account.json
 functions/spotify.config.ts
+.env
 
 # IDE
 .idea/

@@ -4,7 +4,7 @@ import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { delay } from 'redux-saga';
 import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { CLIENT_ID } from '../../spotify.config';
+import { SPOTIFY_CLIENT_ID } from '../common.config';
 import { showToast } from '../actions';
 import {
   checkLoginStatus,
@@ -31,7 +31,7 @@ import firebase, { functions } from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'AuthRedirect';
-const OAUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}`
+const OAUTH_URL = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}`
   + `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`
   + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
 

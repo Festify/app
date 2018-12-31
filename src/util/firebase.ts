@@ -5,7 +5,7 @@ import 'firebase/database';
 import 'firebase/functions';
 import { eventChannel } from 'redux-saga';
 
-import firebaseConfig from '../../firebase.config.js';
+import firebaseConfig from '../firebase.config';
 
 const app = firebase.initializeApp(firebaseConfig);
 export default app;
