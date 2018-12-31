@@ -22,40 +22,45 @@ Festify is a free Spotify-powered app that lets your guests choose which music s
 Festify loads configuration variables though JS / TS / JSON files included in the build process. All following paths are relative to the repository root.
 
 - `common.config.js`: This file includes common configuration values that don't deserve their own file. Currently this is the Sentry URL and the Fanart.tv API key. It looks like this:
-    ```js
-    export const FANART_TV_API_KEY = "FANART_API_KEY_HERE";
-    export const SENTRY_URL = "SENTRY_URL_HERE";
-    ```
+
+  ```js
+  export const FANART_TV_API_KEY = "FANART_API_KEY_HERE";
+  export const SENTRY_URL = "SENTRY_URL_HERE";
+  ```
 
 - `firebase.config.js`: This file contains a simplified form of the config snippet you get when you add Firebase to a web application.
-    ```js
-    export default {
-        apiKey: "FIREBASE_API_KEY",
-        authDomain: "FIREBASE_AUTH_DOMAIN",
-        databaseURL: "FIREBASE_DATABASE_URL",
-        projectId: "FIREBASE_PROJECT_ID",
-    };
-    ```
+
+  ```js
+  export default {
+    apiKey: "FIREBASE_API_KEY",
+    authDomain: "FIREBASE_AUTH_DOMAIN",
+    databaseURL: "FIREBASE_DATABASE_URL",
+    projectId: "FIREBASE_PROJECT_ID",
+  };
+  ```
 
 - `spotify.config.js`: This file contains the required configuration for authorization with Spotify and playback.
-    ```js
-    export const CLIENT_ID = "YOUR_SPOTIFY_APPLICATION_CLIENT_ID";
-    ```
+
+  ```js
+  export const CLIENT_ID = "YOUR_SPOTIFY_APPLICATION_CLIENT_ID";
+  ```
 
 - `functions/service-account.json`: This is the Firebase service account file obtained directly from the web console. You can obtain it by going to Project Settings > Service Accounts > Firebase Admin SDK > Generate new private key.
 
 - `functions/spotify.config.ts`: This file contains Spotify configuration for the cloud functions.
-    ```ts
-    export const CLIENT_ID = "YOUR_SPOTIFY_APPLICATION_CLIENT_ID";
-    export const ENCRYPTION_SECRET = "REFRESH_TOKEN_ENCRYPTION_KEY - PLEASE GENERATE";
-    export const CLIENT_SECRET = "YOUR_SPOTIFY_APPLICATION_CLIENT_SECRET";
-    ```
+  ```ts
+  export const CLIENT_ID = "YOUR_SPOTIFY_APPLICATION_CLIENT_ID";
+  export const ENCRYPTION_SECRET =
+    "REFRESH_TOKEN_ENCRYPTION_KEY - PLEASE GENERATE";
+  export const CLIENT_SECRET = "YOUR_SPOTIFY_APPLICATION_CLIENT_SECRET";
+  ```
 
 Since all config values (except for the `service-account.json`) are loaded through standard ES modules machinery, building the project will notify you if something is missing.
 
 ### Building & Serving
 
 The `package.json` contains all necessary commands for building Festify.
+
 - `build`<a name="build-festify"></a>: Compiles the TypeScript to JS and bundles all JS to a single file. You can then deploy the files in `/build` to a webserver of choice to run Festify.
 - `fix`: Attempts to automatically fix linter errors.
 - `lint`: Lints the TS sources with tslint.

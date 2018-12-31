@@ -22,7 +22,7 @@ export const functions = {
 
 export function valuesChannel(ref: Query) {
     return eventChannel<DataSnapshot>(put => {
-        ref.on('value', put as (snap: DataSnapshot) => void);
+        ref.on('value', put as (snap: DataSnapshot | null) => void);
         return () => ref.off('value', put);
     });
 }
