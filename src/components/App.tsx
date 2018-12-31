@@ -1,4 +1,5 @@
 import Snackbar from '@material-ui/core/es/Snackbar';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/es/styles';
 import React, { useState } from 'react';
 import { Provider as ReduxProvider, connect } from 'react-redux';
 
@@ -17,6 +18,21 @@ interface AppShellProps {
   toastText: string;
   view: Views;
 }
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#951518',
+    },
+    secondary: {
+      main: '#1c1f24',
+    },
+  },
+  typography: {
+    useNextVariants: true,
+  },
+});
 
 const pageSelector = (view: Views) => {
   switch (view) {
@@ -79,6 +95,8 @@ const AppShell = connect(mapStateToProps)(AppShellComponent);
 
 export default () => (
   <ReduxProvider store={store}>
-    <AppShell />
+    <MuiThemeProvider theme={theme}>
+      <AppShell />
+    </MuiThemeProvider>
   </ReduxProvider>
 );

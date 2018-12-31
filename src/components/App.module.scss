@@ -1,12 +1,8 @@
 .appShell {
-  --primary-color: #951518;
-  --primary-color-dark: #731417;
-  --secondary-color: #1c1f24;
-
-  --primary-text-color: white;
+  color: white;
   --secondary-text-color: #a9a9a9;
 
-  background: var(--secondary-color);
+  background: #1c1f24;
 
   display: flex;
   justify-content: center;
