@@ -39,7 +39,12 @@ interface HomeViewOwnProps {
 type HomeViewMergedProps = HomeViewProps & HomeViewDispatch & HomeViewOwnProps;
 
 const HomeButton: React.FC<ButtonProps> = ({ children, ...restProps }) => (
-  <Button className={styles.button} color="primary" variant="contained" {...restProps}>
+  <Button
+    className={styles.button}
+    color="primary"
+    variant="contained"
+    {...restProps}
+  >
     {children}
   </Button>
 );
