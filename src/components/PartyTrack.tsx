@@ -167,7 +167,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
             { [styles.coverPlaying]: isPlayingTrack },
           )}
           images={metadata.cover}
-          size='54px'
+          sizes="54px"
         />
       ) : (
         <div className={styles.cover} />

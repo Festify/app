@@ -9,11 +9,10 @@ type ImgProps = React.DetailedHTMLProps<
 
 interface SrcSetImageProps extends ImgProps {
   images: Image[];
-  size: string;
 }
 
 const SrcSetImage = React.forwardRef<HTMLImageElement, SrcSetImageProps>(
-  ({ images, size, ...restProps }, ref) => {
+  ({ images, ...restProps }, ref) => {
     if (!images || images.length === 0) {
       return <img ref={ref} {...restProps}/>;
     }
@@ -27,7 +26,6 @@ const SrcSetImage = React.forwardRef<HTMLImageElement, SrcSetImageProps>(
     return (
       <img
         ref={ref}
-        sizes={size}
         src={largest.url}
         srcSet={srcset}
         {...restProps}
