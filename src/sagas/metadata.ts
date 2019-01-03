@@ -116,11 +116,11 @@ function* loadMetadataForNewTracks(_) {
 }
 
 export default function* () {
-  yield takeEvery(UPDATE_METADATA, cacheMetadata),
-    yield takeLatest(UPDATE_TRACKS, loadMetadataForNewTracks),
-    yield takeEveryWithState(
-      LOCATION_CHANGED,
-      (s: State) => (s.router!.result || { view: Views.Home }).view,
-      watchTvMode,
-    );
+  yield takeEvery(UPDATE_METADATA, cacheMetadata);
+  yield takeLatest(UPDATE_TRACKS, loadMetadataForNewTracks);
+  yield takeEveryWithState(
+    LOCATION_CHANGED,
+    (s: State) => (s.router!.result || { view: Views.Home }).view,
+    watchTvMode,
+  );
 }
