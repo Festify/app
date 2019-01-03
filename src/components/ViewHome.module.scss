@@ -1,3 +1,5 @@
+@import "../util/variables.scss";
+
 .viewHome {
   display: flex;
   flex-direction: column;
@@ -11,18 +13,6 @@
     linear-gradient(rgba(28, 31, 36, .9), rgba(28, 31, 36, .9)),
     url(/home-bg.jpg) no-repeat center;
   background-size: cover;
-}
-
-.input {
-  font-size: 24px;
-}
-
-.button {
-  margin-top: 1rem !important;
-
-  &[disabled] {
-    opacity: 0.8;
-  }
 }
 
 .logo {
@@ -42,4 +32,28 @@
 
   margin: 0 auto;
   min-width: 250px;
+}
+
+.input {
+  font-size: 24px;
+}
+
+.button {
+  margin-top: 1rem !important;
+
+  &[disabled] {
+    opacity: 0.8;
+  }
+}
+
+.browserIncompatible {
+  color: $color-primary;
+  font-size: .75rem;
+  margin-top: 1rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.browserIncompatibleLink {
+  color: $color-primary;
 }

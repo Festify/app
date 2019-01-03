@@ -51,7 +51,19 @@ const HomeButton: React.FC<ButtonProps> = ({ children, ...restProps }) => (
 
 const DynamicButton = (viewProps: HomeViewMergedProps) => {
   if (!viewProps.playerCompatible) {
-    return null;
+    return (
+      <p className={styles.browserIncompatible}>
+        Creating parties is not possible in this browser.&nbsp;
+        <a
+          className={styles.browserIncompatibleLink}
+          href="https://festify.rocks/faqs/#which-browsers-do-you-support"
+          target="_blank"
+        >
+          Click here
+        </a>
+        &nbsp;to find out why.
+      </p>
+    );
   }
 
   if (viewProps.partyCreationInProgress) {
