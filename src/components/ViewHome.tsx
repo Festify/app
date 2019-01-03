@@ -113,7 +113,7 @@ const HomeViewComponent: React.FC<HomeViewMergedProps> = (props) => (
         {props.partyJoinInProgress ? "Joining..." : "Join Party"}
       </HomeButton>
 
-      {DynamicButton(props)}
+      <DynamicButton {...props}/>
     </main>
   </div>
 );
