@@ -16,7 +16,10 @@ import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
-import { removeTrackAction, requestSetVoteAction as setVoteAction } from '../actions/queue';
+import {
+  removeTrackAction,
+  requestSetVoteAction as setVoteAction,
+} from '../actions/queue';
 import {
   hasOtherPlaybackMasterSelector,
   isPartyOwnerSelector,
