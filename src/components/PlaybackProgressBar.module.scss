@@ -1,0 +1,13 @@
+.progressBar {
+  display: block;
+  height: 1px;
+  position: relative;
+  width: 100%;
+}
+
+.indicator {
+  background: white;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+}
