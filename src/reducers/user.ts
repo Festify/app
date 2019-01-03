@@ -31,21 +31,19 @@ export default function (
   },
   action: Actions,
 ): UserState {
-  function reduceAuthProvider<T>(
+  const reduceAuthProvider = <T>(
     prov: keyof UserCredentials,
     data: Partial<AuthProviderStatus<T>>,
-  ): UserState {
-    return {
-      ...state,
-      credentials: {
-        ...state.credentials,
-        [prov]: {
-          ...(state.credentials[prov]),
-          ...data,
-        },
+  ): UserState => ({
+    ...state,
+    credentials: {
+      ...state.credentials,
+      [prov]: {
+        ...(state.credentials[prov]),
+        ...data,
       },
-    };
-  }
+    },
+  });
 
   switch (action.type) {
     case CHANGE_DISPLAY_LOGIN_MODAL:
