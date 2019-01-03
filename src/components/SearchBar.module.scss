@@ -1,0 +1,44 @@
+$icon-size: 24px;
+
+.searchBar {
+  align-items: center;
+  background-color: #fafafa;
+  border-radius: 2px;
+  box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.24);
+  display: flex;
+  height: 48px;
+  position: relative;
+}
+
+.icon {
+  color: black;
+  flex-shrink: 0;
+  margin: 0 12px;
+
+  height: $icon-size;
+  width: $icon-size;
+}
+
+.buttonBack {
+  margin: 0 4px;
+  padding: 8px;
+}
+
+.input {
+  background: transparent;
+  border: 0;
+  color: black;
+  font-size: 16px;
+  height: 100%;
+  line-height: 24px;
+  margin: 0 16px 0 0;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, .54);
+  }
+}
