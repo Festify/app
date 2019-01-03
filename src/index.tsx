@@ -2,12 +2,16 @@
 /// <reference path="../node_modules/@types/spotify-web-playback-sdk/index.d.ts"/>
 /// <reference path="../node_modules/spotify-web-api-js/src/typings/spotify-api.d.ts"/>
 
+// tslint:disable:ordered-imports
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './components/App';
-import './index.scss';
 import * as serviceWorker from './serviceWorker';
+
+import 'modern-normalize/modern-normalize.css';
+import './index.scss';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
