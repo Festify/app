@@ -64,9 +64,7 @@ const DynamicButton = (viewProps: HomeViewMergedProps) => {
         &nbsp;to find out why.
       </p>
     );
-  }
-
-  if (viewProps.partyCreationInProgress) {
+  } else if (viewProps.partyCreationInProgress) {
     return <HomeButton disabled>Creating...</HomeButton>;
   } else if (viewProps.authorizedAndPremium) {
     return (
