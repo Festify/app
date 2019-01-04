@@ -28,7 +28,7 @@ class PlaybackProgressBar extends React.Component<
     this.updateBarPosition();
   }
 
-  componentDidUpdate() {
+  componentWillReceiveProps() {
     this.updateBarPosition();
   }
 
