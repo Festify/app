@@ -15,7 +15,7 @@ interface SrcSetInnerProps extends SrcSetImageProps {
   innerRef: React.Ref<HTMLImageElement>;
 }
 
-const Image: React.FC<SrcSetInnerProps> = ({
+const ImageBase: React.FC<SrcSetInnerProps> = ({
   images,
   innerRef,
   ...restProps
@@ -40,7 +40,7 @@ const Image: React.FC<SrcSetInnerProps> = ({
   );
 };
 
-const MemoizedImage = React.memo(Image);
+const MemoizedImage = React.memo(ImageBase);
 
 const SrcSetImage = React.forwardRef<HTMLImageElement, SrcSetImageProps>(
   (props, ref) => <MemoizedImage innerRef={ref} {...props}/>,
