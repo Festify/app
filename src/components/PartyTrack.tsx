@@ -140,6 +140,8 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
   return null;
 };
 
+const emptyArray = [];
+
 const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
   const {
     artistName,
@@ -163,20 +165,16 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
         className,
       )}
     >
-      {metadata ? (
-        <SrcSetImage
-          alt={`Cover of ${metadata.name}`}
-          aria-hidden="true"
-          className={classNames(
-            styles.cover,
-            { [styles.coverPlaying]: isPlayingTrack },
-          )}
-          images={metadata.cover}
-          sizes="54px"
-        />
-      ) : (
-        <div className={styles.cover} aria-hidden="true" />
-      )}
+      <SrcSetImage
+        alt={metadata ? `Cover of ${metadata.name}` : undefined}
+        aria-hidden="true"
+        className={classNames(
+          styles.cover,
+          { [styles.coverPlaying]: isPlayingTrack },
+        )}
+        images={metadata ? metadata.cover : emptyArray}
+        sizes="54px"
+      />
 
       <div
         className={classNames(
