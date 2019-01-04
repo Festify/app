@@ -165,6 +165,8 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
     >
       {metadata ? (
         <SrcSetImage
+          alt={`Cover of ${metadata.name}`}
+          aria-hidden="true"
           className={classNames(
             styles.cover,
             { [styles.coverPlaying]: isPlayingTrack },
@@ -173,7 +175,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
           sizes="54px"
         />
       ) : (
-        <div className={styles.cover} />
+        <div className={styles.cover} aria-hidden="true" />
       )}
 
       <div
@@ -189,7 +191,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
         {artistName && (
           <aside className={styles.metadata}>
             <a>{artistName}</a>
-            <span className={styles.dot}>&middot;</span>
+            <span className={styles.dot} aria-hidden="true">&middot;</span>
             <span>{voteString}</span>
           </aside>
         )}
