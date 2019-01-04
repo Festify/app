@@ -211,7 +211,7 @@ const mapStateToProps = (state: State): PartyViewProps => ({
       ? state.user.needsFollowUpSignInWithProviders
       : allEnabled,
   isFollowUpSignIn: !!state.user.needsFollowUpSignInWithProviders,
-  party: state.party.currentParty || { created_by: '', name: '' },
+  party: state.party.currentParty || { created_by: '', name: "Loading..." },
   view: (state.router.result || { subView: PartyViews.Queue }).subView,
 });
 
