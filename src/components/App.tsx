@@ -9,8 +9,9 @@ import { State } from '../state';
 import { store } from '../store';
 
 import styles from './App.module.scss';
+import Lazy from './Lazy';
 import ViewHome from './ViewHome';
-import ViewParty from './ViewParty';
+import { PartyViewOwnProps } from './ViewParty';
 
 interface AppShellProps {
   isPlaybackMaster: boolean;
@@ -34,13 +35,15 @@ const theme = createMuiTheme({
   },
 });
 
+const LazyParty = Lazy<PartyViewOwnProps>(() => import('./ViewParty'));
+
 const pageSelector = (view: Views) => {
   switch (view) {
     default:
     case Views.Home:
       return <ViewHome className={styles.view} />;
     case Views.Party:
-      return <ViewParty className={styles.view} />;
+      return <LazyParty className={styles.view} />;
     case Views.Tv:
       return <p>TV-View</p>;
   }

@@ -49,7 +49,7 @@ interface PartyViewDispatch {
   triggerSpotifyLogin: () => void;
   triggerTwitterLogin: () => void;
 }
-interface PartyViewOwnProps {
+export interface PartyViewOwnProps {
   className?: string;
 }
 
