@@ -1,6 +1,6 @@
-import { push, LOCATION_CHANGED } from '@festify/redux-little-router';
 import { User } from '@firebase/auth-types';
 import { DataSnapshot } from '@firebase/database-types';
+import { push, LOCATION_CHANGED } from 'redux-little-router';
 import { Channel } from 'redux-saga';
 import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
 

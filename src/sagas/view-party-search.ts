@@ -1,4 +1,4 @@
-import { push, replace, LOCATION_CHANGED } from '@festify/redux-little-router';
+import { push, replace, LOCATION_CHANGED } from 'redux-little-router';
 import { delay } from 'redux-saga';
 import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 

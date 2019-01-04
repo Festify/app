@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@festify/redux-little-router';
+import { LOCATION_CHANGED } from 'redux-little-router';
 
 import { Actions } from '../actions';
 import { REQUIRE_FOLLOW_UP_LOGIN } from '../actions/auth';

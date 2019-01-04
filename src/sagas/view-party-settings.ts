@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@festify/redux-little-router';
+import { LOCATION_CHANGED } from 'redux-little-router';
 import { buffers, eventChannel, Channel, END } from 'redux-saga';
 import { call, put, select, take, takeLatest } from 'redux-saga/effects';
 

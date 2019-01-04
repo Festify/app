@@ -1,5 +1,5 @@
-import { Location } from '@festify/redux-little-router';
 import { User } from '@firebase/auth-types';
+import { Location } from 'redux-little-router';
 
 import { OAuthLoginProviders } from './actions/auth';
 import { domainSelector } from './selectors/domain';

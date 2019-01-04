@@ -1,4 +1,4 @@
-import { push } from '@festify/redux-little-router';
+import { push } from 'redux-little-router';
 
 export const handleLinkClick = (event: MouseEvent) => {
   if ((event.button && event.button !== 0) || // BTN Left

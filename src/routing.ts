@@ -1,4 +1,4 @@
-import { routerForBrowser } from '@festify/redux-little-router';
+import { routerForBrowser } from 'redux-little-router';
 
 export enum Views {
   Home = "Home",

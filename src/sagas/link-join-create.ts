@@ -1,4 +1,4 @@
-import { LOCATION_CHANGED } from '@festify/redux-little-router';
+import { LOCATION_CHANGED } from 'redux-little-router';
 import { put, select, take } from 'redux-saga/effects';
 
 import { notifyAuthStatusKnown, triggerOAuthLogin, NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';

@@ -1,4 +1,4 @@
-import { push } from '@festify/redux-little-router';
+import { push } from 'redux-little-router';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import { showToast } from '../actions';

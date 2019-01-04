@@ -1,4 +1,4 @@
-import { RouterActions } from '@festify/redux-little-router';
+import { RouterActions } from 'redux-little-router';
 
 import { Actions as AuthActions } from './auth';
 import { Actions as MetadataActions } from './metadata';

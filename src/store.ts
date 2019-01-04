@@ -1,6 +1,6 @@
-import { initializeCurrentLocation } from '@festify/redux-little-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension/logOnlyInProduction';
+import { initializeCurrentLocation } from 'redux-little-router';
 import createSagaMiddleware from 'redux-saga';
 
 import { generateInstanceId } from './actions';
