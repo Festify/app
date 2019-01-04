@@ -38,9 +38,9 @@ const pageSelector = (view: Views) => {
   switch (view) {
     default:
     case Views.Home:
-      return <ViewHome className={styles.viewHome} />;
+      return <ViewHome className={styles.view} />;
     case Views.Party:
-      return <ViewParty className={styles.viewHome} />;
+      return <ViewParty className={styles.view} />;
     case Views.Tv:
       return <p>TV-View</p>;
   }
