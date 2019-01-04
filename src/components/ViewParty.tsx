@@ -16,6 +16,7 @@ import { changeDisplayLoginModal } from '../actions/view-party';
 import { PartyViews } from '../routing';
 import { EnabledProvidersList, Party, State } from '../state';
 
+import PartyQueue from './PartyQueue';
 import PlaybackProgressBar from './PlaybackProgressBar';
 import SearchBar from './SearchBar';
 import {
@@ -58,11 +59,11 @@ interface InnerProps {
   view: PartyViews;
 }
 
-const Inner: React.FC<InnerProps> = ({ view }) => {
+const Body: React.FC<InnerProps> = ({ view }) => {
   switch (view) {
     default:
     case PartyViews.Queue:
-      return <p>Queue View</p>;
+      return <PartyQueue className={styles.inner} />;
     case PartyViews.Search:
       return <p>Search View</p>;
     case PartyViews.Settings:
@@ -109,9 +110,7 @@ const ViewParty: React.FC<MergedProps> = ({
       <PlaybackProgressBar className={styles.progressBar} />
     </AppBar>
 
-    <main>
-      <Inner view={view}/>
-    </main>
+    <Body view={view}/>
 
     <Dialog
       open={displayLoginModal}

@@ -63,6 +63,7 @@ interface PartyTrackDispatch {
 }
 interface PartyTrackOwnProps {
   className?: string;
+  style?: any;
   trackId: string;
 }
 
@@ -151,6 +152,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
     metadata,
     showRemoveButton,
     showTakeoverButton,
+    style,
     track,
     voteString,
 
@@ -165,6 +167,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
         { [styles.partyTrackPlaying]: isPlayingTrack },
         className,
       )}
+      style={style}
     >
       <SrcSetImage
         alt={metadata ? `Cover of ${metadata.name}` : undefined}
