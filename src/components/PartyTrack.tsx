@@ -112,6 +112,7 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
             classes={{ disabled: styles.fabDisabled }}
             color="primary"
             onClick={togglePlayPause}
+            size="small"
             title={voteBtnTitle}
           >
             {isMusicPlaying ? <Pause /> : <PlayArrow />}
