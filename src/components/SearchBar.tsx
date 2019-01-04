@@ -1,7 +1,7 @@
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import classNames from 'classnames';
 import React from 'react';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
 
 import {
   changeTrackSearchInput,

@@ -11,7 +11,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import SkipNext from '@material-ui/icons/SkipNext';
 import classNames from 'classnames';
 import React from 'react';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';

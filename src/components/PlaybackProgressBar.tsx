@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { CSSProperties } from 'react';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { playbackSelector } from '../selectors/party';
