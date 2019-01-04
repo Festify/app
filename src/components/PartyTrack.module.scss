@@ -1,5 +1,3 @@
-$spinner-size: 44px;
-
 .partyTrack {
   padding: 5px 16px;
   display: flex;
@@ -85,8 +83,6 @@ $spinner-size: 44px;
   position: absolute;
   top: 2px;
   left: 3px;
-  width: $spinner-size !important;
-  height: $spinner-size !important;
   pointer-events: none;
   color: white !important;
 }

@@ -99,14 +99,6 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
         )}
 
         <div className={styles.fabSpinner}>
-          {togglingPlayback && (
-            <CircularProgress
-              classes={{ root: styles.spinner }}
-              thickness={2}
-              variant="indeterminate"
-            />
-          )}
-
           <Fab
             className={styles.fab}
             classes={{ disabled: styles.fabDisabled }}
@@ -117,6 +109,15 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
           >
             {isMusicPlaying ? <Pause /> : <PlayArrow />}
           </Fab>
+
+          {togglingPlayback && (
+            <CircularProgress
+              classes={{ root: styles.spinner }}
+              size={44}
+              thickness={2}
+              variant="indeterminate"
+            />
+          )}
         </div>
       </>
     );
