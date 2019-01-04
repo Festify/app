@@ -1,0 +1,70 @@
+$bg-track: #22262b;
+$bg-track-even: #25292e;
+
+.viewParty {
+
+}
+
+.header {
+  position: relative;
+}
+
+.menuButton {
+  margin-left: -12px;
+  margin-right: 20px;
+}
+
+.partyTitle {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.searchBar {
+  flex-grow: 1;
+}
+
+.progressBar {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.loginIcon {
+  margin: 0 1rem 0 .5rem;
+}
+
+.loginCta {
+  display: none;
+  margin-right: 3.5px;
+
+  @media (min-width: 420px) {
+    display: inline;
+  }
+}
+
+.facebook {
+  background: #3b5998;
+}
+
+.github {
+  background: #333333;
+}
+
+.google {
+  background: #dd4b39;
+}
+
+.spotify {
+  background: #1db954;
+}
+
+.twitter {
+  background: #1da1f2;
+}

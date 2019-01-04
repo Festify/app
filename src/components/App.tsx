@@ -10,6 +10,7 @@ import { store } from '../store';
 
 import styles from './App.module.scss';
 import ViewHome from './ViewHome';
+import ViewParty from './ViewParty';
 
 interface AppShellProps {
   isPlaybackMaster: boolean;
@@ -39,7 +40,7 @@ const pageSelector = (view: Views) => {
     case Views.Home:
       return <ViewHome className={styles.viewHome} />;
     case Views.Party:
-      return <p>Party-View</p>;
+      return <ViewParty className={styles.viewHome} />;
     case Views.Tv:
       return <p>TV-View</p>;
   }
