@@ -1,3 +1,5 @@
+$spinner-size: 44px;
+
 .partyTrack {
   padding: 5px 16px;
   display: flex;
@@ -80,16 +82,13 @@
 }
 
 .spinner {
-  --paper-spinner-stroke-width: 2px;
-  --offset: calc(-1 * var(--paper-spinner-stroke-width));
-  --size: calc(40px + 2 * var(--paper-spinner-stroke-width));
-
   position: absolute;
-  top: var(--offset);
-  left: var(--offset);
-  width: var(--size);
-  height: var(--size);
+  top: 2px;
+  left: 3px;
+  width: $spinner-size !important;
+  height: $spinner-size !important;
   pointer-events: none;
+  color: white !important;
 }
 
 .spinnerRoot {

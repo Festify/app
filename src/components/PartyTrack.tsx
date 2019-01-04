@@ -101,8 +101,7 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
         <div className={styles.fabSpinner}>
           {togglingPlayback && (
             <CircularProgress
-              className={styles.spinner}
-              classes={{ root: styles.spinnerRoot }}
+              classes={{ root: styles.spinner }}
               thickness={2}
               variant="indeterminate"
             />
