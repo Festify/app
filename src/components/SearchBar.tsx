@@ -28,14 +28,8 @@ type MergedProps = SearchBarProps & SearchBarDispatch & SearchBarOwnProps;
 const SearchBar: React.FC<MergedProps> = (props) => (
   <div className={classNames(styles.searchBar, props.className)}>
     {props.text
-      ? (
-        <ArrowBack
-          className={classNames(styles.icon, styles.buttonBack)}
-          onClick={props.onErase}
-        />
-      ) : (
-        <Logo className={styles.icon}/>
-      )}
+      ? <ArrowBack className={styles.icon} onClick={props.onErase} />
+      : <Logo className={styles.icon}/>}
 
     <input
       className={styles.input}
