@@ -2271,9 +2271,10 @@ idb-wrapper@^1.5.0:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/idb-wrapper/-/idb-wrapper-1.7.2.tgz#8251afd5e77fe95568b1c16152eb44b396767ea2"
 
-idb@^2.1.1:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/idb/-/idb-2.1.3.tgz#7b295fa1a46ab7851e42dd85543a271435f87fee"
+idb@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/idb/-/idb-3.0.0.tgz#f7d835fcf097b1a7464bafc5e41e2772de3badcc"
+  integrity sha512-6p6KFlzfu8tMOhPXc6Kpp+MXUNOfJ3a72R3iKfp579qC81hbOEd/Iw+cTDH5zS4nqqP33vAQe1Vs9KO8mqedQQ==
 
 ignore-walk@^3.0.1:
   version "3.0.1"
