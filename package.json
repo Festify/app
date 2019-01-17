@@ -45,7 +45,7 @@
     "connect-history-api-fallback": "^1.5.0",
     "firebase-bolt": "^0.8.2",
     "rollup": "^0.66.6",
-    "rollup-plugin-babel-minify": "^6.0.0",
+    "rollup-plugin-babel-minify": "^7.0.0",
     "rollup-plugin-browsersync": "^0.2.6",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-copy": "^0.2.3",
