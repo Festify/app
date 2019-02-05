@@ -28,7 +28,7 @@
     "fit-html": "^0.7.0",
     "idb": "^2.1.1",
     "ken-burns-carousel": "^0.2.1",
-    "lit-html": "^0.14.0",
+    "lit-html": "^1.0.0",
     "lodash-es": "^4.17.4",
     "promise-debounce": "^1.0.1",
     "raven-js": "^3.24.0",
