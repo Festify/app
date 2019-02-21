@@ -3095,9 +3095,10 @@ opn@4.0.2:
     object-assign "^4.0.1"
     pinkie-promise "^2.0.0"
 
-opn@^5.3.0:
+opn@^5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/opn/-/opn-5.4.0.tgz#cb545e7aab78562beb11aa3bfabc7042e1761035"
+  integrity sha512-YF9MNdVy/0qvJvDtunAOzFw9iasOQHpVthTCvGzxt61Il64AYSGdK+rYwld7NAfk9qJ7dt+hymBNSc9LNYS+Sw==
   dependencies:
     is-wsl "^1.1.0"
 
@@ -3714,12 +3715,13 @@ rollup-plugin-typescript2@^0.18.1:
     rollup-pluginutils "2.3.3"
     tslib "1.9.3"
 
-rollup-plugin-visualizer@^0.9.0:
-  version "0.9.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-0.9.2.tgz#bbc8e8e67d5aa3e6c188c5ca0fcfa57234fb9f92"
+rollup-plugin-visualizer@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-visualizer/-/rollup-plugin-visualizer-1.0.0.tgz#bb41f62331625f4ba24ed12d04e1cd96aed7aaaa"
+  integrity sha512-cxatDRiDK7nlZKNc2HcOneuapPUm78FXtRPWRJc75iNmz2goyMwCYGOghIJIMZ6LEk2gg1QxzqXPTATZqN8n7A==
   dependencies:
     mkdirp "^0.5.1"
-    opn "^5.3.0"
+    opn "^5.4.0"
     source-map "^0.7.3"
     typeface-oswald "0.0.54"
 
