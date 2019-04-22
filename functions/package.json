@@ -21,5 +21,9 @@
   "scripts": {
     "build": "tsc && cp service-account.json ./dist",
     "deploy": "npm run build && firebase deploy --only functions"
+  },
+  "engineStrict": false,
+  "engines": {
+    "node": "8"
   }
 }

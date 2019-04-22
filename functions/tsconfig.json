@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "module": "commonjs",
-    "target": "es2015",
-    "lib": ["es6"],
+    "target": "es2017",
+    "lib": ["es6", "esnext"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
