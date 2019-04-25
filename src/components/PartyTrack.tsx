@@ -70,6 +70,7 @@ interface PartyTrackOwnProps {
 type PartyTrackMergedProps = PartyTrackProps & PartyTrackOwnProps & PartyTrackDispatch;
 
 const PlayButton: React.FC<PartyTrackMergedProps> = ({
+  enablePlayButton,
   hasVoted,
   isMusicPlaying,
   isOwner,
@@ -102,6 +103,7 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
           <Fab
             className={styles.fab}
             classes={{ disabled: styles.fabDisabled }}
+            disabled={!enablePlayButton}
             color="primary"
             onClick={togglePlayPause}
             size="small"
