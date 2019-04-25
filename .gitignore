@@ -39,6 +39,9 @@ GoogleService-Info.plist
 google-services.json
 service-account.json
 functions/spotify.config.ts
+common.config.js
+firebase.config.js
+spotify.config.js
 .env
 
 # IDE
