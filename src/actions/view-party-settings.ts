@@ -58,9 +58,13 @@ export const flushQueueFail = (err: Error) => ({
   payload: err,
 });
 
-export const flushQueueFinish = () => ({ type: FLUSH_QUEUE_FINISH as typeof FLUSH_QUEUE_FINISH });
+export const flushQueueFinish = () => ({
+  type: FLUSH_QUEUE_FINISH as typeof FLUSH_QUEUE_FINISH,
+});
 
-export const flushQueueStart = () => ({ type: FLUSH_QUEUE_START as typeof FLUSH_QUEUE_START });
+export const flushQueueStart = () => ({
+  type: FLUSH_QUEUE_START as typeof FLUSH_QUEUE_START,
+});
 
 export const loadPlaylistsFail = (err: Error) => ({
   type: LOAD_PLAYLISTS_FAIL as typeof LOAD_PLAYLISTS_FAIL,
@@ -68,7 +72,9 @@ export const loadPlaylistsFail = (err: Error) => ({
   payload: err,
 });
 
-export const loadPlaylistsStart = () => ({ type: LOAD_PLAYLISTS_START as typeof LOAD_PLAYLISTS_START });
+export const loadPlaylistsStart = () => ({
+  type: LOAD_PLAYLISTS_START as typeof LOAD_PLAYLISTS_START,
+});
 
 export const insertPlaylistFail = (err: Error) => ({
   type: INSERT_FALLBACK_PLAYLIST_FAIL as typeof INSERT_FALLBACK_PLAYLIST_FAIL,
@@ -99,19 +105,23 @@ export const updateUserPlaylists = (playlists: Playlist[]) => ({
 
 export async function flushQueue(partyId: string, tracks: Track[]) {
   const trackRemoveObject = {};
-  tracks.filter(t => !t.played_at)
+  tracks
+    .filter(t => !t.played_at)
     .map(t => firebaseTrackIdSelector(t))
-    .forEach(k => trackRemoveObject[k] = null);
+    .forEach(k => (trackRemoveObject[k] = null));
   await Promise.all([
-    firebase.database()
+    firebase
+      .database()
       .ref('/tracks')
       .child(partyId)
       .update(trackRemoveObject),
-    firebase.database()
+    firebase
+      .database()
       .ref('/votes')
       .child(partyId)
       .remove(),
-    firebase.database()
+    firebase
+      .database()
       .ref('/votes_by_user')
       .child(partyId)
       .remove(),
@@ -151,7 +161,9 @@ export async function insertPlaylist(
     playlist: Playlist,
     progress?: (amount: number) => any,
   ): Promise<SpotifyApi.TrackObjectFull[]> {
-    let url = `/users/${playlist.reference.userId}/playlists/${playlist.reference.id}/tracks?market=from_token`;
+    let url = `/users/${playlist.reference.userId}/playlists/${
+      playlist.reference.id
+    }/tracks?market=from_token`;
 
     const tracks: SpotifyApi.TrackObjectFull[] = [];
 
@@ -159,7 +171,9 @@ export async function insertPlaylist(
       const resp = await fetchWithAccessToken(url);
       const { items, next }: SpotifyApi.PlaylistTrackResponse = await resp.json();
       const trackItems = items
-        .filter(it => it && !it.is_local && it.track && it.track.id && it.track.is_playable !== false)
+        .filter(
+          it => it && !it.is_local && it.track && it.track.id && it.track.is_playable !== false,
+        )
         .map(it => it.track);
 
       if (typeof progress === 'function') {
@@ -173,13 +187,13 @@ export async function insertPlaylist(
     return tracks;
   }
   async function removeFallbackTracks(partyId: string): Promise<void> {
-    const fallbackTracks: Record<string, Track> | null = (await firebase.database()
+    const fallbackTracks: Record<string, Track> | null = (await firebase
+      .database()
       .ref('/tracks')
       .child(partyId)
       .orderByChild('vote_count')
       .equalTo(0)
-      .once('value'))
-      .val();
+      .once('value')).val();
 
     if (!fallbackTracks) {
       return;
@@ -188,9 +202,10 @@ export async function insertPlaylist(
     const removeObject = {};
     Object.keys(fallbackTracks)
       .filter(k => !fallbackTracks[k].played_at)
-      .forEach(k => removeObject[k] = null);
+      .forEach(k => (removeObject[k] = null));
 
-    await firebase.database()
+    await firebase
+      .database()
       .ref('/tracks')
       .child(partyId)
       .update(removeObject);
@@ -225,7 +240,8 @@ export async function insertPlaylist(
     return acc;
   }, {});
 
-  await firebase.database()
+  await firebase
+    .database()
     .ref('/tracks')
     .child(partyId)
     .update(updateObject);

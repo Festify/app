@@ -16,10 +16,7 @@ import { createSelector } from 'reselect';
 
 import { installPlaybackMaster } from '../actions/party-data';
 import { togglePlaybackStart } from '../actions/playback-spotify';
-import {
-  removeTrackAction,
-  requestSetVoteAction as setVoteAction,
-} from '../actions/queue';
+import { removeTrackAction, requestSetVoteAction as setVoteAction } from '../actions/queue';
 import {
   hasOtherPlaybackMasterSelector,
   isPartyOwnerSelector,
@@ -83,8 +80,7 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
   setVote,
   togglePlayPause,
 }) => {
-  const voteBtnTitle =
-    `${hasVoted ? "Unvote" : "Vote for"} ${metadata && metadata.name}`;
+  const voteBtnTitle = `${hasVoted ? 'Unvote' : 'Vote for'} ${metadata && metadata.name}`;
 
   if (isPlayingTrack) {
     return (
@@ -126,9 +122,9 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
   } else if (track) {
     const Icon = hasVoted
       ? Favorite
-      : (track.vote_count > 0 || track.is_fallback)
-        ? FavoriteBorder
-        : Add;
+      : track.vote_count > 0 || track.is_fallback
+      ? FavoriteBorder
+      : Add;
 
     return (
       <IconButton
@@ -146,7 +142,7 @@ const PlayButton: React.FC<PartyTrackMergedProps> = ({
 
 const emptyArray = [];
 
-const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
+const PartyTrack: React.FC<PartyTrackMergedProps> = props => {
   const {
     artistName,
     className,
@@ -174,28 +170,26 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = (props) => {
       <SrcSetImage
         alt={metadata ? `Cover of ${metadata.name}` : undefined}
         aria-hidden="true"
-        className={classNames(
-          styles.cover,
-          { [styles.coverPlaying]: isPlayingTrack },
-        )}
+        className={classNames(styles.cover, {
+          [styles.coverPlaying]: isPlayingTrack,
+        })}
         images={metadata ? metadata.cover : emptyArray}
         sizes="54px"
       />
 
       <div
-        className={classNames(
-          styles.metadataWrapper,
-          { [styles.metadataWrapperPlaying]: isPlayingTrack },
-        )}
+        className={classNames(styles.metadataWrapper, {
+          [styles.metadataWrapperPlaying]: isPlayingTrack,
+        })}
       >
-        <h2 className={styles.songTitle}>
-          {metadata ? metadata.name : "Loading..."}
-        </h2>
+        <h2 className={styles.songTitle}>{metadata ? metadata.name : 'Loading...'}</h2>
 
         {artistName && (
           <aside className={styles.metadata}>
             <a>{artistName}</a>
-            <span className={styles.dot} aria-hidden="true">&middot;</span>
+            <span className={styles.dot} aria-hidden="true">
+              &middot;
+            </span>
             <span>{voteString}</span>
           </aside>
         )}
@@ -247,8 +241,8 @@ const enablePlayButtonSelector = createSelector(
   (isOwner, isToggling, isCompatible, hasSptAccount, hasOtherMaster) =>
     isOwner &&
     !isToggling &&
-    (!isCompatible && hasOtherMaster || isCompatible) &&
-    (!hasSptAccount && hasOtherMaster || hasSptAccount),
+    ((!isCompatible && hasOtherMaster) || isCompatible) &&
+    ((!hasSptAccount && hasOtherMaster) || hasSptAccount),
 );
 
 export const createMapStateToPropsFactory = (
@@ -273,8 +267,7 @@ export const createMapStateToPropsFactory = (
       isPartyOwnerSelector,
       hasVotesOrIsFallbackSelector,
       isPlayingSelector,
-      (isOwner, hasVotesOrIsFallback, isPlaying) =>
-        isOwner && hasVotesOrIsFallback && !isPlaying,
+      (isOwner, hasVotesOrIsFallback, isPlaying) => isOwner && hasVotesOrIsFallback && !isPlaying,
     );
     const showTakeoverButtonSelector = createSelector(
       isPartyOwnerSelector,
@@ -284,12 +277,7 @@ export const createMapStateToPropsFactory = (
       isCompatibleSelector,
       hasConnectedSpotifyAccountSelector,
       (isOwner, isMaster, master, isPlaying, isCompatible, hasSptConnected) =>
-        isPlaying &&
-        isOwner &&
-        !isMaster &&
-        !!master &&
-        isCompatible &&
-        hasSptConnected,
+        isPlaying && isOwner && !isMaster && !!master && isCompatible && hasSptConnected,
     );
     const voteStringGenerator = voteStringGeneratorFactory(trackSelector);
 
@@ -297,11 +285,9 @@ export const createMapStateToPropsFactory = (
       artistName: artistJoiner(state, ownProps.trackId),
       enablePlayButton: enablePlayButtonSelector(state),
       hasConnectedSpotifyAccount: hasConnectedSpotifyAccountSelector(state),
-      hasVoted: !!state.party.userVotes &&
-        state.party.userVotes[ownProps.trackId] === true,
+      hasVoted: !!state.party.userVotes && state.party.userVotes[ownProps.trackId] === true,
       isOwner: isPartyOwnerSelector(state),
-      isMusicPlaying: !!state.party.currentParty &&
-        state.party.currentParty.playback.playing,
+      isMusicPlaying: !!state.party.currentParty && state.party.currentParty.playback.playing,
       isPlayingTrack: isPlayingSelector(state, ownProps.trackId),
       metadata: singleMetadataSelector(state, ownProps.trackId),
       showRemoveButton: showRemoveTrackButtonSelector(state, ownProps.trackId),

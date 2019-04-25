@@ -1,5 +1,4 @@
-export type Actions =
-  | ReturnType<typeof shareParty>;
+export type Actions = ReturnType<typeof shareParty>;
 
 export const SHARE_PARTY = 'SHARE_PARTY';
 

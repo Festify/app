@@ -16,7 +16,7 @@ const defaultUser = <T>(): AuthProviderStatus<T> => ({
   user: null,
 });
 
-export default function (
+export default function(
   state: UserState = {
     credentials: {
       facebook: defaultUser(),
@@ -39,7 +39,7 @@ export default function (
     credentials: {
       ...state.credentials,
       [prov]: {
-        ...(state.credentials[prov]),
+        ...state.credentials[prov],
         ...data,
       },
     },

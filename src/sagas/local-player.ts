@@ -49,14 +49,17 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
       names = [names];
     }
 
-    return names.reduce((prev, ev) => {
-      player.on(ev as any, listener);
+    return names.reduce(
+      (prev, ev) => {
+        player.on(ev as any, listener);
 
-      return () => {
-        player.removeListener(name as any, listener);
-        prev();
-      };
-    }, () => { });
+        return () => {
+          player.removeListener(name as any, listener);
+          prev();
+        };
+      },
+      () => {},
+    );
   });
 }
 
@@ -96,7 +99,7 @@ function* handlePlaybackStateChange(
     throw new Error('Wat');
   }
 
-  if (('playing' in oldPlayback) && oldPlayback.playing === newPlayback.playing) {
+  if ('playing' in oldPlayback && oldPlayback.playing === newPlayback.playing) {
     return;
   }
 
@@ -121,16 +124,12 @@ function* handlePlaybackStateChange(
   } else {
     const playing = 'playing' in oldPlayback ? oldPlayback.playing : undefined;
     const position = newPlayback.last_position_ms
-      ? newPlayback.last_position_ms + (playing !== false ? Date.now() - newPlayback.last_change : 0)
+      ? newPlayback.last_position_ms +
+        (playing !== false ? Date.now() - newPlayback.last_change : 0)
       : 0;
 
     yield all([
-      call(
-        playTrack,
-        currentTrack.reference.id,
-        deviceId,
-        position,
-      ),
+      call(playTrack, currentTrack.reference.id, deviceId, position),
       call(markTrackAsPlayed, partyId, currentTrack.reference),
     ]);
   }
@@ -139,8 +138,11 @@ function* handlePlaybackStateChange(
 }
 
 function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
-  const playerStateChanges: Channel<Spotify.PlaybackState> =
-    yield call(attachToEvents, player, 'player_state_changed');
+  const playerStateChanges: Channel<Spotify.PlaybackState> = yield call(
+    attachToEvents,
+    player,
+    'player_state_changed',
+  );
 
   while (true) {
     yield take(PLAY);
@@ -217,7 +219,7 @@ function* handleQueueChange(
 
 function* handlePlaybackError(error: Spotify.Error) {
   yield put(showToast(error.message));
-  console.error("Spotify error:", error);
+  console.error('Spotify error:', error);
 
   Raven.captureException(error.message);
 }
@@ -235,32 +237,39 @@ export function* manageLocalPlayer(partyId: string) {
 
       player = new Spotify.Player({
         name: 'Festify 🎉',
-        getOAuthToken: (cb) => requireAccessToken().then(cb),
+        getOAuthToken: cb => requireAccessToken().then(cb),
         volume: 1,
       });
 
-      const playerErrors: Channel<Spotify.Error> =
-        yield call(attachToEvents, player, [
-          'initialization_error',
-          'authentication_error',
-          'account_error',
-          'playback_error',
-        ]);
+      const playerErrors: Channel<Spotify.Error> = yield call(attachToEvents, player, [
+        'initialization_error',
+        'authentication_error',
+        'account_error',
+        'playback_error',
+      ]);
 
-      const playerReady: Channel<Spotify.WebPlaybackInstance> =
-        yield call(attachToEvents, player, 'ready');
-      const playbackStateChanges: Channel<Spotify.PlaybackState> =
-        yield call(attachToEvents, player, 'player_state_changed');
+      const playerReady: Channel<Spotify.WebPlaybackInstance> = yield call(
+        attachToEvents,
+        player,
+        'ready',
+      );
+      const playbackStateChanges: Channel<Spotify.PlaybackState> = yield call(
+        attachToEvents,
+        player,
+        'player_state_changed',
+      );
 
       const connectSuccess: boolean = yield apply(player, player.connect);
 
       if (!connectSuccess) {
         const error = yield take(playerErrors);
         yield put(playerError(error));
-        yield put(updatePlaybackState({
-          master_id: null,
-          playing: false,
-        }));
+        yield put(
+          updatePlaybackState({
+            master_id: null,
+            playing: false,
+          }),
+        );
       }
 
       const lifecycleManager: Task = yield fork(handlePlaybackLifecycle, player);
@@ -322,15 +331,12 @@ export function* checkPlaybackSdkCompatibility() {
   const { platform, userAgent } = navigator;
 
   const validOS =
-    platform.includes('Win') ||
-    platform.includes('Mac') ||
-    platform.includes('Linux');
+    platform.includes('Win') || platform.includes('Mac') || platform.includes('Linux');
 
   const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
 
   const validBrowser =
-    (userAgent.includes('Firefox') && !userAgent.includes('Opera')) ||
-    userAgent.includes('Chrome');
+    (userAgent.includes('Firefox') && !userAgent.includes('Opera')) || userAgent.includes('Chrome');
 
   if (!validOS || !validBrowser || isMobile) {
     yield put(setPlayerCompatibility(false));

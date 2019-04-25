@@ -31,7 +31,9 @@ export const NOTIFY_AUTH_STATUS_KNOWN = 'NOTIFY_AUTH_STATUS_KNOWN';
 export const REQUIRE_FOLLOW_UP_LOGIN = 'REQUIRE_FOLLOW_UP_LOGIN';
 export const TRIGGER_OAUTH_LOGIN = 'TRIGGER_OAUTH_LOGIN';
 
-export const checkLoginStatus = () => ({ type: CHECK_LOGIN_STATUS as typeof CHECK_LOGIN_STATUS });
+export const checkLoginStatus = () => ({
+  type: CHECK_LOGIN_STATUS as typeof CHECK_LOGIN_STATUS,
+});
 
 export const exchangeCodeStart = (prov: keyof UserCredentials) => ({
   type: EXCHANGE_CODE as typeof EXCHANGE_CODE,
@@ -64,7 +66,8 @@ export const triggerOAuthLogin = (provider: OAuthLoginProviders) => ({
   payload: provider,
 });
 
-export const welcomeUser = (user: User) => showToast(user.displayName ? `Welcome, ${user.displayName}!` : 'Welcome!');
+export const welcomeUser = (user: User) =>
+  showToast(user.displayName ? `Welcome, ${user.displayName}!` : 'Welcome!');
 
 /* Utils */
 
@@ -93,13 +96,9 @@ export async function linkFollowUpUser() {
     return;
   }
 
-  const {
-    accessToken,
-    idToken,
-    providerId,
-    secret,
-    spotify,
-  } = JSON.parse(localStorage[FOLLOWUP_LS_KEY]);
+  const { accessToken, idToken, providerId, secret, spotify } = JSON.parse(
+    localStorage[FOLLOWUP_LS_KEY],
+  );
   removeSavedFollowUpLoginCredentials();
 
   if (spotify) {
@@ -121,7 +120,7 @@ export async function linkFollowUpUser() {
         credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
         break;
       default:
-        throw new Error("Unknown provider");
+        throw new Error('Unknown provider');
     }
 
     const user = await requireAuth();

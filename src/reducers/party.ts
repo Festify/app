@@ -16,7 +16,7 @@ import { ConnectionState, PartyState, Track } from '../state';
 
 const VOTE_FACTOR = 1e12;
 
-export default function (
+export default function(
   state: PartyState = {
     connectionState: ConnectionState.Unknown,
     currentParty: null,
@@ -59,7 +59,7 @@ export default function (
         // Precompute order for quicker UI reaction
         trackList[trackId] = {
           ...track,
-          order: track.order + (VOTE_FACTOR * voteQuantifier),
+          order: track.order + VOTE_FACTOR * voteQuantifier,
           vote_count: track.vote_count - voteQuantifier,
         };
       }

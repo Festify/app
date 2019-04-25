@@ -14,7 +14,7 @@ import {
 } from '../actions/view-party-settings';
 import { SettingsViewState } from '../state';
 
-export default function (
+export default function(
   state: SettingsViewState = {
     playlistLoadError: null,
     playlistLoadInProgress: false,

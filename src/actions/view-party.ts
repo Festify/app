@@ -36,4 +36,6 @@ export const searchFinish = (tracks: Record<string, Track>) => ({
   payload: tracks,
 });
 
-export const searchStart = () => ({ type: SEARCH_START as typeof SEARCH_START });
+export const searchStart = () => ({
+  type: SEARCH_START as typeof SEARCH_START,
+});

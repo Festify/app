@@ -28,7 +28,7 @@ function* cacheMetadata(ac: ReturnType<typeof updateMetadata>) {
       return;
     }
     hasThrownIdbError = true;
-    console.warn("Failed to cache metadata to IndexedDB.", err);
+    console.warn('Failed to cache metadata to IndexedDB.', err);
   }
 }
 
@@ -66,10 +66,7 @@ function* watchTvMode(action, prevView: Views, newView: Views) {
   }
 
   if (newView === Views.Tv) {
-    loadFanartTask = yield takeLatest(
-      [UPDATE_TRACKS, UPDATE_METADATA],
-      loadFanartForNewTracks,
-    );
+    loadFanartTask = yield takeLatest([UPDATE_TRACKS, UPDATE_METADATA], loadFanartForNewTracks);
 
     yield* loadFanartForNewTracks(null);
   } else if (prevView === Views.Tv) {
@@ -97,7 +94,7 @@ function* loadMetadataForNewTracks(_) {
     const cached: Record<string, Metadata> = yield cache.getMetadata(fullIds);
     yield put(updateMetadata(cached));
   } catch (err) {
-    console.warn("Failed to load cached tracks from IndexedDB. Fetching from Spotify API...");
+    console.warn('Failed to load cached tracks from IndexedDB. Fetching from Spotify API...');
   }
 
   const country = state.party.currentParty.country;
@@ -110,12 +107,12 @@ function* loadMetadataForNewTracks(_) {
 
       yield put(updateMetadata(tracks));
     } catch (err) {
-      console.error("Failed to load metadata for a track chunk.", err);
+      console.error('Failed to load metadata for a track chunk.', err);
     }
   }
 }
 
-export default function* () {
+export default function*() {
   yield takeEvery(UPDATE_METADATA, cacheMetadata);
   yield takeLatest(UPDATE_TRACKS, loadMetadataForNewTracks);
   yield takeEveryWithState(

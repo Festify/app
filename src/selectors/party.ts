@@ -5,7 +5,9 @@ import firebase from '../util/firebase';
 
 export const isPartyOwnerSelector = (state: State) => {
   const fbUser = firebase.auth().currentUser;
-  return Boolean(fbUser && state.party.currentParty && state.party.currentParty.created_by === fbUser.uid);
+  return Boolean(
+    fbUser && state.party.currentParty && state.party.currentParty.created_by === fbUser.uid,
+  );
 };
 
 export const partyIdSelector = (state: State): string | null => {
@@ -30,4 +32,5 @@ export const hasOtherPlaybackMasterSelector = createSelector(
   (pm, isPm) => pm && !isPm,
 );
 
-export const playbackSelector = (state: State) => state.party.currentParty ? state.party.currentParty.playback : null;
+export const playbackSelector = (state: State) =>
+  state.party.currentParty ? state.party.currentParty.playback : null;

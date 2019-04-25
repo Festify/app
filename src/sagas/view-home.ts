@@ -20,7 +20,7 @@ function* createParty() {
   const spotifyUser = user.credentials.spotify.user;
 
   if (!spotifyUser) {
-    const e = new Error("Missing Spotify user");
+    const e = new Error('Missing Spotify user');
     yield put(createPartyFail(e));
     return;
   }
@@ -28,13 +28,9 @@ function* createParty() {
   const userDisplayName = spotifyUser.display_name || spotifyUser.id;
   let partyId: string;
   try {
-    partyId = yield call(
-      createNewParty,
-      userDisplayName,
-      player.instanceId,
-      spotifyUser.country,
-      { ...defaultPartySettings },
-    );
+    partyId = yield call(createNewParty, userDisplayName, player.instanceId, spotifyUser.country, {
+      ...defaultPartySettings,
+    });
   } catch (err) {
     yield put(createPartyFail(err));
     return;
@@ -47,7 +43,7 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
   const { homeView }: State = yield select();
 
   if (!homeView.partyIdValid) {
-    const e = new Error("Party ID is invalid!");
+    const e = new Error('Party ID is invalid!');
     yield put(joinPartyFail(e));
     return;
   }
@@ -55,7 +51,7 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
   const longId = yield call(resolveShortId, homeView.partyId);
 
   if (!longId) {
-    const e = new Error("Party not found!");
+    const e = new Error('Party not found!');
     yield put(joinPartyFail(e));
     return;
   }
@@ -66,19 +62,24 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
 function* warnNonPremium() {
   const { router, user }: State = yield select();
 
-  if ((router.result || { view: Views.Home }).view !== Views.Home ||
+  if (
+    (router.result || { view: Views.Home }).view !== Views.Home ||
     !user.credentials.spotify.user ||
-    user.credentials.spotify.user.product === 'premium') {
+    user.credentials.spotify.user.product === 'premium'
+  ) {
     return;
   }
 
-  yield put(showToast( // tslint:disable-next-line:max-line-length
-    "To create parties and play music on Festify, you need to have a 'Spotify Premium' account. Please login again using a premium account if you want to host parties.",
-    10000,
-  ));
+  yield put(
+    showToast(
+      // tslint:disable-next-line:max-line-length
+      "To create parties and play music on Festify, you need to have a 'Spotify Premium' account. Please login again using a premium account if you want to host parties.",
+      10000,
+    ),
+  );
 }
 
-export default function* () {
+export default function*() {
   yield takeLatest(NOTIFY_AUTH_STATUS_KNOWN, warnNonPremium);
   yield takeLatest(CREATE_PARTY_START, createParty);
   yield takeLatest(JOIN_PARTY_START, joinParty);

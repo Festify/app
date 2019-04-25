@@ -5,14 +5,14 @@ import { functions } from './firebase';
 
 export const LOCALSTORAGE_KEY = 'SpotifyAuthData';
 export const SCOPES = [
-  "streaming",
-  "user-modify-playback-state",
-  "user-read-playback-state",
-  "user-read-birthdate",
-  "user-read-email",
-  "user-read-private",
-  "playlist-read-collaborative",
-  "playlist-read-private",
+  'streaming',
+  'user-modify-playback-state',
+  'user-read-playback-state',
+  'user-read-birthdate',
+  'user-read-email',
+  'user-read-private',
+  'playlist-read-collaborative',
+  'playlist-read-private',
 ];
 
 export const requireAccessToken: () => Promise<string> = debounce(_requireAccessToken);
@@ -34,15 +34,13 @@ async function _requireAccessToken(): Promise<string> {
   }
 
   if (!authData.refreshToken) {
-    throw new Error("Missing refresh token.");
+    throw new Error('Missing refresh token.');
   }
 
-  const { accessToken, expiresIn } = (await functions.refreshToken({ refreshToken: authData.refreshToken })).data;
-  authData = new AuthData(
-    accessToken,
-    Date.now() + (expiresIn * 1000),
-    authData.refreshToken,
-  );
+  const { accessToken, expiresIn } = (await functions.refreshToken({
+    refreshToken: authData.refreshToken,
+  })).data;
+  authData = new AuthData(accessToken, Date.now() + expiresIn * 1000, authData.refreshToken);
   authData.saveTo(LOCALSTORAGE_KEY);
 
   return authData.accessToken;
@@ -59,7 +57,7 @@ async function _requireAnonymousAuth(): Promise<string> {
   const { data } = await functions.clientToken();
 
   anonymousAccessToken = data.accessToken;
-  anonymousExpireTimeMs = Date.now() + (data.expiresIn * 1000) - 10000; // Safety margin
+  anonymousExpireTimeMs = Date.now() + data.expiresIn * 1000 - 10000; // Safety margin
   return data.accessToken;
 }
 
@@ -80,13 +78,13 @@ function fetchFactory(
         ...options,
         headers: {
           ...options.headers,
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (resp.status === 202) {
         isInactive = true;
-        await (new Promise(res => setTimeout(res, 5000)));
+        await new Promise(res => setTimeout(res, 5000));
       } else {
         return resp;
       }

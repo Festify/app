@@ -184,9 +184,7 @@ export interface UserCredentials {
   twitter: AuthProviderStatus<User>;
 }
 
-export type EnabledProvidersList = {
-  [k in OAuthLoginProviders]: boolean;
-};
+export type EnabledProvidersList = { [k in OAuthLoginProviders]: boolean };
 
 export const enableAuthProviders = (overrides: OAuthLoginProviders[]) => {
   const result: EnabledProvidersList = {
@@ -196,7 +194,7 @@ export const enableAuthProviders = (overrides: OAuthLoginProviders[]) => {
     spotify: false,
     twitter: false,
   };
-  overrides.forEach(prov => result[prov] = true);
+  overrides.forEach(prov => (result[prov] = true));
   return result;
 };
 

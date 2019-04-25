@@ -50,10 +50,7 @@ function* removeTrack(partyId: string, ac: ReturnType<typeof removeTrackAction>)
   try {
     const [ref, moveToHistory] = ac.payload;
     const state: State = yield select();
-    const track = singleTrackSelector(
-      state,
-      firebaseTrackIdSelector(ref),
-    );
+    const track = singleTrackSelector(state, firebaseTrackIdSelector(ref));
 
     yield call(doRemoveTrack, partyId, track, moveToHistory);
   } catch (err) {
@@ -80,7 +77,7 @@ function* setVote(partyId: string, ac: ReturnType<typeof setVoteAction>) {
   }
 }
 
-export default function* (partyId: string) {
+export default function*(partyId: string) {
   yield takeEvery(REMOVE_TRACK, removeTrack, partyId);
   yield takeEvery(REQUEST_SET_VOTE, setVote, partyId);
   yield fork(pinTopTrack, partyId);

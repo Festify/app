@@ -8,12 +8,12 @@ export class AuthData {
   static loadFrom(localStorageKey: string): AuthData {
     const lsString = localStorage[localStorageKey];
     if (!lsString) {
-      throw new Error("Missing authentication data.");
+      throw new Error('Missing authentication data.');
     }
 
     const authData = JSON.parse(lsString);
     if (!authData) {
-      throw new Error("Missing authentication data.");
+      throw new Error('Missing authentication data.');
     }
 
     const { accessToken, expiresAt, refreshToken } = authData;
@@ -35,7 +35,7 @@ export class AuthData {
   }
 
   get isValid(): boolean {
-    return !!this.accessToken && this.expiresAt > (Date.now() + 10000);
+    return !!this.accessToken && this.expiresAt > Date.now() + 10000;
   }
 
   saveTo(localStorageKey: string): void {

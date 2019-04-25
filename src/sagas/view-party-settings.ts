@@ -35,7 +35,8 @@ function* changePartySetting(partyId: string, ac: ReturnType<typeof changePartyS
     return;
   }
 
-  yield firebase.database()
+  yield firebase
+    .database()
     .ref('/parties')
     .child(partyId)
     .child('settings')
@@ -45,9 +46,11 @@ function* changePartySetting(partyId: string, ac: ReturnType<typeof changePartyS
 
 function* fetchPlaylists() {
   const state: State = yield select();
-  if (!state.router.result ||
+  if (
+    !state.router.result ||
     state.router.result.subView !== PartyViews.Settings ||
-    !hasConnectedSpotifyAccountSelector(state)) {
+    !hasConnectedSpotifyAccountSelector(state)
+  ) {
     return;
   }
 
@@ -73,10 +76,7 @@ function* flushTracks(partyId: string) {
 }
 
 function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistStart>) {
-  type SubActions =
-    | { type: 'progress', payload: number }
-    | { type: 'error', payload: Error }
-    | END;
+  type SubActions = { type: 'progress'; payload: number } | { type: 'error'; payload: Error } | END;
 
   function doInsert(creationDate: number) {
     return eventChannel<SubActions>(put => {
@@ -90,7 +90,7 @@ function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistSt
         .then(() => put(END))
         .catch(err => put({ type: 'error', payload: err }));
 
-      return () => { };
+      return () => {};
     }, buffers.expanding());
   }
 
@@ -112,7 +112,8 @@ function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistSt
 }
 
 function* updatePartyName(partyId: string, ac: ReturnType<typeof updatePartyNameAction>) {
-  yield firebase.database()
+  yield firebase
+    .database()
     .ref('/parties')
     .child(partyId)
     .child('name')
@@ -126,9 +127,6 @@ export function* managePartySettings(partyId: string) {
   yield takeLatest(UPDATE_PARTY_NAME, updatePartyName, partyId);
 }
 
-export default function* () {
-  yield takeLatest([
-    NOTIFY_AUTH_STATUS_KNOWN,
-    LOCATION_CHANGED,
-  ], fetchPlaylists);
+export default function*() {
+  yield takeLatest([NOTIFY_AUTH_STATUS_KNOWN, LOCATION_CHANGED], fetchPlaylists);
 }

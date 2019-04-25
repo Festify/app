@@ -19,23 +19,19 @@ import { EnabledProvidersList, Party, State } from '../state';
 import PartyQueue from './PartyQueue';
 import PlaybackProgressBar from './PlaybackProgressBar';
 import SearchBar from './SearchBar';
-import {
-  Facebook,
-  Github,
-  Google,
-  Spotify,
-  Twitter
-} from './SocialIcons';
+import { Facebook, Github, Google, Spotify, Twitter } from './SocialIcons';
 import styles from './ViewParty.module.scss';
 
 interface PartyViewProps {
   displayLoginModal: boolean;
   enabledProviders: EnabledProvidersList;
   isFollowUpSignIn: boolean;
-  party: Party | {
-    created_by: string;
-    name: string
-  };
+  party:
+    | Party
+    | {
+        created_by: string;
+        name: string;
+      };
   view: PartyViews;
 }
 interface PartyViewDispatch {
@@ -93,12 +89,7 @@ const ViewParty: React.FC<MergedProps> = ({
   <div className={classNames(styles.viewParty, className)}>
     <AppBar className={styles.header} position="sticky">
       <Toolbar>
-        <Typography
-          className={styles.partyTitle}
-          color="inherit"
-          noWrap
-          variant="h6"
-        >
+        <Typography className={styles.partyTitle} color="inherit" noWrap variant="h6">
           {party.name}
         </Typography>
       </Toolbar>
@@ -110,23 +101,18 @@ const ViewParty: React.FC<MergedProps> = ({
       <PlaybackProgressBar className={styles.progressBar} />
     </AppBar>
 
-    <Body view={view}/>
+    <Body view={view} />
 
-    <Dialog
-      open={displayLoginModal}
-      onClose={closeLoginModal}
-    >
+    <Dialog open={displayLoginModal} onClose={closeLoginModal}>
       <DialogTitle>
-        {!isFollowUpSignIn
-          ? "Please sign in to vote"
-          : "Further action required"}
+        {!isFollowUpSignIn ? 'Please sign in to vote' : 'Further action required'}
       </DialogTitle>
 
       <DialogContent>
         <p>
           {!isFollowUpSignIn
             ? "The party owner requires all guests to sign in to prevent cheating, but you wouldn't do that anyway, would ya? 😛"
-            : "There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once."}
+            : 'There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once.'}
         </p>
 
         <Button
@@ -182,11 +168,7 @@ const ViewParty: React.FC<MergedProps> = ({
       </DialogContent>
 
       <DialogActions>
-        <Button
-          className={styles.cancel}
-          onClick={closeLoginModal}
-          variant="text"
-        >
+        <Button className={styles.cancel} onClick={closeLoginModal} variant="text">
           Cancel
         </Button>
       </DialogActions>
@@ -207,10 +189,10 @@ const allEnabled: EnabledProvidersList = {
 const mapStateToProps = (state: State): PartyViewProps => ({
   displayLoginModal: state.partyView.loginModalOpen,
   enabledProviders: state.user.needsFollowUpSignInWithProviders
-      ? state.user.needsFollowUpSignInWithProviders
-      : allEnabled,
+    ? state.user.needsFollowUpSignInWithProviders
+    : allEnabled,
   isFollowUpSignIn: !!state.user.needsFollowUpSignInWithProviders,
-  party: state.party.currentParty || { created_by: '', name: "Loading..." },
+  party: state.party.currentParty || { created_by: '', name: 'Loading...' },
   view: (state.router.result || { subView: PartyViews.Queue }).subView,
 });
 

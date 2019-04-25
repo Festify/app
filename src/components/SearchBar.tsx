@@ -3,10 +3,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import {
-  changeTrackSearchInput,
-  eraseTrackSearchInput,
-} from '../actions/view-party';
+import { changeTrackSearchInput, eraseTrackSearchInput } from '../actions/view-party';
 import { State } from '../state';
 import Logo from '../util/festify-logo';
 
@@ -25,11 +22,13 @@ interface SearchBarOwnProps {
 
 type MergedProps = SearchBarProps & SearchBarDispatch & SearchBarOwnProps;
 
-const SearchBar: React.FC<MergedProps> = (props) => (
+const SearchBar: React.FC<MergedProps> = props => (
   <div className={classNames(styles.searchBar, props.className)}>
-    {props.text
-      ? <ArrowBack className={styles.icon} onClick={props.onErase} />
-      : <Logo className={styles.icon}/>}
+    {props.text ? (
+      <ArrowBack className={styles.icon} onClick={props.onErase} />
+    ) : (
+      <Logo className={styles.icon} />
+    )}
 
     <input
       className={styles.input}
@@ -41,15 +40,15 @@ const SearchBar: React.FC<MergedProps> = (props) => (
 );
 
 const mapStateToProps = (state: State): SearchBarProps => ({
-  text: state.router.query
-    ? (state.router.query.s || '')
-    : '',
+  text: state.router.query ? state.router.query.s || '' : '',
 });
 
 const mapDispatchToProps: SearchBarDispatch = {
-  onChange: (ev: React.ChangeEvent<HTMLInputElement>) =>
-    changeTrackSearchInput(ev.target.value),
+  onChange: (ev: React.ChangeEvent<HTMLInputElement>) => changeTrackSearchInput(ev.target.value),
   onErase: eraseTrackSearchInput,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SearchBar);

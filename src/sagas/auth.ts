@@ -2,7 +2,17 @@ import { User, UserCredential } from '@firebase/auth-types';
 import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
 import { replace, LocationChangedAction, LOCATION_CHANGED } from 'redux-little-router';
 import { delay } from 'redux-saga';
-import { all, apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  all,
+  apply,
+  call,
+  fork,
+  put,
+  select,
+  take,
+  takeEvery,
+  takeLatest,
+} from 'redux-saga/effects';
 
 import { showToast } from '../actions';
 import {
@@ -32,9 +42,10 @@ import firebase, { functions } from '../util/firebase';
 import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'AuthRedirect';
-const OAUTH_URL = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}`
-  + `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code`
-  + `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
+const OAUTH_URL =
+  `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}` +
+  `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code` +
+  `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
 
 function* checkLogin() {
   const user: User = yield call(requireAuth);
@@ -101,7 +112,7 @@ function* handleFirebaseOAuth() {
         yield firebase.auth().signInAndRetrieveDataWithCredential(err.credential);
         return;
       case 'auth/web-storage-unsupported':
-        e = new Error("Your browser is not supported or has third party cookies disabled.");
+        e = new Error('Your browser is not supported or has third party cookies disabled.');
         break;
       default:
         e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
@@ -154,7 +165,10 @@ function* handleSpotifyOAuth() {
 
   let resp: HttpsCallableResult;
   try {
-    resp = yield call(functions.exchangeCode, { callbackUrl: location.origin, code });
+    resp = yield call(functions.exchangeCode, {
+      callbackUrl: location.origin,
+      code,
+    });
   } catch (err) {
     yield put(exchangeCodeFail('spotify', err));
     return;
@@ -162,16 +176,14 @@ function* handleSpotifyOAuth() {
 
   const { accessToken, expiresIn, refreshToken } = resp.data;
 
-  const data = new AuthData(
-    accessToken,
-    Date.now() + (expiresIn * 1000),
-    refreshToken,
-  );
+  const data = new AuthData(accessToken, Date.now() + expiresIn * 1000, refreshToken);
   yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
 
   let firebaseToken;
   try {
-    const { data }: HttpsCallableResult = yield call(functions.linkSpotifyAccounts, { accessToken });
+    const { data }: HttpsCallableResult = yield call(functions.linkSpotifyAccounts, {
+      accessToken,
+    });
     firebaseToken = data.firebaseToken;
   } catch (err) {
     switch (err.code) {
@@ -181,9 +193,10 @@ function* handleSpotifyOAuth() {
         yield put(requireFollowUpLogin(followUpProviders));
         return;
       default:
-        const e = ((err as HttpsError).code === 'invalid-argument')
-          ? err // In this case the error message is suitable for displaying to the user
-          : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
+        const e =
+          (err as HttpsError).code === 'invalid-argument'
+            ? err // In this case the error message is suitable for displaying to the user
+            : new Error(`Token exchange failed with ${err.code}: ${err.message}.`);
         yield put(exchangeCodeFail('spotify', e));
         return;
     }
@@ -211,10 +224,7 @@ function* handleSpotifyOAuth() {
 }
 
 function* handleOAuthRedirects() {
-  yield all([
-    handleFirebaseOAuth(),
-    handleSpotifyOAuth(),
-  ]);
+  yield all([handleFirebaseOAuth(), handleSpotifyOAuth()]);
 }
 
 /**
@@ -222,10 +232,12 @@ function* handleOAuthRedirects() {
  */
 function* logout() {
   if (yield select(isPlaybackMasterSelector)) {
-    yield put(updatePlaybackState({
-      master_id: null,
-      playing: false,
-    }));
+    yield put(
+      updatePlaybackState({
+        master_id: null,
+        playing: false,
+      }),
+    );
   }
 
   yield call(AuthData.remove, LOCALSTORAGE_KEY);
@@ -253,7 +265,10 @@ function* refreshFirebaseAuth() {
         break;
       } catch (err) {
         const duration = 5000 * i;
-        console.warn(`Failed to forcefully reauth user, trying again after ${duration / 1000}s.`, err);
+        console.warn(
+          `Failed to forcefully reauth user, trying again after ${duration / 1000}s.`,
+          err,
+        );
         yield call(delay, duration);
       }
     }
@@ -262,7 +277,10 @@ function* refreshFirebaseAuth() {
 
 function* triggerOAuthLogin(ac: ReturnType<typeof triggerOAuthLoginAction>) {
   if (ac.payload === 'spotify') {
-    yield call(console.log, 'Only the swaggiest of developers hacking on Festify will see this 🙌.');
+    yield call(
+      console.log,
+      'Only the swaggiest of developers hacking on Festify will see this 🙌.',
+    );
     localStorage[AUTH_REDIRECT_LOCAL_STORAGE_KEY] =
       window.location.pathname + window.location.search + window.location.hash;
     window.location.href = OAUTH_URL;
@@ -270,15 +288,20 @@ function* triggerOAuthLogin(ac: ReturnType<typeof triggerOAuthLoginAction>) {
     try {
       yield firebase.auth().signInWithRedirect(getProvider(ac.payload));
     } catch (err) {
-      const e = (err.code === 'auth/provider-already-linked') // tslint:disable-next-line:max-line-length
-        ? new Error(`Failed to start OAuth because the account is already linked with an account from ${ac.payload}.`)
-        : new Error(`Failed to start OAuth with code ${err.code}: ${err.message}`);
+      const e =
+        err.code === 'auth/provider-already-linked' // tslint:disable-next-line:max-line-length
+          ? new Error(
+              `Failed to start OAuth because the account is already linked with an account from ${
+                ac.payload
+              }.`,
+            )
+          : new Error(`Failed to start OAuth with code ${err.code}: ${err.message}`);
       yield put(exchangeCodeFail(ac.payload, e));
     }
   }
 }
 
-export default function* () {
+export default function*() {
   yield fork(refreshFirebaseAuth);
   yield takeEvery(CHANGE_DISPLAY_LOGIN_MODAL, handleFollowUpCancellation);
   yield takeEvery(CHECK_LOGIN_STATUS, checkLogin);

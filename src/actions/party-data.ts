@@ -37,9 +37,13 @@ export const UPDATE_TRACKS = 'UPDATE_TRACKS';
 export const UPDATE_USER_VOTES = 'UPDATE_USER_VOTES';
 export const UPDATE_PLAYBACK_STATE = 'UPDATE_PLAYBACK_STATE';
 
-export const becomePlaybackMaster = () => ({ type: BECOME_PLAYBACK_MASTER as typeof BECOME_PLAYBACK_MASTER });
+export const becomePlaybackMaster = () => ({
+  type: BECOME_PLAYBACK_MASTER as typeof BECOME_PLAYBACK_MASTER,
+});
 
-export const cleanupParty = () => ({ type: CLEANUP_PARTY as typeof CLEANUP_PARTY });
+export const cleanupParty = () => ({
+  type: CLEANUP_PARTY as typeof CLEANUP_PARTY,
+});
 
 export const createPartyFail = (err: Error) => ({
   type: CREATE_PARTY_FAIL as typeof CREATE_PARTY_FAIL,
@@ -47,7 +51,9 @@ export const createPartyFail = (err: Error) => ({
   payload: err,
 });
 
-export const createPartyStart = () => ({ type: CREATE_PARTY_START as typeof CREATE_PARTY_START });
+export const createPartyStart = () => ({
+  type: CREATE_PARTY_START as typeof CREATE_PARTY_START,
+});
 
 export const joinPartyFail = (err: Error) => ({
   type: JOIN_PARTY_FAIL as typeof JOIN_PARTY_FAIL,
@@ -55,9 +61,13 @@ export const joinPartyFail = (err: Error) => ({
   payload: err,
 });
 
-export const joinPartyStart = () => ({ type: JOIN_PARTY_START as typeof JOIN_PARTY_START });
+export const joinPartyStart = () => ({
+  type: JOIN_PARTY_START as typeof JOIN_PARTY_START,
+});
 
-export const installPlaybackMaster = () => ({ type: INSTALL_PLAYBACK_MASTER as typeof INSTALL_PLAYBACK_MASTER });
+export const installPlaybackMaster = () => ({
+  type: INSTALL_PLAYBACK_MASTER as typeof INSTALL_PLAYBACK_MASTER,
+});
 
 export const openPartyFail = (err: Error) => ({
   type: OPEN_PARTY_FAIL as typeof OPEN_PARTY_FAIL,
@@ -75,7 +85,9 @@ export const openPartyStart = (id: string) => ({
   payload: id,
 });
 
-export const resignPlaybackMaster = () => ({ type: RESIGN_PLAYBACK_MASTER as typeof RESIGN_PLAYBACK_MASTER });
+export const resignPlaybackMaster = () => ({
+  type: RESIGN_PLAYBACK_MASTER as typeof RESIGN_PLAYBACK_MASTER,
+});
 
 export const updateConnectionState = (isConnected: ConnectionState) => ({
   type: UPDATE_NETWORK_CONNECTION_STATE as typeof UPDATE_NETWORK_CONNECTION_STATE,
@@ -130,19 +142,21 @@ export async function createNewParty(
     short_id: String(Math.floor(Math.random() * 1000000)),
   };
 
-  const result = await firebase.database()
+  const result = await firebase
+    .database()
     .ref('/parties')
     .push(party);
 
   if (!result.key) {
-    throw new Error("Missing ID of newly created party!");
+    throw new Error('Missing ID of newly created party!');
   }
 
   return result.key;
 }
 
 export async function resolveShortId(shortId: string): Promise<string | null> {
-  const snapshot = await firebase.database()
+  const snapshot = await firebase
+    .database()
     .ref('/parties')
     .orderByChild('short_id')
     .equalTo(shortId)
@@ -154,7 +168,7 @@ export async function resolveShortId(shortId: string): Promise<string | null> {
 
   const result: Record<string, Party> = snapshot.val();
   const possibleLongId = Object.keys(result).reduce(
-    (acc, k) => result[k].created_at > (result[acc] || { created_at: -1 }).created_at ? k : acc,
+    (acc, k) => (result[k].created_at > (result[acc] || { created_at: -1 }).created_at ? k : acc),
     '',
   );
 

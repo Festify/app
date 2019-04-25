@@ -3,8 +3,7 @@ import idb, { DB } from 'idb';
 import { FANART_TV_API_KEY } from '../common.config';
 import { Metadata } from '../state';
 
-export type Actions =
-  | ReturnType<typeof updateMetadata>;
+export type Actions = ReturnType<typeof updateMetadata>;
 
 export const UPDATE_METADATA = 'UPDATE_METADATA';
 
@@ -36,8 +35,7 @@ export function updateMetadata(
     };
   } else if (isFanartObj(meta)) {
     const payload: Record<string, Partial<Metadata>> = {};
-    Object.keys(meta)
-      .forEach(key => payload[key] = { background: meta[key] });
+    Object.keys(meta).forEach(key => (payload[key] = { background: meta[key] }));
 
     return {
       type: UPDATE_METADATA as typeof UPDATE_METADATA,
@@ -66,13 +64,16 @@ export class MetadataStore {
   constructor() {
     // Wrap IDB initialization to catch synchronous errors
     this.db = new Promise((res, rej) => {
-      idb.open('Festify', 11, upgrade => {
-        if (upgrade.objectStoreNames.contains('metadata')) {
-          upgrade.deleteObjectStore('metadata');
-        }
-        const store = upgrade.createObjectStore('metadata', { keyPath: 'trackId' });
-        store.createIndex('dateCreated', 'dateCreated', { unique: false });
-      })
+      idb
+        .open('Festify', 11, upgrade => {
+          if (upgrade.objectStoreNames.contains('metadata')) {
+            upgrade.deleteObjectStore('metadata');
+          }
+          const store = upgrade.createObjectStore('metadata', {
+            keyPath: 'trackId',
+          });
+          store.createIndex('dateCreated', 'dateCreated', { unique: false });
+        })
         .then(res)
         .catch(rej);
     });
@@ -148,14 +149,15 @@ export class MetadataStore {
 
       await tx.complete;
     } catch (err) {
-      console.log("Failed to clear out old metadata.", err);
+      console.log('Failed to clear out old metadata.', err);
     }
   }
 }
 
 const FANART_URL = 'https://webservice.fanart.tv/v3/music';
 const MUSICBRAINZ_ARTIST_URL = 'https://musicbrainz.org/ws/2/artist/?fmt=json&limit=10&query=';
-const MUSICBRAINZ_RECORDING_URL = 'https://musicbrainz.org/ws/2/recording/?fmt=json&limit=10&query=';
+const MUSICBRAINZ_RECORDING_URL =
+  'https://musicbrainz.org/ws/2/recording/?fmt=json&limit=10&query=';
 
 /**
  * Gets fanart images of the given artist identified via its music brainz ID.
@@ -164,18 +166,14 @@ const MUSICBRAINZ_RECORDING_URL = 'https://musicbrainz.org/ws/2/recording/?fmt=j
  * @returns {Promise<string[] | null>} A promise with the fanart images or null, if none could be found.
  */
 export async function getArtistFanart(artistMbId: string): Promise<string[] | null> {
-  const fanartResponse = await fetch(
-    `${FANART_URL}/${artistMbId}?api_key=${FANART_TV_API_KEY}`,
-  );
+  const fanartResponse = await fetch(`${FANART_URL}/${artistMbId}?api_key=${FANART_TV_API_KEY}`);
 
   if (!fanartResponse.ok) {
     return null;
   }
 
   const backgrounds = (await fanartResponse.json()).artistbackground;
-  return backgrounds && backgrounds.length
-    ? backgrounds.map(background => background.url)
-    : null;
+  return backgrounds && backgrounds.length ? backgrounds.map(background => background.url) : null;
 }
 
 /**
@@ -196,7 +194,7 @@ export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
   async function tryFetchArtistViaIsrc(isrc: string): Promise<string | null> {
     const isrcResponse = await fetch(
       `${MUSICBRAINZ_RECORDING_URL}isrc:${encodeURIComponent(isrc)}`,
-      { headers: { 'Accept': 'application/json' } },
+      { headers: { Accept: 'application/json' } },
     );
     if (!isrcResponse.ok) {
       return null;
@@ -222,7 +220,7 @@ export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
 
   const musicBrainzResponse = await fetch(
     `${MUSICBRAINZ_ARTIST_URL}${encodeURIComponent(meta.artists[0])}`,
-    { headers: { 'Accept': 'application/json' } },
+    { headers: { Accept: 'application/json' } },
   );
 
   if (!musicBrainzResponse.ok) {
@@ -246,10 +244,12 @@ export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
    * the right search result by choosing the artist with the most metadata / most complete
    * profile.
    */
-  const likeliestArtist: { id: string } | null = musicBrainzResult.artists
+  const likeliestArtist: {
+    id: string;
+  } | null = musicBrainzResult.artists
     .filter(artist => artist.score >= 50)
     .reduce(
-      (acc, it) => acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it,
+      (acc, it) => (acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it),
       null,
     );
 

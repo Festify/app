@@ -18,10 +18,7 @@ interface ProgressBarState {
   indicatorStyle: CSSProperties;
 }
 
-class PlaybackProgressBar extends React.Component<
-  ProgressBarProps,
-  ProgressBarState
-> {
+class PlaybackProgressBar extends React.Component<ProgressBarProps, ProgressBarState> {
   state = { indicatorStyle: {} };
 
   componentDidMount() {
@@ -40,11 +37,7 @@ class PlaybackProgressBar extends React.Component<
     );
   }
 
-  private transitionTo(
-    percentage: number,
-    durationMs: number,
-    isPlaying: boolean,
-  ) {
+  private transitionTo(percentage: number, durationMs: number, isPlaying: boolean) {
     const indicatorStyle: CSSProperties = {
       transition: `opacity 0.25s ease, transform ${durationMs}ms linear`,
       opacity: isPlaying ? 1 : 0.5,
@@ -66,7 +59,7 @@ class PlaybackProgressBar extends React.Component<
     let currentPercentage = last_position_ms / durationMs;
     if (playing) {
       const timeDiff = Date.now() - last_change;
-      currentPercentage += (timeDiff / durationMs);
+      currentPercentage += timeDiff / durationMs;
     }
 
     window.requestAnimationFrame(() => {
@@ -88,9 +81,7 @@ const currentDurationSelector = createSelector(
   metadataSelector,
   currentTrackIdSelector,
   (metadata: Record<string, Metadata>, trackId: string | null) =>
-      trackId && trackId in metadata
-          ? metadata[trackId].durationMs
-          : 0,
+    trackId && trackId in metadata ? metadata[trackId].durationMs : 0,
 );
 
 const mapDispatchToProps = (state: State): ProgressBarProps => ({

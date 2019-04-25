@@ -4,7 +4,7 @@ import { Actions } from '../actions';
 import { UPDATE_METADATA } from '../actions/metadata';
 import { Metadata } from '../state';
 
-export default function (
+export default function(
   state: Record<string, Metadata> = {},
   action: Actions,
 ): Record<string, Metadata> {

@@ -64,7 +64,7 @@ export const hideToast = () => ({ type: HIDE_TOAST as typeof HIDE_TOAST });
 
 export const showToast = (text: string, duration: number = 3000) => {
   if (duration < 0) {
-    throw new Error("Toast duration < 0");
+    throw new Error('Toast duration < 0');
   }
 
   return {

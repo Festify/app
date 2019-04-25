@@ -1,7 +1,7 @@
 import { Actions, HIDE_TOAST, SHOW_TOAST } from '../actions';
 import { AppShellState } from '../state';
 
-export default function (
+export default function(
   state: AppShellState = { currentToast: null },
   action: Actions,
 ): AppShellState {

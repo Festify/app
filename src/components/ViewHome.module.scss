@@ -1,4 +1,4 @@
-@import "../util/variables.scss";
+@import '../util/variables.scss';
 
 .viewHome {
   display: flex;
@@ -9,8 +9,7 @@
   padding: 0 10px;
   text-align: center;
 
-  background:
-    linear-gradient(rgba(28, 31, 36, .9), rgba(28, 31, 36, .9)),
+  background: linear-gradient(rgba(28, 31, 36, 0.9), rgba(28, 31, 36, 0.9)),
     url(/home-bg.jpg) no-repeat center;
   background-size: cover;
 }
@@ -48,7 +47,7 @@
 
 .browserIncompatible {
   color: $color-primary;
-  font-size: .75rem;
+  font-size: 0.75rem;
   margin-top: 1rem;
   text-align: center;
   text-decoration: none;

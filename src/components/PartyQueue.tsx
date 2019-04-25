@@ -1,12 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  AutoSizer,
-  InfiniteLoader,
-  List,
-  ListRowRenderer,
-} from 'react-virtualized';
+import { AutoSizer, InfiniteLoader, List, ListRowRenderer } from 'react-virtualized';
 import 'react-virtualized/styles.css';
 import { Link } from 'redux-little-router';
 
@@ -31,33 +26,23 @@ interface PartyQueueOwnProps {
 
 type MergedProps = PartyQueueProps & PartyQueueOwnProps;
 
-const rowHeight = ({ index }) => (index === 0) ? 80 : 64;
+const rowHeight = ({ index }) => (index === 0 ? 80 : 64);
 
-const Inner: React.FC<MergedProps> = ({
-  hasTracksLoaded,
-  isOwner,
-  settingsRoute,
-  tracks,
-}) => {
+const Inner: React.FC<MergedProps> = ({ hasTracksLoaded, isOwner, settingsRoute, tracks }) => {
   if (!hasTracksLoaded) {
     return <LoadingSpinner />;
   } else if (!tracks.length) {
     return (
       <>
-        <h2 className={styles.queueEmpty}>
-          🌝 The queue is empty!
-        </h2>
+        <h2 className={styles.queueEmpty}>🌝 The queue is empty!</h2>
         <h3 className={styles.queueEmpty}>
           {isOwner ? (
             <>
-              <Link href={settingsRoute}>
-                Go to settings
-              </Link>
-              &nbsp;
-              to add a fallback playlist
+              <Link href={settingsRoute}>Go to settings</Link>
+              &nbsp; to add a fallback playlist
             </>
           ) : (
-            "Search for your favourite tracks and add them to the queue"
+            'Search for your favourite tracks and add them to the queue'
           )}
         </h3>
       </>
@@ -100,9 +85,9 @@ const Inner: React.FC<MergedProps> = ({
   );
 };
 
-const PartyQueue: React.FC<MergedProps> = (props) => (
+const PartyQueue: React.FC<MergedProps> = props => (
   <main className={classNames(styles.partyQueue, props.className)}>
-    <Inner {...props}/>
+    <Inner {...props} />
   </main>
 );
 

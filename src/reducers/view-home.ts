@@ -9,7 +9,7 @@ import {
 import { CHANGE_PARTY_ID } from '../actions/view-home';
 import { HomeViewState } from '../state';
 
-export default function (
+export default function(
   state: HomeViewState = {
     partyCreationError: null,
     partyCreationInProgress: false,

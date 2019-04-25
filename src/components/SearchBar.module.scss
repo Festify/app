@@ -4,7 +4,7 @@ $icon-size: 24px;
   align-items: center;
   background-color: #fafafa;
   border-radius: 2px;
-  box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.24);
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
   display: flex;
   height: 48px;
   position: relative;
@@ -34,6 +34,6 @@ $icon-size: 24px;
   }
 
   &::-webkit-input-placeholder {
-    color: rgba(0, 0, 0, .54);
+    color: rgba(0, 0, 0, 0.54);
   }
 }
