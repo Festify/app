@@ -86,12 +86,12 @@ export function tracksEqual(
   a: Track | null | undefined,
   b: Track | null | undefined,
 ): boolean {
-  // eslint-disable-next-line eqeqeq
+  // tslint:disable-next-line:triple-equals
   if (a == b) {
     return true;
   } else if (!a || !b) {
     return false;
-    // eslint-disable-next-line eqeqeq
+    // tslint:disable-next-line:triple-equals
   } else if (a.reference == b.reference) {
     return true;
   } else if (!a.reference || !b.reference) {
