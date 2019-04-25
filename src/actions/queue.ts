@@ -32,7 +32,10 @@ export const setVoteAction = (ref: TrackReference, vote: boolean) => ({
 
 /* Utils */
 
-export function markTrackAsPlayed(partyId: string, ref: TrackReference): Promise<void> {
+export function markTrackAsPlayed(
+  partyId: string,
+  ref: TrackReference,
+): Promise<void> {
   return firebase
     .database()
     .ref('/tracks')
@@ -58,7 +61,11 @@ export function pinTrack(partyId: string, ref: TrackReference): Promise<void> {
     .set(Number.MIN_SAFE_INTEGER + 1);
 }
 
-export async function removeTrack(partyId: string, track: Track, moveToHistory: boolean) {
+export async function removeTrack(
+  partyId: string,
+  track: Track,
+  moveToHistory: boolean,
+) {
   const trackId = firebaseTrackIdSelector(track);
   const updates: any[] = [
     firebase

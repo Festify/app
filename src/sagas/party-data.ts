@@ -2,7 +2,16 @@ import { User } from '@firebase/auth-types';
 import { DataSnapshot } from '@firebase/database-types';
 import { push, LOCATION_CHANGED } from 'redux-little-router';
 import { Channel } from 'redux-saga';
-import { all, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  cancel,
+  fork,
+  put,
+  select,
+  take,
+  takeEvery,
+} from 'redux-saga/effects';
 
 import { notifyAuthStatusKnown, NOTIFY_AUTH_STATUS_KNOWN } from '../actions/auth';
 import {
@@ -30,7 +39,9 @@ import manageQueue from './queue';
 import { managePartySettings } from './view-party-settings';
 
 function* publishConnectionStateUpdates(snap: DataSnapshot) {
-  const state = snap.val() ? ConnectionState.Connected : ConnectionState.Disconnected;
+  const state = snap.val()
+    ? ConnectionState.Connected
+    : ConnectionState.Disconnected;
 
   yield put(updateConnectionState(state));
 }
@@ -90,7 +101,9 @@ function* loadParty() {
   };
 
   while (true) {
-    const { payload: id }: ReturnType<typeof openPartyStart> = yield take(OPEN_PARTY_START);
+    const { payload: id }: ReturnType<typeof openPartyStart> = yield take(
+      OPEN_PARTY_START,
+    );
 
     const partyRef: Channel<DataSnapshot> = yield call(
       valuesChannel,
@@ -185,7 +198,9 @@ function* watchRoute() {
 
 function* watchLogin() {
   while (true) {
-    const ac: ReturnType<typeof notifyAuthStatusKnown> = yield take(NOTIFY_AUTH_STATUS_KNOWN);
+    const ac: ReturnType<typeof notifyAuthStatusKnown> = yield take(
+      NOTIFY_AUTH_STATUS_KNOWN,
+    );
     const partyId: string = yield select(partyIdSelector);
 
     if (!partyId || !ac.payload.data) {

@@ -28,9 +28,15 @@ function* createParty() {
   const userDisplayName = spotifyUser.display_name || spotifyUser.id;
   let partyId: string;
   try {
-    partyId = yield call(createNewParty, userDisplayName, player.instanceId, spotifyUser.country, {
-      ...defaultPartySettings,
-    });
+    partyId = yield call(
+      createNewParty,
+      userDisplayName,
+      player.instanceId,
+      spotifyUser.country,
+      {
+        ...defaultPartySettings,
+      },
+    );
   } catch (err) {
     yield put(createPartyFail(err));
     return;

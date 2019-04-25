@@ -168,7 +168,10 @@ export async function resolveShortId(shortId: string): Promise<string | null> {
 
   const result: Record<string, Party> = snapshot.val();
   const possibleLongId = Object.keys(result).reduce(
-    (acc, k) => (result[k].created_at > (result[acc] || { created_at: -1 }).created_at ? k : acc),
+    (acc, k) =>
+      result[k].created_at > (result[acc] || { created_at: -1 }).created_at
+        ? k
+        : acc,
     '',
   );
 

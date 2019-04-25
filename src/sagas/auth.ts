@@ -1,6 +1,10 @@
 import { User, UserCredential } from '@firebase/auth-types';
 import { HttpsCallableResult, HttpsError } from '@firebase/functions-types';
-import { replace, LocationChangedAction, LOCATION_CHANGED } from 'redux-little-router';
+import {
+  replace,
+  LocationChangedAction,
+  LOCATION_CHANGED,
+} from 'redux-little-router';
 import { delay } from 'redux-saga';
 import {
   all,
@@ -33,19 +37,28 @@ import {
   TRIGGER_OAUTH_LOGIN,
 } from '../actions/auth';
 import { updatePlaybackState } from '../actions/party-data';
-import { changeDisplayLoginModal, CHANGE_DISPLAY_LOGIN_MODAL } from '../actions/view-party';
+import {
+  changeDisplayLoginModal,
+  CHANGE_DISPLAY_LOGIN_MODAL,
+} from '../actions/view-party';
 import { SPOTIFY_CLIENT_ID } from '../common.config';
 import { isPlaybackMasterSelector } from '../selectors/party';
 import { State } from '../state';
 import { getProvider, requireAuth, AuthData } from '../util/auth';
 import firebase, { functions } from '../util/firebase';
-import { fetchWithAccessToken, LOCALSTORAGE_KEY, SCOPES } from '../util/spotify-auth';
+import {
+  fetchWithAccessToken,
+  LOCALSTORAGE_KEY,
+  SCOPES,
+} from '../util/spotify-auth';
 
 const AUTH_REDIRECT_LOCAL_STORAGE_KEY = 'AuthRedirect';
 const OAUTH_URL =
   `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}` +
   `&redirect_uri=${encodeURIComponent(window.location.origin)}&response_type=code` +
-  `&scope=${encodeURIComponent(SCOPES.join(' '))}&state=SPOTIFY_AUTH&show_dialog=true`;
+  `&scope=${encodeURIComponent(
+    SCOPES.join(' '),
+  )}&state=SPOTIFY_AUTH&show_dialog=true`;
 
 function* checkLogin() {
   const user: User = yield call(requireAuth);
@@ -76,7 +89,9 @@ function* checkLogin() {
  *
  * @param ac the redux action
  */
-function* handleFollowUpCancellation(ac: ReturnType<typeof changeDisplayLoginModal>) {
+function* handleFollowUpCancellation(
+  ac: ReturnType<typeof changeDisplayLoginModal>,
+) {
   if (!ac.payload && hasFollowUpCredentials()) {
     yield call(removeSavedFollowUpLoginCredentials);
     yield call(AuthData.remove, LOCALSTORAGE_KEY);
@@ -112,14 +127,21 @@ function* handleFirebaseOAuth() {
         yield firebase.auth().signInAndRetrieveDataWithCredential(err.credential);
         return;
       case 'auth/web-storage-unsupported':
-        e = new Error('Your browser is not supported or has third party cookies disabled.');
+        e = new Error(
+          'Your browser is not supported or has third party cookies disabled.',
+        );
         break;
       default:
         e = new Error(`Failed to perform OAuth ${err.code}: ${err.message}`);
         break;
     }
 
-    yield put(exchangeCodeFail((err.credential && err.credential.providerId) || 'firebase', e));
+    yield put(
+      exchangeCodeFail(
+        (err.credential && err.credential.providerId) || 'firebase',
+        e,
+      ),
+    );
     return;
   }
 
@@ -176,7 +198,11 @@ function* handleSpotifyOAuth() {
 
   const { accessToken, expiresIn, refreshToken } = resp.data;
 
-  const data = new AuthData(accessToken, Date.now() + expiresIn * 1000, refreshToken);
+  const data = new AuthData(
+    accessToken,
+    Date.now() + expiresIn * 1000,
+    refreshToken,
+  );
   yield apply(data, data.saveTo, [LOCALSTORAGE_KEY]);
 
   let firebaseToken;
@@ -189,7 +215,10 @@ function* handleSpotifyOAuth() {
     switch (err.code) {
       case 'already-exists':
         yield call(saveFollowUpLoginCredentials, { spotify: true });
-        const followUpProviders = yield call(getFollowUpLoginProviders, err.details.email);
+        const followUpProviders = yield call(
+          getFollowUpLoginProviders,
+          err.details.email,
+        );
         yield put(requireFollowUpLogin(followUpProviders));
         return;
       default:
@@ -266,7 +295,8 @@ function* refreshFirebaseAuth() {
       } catch (err) {
         const duration = 5000 * i;
         console.warn(
-          `Failed to forcefully reauth user, trying again after ${duration / 1000}s.`,
+          `Failed to forcefully reauth user, trying again after ${duration /
+            1000}s.`,
           err,
         );
         yield call(delay, duration);

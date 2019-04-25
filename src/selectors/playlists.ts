@@ -4,7 +4,8 @@ import { State } from '../state';
 
 export const playlistsSelector = (state: State) => state.user.playlists;
 
-export const searchQuerySelector = (state: State) => state.settingsView.playlistSearchQuery;
+export const searchQuerySelector = (state: State) =>
+  state.settingsView.playlistSearchQuery;
 
 export const filteredPlaylistsSelector = createSelector(
   playlistsSelector,

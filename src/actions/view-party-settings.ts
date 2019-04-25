@@ -22,7 +22,8 @@ export type Actions =
 
 export const UPDATE_PARTY_NAME = 'CHANGE_PARTYNAME';
 export const CHANGE_PARTY_SETTING = 'CHANGE_PARTY_SETTING';
-export const CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT = 'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT';
+export const CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT =
+  'CHANGE_FALLBACK_PLAYLIST_SEARCH_INPUT';
 export const FLUSH_QUEUE_FAIL = 'FLUSH_QUEUE_Fail';
 export const FLUSH_QUEUE_FINISH = 'FLUSH_QUEUE_Finish';
 export const FLUSH_QUEUE_START = 'FLUSH_QUEUE_Start';
@@ -172,7 +173,12 @@ export async function insertPlaylist(
       const { items, next }: SpotifyApi.PlaylistTrackResponse = await resp.json();
       const trackItems = items
         .filter(
-          it => it && !it.is_local && it.track && it.track.id && it.track.is_playable !== false,
+          it =>
+            it &&
+            !it.is_local &&
+            it.track &&
+            it.track.id &&
+            it.track.is_playable !== false,
         )
         .map(it => it.track);
 

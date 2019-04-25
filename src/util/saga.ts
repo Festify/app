@@ -32,7 +32,15 @@ export function takeEveryWithState<S, T, A1, A2, A3>(
 export function takeEveryWithState<S, T, A1, A2, A3>(
   pattern: Pattern,
   selector: (state: S) => T,
-  saga: (action: any, oldState: T, newState: T, arg1: A1, arg2: A2, arg3: A3, ...rest) => any,
+  saga: (
+    action: any,
+    oldState: T,
+    newState: T,
+    arg1: A1,
+    arg2: A2,
+    arg3: A3,
+    ...rest
+  ) => any,
   arg1: A1,
   arg2: A2,
   arg3: A3,

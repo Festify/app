@@ -28,7 +28,12 @@ type MergedProps = PartyQueueProps & PartyQueueOwnProps;
 
 const rowHeight = ({ index }) => (index === 0 ? 80 : 64);
 
-const Inner: React.FC<MergedProps> = ({ hasTracksLoaded, isOwner, settingsRoute, tracks }) => {
+const Inner: React.FC<MergedProps> = ({
+  hasTracksLoaded,
+  isOwner,
+  settingsRoute,
+  tracks,
+}) => {
   if (!hasTracksLoaded) {
     return <LoadingSpinner />;
   } else if (!tracks.length) {

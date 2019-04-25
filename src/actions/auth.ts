@@ -1,6 +1,10 @@
 import { AuthCredential, OAuthCredential, User } from '@firebase/auth-types';
 
-import { enableAuthProviders, EnabledProvidersList, UserCredentials } from '../state';
+import {
+  enableAuthProviders,
+  EnabledProvidersList,
+  UserCredentials,
+} from '../state';
 import { requireAuth } from '../util/auth';
 import firebase, { firebaseNS, functions } from '../util/firebase';
 import { requireAccessToken } from '../util/spotify-auth';
@@ -73,13 +77,17 @@ export const welcomeUser = (user: User) =>
 
 const FOLLOWUP_LS_KEY = 'FollowUpCredential';
 
-export async function getFollowUpLoginProviders(email: string): Promise<EnabledProvidersList> {
+export async function getFollowUpLoginProviders(
+  email: string,
+): Promise<EnabledProvidersList> {
   const [providers, isSpotify] = await Promise.all([
     firebase.auth().fetchProvidersForEmail(email),
     functions.isSpotifyUser({ email }),
   ]);
   const strippedProviders = providers.map(provId => provId.replace('.com', ''));
-  const enabledProviders = enableAuthProviders(strippedProviders as OAuthLoginProviders[]);
+  const enabledProviders = enableAuthProviders(
+    strippedProviders as OAuthLoginProviders[],
+  );
 
   return {
     ...enabledProviders,
@@ -114,10 +122,16 @@ export async function linkFollowUpUser() {
         credential = firebaseNS.auth!.GithubAuthProvider.credential(accessToken);
         break;
       case 'google.com':
-        credential = firebaseNS.auth!.GoogleAuthProvider.credential(idToken, accessToken);
+        credential = firebaseNS.auth!.GoogleAuthProvider.credential(
+          idToken,
+          accessToken,
+        );
         break;
       case 'twitter.com':
-        credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
+        credential = firebaseNS.auth!.TwitterAuthProvider.credential(
+          accessToken,
+          secret,
+        );
         break;
       default:
         throw new Error('Unknown provider');
@@ -132,6 +146,8 @@ export function removeSavedFollowUpLoginCredentials() {
   localStorage.removeItem(FOLLOWUP_LS_KEY);
 }
 
-export function saveFollowUpLoginCredentials(cred: OAuthCredential | { spotify: true }) {
+export function saveFollowUpLoginCredentials(
+  cred: OAuthCredential | { spotify: true },
+) {
   localStorage[FOLLOWUP_LS_KEY] = JSON.stringify(cred);
 }

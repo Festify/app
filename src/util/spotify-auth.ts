@@ -15,8 +15,12 @@ export const SCOPES = [
   'playlist-read-private',
 ];
 
-export const requireAccessToken: () => Promise<string> = debounce(_requireAccessToken);
-export const requireAnonymousAuth: () => Promise<string> = debounce(_requireAnonymousAuth);
+export const requireAccessToken: () => Promise<string> = debounce(
+  _requireAccessToken,
+);
+export const requireAnonymousAuth: () => Promise<string> = debounce(
+  _requireAnonymousAuth,
+);
 
 export const fetchWithAnonymousAuth = fetchFactory(requireAnonymousAuth);
 export const fetchWithAccessToken = fetchFactory(requireAccessToken);
@@ -40,7 +44,11 @@ async function _requireAccessToken(): Promise<string> {
   const { accessToken, expiresIn } = (await functions.refreshToken({
     refreshToken: authData.refreshToken,
   })).data;
-  authData = new AuthData(accessToken, Date.now() + expiresIn * 1000, authData.refreshToken);
+  authData = new AuthData(
+    accessToken,
+    Date.now() + expiresIn * 1000,
+    authData.refreshToken,
+  );
   authData.saveTo(LOCALSTORAGE_KEY);
 
   return authData.accessToken;

@@ -7,7 +7,10 @@ import { Dispatch } from 'redux';
 
 import { Actions } from '../actions';
 import { triggerOAuthLogin } from '../actions/auth';
-import { createPartyStart, joinPartyStart as joinParty } from '../actions/party-data';
+import {
+  createPartyStart,
+  joinPartyStart as joinParty,
+} from '../actions/party-data';
 import { changePartyId } from '../actions/view-home';
 import { State } from '../state';
 import Logo from '../util/festify-logo';
@@ -39,7 +42,12 @@ interface HomeViewOwnProps {
 type HomeViewMergedProps = HomeViewProps & HomeViewDispatch & HomeViewOwnProps;
 
 const HomeButton: React.FC<ButtonProps> = ({ children, ...restProps }) => (
-  <Button className={styles.button} color="primary" variant="contained" {...restProps}>
+  <Button
+    className={styles.button}
+    color="primary"
+    variant="contained"
+    {...restProps}
+  >
     {children}
   </Button>
 );
@@ -67,7 +75,11 @@ const DynamicButton = (viewProps: HomeViewMergedProps) => {
   } else if (viewProps.authorizationInProgress || !viewProps.authStatusKnown) {
     return <HomeButton disabled>Authorizing...</HomeButton>;
   } else {
-    return <HomeButton onClick={viewProps.loginWithSpotify}>Login to create Party</HomeButton>;
+    return (
+      <HomeButton onClick={viewProps.loginWithSpotify}>
+        Login to create Party
+      </HomeButton>
+    );
   }
 };
 
@@ -78,7 +90,8 @@ const HomeViewComponent: React.FC<HomeViewMergedProps> = props => (
     </header>
 
     <p className={styles.intro}>
-      Festify lets your guests choose which music should be played using their smartphones.
+      Festify lets your guests choose which music should be played using their
+      smartphones.
     </p>
 
     <main className={styles.form}>

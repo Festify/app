@@ -25,7 +25,9 @@ export default function*() {
       return;
     }
     while (true) {
-      const { payload: authPayload }: ReturnType<typeof notifyAuthStatusKnown> = yield take(
+      const {
+        payload: authPayload,
+      }: ReturnType<typeof notifyAuthStatusKnown> = yield take(
         NOTIFY_AUTH_STATUS_KNOWN,
       );
       if (authPayload.provider === 'spotify' && !!authPayload.data) {

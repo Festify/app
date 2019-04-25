@@ -22,7 +22,9 @@ export default function*() {
     event.payload.event.preventDefault();
   });
 
-  yield takeEvery(QUEUE_DRAG_DROP, function*(event: ReturnType<typeof queueDragDrop>) {
+  yield takeEvery(QUEUE_DRAG_DROP, function*(
+    event: ReturnType<typeof queueDragDrop>,
+  ) {
     event.payload.event.preventDefault();
     const data: string = event.payload.event.dataTransfer!.getData('text/plain');
     const trackRegex = /\/track\/([0-9a-z]+)/gi;

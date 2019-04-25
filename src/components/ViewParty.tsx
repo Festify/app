@@ -89,7 +89,12 @@ const ViewParty: React.FC<MergedProps> = ({
   <div className={classNames(styles.viewParty, className)}>
     <AppBar className={styles.header} position="sticky">
       <Toolbar>
-        <Typography className={styles.partyTitle} color="inherit" noWrap variant="h6">
+        <Typography
+          className={styles.partyTitle}
+          color="inherit"
+          noWrap
+          variant="h6"
+        >
           {party.name}
         </Typography>
       </Toolbar>

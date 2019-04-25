@@ -14,12 +14,18 @@ export const tracksSelector = (state: State) => state.party.tracks || {};
 export const singleTrackSelector = (state: State, trackId: string) =>
   tracksSelector(state)[trackId];
 
-export const metadataSelector = (state: State): Record<string, Metadata> => state.metadata || {};
+export const metadataSelector = (state: State): Record<string, Metadata> =>
+  state.metadata || {};
 
-export const singleMetadataSelector = (state: State, trackId: string): Metadata | null =>
-  metadataSelector(state)[trackId];
+export const singleMetadataSelector = (
+  state: State,
+  trackId: string,
+): Metadata | null => metadataSelector(state)[trackId];
 
-export const artistJoinerFactory: () => (s: State, id: string) => string | null = () =>
+export const artistJoinerFactory: () => (
+  s: State,
+  id: string,
+) => string | null = () =>
   createSelector(
     singleMetadataSelector,
     metadata => {
@@ -56,7 +62,8 @@ export const sortedTracksFactory = (
         .filter(t => {
           const fbId = firebaseTrackIdSelector(t);
           return (
-            !(fbId in meta) || (meta[fbId].isPlayable && meta[fbId].durationMs <= maxDurationMs)
+            !(fbId in meta) ||
+            (meta[fbId].isPlayable && meta[fbId].durationMs <= maxDurationMs)
           );
         })
         .sort((a, b) => a.order - b.order);
@@ -75,7 +82,10 @@ export const currentTrackIdSelector = createSelector(
   track => (track ? firebaseTrackIdSelector(track) : null),
 );
 
-export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
+export function tracksEqual(
+  a: Track | null | undefined,
+  b: Track | null | undefined,
+): boolean {
   // eslint-disable-next-line eqeqeq
   if (a == b) {
     return true;
@@ -87,7 +97,10 @@ export function tracksEqual(a: Track | null | undefined, b: Track | null | undef
   } else if (!a.reference || !b.reference) {
     return false;
   } else {
-    return a.reference.provider === b.reference.provider && a.reference.id === b.reference.id;
+    return (
+      a.reference.provider === b.reference.provider &&
+      a.reference.id === b.reference.id
+    );
   }
 }
 

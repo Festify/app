@@ -21,7 +21,9 @@ function* displayErrorToast(action: Actions) {
 
   yield put(
     showToast(
-      action.type === EXCHANGE_CODE_FAIL ? action.payload.data.message : action.payload.message,
+      action.type === EXCHANGE_CODE_FAIL
+        ? action.payload.data.message
+        : action.payload.message,
       10000,
     ),
   );

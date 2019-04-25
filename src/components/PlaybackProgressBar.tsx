@@ -18,7 +18,10 @@ interface ProgressBarState {
   indicatorStyle: CSSProperties;
 }
 
-class PlaybackProgressBar extends React.Component<ProgressBarProps, ProgressBarState> {
+class PlaybackProgressBar extends React.Component<
+  ProgressBarProps,
+  ProgressBarState
+> {
   state = { indicatorStyle: {} };
 
   componentDidMount() {

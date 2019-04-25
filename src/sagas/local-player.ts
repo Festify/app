@@ -119,7 +119,10 @@ function* handlePlaybackStateChange(
     return;
   }
 
-  if (spotifyState && spotifyState.track_window.current_track.id === currentTrack.reference.id) {
+  if (
+    spotifyState &&
+    spotifyState.track_window.current_track.id === currentTrack.reference.id
+  ) {
     yield player.resume();
   } else {
     const playing = 'playing' in oldPlayback ? oldPlayback.playing : undefined;
@@ -241,12 +244,16 @@ export function* manageLocalPlayer(partyId: string) {
         volume: 1,
       });
 
-      const playerErrors: Channel<Spotify.Error> = yield call(attachToEvents, player, [
-        'initialization_error',
-        'authentication_error',
-        'account_error',
-        'playback_error',
-      ]);
+      const playerErrors: Channel<Spotify.Error> = yield call(
+        attachToEvents,
+        player,
+        [
+          'initialization_error',
+          'authentication_error',
+          'account_error',
+          'playback_error',
+        ],
+      );
 
       const playerReady: Channel<Spotify.WebPlaybackInstance> = yield call(
         attachToEvents,
@@ -331,12 +338,17 @@ export function* checkPlaybackSdkCompatibility() {
   const { platform, userAgent } = navigator;
 
   const validOS =
-    platform.includes('Win') || platform.includes('Mac') || platform.includes('Linux');
+    platform.includes('Win') ||
+    platform.includes('Mac') ||
+    platform.includes('Linux');
 
-  const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
+  const isMobile = navigator.userAgent.match(
+    /Android|webOS|iPhone|iPod|iPad|Blackberry/i,
+  );
 
   const validBrowser =
-    (userAgent.includes('Firefox') && !userAgent.includes('Opera')) || userAgent.includes('Chrome');
+    (userAgent.includes('Firefox') && !userAgent.includes('Opera')) ||
+    userAgent.includes('Chrome');
 
   if (!validOS || !validBrowser || isMobile) {
     yield put(setPlayerCompatibility(false));

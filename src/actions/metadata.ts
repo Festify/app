@@ -8,7 +8,10 @@ export type Actions = ReturnType<typeof updateMetadata>;
 export const UPDATE_METADATA = 'UPDATE_METADATA';
 
 export function updateMetadata(
-  meta: Record<string, Metadata> | SpotifyApi.TrackObjectFull[] | Record<string, string[]>,
+  meta:
+    | Record<string, Metadata>
+    | SpotifyApi.TrackObjectFull[]
+    | Record<string, string[]>,
 ) {
   function isFanartObj(
     meta: Record<string, Metadata> | Record<string, string[]>,
@@ -114,15 +117,17 @@ export class MetadataStore {
     const requestedTrackIds = new Set(ids);
     const lastDateCreated = IDBKeyRange.lowerBound(Date.now() - META_IDB_TTL, true);
     const stored: StoredMetadata[] = [];
-    await store.index<string>('dateCreated').iterateCursor(lastDateCreated, cursor => {
-      if (!cursor) {
-        return;
-      }
-      if (requestedTrackIds.has(cursor.value.trackId)) {
-        stored.push(cursor.value);
-      }
-      cursor.continue();
-    });
+    await store
+      .index<string>('dateCreated')
+      .iterateCursor(lastDateCreated, cursor => {
+        if (!cursor) {
+          return;
+        }
+        if (requestedTrackIds.has(cursor.value.trackId)) {
+          stored.push(cursor.value);
+        }
+        cursor.continue();
+      });
 
     await tx.complete;
 
@@ -155,7 +160,8 @@ export class MetadataStore {
 }
 
 const FANART_URL = 'https://webservice.fanart.tv/v3/music';
-const MUSICBRAINZ_ARTIST_URL = 'https://musicbrainz.org/ws/2/artist/?fmt=json&limit=10&query=';
+const MUSICBRAINZ_ARTIST_URL =
+  'https://musicbrainz.org/ws/2/artist/?fmt=json&limit=10&query=';
 const MUSICBRAINZ_RECORDING_URL =
   'https://musicbrainz.org/ws/2/recording/?fmt=json&limit=10&query=';
 
@@ -166,14 +172,18 @@ const MUSICBRAINZ_RECORDING_URL =
  * @returns {Promise<string[] | null>} A promise with the fanart images or null, if none could be found.
  */
 export async function getArtistFanart(artistMbId: string): Promise<string[] | null> {
-  const fanartResponse = await fetch(`${FANART_URL}/${artistMbId}?api_key=${FANART_TV_API_KEY}`);
+  const fanartResponse = await fetch(
+    `${FANART_URL}/${artistMbId}?api_key=${FANART_TV_API_KEY}`,
+  );
 
   if (!fanartResponse.ok) {
     return null;
   }
 
   const backgrounds = (await fanartResponse.json()).artistbackground;
-  return backgrounds && backgrounds.length ? backgrounds.map(background => background.url) : null;
+  return backgrounds && backgrounds.length
+    ? backgrounds.map(background => background.url)
+    : null;
 }
 
 /**
@@ -249,7 +259,8 @@ export async function getMusicBrainzId(meta: Metadata): Promise<string | null> {
   } | null = musicBrainzResult.artists
     .filter(artist => artist.score >= 50)
     .reduce(
-      (acc, it) => (acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it),
+      (acc, it) =>
+        acc && Object.keys(acc).length >= Object.keys(it).length ? acc : it,
       null,
     );
 

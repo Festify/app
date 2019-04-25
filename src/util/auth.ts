@@ -47,7 +47,9 @@ export class AuthData {
   }
 }
 
-export function getProvider(prov: Exclude<keyof UserCredentials, 'spotify' | 'firebase'>) {
+export function getProvider(
+  prov: Exclude<keyof UserCredentials, 'spotify' | 'firebase'>,
+) {
   const auth = firebaseNS.auth!;
   switch (prov) {
     case 'facebook':

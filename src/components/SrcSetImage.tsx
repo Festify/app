@@ -15,23 +15,36 @@ interface SrcSetInnerProps extends SrcSetImageProps {
   innerRef: React.Ref<HTMLImageElement>;
 }
 
-const ImageBase: React.FC<SrcSetInnerProps> = ({ images, innerRef, ...restProps }) => {
+const ImageBase: React.FC<SrcSetInnerProps> = ({
+  images,
+  innerRef,
+  ...restProps
+}) => {
   if (!images || images.length === 0) {
     return <img ref={innerRef} alt={restProps.alt} {...restProps} />;
   }
 
-  const largest = images.reduce((acc, img) => (img.width > acc.width ? img : acc), images[0]);
+  const largest = images.reduce(
+    (acc, img) => (img.width > acc.width ? img : acc),
+    images[0],
+  );
   const srcset = images.map(img => `${img.url} ${img.width}w`).join(', ');
 
   return (
-    <img ref={innerRef} src={largest.url} srcSet={srcset} alt={restProps.alt} {...restProps} />
+    <img
+      ref={innerRef}
+      src={largest.url}
+      srcSet={srcset}
+      alt={restProps.alt}
+      {...restProps}
+    />
   );
 };
 
 const MemoizedImage = React.memo(ImageBase);
 
-const SrcSetImage = React.forwardRef<HTMLImageElement, SrcSetImageProps>((props, ref) => (
-  <MemoizedImage innerRef={ref} {...props} />
-));
+const SrcSetImage = React.forwardRef<HTMLImageElement, SrcSetImageProps>(
+  (props, ref) => <MemoizedImage innerRef={ref} {...props} />,
+);
 
 export default SrcSetImage;

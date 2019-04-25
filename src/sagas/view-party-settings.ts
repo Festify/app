@@ -30,7 +30,10 @@ import { hasConnectedSpotifyAccountSelector } from '../selectors/users';
 import { Playlist, State, Track } from '../state';
 import firebase from '../util/firebase';
 
-function* changePartySetting(partyId: string, ac: ReturnType<typeof changePartySettingAction>) {
+function* changePartySetting(
+  partyId: string,
+  ac: ReturnType<typeof changePartySettingAction>,
+) {
   if (!(yield select(isPartyOwnerSelector))) {
     return;
   }
@@ -75,8 +78,14 @@ function* flushTracks(partyId: string) {
   }
 }
 
-function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistStart>) {
-  type SubActions = { type: 'progress'; payload: number } | { type: 'error'; payload: Error } | END;
+function* insertPlaylist(
+  partyId: string,
+  ac: ReturnType<typeof insertPlaylistStart>,
+) {
+  type SubActions =
+    | { type: 'progress'; payload: number }
+    | { type: 'error'; payload: Error }
+    | END;
 
   function doInsert(creationDate: number) {
     return eventChannel<SubActions>(put => {
@@ -94,7 +103,9 @@ function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistSt
     }, buffers.expanding());
   }
 
-  const createdOn: number = yield select((s: State) => s.party.currentParty!.created_at);
+  const createdOn: number = yield select(
+    (s: State) => s.party.currentParty!.created_at,
+  );
   const chan: Channel<SubActions> = yield call(doInsert, createdOn);
 
   while (true) {
@@ -111,7 +122,10 @@ function* insertPlaylist(partyId: string, ac: ReturnType<typeof insertPlaylistSt
   }
 }
 
-function* updatePartyName(partyId: string, ac: ReturnType<typeof updatePartyNameAction>) {
+function* updatePartyName(
+  partyId: string,
+  ac: ReturnType<typeof updatePartyNameAction>,
+) {
   yield firebase
     .database()
     .ref('/parties')

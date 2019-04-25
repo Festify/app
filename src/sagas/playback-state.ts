@@ -1,6 +1,15 @@
 import isEqual from 'lodash-es/isEqual';
 import { Task } from 'redux-saga';
-import { call, cancelled, fork, join, put, select, take, takeEvery } from 'redux-saga/effects';
+import {
+  call,
+  cancelled,
+  fork,
+  join,
+  put,
+  select,
+  take,
+  takeEvery,
+} from 'redux-saga/effects';
 
 import {
   becomePlaybackMaster,
@@ -14,7 +23,10 @@ import {
   UPDATE_PLAYBACK_STATE,
   UPDATE_TRACKS,
 } from '../actions/party-data';
-import { togglePlaybackFinish, TOGGLE_PLAYBACK_START } from '../actions/playback-spotify';
+import {
+  togglePlaybackFinish,
+  TOGGLE_PLAYBACK_START,
+} from '../actions/playback-spotify';
 import { isPartyOwnerSelector, playbackSelector } from '../selectors/party';
 import { currentTrackSelector, tracksEqual } from '../selectors/track';
 import { Playback, State, Track } from '../state';
@@ -145,7 +157,10 @@ function* handlePartyUpdate(
 
   // Check if the master status of the player changed
   if (oldPlayback.master_id !== newPlayback.master_id) {
-    if (newPlayback.master_id === (yield select((state: State) => state.player.instanceId))) {
+    if (
+      newPlayback.master_id ===
+      (yield select((state: State) => state.player.instanceId))
+    ) {
       yield put(becomePlaybackMaster());
     } else {
       yield put(resignPlaybackMaster());
