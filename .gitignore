@@ -49,3 +49,7 @@ spotify.config.js
 .vscode/
 
 .DS_Store
+
+# Gatsby Stuff
+public/
+.cache/
