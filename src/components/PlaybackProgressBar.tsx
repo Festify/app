@@ -9,8 +9,10 @@ import { Metadata, Playback, State } from '../state';
 
 import styles from './PlaybackProgressBar.module.scss';
 
-interface ProgressBarProps {
+interface ProgressBarOwnProps {
   className?: string;
+}
+interface ProgressBarProps {
   durationMs: number;
   playback: Playback | null;
 }
@@ -19,7 +21,7 @@ interface ProgressBarState {
 }
 
 class PlaybackProgressBar extends React.Component<
-  ProgressBarProps,
+  ProgressBarProps & ProgressBarOwnProps,
   ProgressBarState
 > {
   state = { indicatorStyle: {} };
@@ -87,7 +89,7 @@ const currentDurationSelector = createSelector(
     trackId && trackId in metadata ? metadata[trackId].durationMs : 0,
 );
 
-const mapDispatchToProps = (state: State): ProgressBarProps => ({
+const mapDispatchToProps = (state: State, _: ProgressBarOwnProps): ProgressBarProps => ({
   durationMs: currentDurationSelector(state),
   playback: playbackSelector(state),
 });
