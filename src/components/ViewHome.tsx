@@ -52,6 +52,7 @@ const DynamicButton = (viewProps: HomeViewMergedProps) => {
         <a
           className={styles.browserIncompatibleLink}
           href="https://festify.rocks/faqs/#which-browsers-do-you-support"
+          rel="noopener noreferrer"
           target="_blank"
         >
           Click here

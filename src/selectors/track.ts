@@ -76,12 +76,12 @@ export const currentTrackIdSelector = createSelector(
 );
 
 export function tracksEqual(a: Track | null | undefined, b: Track | null | undefined): boolean {
-  // tslint:disable-next-line:triple-equals
+  // eslint-disable-next-line eqeqeq
   if (a == b) {
     return true;
   } else if (!a || !b) {
     return false;
-    // tslint:disable-next-line:triple-equals
+    // eslint-disable-next-line eqeqeq
   } else if (a.reference == b.reference) {
     return true;
   } else if (!a.reference || !b.reference) {

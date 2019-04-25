@@ -34,7 +34,12 @@ const Inner: React.FC<MergedProps> = ({ hasTracksLoaded, isOwner, settingsRoute,
   } else if (!tracks.length) {
     return (
       <>
-        <h2 className={styles.queueEmpty}>🌝 The queue is empty!</h2>
+        <h2 className={styles.queueEmpty}>
+          <span role="img" aria-hidden>
+            🌝
+          </span>{' '}
+          The queue is empty!
+        </h2>
         <h3 className={styles.queueEmpty}>
           {isOwner ? (
             <>

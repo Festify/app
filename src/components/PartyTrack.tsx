@@ -186,7 +186,7 @@ const PartyTrack: React.FC<PartyTrackMergedProps> = props => {
 
         {artistName && (
           <aside className={styles.metadata}>
-            <a>{artistName}</a>
+            <span>{artistName}</span>
             <span className={styles.dot} aria-hidden="true">
               &middot;
             </span>

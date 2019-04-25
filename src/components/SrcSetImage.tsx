@@ -17,13 +17,15 @@ interface SrcSetInnerProps extends SrcSetImageProps {
 
 const ImageBase: React.FC<SrcSetInnerProps> = ({ images, innerRef, ...restProps }) => {
   if (!images || images.length === 0) {
-    return <img ref={innerRef} {...restProps} />;
+    return <img ref={innerRef} alt={restProps.alt} {...restProps} />;
   }
 
   const largest = images.reduce((acc, img) => (img.width > acc.width ? img : acc), images[0]);
   const srcset = images.map(img => `${img.url} ${img.width}w`).join(', ');
 
-  return <img ref={innerRef} src={largest.url} srcSet={srcset} {...restProps} />;
+  return (
+    <img ref={innerRef} src={largest.url} srcSet={srcset} alt={restProps.alt} {...restProps} />
+  );
 };
 
 const MemoizedImage = React.memo(ImageBase);
