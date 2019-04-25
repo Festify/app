@@ -49,9 +49,7 @@ const pageSelector = (view: Views) => {
   }
 };
 
-const loadOnce = (when: boolean, url: string) => {
-  return; // Although hooks are in the typings, we cannot use them atm
-
+const useLoadOnce = (when: boolean, url: string) => {
   const [hasLoaded, setHasLoaded] = useState(false);
 
   if (when && !hasLoaded) {
@@ -69,7 +67,7 @@ const AppShellComponent: React.FC<AppShellProps> = ({
   toastText,
   view,
 }) => {
-  loadOnce(isPlaybackMaster, 'https://sdk.scdn.co/spotify-player.js');
+  useLoadOnce(isPlaybackMaster, 'https://sdk.scdn.co/spotify-player.js');
 
   return (
     <div className={styles.appShell}>

@@ -166,7 +166,7 @@ function* handleSpotifyOAuth() {
   let resp: HttpsCallableResult;
   try {
     resp = yield call(functions.exchangeCode, {
-      callbackUrl: location.origin,
+      callbackUrl: window.location.origin,
       code,
     });
   } catch (err) {

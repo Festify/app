@@ -1,8 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended"
-  ],
+  "extends": ["tslint:recommended"],
   "jsRules": {},
   "rules": {
     "array-type": false,
@@ -21,7 +19,10 @@
     "no-unused-variable": true,
     "object-literal-key-quotes": false,
     "object-literal-sort-keys": false,
-    "ordered-imports": [true, { "grouped-imports": true, "named-imports-order": "lowercase-first" }],
+    "ordered-imports": [
+      true,
+      { "grouped-imports": true, "named-imports-order": "lowercase-first" }
+    ],
     "prefer-template": [true, "allow-single-concat"],
     "quotemark": ["avoid-escape"],
     "radix": false,

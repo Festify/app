@@ -54,7 +54,7 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
         player.on(ev as any, listener);
 
         return () => {
-          player.removeListener(name as any, listener);
+          player.removeListener(ev as any, listener);
           prev();
         };
       },
@@ -235,7 +235,7 @@ export function* manageLocalPlayer(partyId: string) {
         yield take(SPOTIFY_SDK_INIT_FINISH);
       }
 
-      player = new Spotify.Player({
+      player = new window.Spotify.Player({
         name: 'Festify 🎉',
         getOAuthToken: cb => requireAccessToken().then(cb),
         volume: 1,
