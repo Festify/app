@@ -1,5 +1,5 @@
+import firebase from '@firebase/app';
 import { DataSnapshot, Query } from '@firebase/database-types';
-import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/functions';
