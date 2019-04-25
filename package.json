@@ -20,7 +20,6 @@
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
-    "react-scripts": "2.1.2",
     "react-virtualized": "^9.21.0",
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.7",
@@ -37,12 +36,19 @@
     "fix": "tslint -p tsconfig.json --fix",
     "lint": "tslint -p tsconfig.json"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie > 0",
-    "not op_mini all"
-  ],
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "devDependencies": {
     "@types/classnames": "^2.2.6",
     "@types/jest": "23.3.10",
@@ -54,6 +60,7 @@
     "@types/spotify-web-playback-sdk": "^0.1.3",
     "firebase-bolt": "^0.8.4",
     "node-sass": "^4.11.0",
+    "react-scripts": "^3",
     "spotify-web-api-js": "^1.1.1",
     "typescript": "3.2.2"
   }
