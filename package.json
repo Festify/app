@@ -24,7 +24,7 @@
     "@polymer/polymer": "^3.0.1",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "dom-flip": "^0.4.0",
-    "firebase": "^5.0.2",
+    "firebase": "^6.0.0",
     "fit-html": "^0.7.0",
     "idb": "^2.1.1",
     "ken-burns-carousel": "^0.2.1",
