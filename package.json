@@ -41,7 +41,7 @@
     "@mraerino/rollup-plugin-minifyliterals": "^1.2.0",
     "@types/lodash-es": "^4.17.0",
     "@types/spotify-web-playback-sdk": "^0.1.1",
-    "bundlesize": "^0.17.0",
+    "bundlesize": "^0.18.0",
     "connect-history-api-fallback": "^1.5.0",
     "firebase-bolt": "^0.8.2",
     "rollup": "^0.66.6",
