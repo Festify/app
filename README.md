@@ -13,7 +13,7 @@ Festify is a free Spotify-powered app that lets your guests choose which music s
 ### Dependencies
 
 1. [nodejs](https://nodejs.org), [TypeScript](https://typescriptlang.org) and [yarn](https://yarnpkg.com): Festify is written in TypeScript for better scalability and fewer bugs. We use yarn for package management.
-1. [Firebase](https://firebase.google.com): Festify is built upon Firebase Realtime Database and Firebase Cloud Functions. Set up a _dedicated and paid_ Firebase project.
+1. [Firebase](https://firebase.google.com): Festify is built upon Firebase Realtime Database and Firebase Cloud Functions. Set up a _dedicated and paid_ Firebase project. For user management, you need to enable at least [anonymous authentication](https://firebase.google.com/docs/auth/web/anonymous-auth), and if you want cheat-prevention to work, also authentication with GitHub, Facebook, Twitter, and Google+. In that case, you also need to set up and register the respective app / developer accounts with these services.
 1. [Spotify](https://beta.developer.spotify.com/): Festify plays music from Spotify. Set up a Spotify Developer Application (you need a Spotify Premium account) and configure the OAuth redirect URL. Usually at least `http://localhost:3000` is needed for a dev-environment. 3000 is the port the dev-server started with `yarn serve` runs on, but this can be any port you like, if you configure the dev server accordingly.
 1. [Fanart.tv](https://fanart.tv) & [Sentry](https://sentry.io): Festify displays Fanart from fanart.tv in the TV Mode and uses Sentry for error reporting. You require an account for both services.
 
