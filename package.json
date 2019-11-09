@@ -21,7 +21,7 @@
     "@polymer/paper-slider": "^3.0.1",
     "@polymer/paper-spinner": "^3.0.1",
     "@polymer/paper-toast": "^3.0.1",
-    "@polymer/polymer": "^3.0.1",
+    "@polymer/polymer": "^3.3.1",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "dom-flip": "^0.4.0",
     "firebase": "^5.0.2",
