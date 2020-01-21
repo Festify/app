@@ -60,7 +60,7 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
     });
 }
 
-function* playTrack(id: string, deviceId: string, positionMs?: number) {
+function* playTrack(id: string, deviceId: string, positionMs: number = 0) {
     yield put(play(id, positionMs || 0));
 
     const playUri = `/me/player/play?device_id=${deviceId}`;
@@ -69,18 +69,10 @@ function* playTrack(id: string, deviceId: string, positionMs?: number) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [`spotify:track:${id}`] }),
-    });
-
-    if (!positionMs) {
-        return;
-    } else {
-        positionMs = Math.floor(positionMs);
-    }
-
-    const seekUri = `/me/player/seek?device_id=${deviceId}&position_ms=${positionMs}`;
-    yield fetchWithAccessToken(seekUri, {
-        method: 'put',
+        body: JSON.stringify({
+            uris: [`spotify:track:${id}`],
+            position_ms: Math.floor(positionMs),
+        }),
     });
 }
 
@@ -141,27 +133,25 @@ function* handlePlaybackStateChange(
 function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
     const playerStateChanges: Channel<Spotify.PlaybackState> =
         yield call(attachToEvents, player, 'player_state_changed');
+    let lastPlayerState: Spotify.PlaybackState | null = null;
 
     while (true) {
         yield take(PLAY);
 
         while (true) {
             const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.duration > 0 && state.paused === false) {
-                break;
+            if (
+                lastPlayerState &&
+                state.position < lastPlayerState.position - 100 &&
+                state.paused === false
+            ) {
+                player.pause();
+                const { reference }: Track = yield select(currentTrackSelector);
+                yield put(removeTrackAction(reference, true));
+                yield put(updatePlaybackState({ playing: true }));
             }
+            lastPlayerState = state;
         }
-
-        while (true) {
-            const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.paused === true) {
-                break;
-            }
-        }
-
-        const { reference }: Track = yield select(currentTrackSelector);
-        yield put(removeTrackAction(reference, true));
-        yield put(updatePlaybackState({ playing: true }));
     }
 }
 
