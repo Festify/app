@@ -9,11 +9,11 @@ function* share() {
 
     const currentParty = state.party.currentParty;
     if (!currentParty) {
-        throw new Error("Missing current party");
+        throw new Error('Missing current party');
     }
     const partyId = partyIdSelector(state);
     if (!partyId) {
-        throw new Error("Missing current party ID");
+        throw new Error('Missing current party ID');
     }
 
     yield call((navigator as any).share, {

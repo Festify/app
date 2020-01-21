@@ -19,12 +19,14 @@ function* displayErrorToast(action: Actions) {
         return;
     }
 
-    yield put(showToast(
-        (action.type === EXCHANGE_CODE_FAIL)
-            ? action.payload.data.message
-            : action.payload.message,
-        10000,
-    ));
+    yield put(
+        showToast(
+            action.type === EXCHANGE_CODE_FAIL
+                ? action.payload.data.message
+                : action.payload.message,
+            10000,
+        ),
+    );
 }
 
 export default function*() {

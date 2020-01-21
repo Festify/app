@@ -2,7 +2,8 @@ import { html } from 'lit-html';
 
 export default html`
     <style>
-        :host, * {
+        :host,
+        * {
             box-sizing: border-box;
             color: white;
         }
@@ -46,7 +47,7 @@ export default html`
         }
 
         paper-button.login iron-icon {
-            margin: 0 1em 0 .5em;
+            margin: 0 1em 0 0.5em;
         }
 
         paper-button.login span {
@@ -55,7 +56,7 @@ export default html`
         }
 
         paper-button.login[disabled] {
-            opacity: .5;
+            opacity: 0.5;
         }
 
         paper-button.facebook {

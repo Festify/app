@@ -203,7 +203,7 @@ export namespace EnabledProvidersList {
             spotify: false,
             twitter: false,
         };
-        overrides.forEach(prov => result[prov] = true);
+        overrides.forEach(prov => (result[prov] = true));
         return result;
     }
 }

@@ -40,7 +40,7 @@ export default function(
             credentials: {
                 ...state.credentials,
                 [prov]: {
-                    ...(state.credentials[prov]),
+                    ...state.credentials[prov],
                     ...data,
                 },
             },

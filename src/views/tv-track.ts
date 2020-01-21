@@ -38,7 +38,8 @@ const TvTrack = (props: TvTrackProps) => html`
             box-shadow: 0 0 60px 0 rgba(0, 0, 0, 0.5);
         }
 
-        img, .empty {
+        img,
+        .empty {
             width: 100%;
             height: 100%;
             position: absolute;
@@ -47,9 +48,11 @@ const TvTrack = (props: TvTrackProps) => html`
         .overlay {
             position: absolute;
             z-index: 2;
-            top: 0; bottom: 0;
-            left: 0; right: 0;
-            background: rgba(0, 0, 0, 0.6)
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
         }
 
         h2 {
@@ -71,11 +74,14 @@ const TvTrack = (props: TvTrackProps) => html`
             margin: 0;
         }
 
-        h2, h3, h4 {
+        h2,
+        h3,
+        h4 {
             color: #fff;
         }
 
-        h3, h4 {
+        h3,
+        h4 {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
@@ -86,7 +92,9 @@ const TvTrack = (props: TvTrackProps) => html`
     <div class="cover">
         ${props.metadata
             ? srcsetImg(props.metadata.cover, '128px', props.metadata.name)
-            : html`<div class="empty"></div>`}
+            : html`
+                  <div class="empty"></div>
+              `}
         <div class="overlay"></div>
         <h2>${props.track ? props.track.vote_count : 0}</h2>
     </div>
@@ -104,12 +112,8 @@ const mapStateToPropsFactory = () => {
     });
 };
 
-const TvTrackBase = withFit<TvTrackOwnProps, TvTrackProps>(
-    TvTrack,
-    { trackid: String },
-)(HTMLElement);
-
-customElements.define(
-    'tv-track',
-    connect(mapStateToPropsFactory, {})(TvTrackBase),
+const TvTrackBase = withFit<TvTrackOwnProps, TvTrackProps>(TvTrack, { trackid: String })(
+    HTMLElement,
 );
+
+customElements.define('tv-track', connect(mapStateToPropsFactory, {})(TvTrackBase));

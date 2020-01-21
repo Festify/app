@@ -3,7 +3,12 @@ import { LOCATION_CHANGED } from '@festify/redux-little-router';
 import { Actions } from '../actions';
 import { REQUIRE_FOLLOW_UP_LOGIN } from '../actions/auth';
 import { CLEANUP_PARTY } from '../actions/party-data';
-import { CHANGE_DISPLAY_LOGIN_MODAL, SEARCH_FAIL, SEARCH_FINISH, SEARCH_START } from '../actions/view-party';
+import {
+    CHANGE_DISPLAY_LOGIN_MODAL,
+    SEARCH_FAIL,
+    SEARCH_FINISH,
+    SEARCH_START,
+} from '../actions/view-party';
 import { TOGGLE_USER_MENU } from '../actions/view-queue-drawer';
 import { PartyViewState } from '../state';
 
@@ -26,9 +31,10 @@ export default function(
         case LOCATION_CHANGED:
             return {
                 ...state,
-                searchResult: !(action as any).payload.params || !(action as any).payload.params.query
-                    ? null
-                    : state.searchResult,
+                searchResult:
+                    !(action as any).payload.params || !(action as any).payload.params.query
+                        ? null
+                        : state.searchResult,
             };
         case REQUIRE_FOLLOW_UP_LOGIN:
             return {

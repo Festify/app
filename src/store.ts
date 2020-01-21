@@ -20,11 +20,7 @@ export const store = createStore(
         ...reducers,
         router: routerReducer,
     }),
-    compose(
-        routerEnhancer,
-        applyMiddleware(routerMiddleware, saga),
-        devToolsEnhancer({}),
-    ),
+    compose(routerEnhancer, applyMiddleware(routerMiddleware, saga), devToolsEnhancer({})),
 );
 
 for (const s of sagas) {

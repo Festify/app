@@ -35,8 +35,7 @@ const Progress = (props: SearchProps) => {
 };
 
 const PartySearchView = (props: SearchProps) => html`
-    ${sharedStyles}
-    ${queueStyles}
+    ${sharedStyles} ${queueStyles}
     <style>
         party-track-search:first-of-type {
             padding-top: 16px;
@@ -58,10 +57,12 @@ const PartySearchView = (props: SearchProps) => html`
     </style>
 
     ${Progress(props)}
-    ${props.tracks.map((track, i) => html`
-        <party-track-search trackid="${track.reference.provider}-${track.reference.id}">
-        </party-track-search>
-    `)}
+    ${props.tracks.map(
+        (track, i) => html`
+            <party-track-search trackid="${track.reference.provider}-${track.reference.id}">
+            </party-track-search>
+        `,
+    )}
 `;
 
 const tracksSelector = (state: State) => state.partyView.searchResult;
@@ -73,7 +74,4 @@ const mapStateToProps = (state: State): SearchProps => ({
     tracks: sortedTrackSelector(state),
 });
 
-customElements.define(
-    'party-search',
-    connect(mapStateToProps, {})(PartySearchView),
-);
+customElements.define('party-search', connect(mapStateToProps, {})(PartySearchView));

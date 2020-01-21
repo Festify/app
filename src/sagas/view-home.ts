@@ -20,7 +20,7 @@ function* createParty() {
     const spotifyUser = user.credentials.spotify.user;
 
     if (!spotifyUser) {
-        const e = new Error("Missing Spotify user");
+        const e = new Error('Missing Spotify user');
         yield put(createPartyFail(e));
         return;
     }
@@ -47,7 +47,7 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
     const { homeView }: State = yield select();
 
     if (!homeView.partyIdValid) {
-        const e = new Error("Party ID is invalid!");
+        const e = new Error('Party ID is invalid!');
         yield put(joinPartyFail(e));
         return;
     }
@@ -55,7 +55,7 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
     const longId = yield call(resolveShortId, homeView.partyId);
 
     if (!longId) {
-        const e = new Error("Party not found!");
+        const e = new Error('Party not found!');
         yield put(joinPartyFail(e));
         return;
     }
@@ -66,16 +66,21 @@ function* joinParty(ac: ReturnType<typeof joinPartyStart>) {
 function* warnNonPremium() {
     const { router, user }: State = yield select();
 
-    if ((router.result || { view: Views.Home }).view !== Views.Home ||
+    if (
+        (router.result || { view: Views.Home }).view !== Views.Home ||
         !user.credentials.spotify.user ||
-        user.credentials.spotify.user.product === 'premium') {
+        user.credentials.spotify.user.product === 'premium'
+    ) {
         return;
     }
 
-    yield put(showToast( // tslint:disable-next-line:max-line-length
-        "To create parties and play music on Festify, you need to have a 'Spotify Premium' account. Please login again using a premium account if you want to host parties.",
-        10000,
-    ));
+    yield put(
+        showToast(
+            // tslint:disable-next-line:max-line-length
+            "To create parties and play music on Festify, you need to have a 'Spotify Premium' account. Please login again using a premium account if you want to host parties.",
+            10000,
+        ),
+    );
 }
 
 export default function*() {

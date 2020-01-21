@@ -1,5 +1,4 @@
-export type Actions =
-    | ReturnType<typeof toggleUserMenu>;
+export type Actions = ReturnType<typeof toggleUserMenu>;
 
 export const TOGGLE_USER_MENU = 'TOGGLE_USER_MENU';
 

@@ -1,51 +1,47 @@
 import { routerForBrowser } from '@festify/redux-little-router';
 
 export const enum Views {
-    Home = "Home",
-    Party = "Party",
-    Tv = "Tv",
+    Home = 'Home',
+    Party = 'Party',
+    Tv = 'Tv',
 }
 
 export const enum PartyViews {
-    Queue = "Queue",
-    Search = "Search",
-    Settings = "Settings",
-    Share = "Share",
+    Queue = 'Queue',
+    Search = 'Search',
+    Settings = 'Settings',
+    Share = 'Share',
 }
 
 const routes = {
     '/': {
-        title: "Home",
+        title: 'Home',
         view: Views.Home,
     },
     '/party/:partyId': {
-        title: "Party",
+        title: 'Party',
         view: Views.Party,
         subView: PartyViews.Queue,
         '/search': {
-            title: "Search",
+            title: 'Search',
             view: Views.Party,
             subView: PartyViews.Search,
         },
         '/settings': {
-            title: "Party Settings",
+            title: 'Party Settings',
             view: Views.Party,
             subView: PartyViews.Settings,
         },
         '/share': {
-            title: "Share Party",
+            title: 'Share Party',
             view: Views.Party,
             subView: PartyViews.Share,
         },
     },
     '/tv/:partyId': {
-        title: "TV Mode",
+        title: 'TV Mode',
         view: Views.Tv,
     },
 };
 
-export const {
-    reducer,
-    middleware,
-    enhancer,
-} = routerForBrowser({ routes });
+export const { reducer, middleware, enhancer } = routerForBrowser({ routes });

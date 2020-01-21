@@ -59,12 +59,16 @@ function* publishPartyUpdates(snap: DataSnapshot) {
     // wasn't equal to the instance it, and now it is.
     // Resign if we don't have a party anymore, or we were master and now we aren't anymore.
 
-    if (state1.party.currentParty.playback.master_id !== state1.player.instanceId &&
-        party.playback.master_id === state1.player.instanceId) {
+    if (
+        state1.party.currentParty.playback.master_id !== state1.player.instanceId &&
+        party.playback.master_id === state1.player.instanceId
+    ) {
         yield put(becomePlaybackMaster());
-    } else if ((!state2.party.currentParty ||
-        state1.party.currentParty.playback.master_id === state1.player.instanceId) &&
-        party.playback.master_id !== state1.player.instanceId) {
+    } else if (
+        (!state2.party.currentParty ||
+            state1.party.currentParty.playback.master_id === state1.player.instanceId) &&
+        party.playback.master_id !== state1.player.instanceId
+    ) {
         yield put(resignPlaybackMaster());
     }
 }
@@ -73,13 +77,16 @@ function* loadParty() {
     const closeListener = (e: BeforeUnloadEvent) => {
         const { party, player } = store.getState();
 
-        if (!party.currentParty || !party.currentParty.playback.playing ||
-            party.currentParty.playback.master_id !== player.instanceId) {
+        if (
+            !party.currentParty ||
+            !party.currentParty.playback.playing ||
+            party.currentParty.playback.master_id !== player.instanceId
+        ) {
             return;
         }
 
-        e.returnValue = "😅";
-        return "😅";
+        e.returnValue = '😅';
+        return '😅';
     };
 
     while (true) {
@@ -87,14 +94,15 @@ function* loadParty() {
 
         const partyRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database()
+            firebase
+                .database()
                 .ref('/parties/')
                 .child(id),
         );
         const partySnap: DataSnapshot = yield take(partyRef);
 
         if (!partySnap.exists()) {
-            yield put(openPartyFail(new Error("Party not found!")));
+            yield put(openPartyFail(new Error('Party not found!')));
             yield put(push('/'));
             continue;
         }
@@ -106,13 +114,15 @@ function* loadParty() {
 
         const tracksRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database()
+            firebase
+                .database()
                 .ref('/tracks')
                 .child(id),
         );
         const votesRef: Channel<DataSnapshot> = yield call(
             valuesChannel,
-            firebase.database()
+            firebase
+                .database()
                 .ref('/votes_by_user')
                 .child(id)
                 .child(uid),
@@ -131,7 +141,8 @@ function* loadParty() {
         const playbackManager = yield fork(managePlaybackState, id);
         const queueManager = yield fork(manageQueue, id);
 
-        yield firebase.database()
+        yield firebase
+            .database()
             .ref('/user_parties')
             .child(uid)
             .child(id)
@@ -187,9 +198,5 @@ function* watchLogin() {
 }
 
 export default function*() {
-    yield all([
-        loadParty(),
-        watchRoute(),
-        watchLogin(),
-    ]);
+    yield all([loadParty(), watchRoute(), watchLogin()]);
 }

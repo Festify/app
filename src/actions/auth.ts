@@ -64,7 +64,8 @@ export const triggerOAuthLogin = (provider: OAuthLoginProviders) => ({
     payload: provider,
 });
 
-export const welcomeUser = (user: User) => showToast(user.displayName ? `Welcome, ${user.displayName}!` : 'Welcome!');
+export const welcomeUser = (user: User) =>
+    showToast(user.displayName ? `Welcome, ${user.displayName}!` : 'Welcome!');
 
 /* Utils */
 
@@ -76,7 +77,9 @@ export async function getFollowUpLoginProviders(email: string): Promise<EnabledP
         functions.isSpotifyUser({ email }),
     ]);
     const strippedProviders = providers.map(provId => provId.replace('.com', ''));
-    const enabledProviders = EnabledProvidersList.enable(strippedProviders as OAuthLoginProviders[]);
+    const enabledProviders = EnabledProvidersList.enable(
+        strippedProviders as OAuthLoginProviders[],
+    );
 
     return {
         ...enabledProviders,
@@ -93,13 +96,9 @@ export async function linkFollowUpUser() {
         return;
     }
 
-    const {
-        accessToken,
-        idToken,
-        providerId,
-        secret,
-        spotify,
-    } = JSON.parse(localStorage[FOLLOWUP_LS_KEY]);
+    const { accessToken, idToken, providerId, secret, spotify } = JSON.parse(
+        localStorage[FOLLOWUP_LS_KEY],
+    );
     removeSavedFollowUpLoginCredentials();
 
     if (spotify) {
@@ -121,7 +120,7 @@ export async function linkFollowUpUser() {
                 credential = firebaseNS.auth!.TwitterAuthProvider.credential(accessToken, secret);
                 break;
             default:
-                throw new Error("Unknown provider");
+                throw new Error('Unknown provider');
         }
 
         const user = await requireAuth();

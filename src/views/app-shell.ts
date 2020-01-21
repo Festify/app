@@ -24,11 +24,17 @@ const Pages = (view: Views) => {
     switch (view) {
         default:
         case Views.Home:
-            return html`<view-home></view-home>`;
+            return html`
+                <view-home></view-home>
+            `;
         case Views.Party:
-            return html`<view-party></view-party>`;
+            return html`
+                <view-party></view-party>
+            `;
         case Views.Tv:
-            return html`<view-tv></view-tv>`;
+            return html`
+                <view-tv></view-tv>
+            `;
     }
 };
 
@@ -57,19 +63,13 @@ const AppShellView = (props: AppShellProps) => html`
 
         paper-toast {
             --paper-toast-background-color: var(--primary-color);
-            box-shadow: 0 1px 10px 0 rgba(0,0,0,1);
+            box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 1);
         }
     </style>
 
-    ${Pages(props.view)}
-
-    ${iconSet}
-    <paper-toast duration="0"
-                 .opened=${props.isToastOpen}
-                 .text=${props.toastText}>
-    </paper-toast>
-    <load-script-once .load=${props.isPlaybackMaster}
-                      src="https://sdk.scdn.co/spotify-player.js">
+    ${Pages(props.view)} ${iconSet}
+    <paper-toast duration="0" .opened=${props.isToastOpen} .text=${props.toastText}> </paper-toast>
+    <load-script-once .load=${props.isPlaybackMaster} src="https://sdk.scdn.co/spotify-player.js">
     </load-script-once>
 `;
 
@@ -80,9 +80,6 @@ const mapStateToProps = (state: State): AppShellProps => ({
     view: (state.router!.result || { view: Views.Home }).view,
 });
 
-const Shell = connect(
-    mapStateToProps,
-    {},
-)(AppShellView);
+const Shell = connect(mapStateToProps, {})(AppShellView);
 
 customElements.define('app-shell', withStore(store)(Shell));

@@ -10,7 +10,7 @@ import {
 } from '../actions/playback-spotify';
 import { PlayerState } from '../state';
 
-export default function (
+export default function(
     state: PlayerState = {
         instanceId: '',
         localDeviceId: null,

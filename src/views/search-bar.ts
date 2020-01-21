@@ -24,7 +24,7 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
             align-items: center;
             background-color: #fafafa;
             border-radius: 2px;
-            box-shadow: 0 0 2px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.24);
+            box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
             display: flex;
             height: 48px;
             position: relative;
@@ -32,7 +32,8 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
             --icon-size: 24px;
         }
 
-        paper-icon-button, svg {
+        paper-icon-button,
+        svg {
             color: black;
             flex-shrink: 0;
         }
@@ -66,21 +67,22 @@ const SearchBar = (props: SearchBarProps & SearchBarDispatch) => html`
         }
 
         input::-webkit-input-placeholder {
-            color: rgba(0, 0, 0, .54);
+            color: rgba(0, 0, 0, 0.54);
         }
     </style>
 
     ${props.text
         ? html`
-            <paper-icon-button icon="festify:arrow-back"
-                               @click=${props.eraseText}>
-            </paper-icon-button>
-        `
+              <paper-icon-button icon="festify:arrow-back" @click=${props.eraseText}>
+              </paper-icon-button>
+          `
         : festifyLogo}
 
-    <input value="${props.text}"
-           placeholder="Add Tracks"
-          @input=${ev => props.changeText((ev.target as HTMLInputElement).value)}>
+    <input
+        value="${props.text}"
+        placeholder="Add Tracks"
+        @input=${ev => props.changeText((ev.target as HTMLInputElement).value)}
+    />
 `;
 /* tslint:enable */
 
@@ -93,10 +95,4 @@ const mapDispatchToProps: SearchBarDispatch = {
     eraseText: eraseTrackSearchInput,
 };
 
-customElements.define(
-    'search-bar',
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(SearchBar),
-);
+customElements.define('search-bar', connect(mapStateToProps, mapDispatchToProps)(SearchBar));

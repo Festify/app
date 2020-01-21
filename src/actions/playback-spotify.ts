@@ -37,11 +37,17 @@ export const play = (trackId: string, position: number) => ({
 
 export const pause = () => ({ type: PAUSE as typeof PAUSE });
 
-export const spotifySdkInitFinish = () => ({ type: SPOTIFY_SDK_INIT_FINISH as typeof SPOTIFY_SDK_INIT_FINISH });
+export const spotifySdkInitFinish = () => ({
+    type: SPOTIFY_SDK_INIT_FINISH as typeof SPOTIFY_SDK_INIT_FINISH,
+});
 
-export const togglePlaybackStart = () => ({ type: TOGGLE_PLAYBACK_START as typeof TOGGLE_PLAYBACK_START });
+export const togglePlaybackStart = () => ({
+    type: TOGGLE_PLAYBACK_START as typeof TOGGLE_PLAYBACK_START,
+});
 
-export const togglePlaybackFinish = () => ({ type: TOGGLE_PLAYBACK_FINISH as typeof TOGGLE_PLAYBACK_FINISH });
+export const togglePlaybackFinish = () => ({
+    type: TOGGLE_PLAYBACK_FINISH as typeof TOGGLE_PLAYBACK_FINISH,
+});
 
 export const togglePlaybackFail = (err: Error) => ({
     type: TOGGLE_PLAYBACK_FAIL as typeof TOGGLE_PLAYBACK_FAIL,

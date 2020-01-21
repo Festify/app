@@ -34,12 +34,14 @@ interface ViewTvProps {
 /* tslint:disable:max-line-length */
 const Background = (props: ViewTvProps) => {
     if (!props.currentTrackMetadata) {
-        throw new Error("Missing metadata");
+        throw new Error('Missing metadata');
     }
 
-    if (props.currentTrackMetadata.background &&
+    if (
+        props.currentTrackMetadata.background &&
         props.currentTrackMetadata.background.length > 0 &&
-        props.backgroundImgIndex != null) {
+        props.backgroundImgIndex != null
+    ) {
         return html`
             <ken-burns-carousel .images=${props.currentTrackMetadata.background}>
             </ken-burns-carousel>
@@ -54,15 +56,23 @@ const Background = (props: ViewTvProps) => {
 };
 
 const Lower = (props: ViewTvProps) => {
-    const list = props.queueTracks.map(t => html`
-        <tv-track .trackid="${t.reference.provider}-${t.reference.id}"
-                  data-flip-id="${t.reference.provider}-${t.reference.id}">
-        </tv-track>
-    `);
+    const list = props.queueTracks.map(
+        t => html`
+            <tv-track
+                .trackid="${t.reference.provider}-${t.reference.id}"
+                data-flip-id="${t.reference.provider}-${t.reference.id}"
+            >
+            </tv-track>
+        `,
+    );
 
     return typeof window.ShadyCSS === 'object' && !window.ShadyCSS!.nativeShadow
-        ? html`<div class="lower">${list}</div>`
-        : html`<dom-flip class="lower">${list}</dom-flip>`;
+        ? html`
+              <div class="lower">${list}</div>
+          `
+        : html`
+              <dom-flip class="lower">${list}</dom-flip>
+          `;
 };
 
 const Body = (props: ViewTvProps) => {
@@ -130,8 +140,10 @@ const ViewTv = (props: ViewTvProps) => html`
             flex-direction: column;
             align-items: stretch;
             position: absolute;
-            top: 0; left: 0;
-            bottom: 0; right: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
             overflow: hidden;
             font-size: 5.278vh;
         }
@@ -140,7 +152,8 @@ const ViewTv = (props: ViewTvProps) => html`
             cursor: none;
         }
 
-        .upper, .lower {
+        .upper,
+        .lower {
             font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             display: flex;
         }
@@ -160,7 +173,8 @@ const ViewTv = (props: ViewTvProps) => html`
             padding-left: 8.334vh;
         }
 
-        ken-burns-carousel, .background img {
+        ken-burns-carousel,
+        .background img {
             position: absolute;
             opacity: 0.3;
             width: 100%;
@@ -203,7 +217,11 @@ const ViewTv = (props: ViewTvProps) => html`
             margin-right: 4.815vh;
         }
 
-        h1, h2, h3, h4, h5 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
             margin: 0;
             opacity: 0.9;
             white-space: nowrap;
@@ -265,7 +283,8 @@ const ViewTv = (props: ViewTvProps) => html`
             height: 16vh;
         }
 
-        .no-tracks h1, .no-tracks h2 {
+        .no-tracks h1,
+        .no-tracks h2 {
             font-weight: normal;
         }
 
@@ -285,38 +304,32 @@ const ViewTv = (props: ViewTvProps) => html`
 /* tslint:enable */
 
 const artistNameSelector = artistJoinerFactory();
-const hasTracksSelector = createSelector(
-    queueTracksSelector,
-    tracks => !!tracks.length,
-);
-const restTracksSelector = createSelector(
-    queueTracksSelector,
-    (tracks: Track[]) => tracks.slice(1, 30),
+const hasTracksSelector = createSelector(queueTracksSelector, tracks => !!tracks.length);
+const restTracksSelector = createSelector(queueTracksSelector, (tracks: Track[]) =>
+    tracks.slice(1, 30),
 );
 
 const mapStateToProps = (state: State): ViewTvProps => {
     const currentTrackId = currentTrackIdSelector(state);
-    const meta = currentTrackId
-        ? singleMetadataSelector(state, currentTrackId)
-        : null;
+    const meta = currentTrackId ? singleMetadataSelector(state, currentTrackId) : null;
 
     return {
         // Choose background image to display based on track name
-        backgroundImgIndex: meta && meta.background && meta.background.length > 0
-            ? meta.name.length % meta.background.length
-            : null,
-        currentTrackArtistName: currentTrackId
-            ? artistNameSelector(state, currentTrackId)
-            : null,
+        backgroundImgIndex:
+            meta && meta.background && meta.background.length > 0
+                ? meta.name.length % meta.background.length
+                : null,
+        currentTrackArtistName: currentTrackId ? artistNameSelector(state, currentTrackId) : null,
         currentTrackMetadata: meta,
         hasTracks: hasTracksSelector(state),
         initError: state.party.partyLoadError,
         isLoading: state.party.partyLoadInProgress || !state.party.hasTracksLoaded,
         metadata: state.metadata,
         party: state.party.currentParty,
-        text: state.party.currentParty &&
-            state.party.currentParty.settings &&
-            state.party.currentParty.settings.tv_mode_text ||
+        text:
+            (state.party.currentParty &&
+                state.party.currentParty.settings &&
+                state.party.currentParty.settings.tv_mode_text) ||
             `Add your songs on ${domainSelector()}!`,
         queueTracks: restTracksSelector(state),
     };
