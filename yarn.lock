@@ -3951,9 +3951,10 @@ spdx-license-ids@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-3.0.0.tgz#7a7cd28470cc6d3a1cfe6d66886f6bc430d3ac87"
 
-spotify-web-api-js@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/spotify-web-api-js/-/spotify-web-api-js-1.1.1.tgz#3eb395bc7b1cb86706a38492446cc65923177322"
+spotify-web-api-js@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/spotify-web-api-js/-/spotify-web-api-js-1.3.0.tgz#c9711885f726f0f376e0e013d2de7da9366d0006"
+  integrity sha512-L7R2oSGWbuzzRZdbJzX6BFY/u3dBEfFSl9nvApp9VCQ2AjSbmW7IrMuHnU3qEyOe8sZjiJoosBasQ8glPw1MCw==
 
 sprintf-js@~1.0.2:
   version "1.0.3"
