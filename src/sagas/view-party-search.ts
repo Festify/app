@@ -40,8 +40,6 @@ function* doSearch(action) {
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(s.replace('-', ' ') + '*')}`;
 
-    console.log('Party:', currentParty);
-
     const tracks: SpotifyApi.TrackObjectFull[] = [];
     try {
         // Search until we have at least 20 available and playable search results
@@ -57,7 +55,6 @@ function* doSearch(action) {
                         ? !t.explicit
                         : true;
                 });
-            console.log('votable:', votableTracks);
 
             tracks.push(...votableTracks);
             url = resp.tracks.next;
