@@ -40,19 +40,24 @@ function* doSearch(action) {
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(s.replace('-', ' ') + '*')}`;
 
+    console.log('Party:', currentParty);
+
     const tracks: SpotifyApi.TrackObjectFull[] = [];
     try {
         // Search until we have at least 20 available and playable search results
         while (tracks.length < 20 && url) {
             const trackResponse = yield call(fetchWithAnonymousAuth, url);
             const resp: SpotifyApi.TrackSearchResponse = yield trackResponse.json();
+            console.log(resp.tracks.items);
             const votableTracks = resp.tracks.items
-                .filter(t => t.is_playable !== false)
-                .filter(t => {
+                //.filter((t) => t.is_playable !== false)
+                .filter((t) => !t.is_local)
+                .filter((t) => {
                     return currentParty!.settings && !currentParty!.settings!.allow_explicit_tracks
                         ? !t.explicit
                         : true;
                 });
+            console.log('votable:', votableTracks);
 
             tracks.push(...votableTracks);
             url = resp.tracks.next;
@@ -111,7 +116,7 @@ function* updateUrl(action: ReturnType<typeof changeTrackSearchInput>) {
     yield put(routerFn(searchRouteSelector(state, action.payload)!, {}));
 }
 
-export default function*() {
+export default function* () {
     yield takeLatest(LOCATION_CHANGED, doSearch);
     yield takeEvery(CHANGE_TRACK_SEARCH_INPUT, updateUrl);
     yield takeEvery(SET_VOTE, enforceMultiVoteSetting);

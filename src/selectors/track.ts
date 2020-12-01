@@ -20,7 +20,7 @@ export const singleMetadataSelector = (state: State, trackId: string): Metadata 
     metadataSelector(state)[trackId];
 
 export const artistJoinerFactory: () => (s: State, id: string) => string | null = () =>
-    createSelector(singleMetadataSelector, metadata => {
+    createSelector(singleMetadataSelector, (metadata) => {
         if (!metadata || !metadata.artists) {
             return null;
         }
@@ -48,14 +48,11 @@ export const sortedTracksFactory = (
             }
 
             return Object.keys(tracks)
-                .map(k => tracks[k])
-                .filter(t => t.reference && t.reference.provider && t.reference.id)
-                .filter(t => {
+                .map((k) => tracks[k])
+                .filter((t) => t.reference && t.reference.provider && t.reference.id)
+                .filter((t) => {
                     const fbId = firebaseTrackIdSelector(t);
-                    return (
-                        !(fbId in meta) ||
-                        (meta[fbId].isPlayable && meta[fbId].durationMs <= maxDurationMs)
-                    );
+                    return !(fbId in meta) || meta[fbId].durationMs <= maxDurationMs;
                 })
                 .sort((a, b) => a.order - b.order);
         },
@@ -63,11 +60,11 @@ export const sortedTracksFactory = (
 
 export const queueTracksSelector = sortedTracksFactory(tracksSelector);
 
-export const currentTrackSelector = createSelector(queueTracksSelector, tracks =>
+export const currentTrackSelector = createSelector(queueTracksSelector, (tracks) =>
     tracks.length > 0 ? tracks[0] : null,
 );
 
-export const currentTrackIdSelector = createSelector(currentTrackSelector, track =>
+export const currentTrackIdSelector = createSelector(currentTrackSelector, (track) =>
     track ? firebaseTrackIdSelector(track) : null,
 );
 
@@ -119,9 +116,9 @@ export const loadFanartTracksSelector = createSelector(
     (meta, tracks) =>
         tracks
             .slice(0, 2)
-            .map(t => firebaseTrackIdSelector(t))
-            .filter(id => id in meta && !meta[id].background)
-            .map(id => [id, meta[id]] as [string, Metadata]),
+            .map((t) => firebaseTrackIdSelector(t))
+            .filter((id) => id in meta && !meta[id].background)
+            .map((id) => [id, meta[id]] as [string, Metadata]),
 );
 
 export const loadMetadataSelector = createSelector(
@@ -129,9 +126,9 @@ export const loadMetadataSelector = createSelector(
     queueTracksSelector,
     (meta, tracks) =>
         tracks
-            .filter(t => {
+            .filter((t) => {
                 const fbId = firebaseTrackIdSelector(t);
                 return !(fbId in meta) || meta[fbId].durationMs == null;
             })
-            .map(t => t.reference.id),
+            .map((t) => t.reference.id),
 );
