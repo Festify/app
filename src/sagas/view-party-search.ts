@@ -49,7 +49,6 @@ function* doSearch(action) {
             console.log(resp.tracks.items);
             const votableTracks = resp.tracks.items
                 //.filter((t) => t.is_playable !== false)
-                .filter((t) => !t.is_local)
                 .filter((t) => {
                     return currentParty!.settings && !currentParty!.settings!.allow_explicit_tracks
                         ? !t.explicit
