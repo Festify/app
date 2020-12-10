@@ -53,10 +53,10 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 
     ${props.hasShareApi
         ? html`
-            <paper-button raised @click=${props.shareParty}>
-                Share
-            </paper-button>
-        `
+              <paper-button raised @click=${props.shareParty}>
+                  Share
+              </paper-button>
+          `
         : null}
 `;
 /* tslint:enable */
@@ -64,19 +64,11 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 const mapStateToProps = (state: State): ViewShareProps => ({
     domain: document.location!.host,
     hasShareApi: typeof (navigator as any).share === 'function',
-    partyId: state.party.currentParty
-        ? state.party.currentParty.short_id
-        : '',
+    partyId: state.party.currentParty ? state.party.currentParty.short_id : '',
 });
 
 const mapDispatchToProps: ViewShareDispatch = {
     shareParty,
 };
 
-customElements.define(
-    'party-share',
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(ViewShare),
-);
+customElements.define('party-share', connect(mapStateToProps, mapDispatchToProps)(ViewShare));

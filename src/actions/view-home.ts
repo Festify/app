@@ -1,5 +1,4 @@
-export type Actions =
-    | ReturnType<typeof changePartyId>;
+export type Actions = ReturnType<typeof changePartyId>;
 
 export const CHANGE_PARTY_ID = 'CHANGE_PARTY_ID';
 

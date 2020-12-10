@@ -50,10 +50,7 @@ function* removeTrack(partyId: string, ac: ReturnType<typeof removeTrackAction>)
     try {
         const [ref, moveToHistory] = ac.payload;
         const state: State = yield select();
-        const track = singleTrackSelector(
-            state,
-            firebaseTrackIdSelector(ref),
-        );
+        const track = singleTrackSelector(state, firebaseTrackIdSelector(ref));
 
         yield call(doRemoveTrack, partyId, track, moveToHistory);
     } catch (err) {

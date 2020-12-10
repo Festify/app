@@ -76,29 +76,36 @@ const PlayButton = (props: PartyTrackRenderProps) => {
         return html`
             ${props.isOwner && props.track
                 ? html`
-                    <paper-icon-button icon="festify:skip-next"
-                                       @click=${() => props.removeTrack(props.track!.reference)}
-                                       title="Skip ${props.metadata ? props.metadata.name : 'Loading...'}">
-                    </paper-icon-button>
-                `
+                      <paper-icon-button
+                          icon="festify:skip-next"
+                          @click=${() => props.removeTrack(props.track!.reference)}
+                          title="Skip ${props.metadata ? props.metadata.name : 'Loading...'}"
+                      >
+                      </paper-icon-button>
+                  `
                 : null}
             <div class="fab-spinner">
                 <paper-spinner-lite .active=${props.togglingPlayback}></paper-spinner-lite>
-                <paper-fab mini
-                           icon=${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}
-                           @click=${props.togglePlayPause}
-                           .disabled=${!props.enablePlayButton}>
+                <paper-fab
+                    mini
+                    icon=${props.isMusicPlaying ? 'festify:pause' : 'festify:play-arrow'}
+                    @click=${props.togglePlayPause}
+                    .disabled=${!props.enablePlayButton}
+                >
                 </paper-fab>
             </div>
         `;
     } else {
         return props.track
             ? html`
-                <paper-icon-button icon="${LikeButtonIcon(props)}"
-                                   @click=${() => props.setVote(props.track!.reference, !props.hasVoted)}
-                                   title="${(props.hasVoted ? "Unvote " : "Vote for ") + (props.metadata ? props.metadata.name : 'Loading...')}">
-                </paper-icon-button>
-            `
+                  <paper-icon-button
+                      icon="${LikeButtonIcon(props)}"
+                      @click=${() => props.setVote(props.track!.reference, !props.hasVoted)}
+                      title="${(props.hasVoted ? 'Unvote ' : 'Vote for ') +
+                          (props.metadata ? props.metadata.name : 'Loading...')}"
+                  >
+                  </paper-icon-button>
+              `
             : null;
     }
 };
@@ -131,7 +138,8 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
             margin-right: 20px;
         }
 
-        img, .empty {
+        img,
+        .empty {
             background: rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
             height: 54px;
@@ -210,37 +218,44 @@ export const PartyTrack = (props: PartyTrackRenderProps) => html`
 
     ${props.metadata
         ? srcsetImg(props.metadata.cover, '54px')
-        : html`<div class="empty"></div>`}
+        : html`
+              <div class="empty"></div>
+          `}
     <div class="metadata-wrapper">
         <h2>${props.metadata ? props.metadata.name : 'Loading...'}</h2>
         ${props.artistName
             ? html`
-                <aside>
-                    <a>${props.artistName}</a>
-                    <span class="dot">&middot;</span>
-                    <span>${props.voteString}</span>
-                </aside>
-            `
-            : null
-        }
+                  <aside>
+                      <a>${props.artistName}</a>
+                      <span class="dot">&middot;</span>
+                      <span>${props.voteString}</span>
+                  </aside>
+              `
+            : null}
     </div>
 
     <div class="icon-wrapper">
         ${props.showTakeoverButton
             ? html`
-                <paper-icon-button icon="festify:download"
-                                   @click=${props.takeOverPlayback}
-                                   title="Transfer playback to current device">
-                </paper-icon-button>
-            `
+                  <paper-icon-button
+                      icon="festify:download"
+                      @click=${props.takeOverPlayback}
+                      title="Transfer playback to current device"
+                  >
+                  </paper-icon-button>
+              `
             : null}
         ${props.showRemoveButton
             ? html`
-                <paper-icon-button icon="festify:clear"
-                                   @click=${() => props.removeTrack(props.track!.reference)}
-                                   title="Remove ${props.metadata ? props.metadata.name : 'Loading...'} from queue">
-                </paper-icon-button>
-            `
+                  <paper-icon-button
+                      icon="festify:clear"
+                      @click=${() => props.removeTrack(props.track!.reference)}
+                      title="Remove ${props.metadata
+                          ? props.metadata.name
+                          : 'Loading...'} from queue"
+                  >
+                  </paper-icon-button>
+              `
             : null}
         ${PlayButton(props)}
     </div>
@@ -267,16 +282,15 @@ const enablePlayButtonSelector = createSelector(
     (isOwner, isToggling, isCompatible, hasSptAccount, hasOtherMaster) =>
         isOwner &&
         !isToggling &&
-        (!isCompatible && hasOtherMaster || isCompatible) &&
-        (!hasSptAccount && hasOtherMaster || hasSptAccount),
+        ((!isCompatible && hasOtherMaster) || isCompatible) &&
+        ((!hasSptAccount && hasOtherMaster) || hasSptAccount),
 );
 
 export const createMapStateToPropsFactory = (
     trackSelector: (state: State, trackId: string) => Track | null,
 ) => {
-    const hasVotesOrIsFallbackSelector = createSelector(
-        trackSelector,
-        track => Boolean(track && (track.vote_count > 0 || track.is_fallback)),
+    const hasVotesOrIsFallbackSelector = createSelector(trackSelector, track =>
+        Boolean(track && (track.vote_count > 0 || track.is_fallback)),
     );
 
     /*
@@ -293,7 +307,8 @@ export const createMapStateToPropsFactory = (
             isPartyOwnerSelector,
             hasVotesOrIsFallbackSelector,
             isPlayingSelector,
-            (isOwner, hasVotesOrIsFallback, isPlaying) => isOwner && hasVotesOrIsFallback && !isPlaying,
+            (isOwner, hasVotesOrIsFallback, isPlaying) =>
+                isOwner && hasVotesOrIsFallback && !isPlaying,
         );
         const showTakeoverButtonSelector = createSelector(
             isPartyOwnerSelector,
@@ -332,10 +347,13 @@ export const mapDispatchToProps: PartyTrackDispatch = {
     togglePlayPause: togglePlaybackStart,
 };
 
-export const PartyTrackElementBase = withFit<PartyTrackOwnProps, PartyTrackRenderProps>(PartyTrack, {
-    playing: Boolean,
-    trackid: String,
-})(HTMLElement);
+export const PartyTrackElementBase = withFit<PartyTrackOwnProps, PartyTrackRenderProps>(
+    PartyTrack,
+    {
+        playing: Boolean,
+        trackid: String,
+    },
+)(HTMLElement);
 
 const PartyTrackElement = connect(
     createMapStateToPropsFactory(singleTrackSelector),

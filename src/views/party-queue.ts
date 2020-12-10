@@ -29,7 +29,8 @@ export const queueStyles = html`
             position: relative;
         }
 
-        party-track:nth-child(even), party-track-search:nth-child(even) {
+        party-track:nth-child(even),
+        party-track-search:nth-child(even) {
             background-color: var(--track-bg-even);
         }
     </style>
@@ -47,11 +48,9 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
     if (!props.tracks.length) {
         const inner = props.isOwner
             ? html`
-                <a href="${props.settingsRoute}"
-                   @click=${props.handleClick}>
-                    Go to settings</a>
-                to add a fallback playlist
-            `
+                  <a href="${props.settingsRoute}" @click=${props.handleClick}> Go to settings</a>
+                  to add a fallback playlist
+              `
             : 'Search for your favourite tracks and add them to the queue';
 
         return html`
@@ -60,24 +59,31 @@ const List = (props: PartyQueueProps & PartyQueueDispatch) => {
         `;
     }
 
-    const list = props.tracks.map((track, i) => html`
-        <party-track ?playing=${i === 0}
-                     data-flip-id="${track.reference.provider}-${track.reference.id}"
-                     .trackid="${track.reference.provider}-${track.reference.id}">
-        </party-track>
-    `);
+    const list = props.tracks.map(
+        (track, i) => html`
+            <party-track
+                ?playing=${i === 0}
+                data-flip-id="${track.reference.provider}-${track.reference.id}"
+                .trackid="${track.reference.provider}-${track.reference.id}"
+            >
+            </party-track>
+        `,
+    );
 
     // ShadyCSS + lit-html + dom-flip breaks in Firefox causing the track elements
     // not to be instantiated. Thus, no dom-flip in environments where there isn't support
     // for native Shady DOM yet.
     return window.ShadyCSS && !window.ShadyCSS.nativeShadow
-        ? html`<div>${list}</div>`
-        : html`<dom-flip>${list}</dom-flip>`;
+        ? html`
+              <div>${list}</div>
+          `
+        : html`
+              <dom-flip>${list}</dom-flip>
+          `;
 };
 
 const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
-    ${sharedStyles}
-    ${queueStyles}
+    ${sharedStyles} ${queueStyles}
     <style>
         .spinner {
             display: flex;
@@ -89,7 +95,8 @@ const PartyQueue = (props: PartyQueueProps & PartyQueueDispatch) => html`
             padding-top: 13px;
         }
 
-        h2, h3 {
+        h2,
+        h3 {
             margin-left: 16px;
             margin-right: 16px;
             text-align: center;
@@ -111,10 +118,4 @@ const mapDispatchToProps: PartyQueueDispatch = {
     handleClick: handleLinkClick,
 };
 
-customElements.define(
-    'party-queue',
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(PartyQueue),
-);
+customElements.define('party-queue', connect(mapStateToProps, mapDispatchToProps)(PartyQueue));

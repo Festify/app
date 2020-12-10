@@ -23,7 +23,9 @@ function* doSearch(action) {
         yield take(UPDATE_PARTY);
     }
 
-    const { query: { s } } = action.payload || { query: { s: '' } };
+    const {
+        query: { s },
+    } = action.payload || { query: { s: '' } };
     if (!s) {
         return;
     }
@@ -31,7 +33,9 @@ function* doSearch(action) {
     yield put(searchStart());
     yield call(delay, 500);
 
-    const { party: { currentParty } }: State = yield select();
+    const {
+        party: { currentParty },
+    }: State = yield select();
     let url =
         `/search?type=track&limit=${20}&market=${currentParty!.country}` +
         `&q=${encodeURIComponent(s.replace('-', ' ') + '*')}`;
@@ -42,10 +46,11 @@ function* doSearch(action) {
         while (tracks.length < 20 && url) {
             const trackResponse = yield call(fetchWithAnonymousAuth, url);
             const resp: SpotifyApi.TrackSearchResponse = yield trackResponse.json();
+            console.log(resp.tracks.items);
             const votableTracks = resp.tracks.items
-                .filter(t => t.is_playable !== false)
-                .filter(t => {
-                    return (currentParty!.settings && !currentParty!.settings!.allow_explicit_tracks)
+                //.filter((t) => t.is_playable !== false)
+                .filter((t) => {
+                    return currentParty!.settings && !currentParty!.settings!.allow_explicit_tracks
                         ? !t.explicit
                         : true;
                 });
@@ -83,16 +88,18 @@ function* enforceMultiVoteSetting(ac: ReturnType<typeof setVoteAction>) {
     }
 
     const hasVoted: boolean = ac.payload[1];
-    if (!state.party.currentParty.settings.allow_multi_track_add &&
+    if (
+        !state.party.currentParty.settings.allow_multi_track_add &&
         state.router.result!.subView === PartyViews.Search &&
-        hasVoted) {
+        hasVoted
+    ) {
         yield put(push(queueRouteSelector(state)!));
     }
 }
 
 function* updateUrl(action: ReturnType<typeof changeTrackSearchInput>) {
     const state: State = yield select();
-    const { s } = state.router!.query || { s: '' };
+    const { s } = state.router!.query || { s: '' };
 
     if (!action.payload) {
         yield put(push(queueRouteSelector(state)!, {}));
@@ -105,7 +112,7 @@ function* updateUrl(action: ReturnType<typeof changeTrackSearchInput>) {
     yield put(routerFn(searchRouteSelector(state, action.payload)!, {}));
 }
 
-export default function*() {
+export default function* () {
     yield takeLatest(LOCATION_CHANGED, doSearch);
     yield takeEvery(CHANGE_TRACK_SEARCH_INPUT, updateUrl);
     yield takeEvery(SET_VOTE, enforceMultiVoteSetting);

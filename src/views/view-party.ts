@@ -28,10 +28,12 @@ interface PartyViewProps {
     displayLoginModal: boolean;
     enabledProviders: EnabledProvidersList;
     isFollowUpSignIn: boolean;
-    party: Party | {
-        created_by: string;
-        name: string
-    };
+    party:
+        | Party
+        | {
+              created_by: string;
+              name: string;
+          };
     view: PartyViews;
 }
 
@@ -158,10 +160,12 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
             </header>
 
             <iron-pages selected="${props.view}" attr-for-selected="view" role="main">
-                <party-queue view="${PartyViews.Queue}"
-                            @dragenter=${props.trackDragEnter}
-                            @drop=${props.trackDragDrop}
-                            @dragover=${props.trackDragOver}>
+                <party-queue
+                    view="${PartyViews.Queue}"
+                    @dragenter=${props.trackDragEnter}
+                    @drop=${props.trackDragDrop}
+                    @dragover=${props.trackDragOver}
+                >
                 </party-queue>
                 <party-search view="${PartyViews.Search}"></party-search>
                 <party-settings view="${PartyViews.Settings}"></party-settings>
@@ -170,56 +174,68 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
         </div>
     </app-drawer-layout>
 
-    <paper-dialog with-backdrop
-                  .opened=${props.displayLoginModal}
-                  @iron-overlay-canceled=${props.closeLoginModal}>
+    <paper-dialog
+        with-backdrop
+        .opened=${props.displayLoginModal}
+        @iron-overlay-canceled=${props.closeLoginModal}
+    >
         <h2>
-            ${!props.isFollowUpSignIn ? "Please sign in to vote" : "Further action required"}
+            ${!props.isFollowUpSignIn ? 'Please sign in to vote' : 'Further action required'}
         </h2>
 
         <paper-dialog-scrollable>
             <p>
                 ${!props.isFollowUpSignIn
                     ? "The party owner requires all guests to sign in to prevent cheating, but you wouldn't do that anyway, would ya? 😛"
-                    : "There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once."}
+                    : 'There already seems to be an account connected to that email. Please sign in with one of your previous social accounts. You will only need to do this once.'}
             </p>
 
-            <paper-button raised
-                          class="login facebook"
-                          @click=${props.triggerFacebookLogin}
-                          .disabled=${!props.enabledProviders.facebook}>
+            <paper-button
+                raised
+                class="login facebook"
+                @click=${props.triggerFacebookLogin}
+                .disabled=${!props.enabledProviders.facebook}
+            >
                 <iron-icon icon="social:facebook"></iron-icon>
                 <span>Sign in with</span>
                 Facebook
             </paper-button>
-            <paper-button raised
-                          class="login google"
-                          @click=${props.triggerGoogleLogin}
-                          .disabled=${!props.enabledProviders.google}>
+            <paper-button
+                raised
+                class="login google"
+                @click=${props.triggerGoogleLogin}
+                .disabled=${!props.enabledProviders.google}
+            >
                 <iron-icon icon="social:google"></iron-icon>
                 <span>Sign in with</span>
                 Google
             </paper-button>
-            <paper-button raised
-                          class="login twitter"
-                          @click=${props.triggerTwitterLogin}
-                          .disabled=${!props.enabledProviders.twitter}>
+            <paper-button
+                raised
+                class="login twitter"
+                @click=${props.triggerTwitterLogin}
+                .disabled=${!props.enabledProviders.twitter}
+            >
                 <iron-icon icon="social:twitter"></iron-icon>
                 <span>Sign in with</span>
                 Twitter
             </paper-button>
-            <paper-button raised
-                          class="login github"
-                          @click=${props.triggerGithubLogin}
-                          .disabled=${!props.enabledProviders.github}>
+            <paper-button
+                raised
+                class="login github"
+                @click=${props.triggerGithubLogin}
+                .disabled=${!props.enabledProviders.github}
+            >
                 <iron-icon icon="social:github"></iron-icon>
                 <span>Sign in with</span>
                 GitHub
             </paper-button>
-            <paper-button raised
-                          class="login spotify"
-                          @click=${props.triggerSpotifyLogin}
-                          .disabled=${!props.enabledProviders.spotify}>
+            <paper-button
+                raised
+                class="login spotify"
+                @click=${props.triggerSpotifyLogin}
+                .disabled=${!props.enabledProviders.spotify}
+            >
                 <iron-icon icon="social:spotify"></iron-icon>
                 <span>Sign in with</span>
                 Spotify
@@ -227,8 +243,7 @@ const PartyView = (props: PartyViewProps & PartyViewDispatch) => html`
         </paper-dialog-scrollable>
 
         <div class="buttons">
-            <paper-button class="cancel"
-                          @click=${props.closeLoginModal}>
+            <paper-button class="cancel" @click=${props.closeLoginModal}>
                 Cancel
             </paper-button>
         </div>
@@ -265,10 +280,7 @@ const mapDispatchToProps: PartyViewDispatch = {
     triggerTwitterLogin: () => triggerOAuthLogin('twitter'),
 };
 
-const Base = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(PartyView);
+const Base = connect(mapStateToProps, mapDispatchToProps)(PartyView);
 
 class ViewParty extends Base {
     private queueFlip: DomFlip | null = null;
@@ -282,9 +294,9 @@ class ViewParty extends Base {
          */
 
         if (!this.queueFlip) {
-            this.queueFlip = this.shadowRoot!.querySelector('party-queue')!
-                .shadowRoot!
-                .querySelector('dom-flip');
+            this.queueFlip = this.shadowRoot!.querySelector(
+                'party-queue',
+            )!.shadowRoot!.querySelector('dom-flip');
         }
         if (!this.queueFlip) {
             return;

@@ -18,22 +18,27 @@ export default function*() {
 
     yield takeEvery(QUEUE_DRAG_ENTER, (event: ReturnType<typeof queueDragEnter>) => {
         event.payload.event.returnValue = false;
-        event.payload.event.dataTransfer!.dropEffect = "copy";
+        event.payload.event.dataTransfer!.dropEffect = 'copy';
         event.payload.event.preventDefault();
     });
 
     yield takeEvery(QUEUE_DRAG_DROP, function*(event: ReturnType<typeof queueDragDrop>) {
         event.payload.event.preventDefault();
-        const data: string = event.payload.event.dataTransfer!.getData("text/plain");
+        const data: string = event.payload.event.dataTransfer!.getData('text/plain');
         const trackRegex = /\/track\/([0-9a-z]+)/gi;
 
         let match = trackRegex.exec(data);
 
         while (match !== null) {
-            yield put(setVoteAction({
-                id: match[1],
-                provider: 'spotify',
-            }, true));
+            yield put(
+                setVoteAction(
+                    {
+                        id: match[1],
+                        provider: 'spotify',
+                    },
+                    true,
+                ),
+            );
 
             // Delay the track insertion to protect track order
             yield delay(100);

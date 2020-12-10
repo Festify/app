@@ -10,13 +10,9 @@ import {
 } from './party-track';
 
 const trackSelector = (state: State, trackId: string) =>
-    state.partyView.searchResult
-        ? state.partyView.searchResult[trackId]
-        : null;
+    state.partyView.searchResult ? state.partyView.searchResult[trackId] : null;
 const voteCountSelector = (state: State, trackId: string) =>
-    state.party.tracks && state.party.tracks[trackId]
-        ? state.party.tracks[trackId].vote_count
-        : 0;
+    state.party.tracks && state.party.tracks[trackId] ? state.party.tracks[trackId].vote_count : 0;
 const enhancedTrackSelector = createSelector(
     trackSelector,
     voteCountSelector,

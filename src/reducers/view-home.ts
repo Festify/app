@@ -46,7 +46,7 @@ export default function(
                 partyJoinInProgress: true,
             };
         case JOIN_PARTY_FAIL:
-            return {
+            return {
                 ...state,
                 partyJoinError: action.payload,
                 partyJoinInProgress: false,

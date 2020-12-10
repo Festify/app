@@ -28,6 +28,7 @@ import {
     togglePlaybackFinish,
     PLAY,
     SPOTIFY_SDK_INIT_FINISH,
+    PAUSE,
 } from '../actions/playback-spotify';
 import { markTrackAsPlayed, removeTrackAction } from '../actions/queue';
 import { playbackSelector } from '../selectors/party';
@@ -38,10 +39,10 @@ import { takeEveryWithState } from '../util/saga';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
-    return eventChannel<T>(put => {
-        const listener = detail => {
+    return eventChannel<T>((put) => {
+        const listener = (detail: T) => {
             if (detail) {
-                put(detail as any);
+                put(detail);
             }
         };
 
@@ -49,18 +50,21 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
             names = [names];
         }
 
-        return names.reduce((prev, ev) => {
-            player.on(ev as any, listener);
+        return names.reduce(
+            (prev, ev) => {
+                player.on(ev as any, listener as any);
 
-            return () => {
-                player.removeListener(name as any, listener);
-                prev();
-            };
-        }, () => {});
+                return () => {
+                    player.removeListener(name as any, listener as any);
+                    prev();
+                };
+            },
+            () => {},
+        );
     });
 }
 
-function* playTrack(id: string, deviceId: string, positionMs?: number) {
+function* playTrack(id: string, deviceId: string, positionMs: number = 0) {
     yield put(play(id, positionMs || 0));
 
     const playUri = `/me/player/play?device_id=${deviceId}`;
@@ -69,18 +73,10 @@ function* playTrack(id: string, deviceId: string, positionMs?: number) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uris: [`spotify:track:${id}`] }),
-    });
-
-    if (!positionMs) {
-        return;
-    } else {
-        positionMs = Math.floor(positionMs);
-    }
-
-    const seekUri = `/me/player/seek?device_id=${deviceId}&position_ms=${positionMs}`;
-    yield fetchWithAccessToken(seekUri, {
-        method: 'put',
+        body: JSON.stringify({
+            uris: [`spotify:track:${id}`],
+            position_ms: Math.floor(positionMs),
+        }),
     });
 }
 
@@ -96,7 +92,7 @@ function* handlePlaybackStateChange(
         throw new Error('Wat');
     }
 
-    if (('playing' in oldPlayback) && oldPlayback.playing === newPlayback.playing) {
+    if ('playing' in oldPlayback && oldPlayback.playing === newPlayback.playing) {
         return;
     }
 
@@ -121,16 +117,12 @@ function* handlePlaybackStateChange(
     } else {
         const playing = 'playing' in oldPlayback ? oldPlayback.playing : undefined;
         const position = newPlayback.last_position_ms
-            ? newPlayback.last_position_ms + (playing !== false ? Date.now() - newPlayback.last_change : 0)
+            ? newPlayback.last_position_ms +
+              (playing !== false ? Date.now() - newPlayback.last_change : 0)
             : 0;
 
         yield all([
-            call(
-                playTrack,
-                currentTrack.reference.id,
-                deviceId,
-                position,
-            ),
+            call(playTrack, currentTrack.reference.id, deviceId, position),
             call(markTrackAsPlayed, partyId, currentTrack.reference),
         ]);
     }
@@ -139,29 +131,32 @@ function* handlePlaybackStateChange(
 }
 
 function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
-    const playerStateChanges: Channel<Spotify.PlaybackState> =
-        yield call(attachToEvents, player, 'player_state_changed');
+    const playerStateChanges: Channel<Spotify.PlaybackState> = yield call(
+        attachToEvents,
+        player,
+        'player_state_changed',
+    );
+    let lastPlayerState: Spotify.PlaybackState | null = null;
 
     while (true) {
         yield take(PLAY);
 
         while (true) {
             const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.duration > 0 && state.paused === false) {
-                break;
+            if (
+                lastPlayerState &&
+                state.position === 0 &&
+                lastPlayerState.position > 0 &&
+                state.track_window.current_track.id ===
+                    lastPlayerState.track_window.current_track.id &&
+                state.paused === true
+            ) {
+                const { reference }: Track = yield select(currentTrackSelector);
+                yield put(removeTrackAction(reference, true));
+                yield put(updatePlaybackState({ playing: true }));
             }
+            lastPlayerState = state;
         }
-
-        while (true) {
-            const state = yield take(playerStateChanges);
-            if (state.position === 0 && state.paused === true) {
-                break;
-            }
-        }
-
-        const { reference }: Track = yield select(currentTrackSelector);
-        yield put(removeTrackAction(reference, true));
-        yield put(updatePlaybackState({ playing: true }));
     }
 }
 
@@ -217,7 +212,7 @@ function* handleQueueChange(
 
 function* handlePlaybackError(error: Spotify.Error) {
     yield put(showToast(error.message));
-    console.error("Spotify error:", error);
+    console.error('Spotify error:', error);
 
     Raven.captureException(error.message);
 }
@@ -239,28 +234,35 @@ export function* manageLocalPlayer(partyId: string) {
                 volume: 1,
             });
 
-            const playerErrors: Channel<Spotify.Error> =
-                yield call(attachToEvents, player, [
-                    'initialization_error',
-                    'authentication_error',
-                    'account_error',
-                    'playback_error',
-                ]);
+            const playerErrors: Channel<Spotify.Error> = yield call(attachToEvents, player, [
+                'initialization_error',
+                'authentication_error',
+                'account_error',
+                'playback_error',
+            ]);
 
-            const playerReady: Channel<Spotify.WebPlaybackInstance> =
-                yield call(attachToEvents, player, 'ready');
-            const playbackStateChanges: Channel<Spotify.PlaybackState> =
-                yield call(attachToEvents, player, 'player_state_changed');
+            const playerReady: Channel<Spotify.WebPlaybackInstance> = yield call(
+                attachToEvents,
+                player,
+                'ready',
+            );
+            const playbackStateChanges: Channel<Spotify.PlaybackState> = yield call(
+                attachToEvents,
+                player,
+                'player_state_changed',
+            );
 
             const connectSuccess: boolean = yield apply(player, player.connect);
 
             if (!connectSuccess) {
                 const error = yield take(playerErrors);
                 yield put(playerError(error));
-                yield put(updatePlaybackState({
-                    master_id: null,
-                    playing: false,
-                }));
+                yield put(
+                    updatePlaybackState({
+                        master_id: null,
+                        playing: false,
+                    }),
+                );
             }
 
             const lifecycleManager: Task = yield fork(handlePlaybackLifecycle, player);
@@ -322,9 +324,7 @@ export function* checkPlaybackSdkCompatibility() {
     const { platform, userAgent } = navigator;
 
     const validOS =
-        platform.includes('Win') ||
-        platform.includes('Mac') ||
-        platform.includes('Linux');
+        platform.includes('Win') || platform.includes('Mac') || platform.includes('Linux');
 
     const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
 

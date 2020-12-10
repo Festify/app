@@ -35,9 +35,7 @@ const currentDurationSelector = createSelector(
     metadataSelector,
     currentTrackIdSelector,
     (metadata: Record<string, Metadata>, trackId: string | null) =>
-        trackId && trackId in metadata
-            ? metadata[trackId].durationMs
-            : 0,
+        trackId && trackId in metadata ? metadata[trackId].durationMs : 0,
 );
 
 const mapDispatchToProps = (state: State): ProgressBarProps => ({
@@ -64,7 +62,7 @@ class ProgressBar extends ProgressBarBase {
         let currentPercentage = last_position_ms / durationMs;
         if (playing) {
             const timeDiff = Date.now() - last_change;
-            currentPercentage += (timeDiff / durationMs);
+            currentPercentage += timeDiff / durationMs;
         }
         window.requestAnimationFrame(() => {
             this.transitionTo(currentPercentage * 100, 0, playing);
@@ -97,7 +95,4 @@ class ProgressBar extends ProgressBarBase {
     }
 }
 
-customElements.define(
-    'playback-progress-bar',
-    ProgressBar,
-);
+customElements.define('playback-progress-bar', ProgressBar);

@@ -37,27 +37,29 @@ interface QueueDrawerDispatch {
     toggleUserMenu: () => void;
 }
 
-const isActive = (isActive: boolean) => isActive ? 'active' : '';
+const isActive = (isActive: boolean) => (isActive ? 'active' : '');
 
 /* tslint:disable:max-line-length */
 const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     ${sharedStyles}
     <style>
         :host {
-            color: rgba(255, 255, 255, .54);
+            color: rgba(255, 255, 255, 0.54);
             display: block;
             min-height: 100vh;
         }
 
-        a, a:visited, .dropdown-content {
-            color: rgba(0, 0, 0, .8);
+        a,
+        a:visited,
+        .dropdown-content {
+            color: rgba(0, 0, 0, 0.8);
             text-decoration: none;
             font-weight: bolder;
         }
 
         .hidable {
             transform-origin: 50% 0;
-            transition: transform .3s ease, opacity .3s ease;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         .hidable.hidden {
@@ -70,8 +72,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
          * Header
          */
         header {
-            background:
-                linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)),
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
                 url(https://source.unsplash.com/512x352/?concert) no-repeat center;
             background-size: cover;
             display: flex;
@@ -100,7 +101,7 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
 
         .user-menu paper-icon-button {
             margin-left: auto;
-            transition: transform .3s ease;
+            transition: transform 0.3s ease;
         }
 
         .user-menu paper-icon-button.open {
@@ -126,11 +127,12 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
         }
 
         .menu iron-icon {
-            color: rgba(0, 0, 0, .54);
+            color: rgba(0, 0, 0, 0.54);
             margin: 0 16px 2px 0;
         }
 
-        .menu a.active, .menu a.active iron-icon {
+        .menu a.active,
+        .menu a.active iron-icon {
             color: var(--primary-color);
         }
     </style>
@@ -138,52 +140,67 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     <header>
         ${festifyLogo}
 
-        <div class="user-menu hidable ${props.username ? '' : 'hidden'}" @click=${props.toggleUserMenu}>
+        <div
+            class="user-menu hidable ${props.username ? '' : 'hidden'}"
+            @click=${props.toggleUserMenu}
+        >
             <span>${props.username}</span>
-            <paper-icon-button icon="festify:expand-more"
-                               class="${props.userMenuOpen ? 'open' : ''}"
-                               title="Open user menu">
+            <paper-icon-button
+                icon="festify:expand-more"
+                class="${props.userMenuOpen ? 'open' : ''}"
+                title="Open user menu"
+            >
             </paper-icon-button>
         </div>
     </header>
 
     <div class="menu hidable ${props.userMenuOpen ? 'hidden' : ''}" role="menu">
-        <a href="${props.queueRoute}"
-           class="${isActive(props.subView === PartyViews.Queue || props.subView === PartyViews.Search)}"
-           @click=${props.handleClick}>
+        <a
+            href="${props.queueRoute}"
+            class="${isActive(
+                props.subView === PartyViews.Queue || props.subView === PartyViews.Search,
+            )}"
+            @click=${props.handleClick}
+        >
             <iron-icon icon="festify:menu"></iron-icon>
             Queue
         </a>
         ${props.isOwner
             ? html`
-                <a href="${props.settingsRoute}"
-                   class="${isActive(props.subView === PartyViews.Settings)}"
-                   @click=${props.handleClick}>
-                    <iron-icon icon="festify:settings"></iron-icon>
-                    Settings
-                </a>
-            `
-            : null
-        }
-
+                  <a
+                      href="${props.settingsRoute}"
+                      class="${isActive(props.subView === PartyViews.Settings)}"
+                      @click=${props.handleClick}
+                  >
+                      <iron-icon icon="festify:settings"></iron-icon>
+                      Settings
+                  </a>
+              `
+            : null}
         ${!props.isOwner
             ? html`
-                <a href="#"
-                   @click=${ev => { ev.preventDefault(); props.enterAdmin(); }}>
-                    <iron-icon icon="festify:settings-remote"></iron-icon>
-                    Login for Admin Mode
-                </a>
-            ` : null
-        }
+                  <a
+                      href="#"
+                      @click=${ev => {
+                          ev.preventDefault();
+                          props.enterAdmin();
+                      }}
+                  >
+                      <iron-icon icon="festify:settings-remote"></iron-icon>
+                      Login for Admin Mode
+                  </a>
+              `
+            : null}
 
-        <a href="${props.shareRoute}"
-           class="${isActive(props.subView === PartyViews.Share)}"
-           @click=${props.handleClick}>
+        <a
+            href="${props.shareRoute}"
+            class="${isActive(props.subView === PartyViews.Share)}"
+            @click=${props.handleClick}
+        >
             <iron-icon icon="festify:share"></iron-icon>
             Share
         </a>
-        <a href="${props.tvRoute}"
-           @click=${props.handleClick}>
+        <a href="${props.tvRoute}" @click=${props.handleClick}>
             <iron-icon icon="festify:tv"></iron-icon>
             TV Mode
         </a>
@@ -198,8 +215,13 @@ const QueueDrawer = (props: QueueDrawerProps & QueueDrawerDispatch) => html`
     </div>
 
     <div class="menu hidable ${props.userMenuOpen ? '' : 'hidden'}" role="menu">
-        <a href="#"
-           @click=${ev => { ev.preventDefault(); props.logout(); }}>
+        <a
+            href="#"
+            @click=${ev => {
+                ev.preventDefault();
+                props.logout();
+            }}
+        >
             <iron-icon icon="festify:exit-to-app"></iron-icon>
             Logout
         </a>
@@ -233,10 +255,4 @@ const mapDispatchToProps: QueueDrawerDispatch = {
     toggleUserMenu,
 };
 
-customElements.define(
-    'queue-drawer',
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(QueueDrawer),
-);
+customElements.define('queue-drawer', connect(mapStateToProps, mapDispatchToProps)(QueueDrawer));
