@@ -39,10 +39,10 @@ import { takeEveryWithState } from '../util/saga';
 import { fetchWithAccessToken, requireAccessToken } from '../util/spotify-auth';
 
 function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string[]) {
-    return eventChannel<T>(put => {
-        const listener = detail => {
+    return eventChannel<T>((put) => {
+        const listener = (detail: T) => {
             if (detail) {
-                put(detail as any);
+                put(detail);
             }
         };
 
@@ -52,10 +52,10 @@ function attachToEvents<T>(player: Spotify.SpotifyPlayer, names: string | string
 
         return names.reduce(
             (prev, ev) => {
-                player.on(ev as any, listener);
+                player.on(ev as any, listener as any);
 
                 return () => {
-                    player.removeListener(name as any, listener);
+                    player.removeListener(name as any, listener as any);
                     prev();
                 };
             },
@@ -145,10 +145,12 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
             const state = yield take(playerStateChanges);
             if (
                 lastPlayerState &&
-                state.position < lastPlayerState.position - 100 &&
-                state.paused === false
+                state.position === 0 &&
+                lastPlayerState.position > 0 &&
+                state.track_window.current_track.id ===
+                    lastPlayerState.track_window.current_track.id &&
+                state.paused === true
             ) {
-                player.pause();
                 const { reference }: Track = yield select(currentTrackSelector);
                 yield put(removeTrackAction(reference, true));
                 yield put(updatePlaybackState({ playing: true }));
@@ -228,7 +230,7 @@ export function* manageLocalPlayer(partyId: string) {
 
             player = new Spotify.Player({
                 name: 'Festify 🎉',
-                getOAuthToken: cb => requireAccessToken().then(cb),
+                getOAuthToken: (cb) => requireAccessToken().then(cb),
                 volume: 1,
             });
 
