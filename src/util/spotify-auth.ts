@@ -8,7 +8,6 @@ export const SCOPES = [
     'streaming',
     'user-modify-playback-state',
     'user-read-playback-state',
-    'user-read-birthdate',
     'user-read-email',
     'user-read-private',
     'playlist-read-collaborative',
@@ -84,7 +83,7 @@ function fetchFactory(
 
             if (resp.status === 202) {
                 isInactive = true;
-                await new Promise(res => setTimeout(res, 5000));
+                await new Promise((res) => setTimeout(res, 5000));
             } else {
                 return resp;
             }
