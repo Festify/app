@@ -319,20 +319,3 @@ export function* manageLocalPlayer(partyId: string) {
 }
 
 export default manageLocalPlayer;
-
-export function* checkPlaybackSdkCompatibility() {
-    const { platform, userAgent } = navigator;
-
-    const validOS =
-        platform.includes('Win') || platform.includes('Mac') || platform.includes('Linux');
-
-    const isMobile = navigator.userAgent.match(/Android|webOS|iPhone|iPod|iPad|Blackberry/i);
-
-    const validBrowser =
-        (userAgent.includes('Firefox') && !userAgent.includes('Opera')) ||
-        userAgent.includes('Chrome');
-
-    if (!validOS || !validBrowser || isMobile) {
-        yield put(setPlayerCompatibility(false));
-    }
-}
