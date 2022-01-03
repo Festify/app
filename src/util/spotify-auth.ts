@@ -72,22 +72,27 @@ function fetchFactory(
         let attempts = 0;
 
         do {
-            const resp = await fetch(url, {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            try {
+                const resp = await fetch(url, {
+                    ...options,
+                    headers: {
+                        ...options.headers,
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-            if (resp.status === 429) {
-                console.log(`Got too many requests for ${url}, retrying in 5s...`);
-                await new Promise((res) => setTimeout(res, 5000));
-            } else if (resp.status === 502) {
-                console.log(`Got bad gateway for ${url}, retrying in 200ms...`);
-                await new Promise((res) => setTimeout(res, 200));
-            } else {
-                return resp;
+                if (resp.status === 429) {
+                    console.warn(`Got too many requests for ${url}, retrying in 5s...`);
+                    await new Promise((res) => setTimeout(res, 5000));
+                } else if (resp.status === 502) {
+                    console.warn(`Got bad gateway for ${url}, retrying in 200ms...`);
+                    await new Promise((res) => setTimeout(res, 200));
+                } else {
+                    return resp;
+                }
+            } catch (err) {
+                console.warn(`Got error for ${url}, retrying in 1s...`, err);
+                await new Promise((res) => setTimeout(res, 1000));
             }
         } while (attempts++ < 5);
 
