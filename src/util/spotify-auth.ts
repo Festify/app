@@ -69,7 +69,6 @@ function fetchFactory(
         }
 
         const token = await tokenFetcher();
-        let isInactive = false;
         let attempts = 0;
 
         do {
@@ -81,13 +80,16 @@ function fetchFactory(
                 },
             });
 
-            if (resp.status === 202) {
-                isInactive = true;
+            if (resp.status === 429) {
+                console.log(`Got too many requests for ${url}, retrying in 5s...`);
                 await new Promise((res) => setTimeout(res, 5000));
+            } else if (resp.status === 502) {
+                console.log(`Got bad gateway for ${url}, retrying in 200ms...`);
+                await new Promise((res) => setTimeout(res, 200));
             } else {
                 return resp;
             }
-        } while (isInactive && attempts++ < 5);
+        } while (attempts++ < 5);
 
         throw new Error('Device is inactive');
     };
