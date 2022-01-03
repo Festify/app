@@ -102,25 +102,13 @@ export const updateUserPlaylists = (playlists: Playlist[]) => ({
 export async function flushQueue(partyId: string, tracks: Track[]) {
     const trackRemoveObject = {};
     tracks
-        .filter(t => !t.played_at)
-        .map(t => firebaseTrackIdSelector(t))
-        .forEach(k => (trackRemoveObject[k] = null));
+        .filter((t) => !t.played_at)
+        .map((t) => firebaseTrackIdSelector(t))
+        .forEach((k) => (trackRemoveObject[k] = null));
     await Promise.all([
-        firebase
-            .database()
-            .ref('/tracks')
-            .child(partyId)
-            .update(trackRemoveObject),
-        firebase
-            .database()
-            .ref('/votes')
-            .child(partyId)
-            .remove(),
-        firebase
-            .database()
-            .ref('/votes_by_user')
-            .child(partyId)
-            .remove(),
+        firebase.database().ref('/tracks').child(partyId).update(trackRemoveObject),
+        firebase.database().ref('/votes').child(partyId).remove(),
+        firebase.database().ref('/votes_by_user').child(partyId).remove(),
     ]);
 }
 
@@ -165,15 +153,8 @@ export async function insertPlaylist(
             const resp = await fetchWithAccessToken(url);
             const { items, next }: SpotifyApi.PlaylistTrackResponse = await resp.json();
             const trackItems = items
-                .filter(
-                    it =>
-                        it &&
-                        !it.is_local &&
-                        it.track &&
-                        it.track.id &&
-                        it.track.is_playable !== false,
-                )
-                .map(it => it.track);
+                .filter((it) => it && !it.is_local && it.track.id && it.track.is_playable !== false)
+                .map((it) => it.track);
 
             if (typeof progress === 'function') {
                 progress(items.length);
@@ -202,14 +183,10 @@ export async function insertPlaylist(
 
         const removeObject = {};
         Object.keys(fallbackTracks)
-            .filter(k => !fallbackTracks[k].played_at)
-            .forEach(k => (removeObject[k] = null));
+            .filter((k) => !fallbackTracks[k].played_at)
+            .forEach((k) => (removeObject[k] = null));
 
-        await firebase
-            .database()
-            .ref('/tracks')
-            .child(partyId)
-            .update(removeObject);
+        await firebase.database().ref('/tracks').child(partyId).update(removeObject);
     }
 
     if (typeof progress === 'function') {
@@ -241,9 +218,5 @@ export async function insertPlaylist(
         return acc;
     }, {});
 
-    await firebase
-        .database()
-        .ref('/tracks')
-        .child(partyId)
-        .update(updateObject);
+    await firebase.database().ref('/tracks').child(partyId).update(updateObject);
 }
