@@ -81,7 +81,7 @@ function* playTrack(id: string, deviceId: string, positionMs: number = 0) {
 }
 
 function* handlePlaybackStateChange(
-    action,
+    _: any,
     oldPlayback: Playback | {} | null,
     newPlayback: Playback | null,
     player: Spotify.SpotifyPlayer,
@@ -220,8 +220,8 @@ function* handlePlaybackError(error: Spotify.Error) {
 export function* manageLocalPlayer(partyId: string) {
     let player: Spotify.SpotifyPlayer = null!;
 
-    try {
-        while (true) {
+    while (true) {
+        try {
             yield take(BECOME_PLAYBACK_MASTER);
 
             if (!(yield select((state: State) => state.player.sdkReady))) {
@@ -310,10 +310,11 @@ export function* manageLocalPlayer(partyId: string) {
                 playbackStateUpdateManager,
                 spotifyPlaybackChangeManager,
             );
-        }
-    } finally {
-        if (player && (yield cancelled())) {
-            yield apply(player, player.disconnect);
+        } finally {
+            if (player && (yield cancelled())) {
+                yield apply(player, player.disconnect);
+                break;
+            }
         }
     }
 }
