@@ -81,8 +81,9 @@ function fetchFactory(
                 },
             });
 
-            if (resp.status === 202) {
+            if (resp.status >= 300) {
                 isInactive = true;
+                console.log('Fetch for', url, 'failed, retrying:', resp);
                 await new Promise((res) => setTimeout(res, 5000));
             } else {
                 return resp;
