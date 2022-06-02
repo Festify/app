@@ -3,7 +3,6 @@ import '@polymer/paper-input/paper-input';
 import { connect } from 'fit-html';
 import { html } from 'lit-html';
 
-import { shareParty } from '../actions/view-party-share';
 import { State } from '../state';
 import sharedStyles from '../util/shared-styles';
 
@@ -11,14 +10,11 @@ interface ViewShareProps {
     domain: string;
     hasShareApi: boolean;
     partyId: string;
-}
-
-interface ViewShareDispatch {
-    shareParty: () => void;
+    partyName: string;
 }
 
 /* tslint:disable:max-line-length */
-const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
+const ViewShare = (props: ViewShareProps) => html`
     ${sharedStyles}
     <style>
         :host {
@@ -53,7 +49,15 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 
     ${props.hasShareApi
         ? html`
-              <paper-button raised @click=${props.shareParty}>
+              <paper-button
+                  raised
+                  @click=${() =>
+                      (navigator as any).share({
+                          title: props.partyName,
+                          text: `Join ${props.partyName} and rule the music!`,
+                          url: `${document.location!.origin}/party/${props.partyId}`,
+                      })}
+              >
                   Share
               </paper-button>
           `
@@ -63,12 +67,9 @@ const ViewShare = (props: ViewShareProps & ViewShareDispatch) => html`
 
 const mapStateToProps = (state: State): ViewShareProps => ({
     domain: document.location!.host,
-    hasShareApi: typeof (navigator as any).share === 'function',
+    hasShareApi: Boolean((navigator as any).share),
     partyId: state.party.currentParty ? state.party.currentParty.short_id : '',
+    partyName: state.party.currentParty ? state.party.currentParty.name : '',
 });
 
-const mapDispatchToProps: ViewShareDispatch = {
-    shareParty,
-};
-
-customElements.define('party-share', connect(mapStateToProps, mapDispatchToProps)(ViewShare));
+customElements.define('party-share', connect(mapStateToProps, {})(ViewShare));
