@@ -147,8 +147,8 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
                 lastPlayerState &&
                 state.position === 0 &&
                 lastPlayerState.position > 0 &&
-                state.track_window.current_track.id ===
-                    lastPlayerState.track_window.current_track.id &&
+                state.track_window.current_track?.id ===
+                    lastPlayerState.track_window.current_track?.id &&
                 state.paused === true
             ) {
                 const { reference }: Track = yield select(currentTrackSelector);

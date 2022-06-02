@@ -24,7 +24,7 @@ export const store = createStore(
 );
 
 for (const s of sagas) {
-    saga.run(s);
+    saga.run(s as any);
 }
 
 store.dispatch(generateInstanceId());
