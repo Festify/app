@@ -147,10 +147,13 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
                 lastPlayerState &&
                 state.position === 0 &&
                 lastPlayerState.position > 0 &&
-                state.track_window.current_track?.id ===
-                    lastPlayerState.track_window.current_track?.id &&
+                state.track_window.current_track &&
+                lastPlayerState.track_window.current_track &&
+                state.track_window.current_track.id ===
+                    lastPlayerState.track_window.current_track.id &&
                 state.paused === true
             ) {
+                console.log('Song ended, removing and playing the next one...');
                 const { reference }: Track = yield select(currentTrackSelector);
                 yield put(removeTrackAction(reference, true));
                 yield put(updatePlaybackState({ playing: true }));
