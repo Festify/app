@@ -121,6 +121,8 @@ function* handlePlaybackStateChange(
               (playing !== false ? Date.now() - newPlayback.last_change : 0)
             : 0;
 
+        console.log('Playing track:', currentTrack.reference.id, position);
+
         yield all([
             call(playTrack, currentTrack.reference.id, deviceId, position),
             call(markTrackAsPlayed, partyId, currentTrack.reference),
@@ -204,6 +206,7 @@ function* handleQueueChange(
     }
 
     if (newTrack) {
+        console.log('Queue changed, playing new track:', newTrack.reference.id);
         yield all([
             call(markTrackAsPlayed, partyId, newTrack.reference),
             call(playTrack, newTrack.reference.id, deviceId),
