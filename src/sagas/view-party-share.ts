@@ -19,7 +19,7 @@ function* share() {
     yield call((navigator as any).share, {
         text: `Join ${currentParty.name} and rule the music!`,
         title: currentParty.name,
-        url: `${document.location!.origin}/party/${partyId}`,
+        url: `${document.location!.origin}/${partyId}`,
     });
 }
 
