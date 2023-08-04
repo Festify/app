@@ -92,6 +92,8 @@ function* handlePlaybackStateChange(
         throw new Error('Wat');
     }
 
+    console.log('Playback:', newPlayback);
+
     if ('playing' in oldPlayback && oldPlayback.playing === newPlayback.playing) {
         return;
     }
@@ -148,11 +150,11 @@ function* handlePlaybackLifecycle(player: Spotify.SpotifyPlayer) {
             if (
                 lastPlayerState &&
                 state.position === 0 &&
-                lastPlayerState.position > 0 &&
                 state.track_window.current_track &&
                 lastPlayerState.track_window.current_track &&
                 state.track_window.current_track.id ===
                     lastPlayerState.track_window.current_track.id &&
+                lastPlayerState.paused === false &&
                 state.paused === true
             ) {
                 console.log('Song ended, removing and playing the next one...');
